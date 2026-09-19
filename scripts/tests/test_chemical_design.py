@@ -2,11 +2,22 @@ import sys
 from pathlib import Path
 import unittest
 import json
+import gzip
+import tempfile
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'dossier'))
-from chemical_design import parse_hash,rt_cell_line
+from chemical_design import parse_hash,rt_cell_line,read_hash_capture
 
 
 class ChemicalDesignTests(unittest.TestCase):
+    def test_source_wrapped_count_is_losslessly_decoded_and_ambiguous_wrap_rejected(self):
+        with tempfile.TemporaryDirectory() as root:
+            path=Path(root)/'hash.gz'
+            with gzip.open(path,'wt') as h:h.write('s\tc\th\t1\n\t7\ns\tc2\th2\t1\t3\n')
+            frame,audit=read_hash_capture(path)
+            self.assertEqual(frame.umi.tolist(),[7,3]);self.assertEqual(audit['physical_lines'],3);self.assertEqual(audit['split_final_field_records'],1)
+            with gzip.open(path,'wt') as h:h.write('s\tc\th\t1\ns\tc2\th2\t1\t3\n')
+            with self.assertRaises(ValueError):read_hash_capture(path)
+
     def test_combo_components_and_RT_line_are_distinct_from_hash(self):
         result=parse_hash('plate6_0.1_DDR1IN_0.1_rep1','chemical4','A172')
         self.assertEqual(json.loads(result['components']),[['DDR1IN',.1],['Trametinib',.1]])

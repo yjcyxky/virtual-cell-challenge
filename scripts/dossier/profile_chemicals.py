@@ -16,7 +16,7 @@ import pandas as pd
 from scipy import sparse
 from annotation import RULES,marker_model,state_model,validate_records
 from sparse_annotation import annotate_sparse
-from chemical_design import parse_hash,design
+from chemical_design import parse_hash,design,read_hash_capture
 from chemical_diagnostics import PARAMETERS,distribution_contrast
 from rna import RNAFile,hash_file,scan,mapping_audit,value_hash,quantiles
 from profile_responses import write_json,serial
@@ -53,7 +53,8 @@ def run(cache,references,evidence,output,group):
     metadata=pd.read_parquet(cache/'all-CDS-source-metadata.parquet')
     if metadata.source_barcode.duplicated().any():raise ValueError('ambiguous_CDS_membership')
     assignments=design(metadata,sheet,group);assignments.to_parquet(output/'condition-assignment.parquet',index=False)
-    hashes=pd.read_csv(raw/(prefix+'hashTable.out.txt.gz'),sep='\t',header=None,names=['sample','barcode','hash','axis','umi'])
+    hashes,format_audit=read_hash_capture(raw/(prefix+'hashTable.out.txt.gz'))
+    write_json(output/'hash-table-format.json',format_audit)
     if not set(hashes['hash'])<=set(sheet['hash']) or (hashes.umi<0).any() or not np.isfinite(hashes.umi).all() or (hashes.umi!=np.floor(hashes.umi)).any():raise ValueError('invalid_capture_hash_counts')
     hash_totals=hashes.groupby('barcode').umi.sum();by_hash=hashes.groupby(['barcode','hash']).umi.sum();max_hash=by_hash.groupby(level=0).max()
     audit=metadata[['source_barcode','top_oligo_W','hash_umis_W','top_to_second_best_ratio_W']].copy()
@@ -71,8 +72,9 @@ def run(cache,references,evidence,output,group):
     if not facts['all_counts_finite_nonnegative_integer']:raise ValueError('invalid_source_counts')
     cells=cells.merge(metadata.add_prefix('source_CDS_').rename(columns={'source_CDS_source_barcode':'source_barcode'}),on='source_barcode',how='left',validate='1:1',sort=False)
     cells=cells.merge(assignments,on='source_barcode',how='left',validate='1:1',sort=False)
-    cells['condition_eligible']=cells.condition_eligible.fillna(False);missing=cells.assignment_limitation.isna()&~cells.condition_eligible
+    cells['condition_eligible']=cells.condition_eligible.fillna(False).astype(bool);missing=cells.assignment_limitation.isna()&~cells.condition_eligible
     cells.loc[missing,'assignment_limitation']='no_author_CDS_condition_metadata'
+    if cells.loc[cells.condition_eligible,'assignment_limitation'].notna().any():raise ValueError('eligible_assignment_has_exclusion_reason')
     cells['genetic_supervision_role']='not_applicable_no_genetic_intervention'
     declared=[]
     for label in sorted(set(sheet['hash'])):

@@ -1,8 +1,33 @@
 """Explicit source hash interpretation for the two non-genetic McFaline screens."""
 import json
+import gzip
 import re
 import numpy as np
 import pandas as pd
+
+
+def read_hash_capture(path):
+    """Decode exact five-field records, including the source's split final field.
+
+    A four-field physical line may only be followed by a tab + integer UMI line.
+    This documented read view retains source bytes and rejects all other wrapping.
+    """
+    rows=[];pending=None;wrapped=0;physical=0
+    with gzip.open(path,'rt',newline='') as handle:
+        for physical,line in enumerate(handle,1):
+            fields=line.rstrip('\r\n').split('\t')
+            if pending is not None:
+                if len(fields)!=2 or fields[0]!='':raise ValueError('ambiguous_hash_count_continuation')
+                fields=pending+[fields[1]];pending=None;wrapped+=1
+            elif len(fields)==4:pending=fields;continue
+            if len(fields)!=5 or not all(fields):raise ValueError('invalid_hash_capture_field_count')
+            try:fields[3]=int(fields[3]);fields[4]=int(fields[4])
+            except ValueError:raise ValueError('hash_axis_and_count_must_be_integer')
+            if fields[4]<0:raise ValueError('negative_hash_UMI')
+            rows.append(fields)
+    if pending is not None:raise ValueError('truncated_hash_count_continuation')
+    return pd.DataFrame(rows,columns=['sample','barcode','hash','axis','umi']),{'physical_lines':physical,'logical_records':len(rows),'split_final_field_records':wrapped,
+        'interpretation':'lossless five-field read view; a four-field line followed by TAB+integer continues its UMI field; source bytes unchanged'}
 
 
 def rt_cell_line(barcode):
