@@ -12,7 +12,7 @@ import time
 import uuid
 import numpy as np
 import pandas as pd
-from crispri import REPLOGLE, task_metadata, control_coverage, bulk_comparison
+from crispri import REPLOGLE, NADIG, task_metadata, control_coverage, bulk_comparison, geo_gem_libraries
 from rna import RNAFile, hash_file, scan, mapping_audit, value_hash
 from profile_responses import write_json, serial
 from render import render
@@ -20,18 +20,22 @@ from render import render
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def assess(inventory, evidence, output):
+def assess(inventory, evidence, output, source_id='replogle2022'):
+    run_commit = subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip()
     if output.exists() or output.resolve().is_relative_to((ROOT / 'data/raw').resolve()):
         raise ValueError('fresh_non_raw_output_required')
     inv = json.loads(inventory.read_text())
     if inv['status'] != 'completed':
         raise ValueError('completed_inventory_required')
-    files = {Path(f['file']).name: f['sha256'] for f in inv['file_results'] if f['source_id'] == 'replogle2022'}
-    if set(files) != {f'{c}_raw_{kind}_01.h5ad' for c in REPLOGLE for kind in ['singlecell','bulk']}:
-        raise ValueError('unexpected_Replogle_input_scope')
+    contexts = {'replogle2022':REPLOGLE,'nadig2025':NADIG}[source_id]
+    prefix = 'GSE264667_' if source_id == 'nadig2025' else ''
+    kinds = ['singlecell'] if source_id == 'nadig2025' else ['singlecell','bulk']
+    files = {Path(f['file']).name: f['sha256'] for f in inv['file_results'] if f['source_id'] == source_id}
+    if set(files) != {f'{prefix}{c}_raw_{kind}_01.h5ad' for c in contexts for kind in kinds}:
+        raise ValueError('unexpected_CRISPRi_input_scope')
     hgnc_path = ROOT / 'data/raw/networks/hgnc_complete_set.txt'
     axis_path = ROOT / 'data/raw/arc_vcc2026_controls/gene_names.csv'
-    input_paths = [ROOT / 'data/raw/replogle2022' / n for n in files] + [hgnc_path, axis_path]
+    input_paths = [ROOT / 'data/raw' / source_id / n for n in files] + [hgnc_path, axis_path]
     hashes = {str(p.relative_to(ROOT)): hash_file(p) for p in input_paths}
     for p in input_paths:
         if p.name in files and hashes[str(p.relative_to(ROOT))] != files[p.name]:
@@ -46,14 +50,14 @@ def assess(inventory, evidence, output):
     hgnc = pd.read_csv(hgnc_path, sep='\t', low_memory=False)
     official = pd.read_csv(axis_path).gene_name.tolist()
     summaries, bulk_summaries, overlaps, axes, experiments = [], [], [], [], {}
-    for experiment, context in REPLOGLE.items():
+    for experiment, context in contexts.items():
         directory = output / experiment
         directory.mkdir()
-        path = ROOT / 'data/raw/replogle2022' / f'{experiment}_raw_singlecell_01.h5ad'
-        bulk = path.with_name(f'{experiment}_raw_bulk_01.h5ad')
+        path = ROOT / 'data/raw' / source_id / f'{prefix}{experiment}_raw_singlecell_01.h5ad'
+        bulk = path.with_name(f'{prefix}{experiment}_raw_bulk_01.h5ad')
         digest = hashes[str(path.relative_to(ROOT))]
         print(f'scan {experiment}', flush=True)
-        summary, cells, genes = scan(path, digest, 'Replogle2022:' + experiment)
+        summary, cells, genes = scan(path, digest, source_id + ':' + experiment)
         if not summary['all_counts_finite_nonnegative_integer']:
             raise ValueError('singlecell_raw_count_semantics_failed')
         with RNAFile(path) as source:
@@ -67,16 +71,21 @@ def assess(inventory, evidence, output):
             cells['source_context'] = experiment
             cells['source_cell_line'] = context['cell_line']
             cells['source_days_post_transduction'] = context['days_post_transduction']
-            manifest_name = {'K562_essential':'KD6', 'K562_gwps':'KD8', 'rpe1':'RD7'}[experiment] + '_raw_files.csv'
-            manifest = pd.read_csv(evidence / manifest_name)
-            if manifest.gemgroup.duplicated().any():
-                raise ValueError('ambiguous_GEM_library_mapping')
-            libraries = manifest.set_index('gemgroup').library
+            if source_id == 'replogle2022':
+                manifest_name = {'K562_essential':'KD6', 'K562_gwps':'KD8', 'rpe1':'RD7'}[experiment] + '_raw_files.csv'
+                manifest = pd.read_csv(evidence / manifest_name)
+                if manifest.gemgroup.duplicated().any():
+                    raise ValueError('ambiguous_GEM_library_mapping')
+                libraries = manifest.set_index('gemgroup').library
+            else:
+                manifest = geo_gem_libraries(evidence / 'GSE264667_family.soft.gz', context['cell_line'])
+                manifest.to_parquet(directory / 'GEO_library_associations.parquet', index=False)
+                libraries = manifest.groupby('gem_group').source_library.agg('|'.join)
             cells['source_library'] = obs.gem_group.map(libraries).to_numpy()
             if cells.source_library.isna().any():
                 raise ValueError('GEM_missing_from_primary_library_manifest')
             cells['independent_biological_replicate'] = None
-            cells['computed_identity_key'] = [value_hash(['Replogle2022', experiment, str(g), str(b)]) for g,b in zip(obs.gem_group, obs.index)]
+            cells['computed_identity_key'] = [value_hash([source_id, experiment, str(g), str(b)]) for g,b in zip(obs.gem_group, obs.index)]
             experiments[experiment] = {'targets': set(obs.gene) - {'non-targeting'}, 'constructs': set(obs.gene_transcript),
                 'barcodes': set(obs.index), 'source_axis': list(source.var.index)}
         mapping = mapping_audit(genes.gene_name.tolist(), hgnc, official, genes.source_gene.tolist())
@@ -97,14 +106,15 @@ def assess(inventory, evidence, output):
             exact_count_duplicates_within_context=int(cells.computed_count_sha256.duplicated().sum()))
         for name, frame in [('cells', cells), ('genes', genes), ('gene_mapping', mapping), ('tasks', tasks), ('control_coverage', coverage)]:
             frame.to_parquet(directory / f'{name}.parquet', index=False, compression='zstd')
-        print(f'bulk comparison {experiment}', flush=True)
-        comparison, bulk_summary = bulk_comparison(path, bulk)
-        comparison.to_parquet(directory / 'bulk_comparison.parquet', index=False)
-        with RNAFile(bulk) as source:
-            source.obs.rename_axis('source_task').reset_index().add_prefix('source_').to_parquet(directory / 'bulk_source_metadata.parquet', index=False)
+        if 'bulk' in kinds:
+            print(f'bulk comparison {experiment}', flush=True)
+            comparison, bulk_summary = bulk_comparison(path, bulk)
+            comparison.to_parquet(directory / 'bulk_comparison.parquet', index=False)
+            with RNAFile(bulk) as source:
+                source.obs.rename_axis('source_task').reset_index().add_prefix('source_').to_parquet(directory / 'bulk_source_metadata.parquet', index=False)
+            bulk_summaries.append(dict(bulk_summary, context=experiment))
         write_json(directory / 'summary.json', summary)
         summaries.append(summary)
-        bulk_summaries.append(dict(bulk_summary, context=experiment))
         print(f'completed structure {experiment}: {len(cells)} cells, {summary["perturbation_construct_tasks"]} tasks', flush=True)
     for i, a in enumerate(experiments):
         for b in list(experiments)[:i]:
@@ -116,21 +126,21 @@ def assess(inventory, evidence, output):
                 'reason': 'Different source experiments/timepoints; 10x barcode namespaces are reusable. No cells removed.'})
     pd.DataFrame(axes).to_parquet(output / 'official_axis_coverage.parquet', index=False)
     changed = [p for p,v in before.items() if v != (Path(p).stat().st_size, Path(p).stat().st_mtime_ns, Path(p).stat().st_ctime_ns)]
-    report = {'schema_version': 2, 'bundle_id': 'replogle-structure-' + uuid.uuid4().hex,
-        'title': 'Replogle 全量来源、构件和测量语义核查', 'status': 'completed' if not changed else 'failed',
+    report = {'schema_version': 2, 'bundle_id': source_id + '-structure-' + uuid.uuid4().hex,
+        'title': source_id + ' 全量来源、构件和测量语义核查', 'status': 'completed' if not changed else 'failed',
         'completed_at': datetime.now(timezone.utc).isoformat(), 'duration_seconds': time.monotonic() - t0,
         'input_sha256': hashes, 'inventory_sha256': hash_file(inventory), 'inputs_unchanged': not changed,
-        'code_commit': subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip(),
+        'code_commit': run_commit,
         'code': {n: hash_file(Path(__file__).with_name(n)) for n in ['crispri.py','rna.py','profile_crispri_structure.py','profile_responses.py','render.py']},
         'runtime': {'python': sys.version, 'packages': {p: importlib.metadata.version(p) for p in ['numpy','scipy','pandas','h5py','pyarrow']},
                     'uv_lock_sha256': hash_file(Path(__file__).with_name('uv.lock'))},
-        'methods': {'protocol': 'https://github.com/yjcyxky/virtual-cell-challenge/issues/7',
+        'methods': {'protocol': 'https://github.com/yjcyxky/virtual-cell-challenge/issues/' + ('7' if source_id == 'replogle2022' else '8'),
             'identity': 'SHA256 input + source row, plus study/experiment/GEM/barcode index; no cross-experiment barcode-only deduplication',
             'bulk': 'All source rows numeric audit and all local single-cell group means compared at float32 tolerance; not independent experiments',
             'mapping': 'Source symbols and Ensembl checked against fixed local HGNC; native axis preserved; official unmeasured entries are not zero'},
         'limitations': ['本阶段完成工程及设计核查；全任务响应与逐细胞推断由后续计算产物提供。',
             'gene_transcript 保留启动子／转录本差异；双 guide 为同一构件，GEM 分组不是独立培养重复。',
-            '来源只保留平均表达 >0.01 UMI/cell 的基因；未测量的官方基因不能填为真实零值。',
+            '本地输入为来源已处理和选择的单细胞发布；未测量的官方基因不能填为真实零值。',
             '原始标签、pseudobulk 的源 DE 列与本轮计算分开保存；来源 raw 命名不保证整数语义。'],
         'tables': [{'title':'全部单细胞输入','rows':summaries}, {'title':'全部 pseudobulk 输入','rows':bulk_summaries},
                    {'title':'实验间覆盖与身份','rows':overlaps}], 'reproduce': sys.argv}
@@ -145,9 +155,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ['inventory','evidence','output']:
         parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--source-id', choices=['replogle2022','nadig2025'], default='replogle2022')
     args = parser.parse_args()
     try:
-        result = assess(args.inventory,args.evidence,args.output)
+        result = assess(args.inventory,args.evidence,args.output,args.source_id)
     except Exception as exc:
         if args.output.exists() and not (args.output/'report.json').exists():
             write_json(args.output/'failure.json', {'status':'failed','error':f'{type(exc).__name__}: {exc}'})

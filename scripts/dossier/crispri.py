@@ -3,6 +3,8 @@
 The Replogle protocol is registered in Issue #7. No source fields are overwritten.
 """
 from collections import Counter
+import gzip
+import re
 import numpy as np
 import pandas as pd
 from rna import RNAFile, quantiles
@@ -15,6 +17,42 @@ REPLOGLE = {
     'rpe1': {'cell_line': 'RPE1', 'days_post_transduction': 7, 'library': 'essential',
              'effector': 'ZIM3-KRAB-dCas9', 'expected_lineages': ['epithelial']},
 }
+
+NADIG = {
+    'hepg2': {'cell_line':'HepG2','days_post_transduction':7,'library':'dJR092_essential_enriched',
+              'effector':'KOX1-derived dCas9-BFP-KRAB','expected_lineages':['epithelial'],
+              'culture':'EMEM with 10% FBS and penicillin/streptomycin; 37 C, 5% CO2',
+              'harvest':'Accutase 30 minutes, EDTA-PBS, GFP-positive singlet FACS'},
+    'jurkat': {'cell_line':'Jurkat','days_post_transduction':7,'library':'dJR092_essential_enriched',
+               'effector':'ZIM3-dCas9-P2A-mCherry','expected_lineages':['immune'],
+               'culture':'RPMI-1640 with HEPES, 10% FBS, glutamine and penicillin/streptomycin; 37 C, 5% CO2',
+               'harvest':'Suspension in PBS with 0.04% BSA'},
+}
+
+
+def geo_gem_libraries(path, cell_line):
+    """Keep GEO sample/library associations; accession count is not replication."""
+    text = gzip.decompress(path.read_bytes()).decode()
+    rows = []
+    for block in text.split('^SAMPLE = ')[1:]:
+        fields = {}
+        for line in block.splitlines()[1:]:
+            if line.startswith('!Sample_') and ' = ' in line:
+                key, value = line.split(' = ', 1)
+                fields.setdefault(key, []).append(value)
+        if fields.get('!Sample_source_name_ch1') != [cell_line]:
+            continue
+        descriptions = fields.get('!Sample_description', [])
+        gems = set(re.findall(r'gemgroup (\d+)', ' '.join(descriptions)))
+        if len(gems) != 1:
+            raise ValueError('ambiguous_GEO_GEM_identity')
+        rows.append({'gem_group':int(next(iter(gems))), 'source_GSM':block.splitlines()[0],
+            'source_library':fields['!Sample_title'][0],
+            'source_relations':'|'.join(fields.get('!Sample_relation', [])),
+            'source_cell_line':cell_line, 'biological_replicate':None})
+    if not rows:
+        raise ValueError('missing_GEO_cell_line')
+    return pd.DataFrame(rows)
 
 
 def task_metadata(obs):

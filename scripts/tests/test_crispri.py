@@ -13,6 +13,24 @@ from test_rna import h5ad
 
 
 class CrispriTests(unittest.TestCase):
+    def test_GEO_library_mapping_preserves_shared_biosample_without_replication(self):
+        import gzip
+        from crispri import geo_gem_libraries
+        with tempfile.TemporaryDirectory() as root:
+            p=Path(root)/'source.soft.gz'
+            content=''
+            for i,kind in enumerate(['mRNA','sgRNA']):
+                content+=f'^SAMPLE = GSM{i}\n!Sample_source_name_ch1 = Jurkat\n!Sample_title = jurkat_1_{kind}\n!Sample_description = Essential-scale experiment, gemgroup 1\n!Sample_relation = BioSample: SAMN_SHARED\n'
+            content+='^SAMPLE = GSM_OTHER\n!Sample_source_name_ch1 = HepG2\n!Sample_title = hepg2_1_mRNA\n!Sample_description = Essential-scale experiment, gemgroup 1\n'
+            p.write_bytes(gzip.compress(content.encode()))
+            result=geo_gem_libraries(p,'Jurkat')
+            self.assertEqual(len(result),2)
+            self.assertEqual(result.gem_group.unique().tolist(),[1])
+            self.assertTrue(result.biological_replicate.isna().all())
+            self.assertTrue((result.source_cell_line=='Jurkat').all())
+            with self.assertRaisesRegex(ValueError,'missing_GEO_cell_line'):
+                geo_gem_libraries(p,'K562')
+
     def test_promoters_are_distinct_and_dual_guides_not_replicates(self):
         obs=pd.DataFrame({'gene':['A','A','non-targeting','KNTC1'],
             'gene_id':['ENSG1','ENSG1','NTC','ENSG2'],'transcript':['P1','P2','NTC','P1'],
