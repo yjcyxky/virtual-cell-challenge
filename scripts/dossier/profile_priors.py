@@ -24,6 +24,17 @@ ROOT=Path(__file__).resolve().parents[2]
 SOURCES={'lincs_l1000','depmap_24q4','networks','vcc_gene_axis','arc_se600m','esm2_650m'}
 
 
+def depmap_features(headers,namespace):
+    symbols=[];ids=[]
+    for header in headers:
+        match=re.fullmatch(r'(.+) \(([^()]+)\)',header)
+        if match:symbol,identifier=match.groups()
+        elif namespace=='ensembl_gene_id' and re.fullmatch(r'ENSG\d+(?:\.\d+)?',header):symbol=identifier=header
+        else:raise ValueError('DepMap_unrecognized_feature_header: '+header)
+        symbols.append(symbol);ids.append(identifier)
+    return symbols,ids
+
+
 def safe_mapping(symbols,ids,kind,hgnc,official):
     result=mapping_audit(list(symbols),hgnc,official)
     lookup=defaultdict(set)
@@ -124,9 +135,7 @@ def depmap(out,hgnc,official,targets):
         ('CRISPRGeneDependency.csv','Gene dependency probability, not transcript response','entrez_id'),
         ('OmicsExpressionAllGenesTPMLogp1Profile.csv','Bulk RNA-seq RSEM log2(TPM+1), not single-cell UMI','ensembl_gene_id')]:
         name='depmap-'+filename[:-4];header=pd.read_csv(base/filename,nrows=0).columns[1:].tolist()
-        parsed=[re.fullmatch(r'(.+) \(([^()]+)\)',x) for x in header]
-        if not all(parsed):raise ValueError('DepMap_unrecognized_feature_header')
-        symbols=[x.group(1) for x in parsed];ids=[x.group(2) for x in parsed]
+        symbols,ids=depmap_features(header,namespace)
         mapping=safe_mapping(symbols,ids,namespace,hgnc,official);mapping['source_header']=header
         numeric=Numeric(len(header));identities=[];record_stats=[]
         for chunk in pd.read_csv(base/filename,index_col=0,chunksize=32):
@@ -289,4 +298,9 @@ def assess(inventory,cache,evidence,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['inventory','cache','evidence','output']:p.add_argument('--'+name,type=Path,required=True)
-    a=p.parse_args();result=assess(a.inventory,a.cache,a.evidence,a.output);print(json.dumps({'status':result['status'],'bundle_id':result['bundle_id']}))
+    a=p.parse_args()
+    try:result=assess(a.inventory,a.cache,a.evidence,a.output)
+    except Exception as error:
+        if a.output.exists() and not (a.output/'report.json').exists():write_json(a.output/'failure.json',{'status':'failed','error':str(error),'type':type(error).__name__})
+        raise
+    print(json.dumps({'status':result['status'],'bundle_id':result['bundle_id']}))

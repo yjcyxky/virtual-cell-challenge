@@ -8,9 +8,14 @@ import unittest
 import numpy as np
 import pandas as pd
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'dossier'))
-from profile_priors import safe_mapping,Numeric,weights
+from profile_priors import safe_mapping,Numeric,weights,depmap_features
 
 class PriorTests(unittest.TestCase):
+    def test_expression_retains_Ensembl_only_features_without_invented_symbol(self):
+        symbols,ids=depmap_features(['A (ENSG000001)','ENSG000002'],'ensembl_gene_id')
+        self.assertEqual(symbols,['A','ENSG000002']);self.assertEqual(ids,['ENSG000001','ENSG000002'])
+        with self.assertRaisesRegex(ValueError,'unrecognized_feature_header'):depmap_features(['ENSG000002'],'entrez_id')
+
     def test_identifier_conflict_is_not_official_coverage(self):
         hgnc=pd.DataFrame({'status':['Approved']*2,'symbol':['A','B'],'hgnc_id':['H1','H2'],'entrez_id':['1','2'],
             'alias_symbol':['ALIAS','ALIAS'],'prev_symbol':['',''],'ensembl_gene_id':['ENSG1','ENSG2']})
