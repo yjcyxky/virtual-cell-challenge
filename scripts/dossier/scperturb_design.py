@@ -95,7 +95,7 @@ def single_target(file,row,safe_symbols):
         if row.get('good_coverage') not in [True,'True','true'] or row.get('match_type') not in ['exact_match','likely_match']:
             return None,'source_guide_match_or_coverage_not_supported'
     # A single source symbol is required; inferred composite nperts is not used.
-    if p in safe_symbols:return p,'single_gene_source_target'
+    if p in safe_symbols:return (safe_symbols[p] if isinstance(safe_symbols,dict) else p),'single_gene_source_target'
     return None,'unresolved_or_multiple_source_target_genes'
 
 
@@ -105,7 +105,7 @@ def build_design(file,obs,safe_symbols,recovered=None):
     technical=[]
     for prefix,fields in [
         ('Gasperini',['sample']),('Schraivogel',['replicate']),('Sunshine',['gem_group']),('Tian',['batch']),
-        ('Xie',['batch','sample','replicate','filename']),('Replogle',['batch']),('Nadig',['batch']),('DatlingerBock2017',['replicate']),
+        ('Xie',['batch','sample','replicate','filename']),('Replogle',['batch']),('Nadig',['batch']),('DatlingerBock2017',['replicate']),('Cui',['bio_replicate']),
         ('Lara',['sample']),('Liang',['sample']),('SrivatsanTrapnell2020_sciplex3',['plate','replicate']),
         ('SrivatsanTrapnell2020_sciplex4',['plate_id']),('Schiebinger',['replicate']),('Wessels',['10X_lane'])]:
         if file.startswith(prefix):technical=[c for c in fields if c in obs];break
