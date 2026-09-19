@@ -13,11 +13,13 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import time
 import urllib.error
 import urllib.request
+import uuid
 import xml.etree.ElementTree as ET
 
 import pyarrow as pa
@@ -212,6 +214,8 @@ def classify(local, experiment, sample, study):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--inventory", type=Path, required=True)
+    parser.add_argument("--evidence-from", type=Path, help="Reuse a prior frozen upstream evidence directory; each reused response hash is verified")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--workers", type=int, default=4)
     args = parser.parse_args()
@@ -219,7 +223,12 @@ def main():
     if output.is_relative_to((ROOT / "data/raw").resolve()) or output.is_relative_to((ROOT / "models").resolve()):
         parser.error("Results must be outside raw inputs")
     selection_path = ROOT / f"data/selections/{SOURCE}.json"
-    identity = {"selection_sha256": digest(selection_path.read_bytes()), "code_sha256": digest(Path(__file__).read_bytes())}
+    inventory = json.loads(args.inventory.read_text())
+    if inventory["status"] != "completed":
+        parser.error("A completed content inventory is required")
+    source_files = {Path(x["file"]).stem: x for x in inventory["file_results"] if x["source_id"] == SOURCE and x["file"].endswith(".h5ad")}
+    identity = {"selection_sha256": digest(selection_path.read_bytes()), "code_sha256": digest(Path(__file__).read_bytes()),
+                "inventory_sha256": digest(args.inventory.read_bytes()), "inventory_bundle_id": inventory["bundle_id"]}
     if output.exists():
         if not args.resume or json.loads((output / "identity.json").read_text()) != identity:
             parser.error("Existing output requires --resume with identical code and selection")
@@ -229,12 +238,18 @@ def main():
         output.mkdir(parents=True)
         (output / "identity.json").write_text(json.dumps(identity, indent=2))
     cache = output / "upstream"
+    if args.evidence_from and not cache.exists():
+        shutil.copytree(args.evidence_from / "upstream", cache)
     cache.mkdir(exist_ok=True)
     selection = json.loads(selection_path.read_text())["samples"]
     local_files = {p.stem for p in (ROOT / f"data/raw/{SOURCE}/h5ad").glob("*.h5ad")}
     selected_ids = {s["srx_accession"] for s in selection}
     if local_files != selected_ids:
         raise ValueError("Local H5AD selection and frozen manifest differ")
+    for accession in selected_ids:
+        expected = source_files[accession]
+        if (ROOT / expected["file"]).stat().st_size != expected["bytes"]:
+            raise ValueError(f"Source file size changed since completed inventory: {accession}")
     archive_ids = {x for x in selected_ids if re.fullmatch(r"[SED]RX\d+", x)}
     exps, ee, evidence = retrieve("EXPERIMENT", archive_ids, cache, args.workers)
     sample_ids, study_ids = {}, {}
@@ -257,7 +272,10 @@ def main():
                 url = "https://api.cellxgene.cziscience.com/curation/v1/collections/" + collection
                 data, entry = fetch_document(url, cache, ".jsondata")
                 evidence.append(entry)
-                supplements[accession] = (json.loads(data), entry["file"])
+                collection_data = json.loads(data)
+                if collection_data.get("collection_id") != collection:
+                    raise ValueError("CELLxGENE returned a different collection identity")
+                supplements[accession] = (collection_data, entry["file"])
             continue
         if accession in exps and sample_ids.get(accession) in samples:
             continue
@@ -287,13 +305,16 @@ def main():
         accession = local["srx_accession"]
         sid, stid = sample_ids.get(accession), study_ids.get(accession)
         row = classify(local, exps.get(accession), samples.get(sid), studies.get(stid))
+        row["source_file"] = source_files[accession]["file"]
+        row["source_file_sha256_from_inventory"] = source_files[accession]["sha256"]
         if row["missing_records"] and failed_ids.intersection({accession, sid, stid}):
             row["status"] = "failed"
         row.update(sample_ref=sid, study_ref=stid, evidence_files=[x for x in [ee.get(accession), se.get(sid), ste.get(stid)] if x])
         row["upstream_resolution_status"] = row["status"]
         if accession in external_gaps:
             gap = external_gaps[accession]
-            row.update(status="completed", upstream_resolution_status="blocked", recovery=gap["reason"] + "; recover original public study metadata or await restored archive availability")
+            known_unavailable = accession + " is not public" in gap["reason"]
+            row.update(status="completed" if known_unavailable else "failed", upstream_resolution_status="blocked" if known_unavailable else "failed", recovery=gap["reason"] + "; recover original public study metadata or await restored archive availability")
             row["evidence_files"].append(gap["evidence_file"])
         if accession in supplements:
             collection, filename = supplements[accession]
@@ -321,10 +342,14 @@ def main():
     pq.write_table(pa.Table.from_pylist(parquet_rows), output / "samples.parquet")
     flags = Counter(f for row in rows for f in row["flags"])
     artifacts = [{"file": p.name, "sha256": digest(p.read_bytes()), "description": "Fixed archive evidence / sample assessment"} for p in sorted(output.iterdir()) if p.is_file()]
-    report = {"schema_version": 2, "bundle_id": "scbase-provenance-" + identity["selection_sha256"][:16],
+    if digest(selection_path.read_bytes()) != identity["selection_sha256"]:
+        raise ValueError("Selection changed during assessment")
+    report = {"schema_version": 2, "bundle_id": "scbase-provenance-" + uuid.uuid4().hex,
               "title": "scBaseCount 全样本上游溯源与可观测性", "completed_at": now(),
               "status": "failed" if any(r["status"] == "failed" for r in rows) else "blocked" if any(r["status"] == "blocked" for r in rows) else "completed",
               "identity": identity, "code_commit": subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
+              "inputs_unchanged": True, "runtime": {"python": sys.version, "pyarrow": pa.__version__, "uv_lock_sha256": digest((ROOT / "scripts/dossier/uv.lock").read_bytes()), "renderer_sha256": digest((ROOT / "scripts/dossier/render.py").read_bytes())},
+              "source_identity_limit": "Expression hashes referenced from completed full-byte inventory; only path/size checked in this metadata assessment, expression matrices not read",
               "scope": {"local_H5AD": len(local_files), "assessed_experiments": len(rows), "unique_sample_refs": len(shared),
                         "flag_counts": dict(flags), "metadata_cell_total_not_unique": sum(s["obs_count"] for s in selection)},
               "methods": {"archive-v2": "ENA experiment XML → sample and study XML; missing SRX uses NCBI UID with strict returned-accession identity check; NRX uses source-linked CELLxGENE collection, never a synthetic UID as an SRA identifier. Store full response/hash/time/request evidence; exact selection and code identity required to resume. Completed assessment can retain blocked metadata fields supported by explicit archive unavailability evidence.",
