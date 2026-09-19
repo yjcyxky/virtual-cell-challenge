@@ -39,6 +39,9 @@ class McfalineTests(unittest.TestCase):
         vehicle=parse_gxe1_hash('plate10_A1_A172_CRISPRi_MMR_0_dmso_96')
         self.assertIsNone(vehicle['dose_unit_from_primary_methods'])
         self.assertEqual(vehicle['vehicle_percent_vv_from_primary_methods'],0.1)
+        collision=assigned_design(pd.DataFrame([{**common,'new_cell':'shared'},{**common,'new_cell':'shared'}],index=['barcode1','barcode2']))
+        self.assertTrue(collision.guide_join_key_collision.all())
+        self.assertEqual(collision.assignment_limitation.tolist(),['guide_join_key_collision']*2)
         with self.assertRaisesRegex(ValueError,'unrecognized_GxE1_hash_condition'):parse_gxe1_hash('other_background')
 
 if __name__=='__main__':unittest.main()

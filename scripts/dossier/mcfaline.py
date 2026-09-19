@@ -74,6 +74,7 @@ def parse_gxe1_hash(label):
 
 def assigned_design(cds_metadata):
     rows=[]
+    collisions=set(cds_metadata.loc[cds_metadata.new_cell.duplicated(keep=False)].index) if 'new_cell' in cds_metadata else set()
     for barcode,r in cds_metadata.iterrows():
         facts=parse_gxe1_hash(r.top_oligo_W)
         consistent=(str(r.CRISPR_hash)==facts['effector'] and str(r.gRNA_library)==facts['guide_library'] and float(r.dose)==facts['dose_value'] and str(r.treatment)==facts['drug'])
@@ -83,9 +84,10 @@ def assigned_design(cds_metadata):
         library_targets={'HPRT1':{'HPRT1','NTC'},'MMR':{'MGMT','MLH1','MSH2','MSH3','MSH6','PMS2','NTC'}}
         library_conflict=bool(set(target_set)-library_targets[facts['guide_library']])
         hash_supported=pd.notna(r.hash_umis_W) and r.hash_umis_W>=5 and pd.notna(r.top_to_second_best_ratio_W) and r.top_to_second_best_ratio_W>=2.5
-        reason='metadata_vs_hash_condition_conflict' if not consistent else 'insufficient_or_ambiguous_hash' if not hash_supported else 'unassigned_guide' if not target_set else 'hash_vs_guide_effector_conflict' if guide_conflict else 'multiple_source_target_genes' if len(target_set)>1 else 'hash_library_vs_guide_target_conflict' if library_conflict else None
+        reason='metadata_vs_hash_condition_conflict' if not consistent else 'insufficient_or_ambiguous_hash' if not hash_supported else 'unassigned_guide' if not target_set else 'guide_join_key_collision' if barcode in collisions else 'hash_vs_guide_effector_conflict' if guide_conflict else 'multiple_source_target_genes' if len(target_set)>1 else 'hash_library_vs_guide_target_conflict' if library_conflict else None
         rows.append({'source_barcode':barcode,**facts,'hash_condition_consistent':consistent,'hash_supported':hash_supported,
             'source_targets':target_set,'guide_effector_conflict':guide_conflict,'guide_library_conflict':library_conflict,'analysis_target':target_set[0] if len(target_set)==1 else None,
+            'guide_join_key_collision':barcode in collisions,
             'genetic_response_assignment_status':'eligible' if reason is None else 'not_estimable','assignment_limitation':reason,
             'labels_are_source_inferences':True})
     return pd.DataFrame(rows)
