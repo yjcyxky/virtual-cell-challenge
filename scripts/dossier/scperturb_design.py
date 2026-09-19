@@ -121,7 +121,7 @@ def build_design(file,obs,safe_symbols,recovered=None):
             chemical=recovered.original_GEM_group.map({1:'tunicamycin',2:'thapsigargin',3:'DMSO'})
             if chemical.isna().any():raise ValueError('unreviewed_original_Adamson_chemical_GEM')
             keys=[json.dumps([bgs[int(b)]['background_key'],drug],separators=(',',':')) for b,drug in zip(bio,chemical)]
-            bio,unique=pd.factorize(keys,sort=True)
+            bio,unique=pd.factorize(np.asarray(keys,dtype=object),sort=True)
             bgs=[{'background_index':i,'background_key':key,'source_fields':['collection_biological_background','original_GEO_GEM_author_chemical_mapping'],
                   'source_values':json.loads(key),'interpretation':'Recovered author chemical condition; per-cell inference retains its independently documented pooled endpoint background'} for i,key in enumerate(unique)]
     else:recovered=None
