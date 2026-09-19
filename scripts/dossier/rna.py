@@ -167,7 +167,7 @@ def scan(path, input_sha256, study_id, chunk=2048):
         return summary, qc.reset_index(drop=True), var.reset_index(drop=True)
 
 
-def mapping_audit(genes, hgnc: pd.DataFrame, official_genes):
+def mapping_audit(genes, hgnc: pd.DataFrame, official_genes, source_ensembl=None):
     approved = hgnc[hgnc.status == "Approved"]
     direct = set(approved.symbol)
     aliases = defaultdict(set)
@@ -178,10 +178,15 @@ def mapping_audit(genes, hgnc: pd.DataFrame, official_genes):
                     aliases[value].add(row.symbol)
     rows = []
     official = set(official_genes)
-    for gene in genes:
+    for index, gene in enumerate(genes):
         possibilities = {gene} if gene in direct else aliases.get(gene.split(".")[0], set())
         resolved = next(iter(possibilities)) if len(possibilities) == 1 else None
+        original_id = str(source_ensembl[index]) if source_ensembl is not None else None
+        id_candidates = aliases.get(original_id.split(".")[0], set()) if original_id else set()
+        agreement = "source_ensembl_unavailable" if original_id is None else "id_unresolved" if not id_candidates else "symbol_unresolved" if not resolved else "consistent" if resolved in id_candidates else "conflict"
         rows.append({"source_gene": gene, "mapped_symbol": resolved,
+                     "source_ensembl": original_id, "ensembl_candidates": "|".join(sorted(id_candidates)),
+                     "symbol_vs_ensembl": agreement,
                      "mapping_status": "approved_symbol" if gene in direct else "unique_alias_or_ensembl" if resolved else "ambiguous" if possibilities else "unmapped",
                      "candidates": "|".join(sorted(possibilities)), "literal_in_official_axis": gene in official,
                      "mapped_in_official_axis": resolved in official if resolved else None})

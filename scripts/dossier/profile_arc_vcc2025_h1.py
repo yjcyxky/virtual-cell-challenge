@@ -101,7 +101,8 @@ def assess(root, output, inventory, chunk=2048):
         summary, cells, genes = scan(root / relative, identities[relative], "VCC2025-H1", chunk)
         cells["split"] = split
         genes["split"] = split
-        mapping = mapping_audit(genes.source_gene.tolist(), hgnc, official)
+        mapping = mapping_audit(genes.source_gene.tolist(), hgnc, official,
+                                genes.gene_id.tolist() if "gene_id" in genes else None)
         mapping["split"] = split
         unique_mapped = set(mapping.loc[~mapping.many_to_one_mapping, "mapped_symbol"].dropna())
         observed = set(genes.source_gene)
@@ -126,6 +127,7 @@ def assess(root, output, inventory, chunk=2048):
                        measured_all_zero_genes=int((genes.computed_sum == 0).sum()),
                        official_no_identified_measurement=sum(a["measurement_status"] == "unmeasured_in_supplied_axis" for a in axes if a["split"] == split),
                        mapping_status_counts=dict(Counter(mapping.mapping_status)),
+                       symbol_ensembl_agreement_counts=dict(Counter(mapping.symbol_vs_ensembl)),
                        many_to_one_features=int(mapping.many_to_one_mapping.sum()))
         summaries.append(summary)
         cells_all.append(cells)
@@ -139,9 +141,17 @@ def assess(root, output, inventory, chunk=2048):
     csv_checks = []
     for split in SPLITS:
         declared = pd.read_csv(root / f"data/raw/arc_vcc2025_h1/pert_counts_{split}.csv")
+        actual = cells[cells.split == split].groupby("source_target_gene").computed_total_counts.agg(["size", "median"])
+        comparisons = []
+        for row in declared.to_dict("records"):
+            measured = actual.loc[row["target_gene"]] if row["target_gene"] in actual.index else None
+            comparisons.append({**row, "observed_cells": int(measured["size"]) if measured is not None else None,
+                                "observed_median_counts": float(measured["median"]) if measured is not None else None,
+                                "n_cells_agree": int(measured["size"]) == row["n_cells"] if measured is not None else False,
+                                "median_agrees": bool(np.isclose(measured["median"], row["median_umi_per_cell"])) if measured is not None and "median_umi_per_cell" in row else None})
         csv_checks.append({"split": split, "columns": list(declared), "rows": len(declared),
-                           "interpretation": "Preserved challenge requested counts, not assumed actual observed counts",
-                           "declared_rows": records(declared)})
+                           "interpretation": "Source summary compared against full observed cell counts and median library sizes; not treated as an imposed prediction-size rule",
+                           "declared_vs_observed": comparisons})
     files = {"cells.parquet": (cells, "All original record identities/labels plus computed QC; no expression matrix"),
              "genes.parquet": (pd.concat(genes_all, ignore_index=True), "Original features/annotations and full-scan gene sums/detection"),
              "gene_mapping.parquet": (pd.concat(mappings, ignore_index=True), "Mapping ambiguity and official-axis coverage"),
