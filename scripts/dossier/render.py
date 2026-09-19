@@ -21,12 +21,18 @@ const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 function fmt(x){if(x===null||x===undefined)return '<span class="unknown">unknown / not estimable</span>';return esc(typeof x==='object'?JSON.stringify(x):x);}
 document.getElementById('identity').textContent=`${r.bundle_id} | ${r.status} | ${r.completed_at}`;
 document.getElementById('limitations').textContent=(r.limitations||[]).join(' ');
-document.getElementById('downloads').innerHTML=(r.artifacts||[]).map(a=>`<li><a href="${esc(a.file)}">${esc(a.file)}</a> — ${esc(a.description||'')} (${esc(a.sha256||'see SHA256SUMS')})</li>`).join('');
+let artifactPage=0;
+function downloads(){const all=r.artifacts||[], start=artifactPage*100;
+document.getElementById('downloads').innerHTML=all.slice(start,start+100).map(a=>`<li><a href="${esc(a.file)}">${esc(a.file)}</a> — ${esc(a.description||'')} (${esc(a.sha256||'see SHA256SUMS')})</li>`).join('')+
+(all.length>100?`<li>${start+1}–${Math.min(start+100,all.length)} / ${all.length} <button onclick="artifactPage=Math.max(0,artifactPage-1);downloads()">上一页文件</button> <button onclick="artifactPage=Math.min(${Math.floor((all.length-1)/100)},artifactPage+1);downloads()">下一页文件</button></li>`:'');}downloads();
 document.getElementById('metadata').textContent=JSON.stringify({...r,tables:undefined},null,2);
-function draw(){const q=document.getElementById('filter').value.toLowerCase();document.getElementById('tables').innerHTML=(r.tables||[]).map(t=>{
+let pages={};function move(i,d){pages[i]=Math.max(0,(pages[i]||0)+d);draw();}
+function draw(){const q=document.getElementById('filter').value.toLowerCase();document.getElementById('tables').innerHTML=(r.tables||[]).map((t,i)=>{
 const rows=t.rows.filter(row=>JSON.stringify(row).toLowerCase().includes(q));const cols=t.columns||Object.keys(t.rows[0]||{});
-return `<section><h2>${esc(t.title)}</h2><p>${esc(t.description||'')} (${rows.length} matching rows)</p><table><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${cols.map(c=>`<td>${fmt(row[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></section>`}).join('');}
-document.getElementById('filter').oninput=draw;draw();</script></html>'''
+const size=rows.length>500?250:Math.max(1,rows.length),page=Math.min(pages[i]||0,Math.max(0,Math.ceil(rows.length/size)-1));pages[i]=page;
+const navigation=rows.length>500?`<p>第 ${page+1} / ${Math.ceil(rows.length/size)} 页 <button onclick="move(${i},-1)" ${page===0?'disabled':''}>上一页</button> <button onclick="move(${i},1)" ${(page+1)*size>=rows.length?'disabled':''}>下一页</button> 筛选覆盖全部结果；分页仅控制展示。</p>`:'';
+return `<section><h2>${esc(t.title)}</h2><p>${esc(t.description||'')} (${rows.length} matching rows)</p>${navigation}<table><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.slice(page*size,(page+1)*size).map(row=>`<tr>${cols.map(c=>`<td>${fmt(row[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></section>`}).join('');}
+document.getElementById('filter').oninput=()=>{pages={};draw()};draw();</script></html>'''
 
 
 def main():

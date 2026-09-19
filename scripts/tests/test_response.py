@@ -91,3 +91,20 @@ class ResponseTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class CachedControlPoolTests(unittest.TestCase):
+    def test_cached_pools_preserve_seeded_draws_and_disjointness(self):
+        from response import disjoint_control_indices
+        target_batches=np.array(['a']*4+['b']*7)
+        control_batches=np.array(['a']*12+['b']*10)
+        pools={b:np.flatnonzero(control_batches==b) for b in ['a','b']}
+        for seed in range(3):
+            expected=disjoint_control_indices(target_batches,control_batches,['a','b'],np.random.default_rng(seed))
+            cached=disjoint_control_indices(target_batches,control_batches,['a','b'],np.random.default_rng(seed),pools)
+            for a,b in zip(expected,cached):np.testing.assert_array_equal(a,b)
+            self.assertEqual(len(np.intersect1d(*cached)),0)
+            self.assertEqual(len(cached[0]),9)
+
+
+if __name__ == "__main__":
+    unittest.main()

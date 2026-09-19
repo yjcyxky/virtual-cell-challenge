@@ -73,12 +73,12 @@ def conditional_de(target_groups, control_groups, min_cells=20, min_detection=10
                                      interpretation="Approximate cell-sampling association; no between-experiment inference; BH requires dependence assumptions; BY is sensitivity only")
 
 
-def disjoint_control_indices(target_batches, control_batches, batch_names, rng):
+def disjoint_control_indices(target_batches, control_batches, batch_names, rng, control_pools=None):
     """Two non-overlapping NTC samples matched to target counts within each batch."""
     a, b = [], []
     for batch in batch_names:
         n = int((target_batches == batch).sum())
-        pool = np.flatnonzero(control_batches == batch)
+        pool = control_pools[batch] if control_pools is not None else np.flatnonzero(control_batches == batch)
         k = min(n, len(pool) // 2)
         if k:
             chosen = rng.choice(pool, 2 * k, replace=False)
@@ -99,11 +99,13 @@ def control_half_means(control, control_batches, batch_names, reps, seed):
 
 
 def resampling(target, target_batches, control, control_batches, batch_names,
-               half_controls, downstream, seed, reps=20):
+               half_controls, downstream, seed, reps=20, control_pools=None):
     rng = np.random.default_rng(seed)
     rows = []
     if len(target) < 4:
         return [], {"status": "not_estimable", "reason": "fewer_than_four_target_cells"}
+    if control_pools is None:
+        control_pools = {batch: np.flatnonzero(control_batches == batch) for batch in batch_names}
     for r in range(reps):
         halves = np.array_split(rng.permutation(len(target)), 2)
         effects = []
@@ -115,7 +117,7 @@ def resampling(target, target_batches, control, control_batches, batch_names,
                 return rows, {"status": "not_estimable", "reason": "empty_control_half_in_matched_batch"}
             baseline = weights[used] @ half_controls[r, h, used].astype(float)
             effects.append(target[ids].mean(axis=0, dtype=np.float64) - baseline)
-        a, b = disjoint_control_indices(target_batches, control_batches, batch_names, rng)
+        a, b = disjoint_control_indices(target_batches, control_batches, batch_names, rng, control_pools)
         null = control[a].mean(axis=0, dtype=np.float64) - control[b].mean(axis=0, dtype=np.float64) if len(a) else None
         rows.append({"replicate": r, "half_1_cells": len(halves[0]), "half_2_cells": len(halves[1]),
                      "half_effect_correlation": correlation(effects[0][downstream], effects[1][downstream]),

@@ -85,7 +85,7 @@ def build_cache(path, directory, source_hash, seed, chunk=2048):
 
 
 def task_result(target_name, target, thin_target, cell_rows, control, control_batches,
-                batch_names, controls, thin_controls, half_controls, genes, mapping_conflicts, seed):
+                batch_names, controls, thin_controls, half_controls, genes, mapping_conflicts, seed, control_pools=None):
     batches = cell_rows.source_batch.astype(str).to_numpy()
     groups = grouped_moments(target, batches, batch_names)
     thin_groups = grouped_moments(thin_target, batches, batch_names)
@@ -100,7 +100,7 @@ def task_result(target_name, target, thin_target, cell_rows, control, control_ba
     thin_effect, thin_match = matched_effect(thin_groups, thin_controls)
     de, de_meta = conditional_de(groups, controls)
     stability, stability_meta = resampling(target, batches, control, control_batches, batch_names,
-                                           half_controls, downstream, seed, PARAMETERS["resampling_repetitions"])
+                                           half_controls, downstream, seed, PARAMETERS["resampling_repetitions"], control_pools)
     agreement = consistency(target, batches, cell_rows.source_guide_id.astype(str).to_numpy(), batch_names,
                             controls, downstream, PARAMETERS["consistency_min_cells"])
     total_n = sum(t["n"] for t, c in zip(groups, controls) if t["n"] and c["n"])
