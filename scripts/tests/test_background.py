@@ -44,8 +44,9 @@ class BackgroundTests(unittest.TestCase):
             digest=hash_file(raw);out=root/'out';out.mkdir()
             row={'source_file':'data/raw/fixture.h5ad','source_file_sha256_from_inventory':digest,
                 'experiment_accession':'SRXTEST','upstream_tax_id':'9606','library_source':'TRANSCRIPTOMIC',
-                'library_name':'GEX','experiment_title':'GEX','sample_accessions':['SAMN1'],
-                'study_accessions':['PRJ1'],'source_cells_from_metadata':3}
+                'library_name':'GEX','experiment_title':'GEX','sample_accessions':np.array(['SAMN1']),
+                'study_accessions':np.array(['PRJ1']),'source_cells_from_metadata':3,
+                'flags':np.array(['upstream_flag']),'supervised_overlap':np.array([],dtype=str)}
             with patch('profile_background.ROOT',root):
                 result=assess_file(row,str(out),str(refs),{'fixture':1})
                 self.assertEqual(result['n_cells'],3)

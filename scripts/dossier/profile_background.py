@@ -67,6 +67,7 @@ def unknown_labels(n,reason):
 
 
 def assess_file(record,output_string,references_string,identity):
+    record = {key: value.tolist() if isinstance(value, np.ndarray) else value for key, value in record.items()}
     output,references=Path(output_string),Path(references_string)
     raw=ROOT/record['source_file'];directory=output/record['experiment_accession']
     directory.mkdir(exist_ok=True)
