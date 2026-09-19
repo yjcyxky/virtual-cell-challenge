@@ -28,14 +28,22 @@ def value_hash(value) -> str:
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
 
 
+def decode_categories(categories, codes, name):
+    if codes.dtype.kind not in "iu" or np.any(codes < -1) or np.any(codes >= len(categories)):
+        raise ValueError(f"invalid_category_codes: {name}")
+    return np.array([categories[c] if c >= 0 else None for c in codes], dtype=object)
+
+
 def read_array(node):
     if isinstance(node, h5py.Dataset):
         a = node[:]
+        if "categories" in node.attrs:
+            return decode_categories(read_array(node.file[node.attrs["categories"]]), a, node.name)
         return node.asstr()[:] if a.dtype.kind in "OSU" else a
     encoding = node.attrs.get("encoding-type", "")
     if encoding == "categorical" or {"categories", "codes"} <= set(node):
         categories, codes = read_array(node["categories"]), node["codes"][:]
-        return np.array([categories[c] if c >= 0 else None for c in codes], dtype=object)
+        return decode_categories(categories, codes, node.name)
     if "values" in node and "mask" in node:
         a = read_array(node["values"]).astype(object)
         a[node["mask"][:]] = None
@@ -45,7 +53,7 @@ def read_array(node):
 
 def read_frame(group) -> pd.DataFrame:
     index_key = group.attrs.get("_index", "_index")
-    frame = pd.DataFrame({k: read_array(group[k]) for k in group if k != index_key})
+    frame = pd.DataFrame({k: read_array(group[k]) for k in group if k not in (index_key, "__categories")})
     frame.index = read_array(group[index_key])
     return frame
 

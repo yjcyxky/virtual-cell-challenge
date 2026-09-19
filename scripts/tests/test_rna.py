@@ -154,6 +154,26 @@ class RNATests(unittest.TestCase):
         self.assertEqual(hashes, {str(p.relative_to(self.root)): hash_file(p) for p in paths})
         self.assertTrue((self.root / "result/report.html").exists())
 
+    def test_legacy_categories_preserve_labels_missing_and_input(self):
+        path = self.root / "legacy.h5ad"
+        h5ad(path, [[1, 2], [3, 4]])
+        with h5py.File(path, "a") as f:
+            del f["obs/batch"]
+            categories = f["obs"].create_group("__categories").create_dataset(
+                "batch", data=["GEM_1", "GEM_2"], dtype=h5py.string_dtype())
+            codes = f["obs"].create_dataset("batch", data=[1, -1])
+            codes.attrs["categories"] = categories.ref
+        original = hash_file(path)
+        with RNAFile(path) as source:
+            self.assertEqual(source.obs.batch.iloc[0], "GEM_2")
+            self.assertTrue(pd.isna(source.obs.batch.iloc[1]))
+            self.assertNotIn("__categories", source.obs)
+        self.assertEqual(original, hash_file(path))
+        with h5py.File(path, "a") as f:
+            f["obs/batch"][0] = 2
+        with self.assertRaisesRegex(ValueError, "invalid_category_codes"):
+            RNAFile(path)
+
 
 if __name__ == "__main__":
     unittest.main()
