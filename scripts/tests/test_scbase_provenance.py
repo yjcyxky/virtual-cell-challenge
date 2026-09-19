@@ -46,6 +46,12 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(row['library_assessment'], 'GEX_title_signal')
         self.assertNotIn('non_GEX_title_signal', row['flags'])
 
+    def test_uid_lookup_must_match_requested_experiment(self):
+        data = b'<EXPERIMENT_PACKAGE_SET><EXPERIMENT_PACKAGE><EXPERIMENT accession="SRX_WRONG"/></EXPERIMENT_PACKAGE></EXPERIMENT_PACKAGE_SET>'
+        exp, sample, study, error = audit.ncbi_package(data, 'SRX1')
+        self.assertIsNone(exp)
+        self.assertEqual(error, 'requested_accession_not_returned')
+
 
 if __name__ == '__main__':
     unittest.main()

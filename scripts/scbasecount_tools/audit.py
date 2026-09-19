@@ -117,6 +117,33 @@ def retrieve(kind, ids, cache, workers):
     return records, evidence, entries
 
 
+def fetch_document(url, cache, extension):
+    """Freeze supplementary primary-source evidence without accession guessing."""
+    key = "supplement-" + digest(url.encode())[:20]
+    path, meta = cache / (key + extension), cache / (key + ".json")
+    if meta.exists():
+        entry = json.loads(meta.read_text())
+        if digest(path.read_bytes()) != entry["sha256"]:
+            raise ValueError("Supplementary evidence hash mismatch")
+        return path.read_bytes(), entry
+    with urllib.request.urlopen(url, timeout=60) as response:
+        data = response.read()
+    entry = {"url": url, "file": path.name, "retrieved_at": now(), "sha256": digest(data), "status": "completed", "kind": "supplementary"}
+    path.write_bytes(data)
+    meta.write_text(json.dumps(entry, indent=2))
+    return data, entry
+
+
+def ncbi_package(data, expected_accession):
+    """UID lookup is not identity evidence: accept only the requested experiment."""
+    tree = ET.fromstring(data)
+    for package in tree.findall(".//EXPERIMENT_PACKAGE"):
+        experiment = package.find("EXPERIMENT")
+        if experiment is not None and experiment.get("accession") == expected_accession:
+            return experiment, package.find("SAMPLE"), package.find("STUDY"), None
+    return None, None, None, " | ".join((x.text or "") for x in tree.findall(".//ERROR")) or "requested_accession_not_returned"
+
+
 def classify(local, experiment, sample, study):
     """Evidence flags, not inferred ground-truth labels or automatic filters."""
     sample_attributes = attributes(sample, "SAMPLE")
@@ -137,8 +164,10 @@ def classify(local, experiment, sample, study):
     overlap = []
     if "SRP376262" in identifiers(study) or "PRJNA831566" in identifiers(study):
         overlap.append("replogle2022")
+    if "SRP501831" in identifiers(study) or "PRJNA1100571" in identifiers(study):
+        overlap.append("nadig2025")
     for geo, source in [("GSE264667", "nadig2025"), ("GSE225775", "mcfaline_figueroa2024")]:
-        if geo in study_xml:
+        if geo in study_xml and source not in overlap:
             overlap.append(source)
     missing = [kind for kind, node in (("experiment", experiment), ("sample", sample), ("study", study)) if node is None]
     flags = []
@@ -206,7 +235,8 @@ def main():
     selected_ids = {s["srx_accession"] for s in selection}
     if local_files != selected_ids:
         raise ValueError("Local H5AD selection and frozen manifest differ")
-    exps, ee, evidence = retrieve("EXPERIMENT", selected_ids, cache, args.workers)
+    archive_ids = {x for x in selected_ids if re.fullmatch(r"[SED]RX\d+", x)}
+    exps, ee, evidence = retrieve("EXPERIMENT", archive_ids, cache, args.workers)
     sample_ids, study_ids = {}, {}
     for accession in selected_ids:
         if accession not in exps:
@@ -218,7 +248,40 @@ def main():
     samples, se, sample_evidence = retrieve("SAMPLE", sample_ids.values(), cache, args.workers)
     studies, ste, study_evidence = retrieve("STUDY", study_ids.values(), cache, args.workers)
     evidence += sample_evidence + study_evidence
-    failed_ids = {accession for e in evidence if e["status"] == "failed" for accession in e["requested"]}
+    supplements, external_gaps = {}, {}
+    for local in selection:
+        accession = local["srx_accession"]
+        if accession.startswith("NRX"):
+            collection = local.get("czi_collection_id")
+            if collection:
+                url = "https://api.cellxgene.cziscience.com/curation/v1/collections/" + collection
+                data, entry = fetch_document(url, cache, ".jsondata")
+                evidence.append(entry)
+                supplements[accession] = (json.loads(data), entry["file"])
+            continue
+        if accession in exps and sample_ids.get(accession) in samples:
+            continue
+        time.sleep(0.4)  # Respect unauthenticated NCBI E-utilities request rate.
+        url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=sra&id=" + str(local["entrez_id"])
+        data, entry = fetch_document(url, cache, ".xml")
+        evidence.append(entry)
+        exp, sample, study, error = ncbi_package(data, accession)
+        if exp is None:
+            external_gaps[accession] = {"reason": error, "evidence_file": entry["file"]}
+            continue
+        exps[accession], ee[accession] = exp, entry["file"]
+        if sample is not None:
+            sid = sample.get("accession")
+            sample_ids[accession], samples[sid], se[sid] = sid, sample, entry["file"]
+        if study is not None:
+            stid = study.get("accession")
+            study_ids[accession], studies[stid], ste[stid] = stid, study, entry["file"]
+    documentation_url = "https://raw.githubusercontent.com/ArcInstitute/arc-virtual-cell-atlas/main/scBaseCount/README.md"
+    _, documentation_evidence = fetch_document(documentation_url, cache, ".txt")
+    evidence.append(documentation_evidence)
+    _, nadig_evidence = fetch_document("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE264667&targ=self&form=text&view=full", cache, ".txt")
+    evidence.append(nadig_evidence)
+    failed_ids = {accession for e in evidence if e["status"] == "failed" for accession in e.get("requested", [])}
     rows = []
     for local in selection:
         accession = local["srx_accession"]
@@ -227,6 +290,25 @@ def main():
         if row["missing_records"] and failed_ids.intersection({accession, sid, stid}):
             row["status"] = "failed"
         row.update(sample_ref=sid, study_ref=stid, evidence_files=[x for x in [ee.get(accession), se.get(sid), ste.get(stid)] if x])
+        row["upstream_resolution_status"] = row["status"]
+        if accession in external_gaps:
+            gap = external_gaps[accession]
+            row.update(status="completed", upstream_resolution_status="blocked", recovery=gap["reason"] + "; recover original public study metadata or await restored archive availability")
+            row["evidence_files"].append(gap["evidence_file"])
+        if accession in supplements:
+            collection, filename = supplements[accession]
+            row.update(status="completed", upstream_resolution_status="collection_only", study_title=collection.get("name"),
+                       archive_kind="non_SRA_NRX", czi_collection_id=collection.get("collection_id"),
+                       czi_collection_version_id=collection.get("collection_version_id"),
+                       czi_dataset_candidates=[d["dataset_id"] for d in collection.get("datasets", [])],
+                       specific_dataset_assignment="not_estimable_from_supplied_NRX_mapping",
+                       recovery="NRX is a non-SRA identifier. Collection recovered; obtain NRX-to-original-dataset/sample mapping before assigning a specific dataset or donor.",
+                       missing_records=["specific_original_dataset_sample_mapping"],
+                       flags=["collection_only_provenance", "specific_sample_mapping_unknown"])
+            row["evidence_files"] += [filename, documentation_evidence["file"]]
+            row["study_accessions"] = [collection.get("collection_id")]
+            row["sample_ref"] = None
+            row["study_ref"] = collection.get("collection_id")
         rows.append(row)
     shared = Counter(r["sample_ref"] for r in rows if r["sample_ref"])
     for row in rows:
@@ -245,14 +327,14 @@ def main():
               "identity": identity, "code_commit": subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
               "scope": {"local_H5AD": len(local_files), "assessed_experiments": len(rows), "unique_sample_refs": len(shared),
                         "flag_counts": dict(flags), "metadata_cell_total_not_unique": sum(s["obs_count"] for s in selection)},
-              "methods": {"archive-v1": "ENA experiment XML → sample and study XML, accession joins, full immutable response/hash/time/request evidence; exact selection and code identity required to resume",
+              "methods": {"archive-v2": "ENA experiment XML → sample and study XML; missing SRX uses NCBI UID with strict returned-accession identity check; NRX uses source-linked CELLxGENE collection, never a synthetic UID as an SRA identifier. Store full response/hash/time/request evidence; exact selection and code identity required to resume. Completed assessment can retain blocked metadata fields supported by explicit archive unavailability evidence.",
                           "flag-v1": "Species by tax_id/scientific_name; library/condition title regexes are evidence signals, not truth labels; exact study accessions/GEO links establish supervised study overlap; shared sample IDs do not establish independence"},
               "limitations": ["归档元数据可能缺失或错误；标记为文本线索，不是实验真值。",
                               "nominal untreated 不等于逐细胞未处理；多文库与重复细胞须在表达评估中核查。",
                               "细胞数量来自选择元数据，不代表去重后的表达细胞数；原始标签没有改写。"],
               "exposure": {"source_expression": "not_read_in_this_provenance_stage", "archive_metadata": "all selected experiments and linked sample/study records"},
               "artifacts": artifacts, "reproduce": {"argv": sys.argv, "environment": "scripts/dossier/uv.lock"},
-              "tables": [{"title": "完整样本台账", "rows": rows, "columns": ["experiment_accession", "sample_ref", "study_ref", "upstream_species", "experiment_title", "library_assessment", "flags", "status", "recovery"]}]}
+              "tables": [{"title": "完整样本台账", "rows": rows, "columns": ["experiment_accession", "sample_ref", "study_ref", "upstream_species", "experiment_title", "library_assessment", "flags", "status", "upstream_resolution_status", "recovery"]}]}
     (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2))
     (output / "report.html").write_text(render(report))
     (output / "SHA256SUMS").write_text("".join(digest(p.read_bytes()) + "  " + str(p.relative_to(output)) + "\n" for p in sorted(output.rglob("*")) if p.is_file() and p.name != "SHA256SUMS"))
