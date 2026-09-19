@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import h5py
 import numpy as np
@@ -13,6 +14,7 @@ from scipy import sparse
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "dossier"))
 from rna import scan, hash_file, mapping_audit, duplicate_audit, RNAFile
 from render import render
+from profile_arc_vcc2025_h1 import assess as h1_assess
 
 
 def h5ad(path, values, encoding="csr", genes=("TP53", "GAPDH"), barcodes=None):
@@ -119,6 +121,38 @@ class RNATests(unittest.TestCase):
         with RNAFile(path) as r:
             self.assertEqual(r.obs.batch.iloc[0], "b0")
             self.assertTrue(pd.isna(r.obs.batch.iloc[1]))
+
+    def test_full_h1_bundle_serializes_and_preserves_inputs(self):
+        paths = []
+        for split in ("Training", "Validation", "Test"):
+            source = self.root / "data/raw/arc_vcc2025_h1"
+            source.mkdir(parents=True, exist_ok=True)
+            path = source / f"adata_{split}.h5ad"
+            h5ad(path, [[1, 2], [3, 0]])
+            paths.append(path)
+            count_path = source / f"pert_counts_{split}.csv"
+            count_path.write_text("target_gene,n_cells\nTP53,2\n")
+            paths.append(count_path)
+        hgnc = self.root / "data/raw/networks/hgnc_complete_set.txt"
+        hgnc.parent.mkdir(parents=True)
+        hgnc.write_text("status\tsymbol\talias_symbol\tprev_symbol\tensembl_gene_id\nApproved\tTP53\tP53\t\tENSG1\nApproved\tGAPDH\t\t\tENSG2\n")
+        official = self.root / "data/raw/arc_vcc2026_controls/gene_names.csv"
+        official.parent.mkdir(parents=True)
+        official.write_text("gene_name\nTP53\nGAPDH\nUNMEASURED\n")
+        paths.extend([hgnc, official])
+        hashes = {str(p.relative_to(self.root)): hash_file(p) for p in paths}
+        inventory = self.root / "inventory.json"
+        inventory.write_text(json.dumps({"status": "completed", "bundle_id": "fixture", "file_results": [{"file": p, "sha256": h} for p, h in hashes.items()]}))
+        with patch("profile_arc_vcc2025_h1.subprocess.check_output", return_value="fixture-commit"):
+            result = h1_assess(self.root, self.root / "result", inventory, chunk=1)
+        self.assertEqual(result["status"], "completed")
+        loaded = json.loads((self.root / "result/report.json").read_text())
+        self.assertEqual(loaded["duplicates"]["excess_identical_rows"], 4)
+        self.assertEqual(loaded["duplicates"]["unique_records_after_confirmed_copy_accounting"], 2)
+        axes = pd.read_parquet(self.root / "result/official_axis_coverage.parquet")
+        self.assertTrue(axes.loc[axes.official_gene == "UNMEASURED", "observed_count_sum"].isna().all())
+        self.assertEqual(hashes, {str(p.relative_to(self.root)): hash_file(p) for p in paths})
+        self.assertTrue((self.root / "result/report.html").exists())
 
 
 if __name__ == "__main__":

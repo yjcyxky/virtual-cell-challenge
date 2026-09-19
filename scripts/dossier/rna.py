@@ -58,7 +58,7 @@ class RNAFile:
         try:
             self.x = self.handle["X"]
             self.encoding = "dense" if isinstance(self.x, h5py.Dataset) else self.x.attrs.get("encoding-type")
-            self.shape = tuple(self.x.shape if self.encoding == "dense" else self.x.attrs["shape"])
+            self.shape = tuple(int(x) for x in (self.x.shape if self.encoding == "dense" else self.x.attrs["shape"]))
             self.obs, self.var = read_frame(self.handle["obs"]), read_frame(self.handle["var"])
             if self.shape != (len(self.obs), len(self.var)):
                 raise ValueError(f"axis_shape_mismatch: X={self.shape}, obs={len(self.obs)}, var={len(self.var)}")

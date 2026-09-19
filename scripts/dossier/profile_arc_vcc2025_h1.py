@@ -188,8 +188,9 @@ def assess(root, output, inventory, chunk=2048):
                    {"title": "全部扰动任务与对照资格", "rows": records(tasks)}],
         "reproduce": {"argv": sys.argv},
     }
+    serialized = json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)
     with (output / "report.json").open("x") as fh:
-        json.dump(report, fh, ensure_ascii=False, indent=2, allow_nan=False)
+        fh.write(serialized)
         fh.write("\n")
     (output / "report.html").write_text(render(report))
     (output / "SHA256SUMS").write_text("".join(f"{hash_file(p)}  {p.name}\n" for p in sorted(output.iterdir()) if p.is_file() and p.name != "SHA256SUMS"))
@@ -206,7 +207,13 @@ def main():
     args = parser.parse_args()
     if args.chunk_cells < 1:
         parser.error("chunk size must be positive")
-    result = assess(args.root.resolve(), args.output.resolve(), args.inventory.resolve(), args.chunk_cells)
+    existed = args.output.exists()
+    try:
+        result = assess(args.root.resolve(), args.output.resolve(), args.inventory.resolve(), args.chunk_cells)
+    except Exception as exc:
+        if not existed and args.output.is_dir():
+            (args.output / "failure.json").write_text(json.dumps({"status": "failed", "error": f"{type(exc).__name__}: {exc}", "completed_at": datetime.now(timezone.utc).isoformat()}))
+        raise
     return 0 if result["status"] == "completed" else 1
 
 
