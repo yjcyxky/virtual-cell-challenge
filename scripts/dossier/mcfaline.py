@@ -42,6 +42,7 @@ def compare_CDS(raw,processed):
         source_cells=pd.Index(source.obs.index);source_genes=pd.Index(source.var.index)
         cell_indices=source_cells.get_indexer(cds.obs.index);gene_indices=source_genes.get_indexer(cds.var.index)
         if (cell_indices<0).any() or (gene_indices<0).any():raise ValueError('CDS_cells_or_genes_absent_from_coordinate_axes')
+        identical_gene_axis=np.array_equal(gene_indices,np.arange(source.shape[1]))
         desired={int(original):i for i,original in enumerate(cell_indices)}
         # Small GxE1 CDS fits in memory. Larger sources are read by bounded row blocks.
         ptr=cds.indptr
@@ -52,7 +53,7 @@ def compare_CDS(raw,processed):
                 j=desired[original];lo,hi=ptr[j:j+2]
                 from scipy import sparse
                 expected=sparse.csr_matrix((cds.x['data'][lo:hi],cds.x['indices'][lo:hi],np.array([0,hi-lo])),shape=(1,cds.shape[1]))
-                delta=matrix[local,gene_indices]-expected;delta.eliminate_zeros()
+                delta=(matrix[local] if identical_gene_axis else matrix[local,gene_indices])-expected;delta.eliminate_zeros()
                 rows.append({'source_row':original,'CDS_row':j,'source_barcode':str(source.obs.index[original]),'common_features':len(gene_indices),
                     'differing_values':delta.nnz,'max_absolute_difference':float(np.max(np.abs(delta.data))) if delta.nnz else 0,
                     'classification':'counts_identical_on_CDS_feature_axis' if not delta.nnz else 'count_mismatch',

@@ -15,6 +15,47 @@ from mcfaline import coordinate_cache,compare_CDS,assigned_design
 from profile_responses import write_json
 from rna import RNAFile,hash_file
 ROOT=Path(__file__).resolve().parents[2]
+COLLECTIONS={'gxe2':('GSM7056149_sciPlexGxE_2_','preprocessed_cds.list.RDS.gz',11),
+    'chemical3':('GSM7056150_sciPlex_3_','preprocessed_cds.list.rds.gz',6),
+    'chemical4':('GSM7056151_sciPlex_4_','preprocessed_cds.list.rds.gz',6)}
+
+
+def export_monocle(source,destination,logfile):
+    env=os.environ.copy();env['R_HOME']=str(RROOT);env['LD_LIBRARY_PATH']=str(RROOT/'lib')+':'+str(RROOT.parent)
+    with logfile.open('w') as log:
+        subprocess.run(['/lib/ld-linux-aarch64.so.1',str(RROOT/'bin/exec/R'),'--vanilla','--slave','-f',str(Path(__file__).with_name('export_monocle_readonly.R')),'--args',str(source),str(destination.resolve())],env=env,check=True,stdout=log,stderr=subprocess.STDOUT)
+
+
+def prepare_collection(inventory,output,group):
+    start=time.monotonic();commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip();prefix,cdsfile,expected_count=COLLECTIONS[group]
+    inv=json.loads((inventory/'report.json').read_text());inputs={r['file']:r['sha256'] for r in inv['file_results'] if r['source_id']=='mcfaline_figueroa2024' and prefix in r['file']}
+    if len(inputs)!=expected_count:raise ValueError('unexpected_collection_scope')
+    for name,digest in inputs.items():
+        if hash_file(ROOT/name)!=digest:raise ValueError('source_hash_mismatch')
+    output.mkdir(parents=True,exist_ok=False);source=lambda suffix:ROOT/'data/raw/mcfaline_figueroa2024'/(prefix+suffix)
+    export_monocle(source(cdsfile),output/'R-export',output/'R-export.log')
+    raw=coordinate_cache(source('UMI.count.matrix.gz'),source('cell.annotations.txt.gz'),source('gene.annotations.txt.gz'),output/'coordinate-counts.h5ad')
+    keys=pd.read_csv(output/'R-export/list_keys.csv',keep_default_na=False);records=[];metas=[]
+    for row in keys.itertuples():
+        name='CDS-'+str(row.source_list_index);folder=output/name;folder.mkdir();destination=folder/'counts.h5ad'
+        details=make_h5ad(output/'R-export'/name,destination);compared=compare_CDS(output/'coordinate-counts.h5ad',destination)
+        compared.to_parquet(folder/'raw-count-comparison.parquet',index=False)
+        with RNAFile(destination) as cds:
+            metadata=cds.obs.reset_index(names='source_barcode');metadata.insert(0,'source_list_key',str(row.source_list_key));metadata.insert(0,'source_list_index',int(row.source_list_index))
+            metadata.to_parquet(folder/'source-metadata.parquet',index=False);metas.append(metadata)
+        records.append({'source_list_index':int(row.source_list_index),'source_list_key':str(row.source_list_key),'directory':name,'count_cache_sha256':hash_file(destination),
+            'counts':details,'CDS_cells_compared':len(compared),'differing_values':int(compared.differing_values.sum()),'maximum_count_difference':float(compared.max_absolute_difference.max())})
+        print(group+' '+str(row.source_list_key)+' '+str(details['shape'])+' differing values '+str(int(compared.differing_values.sum())),flush=True)
+    metadata=pd.concat(metas,ignore_index=True);metadata.to_parquet(output/'all-CDS-source-metadata.parquet',index=False)
+    duplicated=metadata.loc[metadata.source_barcode.duplicated(keep=False)];duplicated.to_parquet(output/'multi-CDS-memberships.parquet',index=False)
+    for name,digest in inputs.items():
+        if hash_file(ROOT/name)!=digest:raise ValueError('source_changed_during_conversion')
+    result={'status':'completed','phase':'source_count_and_CDS_adapter_only','group':group,'input_sha256':inputs,'inputs_unchanged':True,
+        'code_commit':commit,'code':{n:hash_file(Path(__file__).with_name(n)) for n in ['prepare_mcfaline.py','mcfaline.py','export_monocle_readonly.R','convert_seurat_cache.py']},
+        'coordinate':raw,'CDS_members':records,'CDS_unique_source_barcodes':metadata.source_barcode.nunique(),
+        'source_cells_without_CDS_metadata':raw['shape'][0]-metadata.source_barcode.nunique(),'multiple_CDS_membership_records':len(duplicated),
+        'source_metadata_not_groundtruth':True,'completed_at':datetime.now(timezone.utc).isoformat(),'duration_seconds':time.monotonic()-start,'reproduce':sys.argv}
+    result['artifacts']={str(p.relative_to(output)):hash_file(p) for p in output.rglob('*') if p.is_file()};write_json(output/'identity.json',result);return result
 
 
 def prepare(inventory,output):
@@ -26,10 +67,8 @@ def prepare(inventory,output):
         if hash_file(ROOT/file)!=digest:raise ValueError('source_hash_mismatch')
     output.mkdir(parents=True);prefix=ROOT/'data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_'
     path=lambda name:Path(str(prefix)+name)
-    env=os.environ.copy();env['R_HOME']=str(RROOT);env['LD_LIBRARY_PATH']=str(RROOT/'lib')+':'+str(RROOT.parent)
     for name,directory in [('preprocessed_cds.rds.gz','R-export'),('sgRNATable_out.rds.gz','guide-export')]:
-        with (output/(directory+'.log')).open('w') as log:
-            subprocess.run(['/lib/ld-linux-aarch64.so.1',str(RROOT/'bin/exec/R'),'--vanilla','--slave','-f',str(Path(__file__).with_name('export_monocle_readonly.R')),'--args',str(path(name)),str((output/directory).resolve())],env=env,check=True,stdout=log,stderr=subprocess.STDOUT)
+        export_monocle(path(name),output/directory,output/(directory+'.log'))
     raw=coordinate_cache(path('UMI.count.matrix.gz'),path('cell.annotations.txt.gz'),path('gene.annotations.txt.gz'),output/'coordinate-counts.h5ad')
     cds=make_h5ad(output/'R-export/CDS',output/'CDS-counts.h5ad')
     compare=compare_CDS(output/'coordinate-counts.h5ad',output/'CDS-counts.h5ad');compare.to_parquet(output/'CDS-count-comparison.parquet',index=False)
@@ -103,9 +142,10 @@ def prepare(inventory,output):
     write_json(output/'identity.json',result);return result
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inventory',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    try:r=prepare(a.inventory,a.output)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inventory',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--group',choices=['gxe1',*COLLECTIONS],default='gxe1');a=p.parse_args()
+    try:r=prepare(a.inventory,a.output) if a.group=='gxe1' else prepare_collection(a.inventory,a.output,a.group)
     except Exception as e:
         if a.output.exists():write_json(a.output/'failure.json',{'status':'failed','error':str(e),'type':type(e).__name__})
         raise
-    print(json.dumps({k:v for k,v in r.items() if k not in ['artifacts','CDS','input_sha256','code']}))
+    print(json.dumps({k:v for k,v in r.items() if k not in ['artifacts','CDS','CDS_members','input_sha256','code']}))
