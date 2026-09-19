@@ -9,8 +9,22 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'dossier'))
 from mcfaline import coordinate_cache,compare_CDS,assigned_design,parse_gxe1_hash
 from rna import RNAFile
 from test_rna import h5ad
+from profile_mcfaline import contrast
 
 class McfalineTests(unittest.TestCase):
+    def test_contrast_excludes_unmatched_wells_and_drug_is_not_gene_knockdown(self):
+        rng=np.random.default_rng(92);log=rng.random((75,12),dtype=np.float32)
+        cells=pd.DataFrame({'source_guide_id':['g1']*75,'computed_total_counts':[100]*75,'computed_detected_genes':[12]*75})
+        strata=np.array(['shared']*70+['unmatched']*5)
+        result,features,draws=contrast(log,log,cells,np.arange(40,75),np.arange(40),strata,[f'G{i}' for i in range(12)],'G0',set(),3,'genetic_response')
+        self.assertEqual(result['observed_target_cells'],35);self.assertEqual(result['matched_target_cells'],30)
+        self.assertEqual(result['unmatched_target_cells'],5);self.assertEqual(result['target_RNA']['status'],'completed')
+        self.assertTrue(all(r['null_reference_intersection']==0 for r in draws))
+        drug,features,draws=contrast(log,log,cells,np.arange(40,70),np.arange(40),strata,[f'G{i}' for i in range(12)],'__chemical_intervention__',set(),3,'chemical_response')
+        self.assertEqual(drug['target_RNA']['status'],'not_applicable');self.assertFalse(features.is_target.any())
+        unavailable,features,draws=contrast(log,log,cells,np.arange(70,75),np.arange(40),strata,[f'G{i}' for i in range(12)],'G0',set(),3,'genetic_response')
+        self.assertEqual(unavailable['status'],'not_estimable');self.assertIsNone(features)
+
     def test_one_based_coordinate_axes_and_full_CDS_comparison(self):
         with tempfile.TemporaryDirectory() as root:
             root=Path(root);(root/'cells.tsv').write_text('cell1\tsample\ncell2\tsample\n');(root/'genes.tsv').write_text('ENSG1\tG1\nENSG2\tG2\n')
