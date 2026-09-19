@@ -90,6 +90,6 @@ def convert(source,output,expected):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--inventory',type=Path,required=True)
-    a=p.parse_args();inv=json.loads((a.inventory/'report.json').read_text());rows=[r for r in inv['file_results'] if r['source_id']=='jiang2025' and r['file']==a.source.name]
+    a=p.parse_args();inv=json.loads((a.inventory/'report.json').read_text());rows=[r for r in inv['file_results'] if r['source_id']=='jiang2025' and Path(r['file']).name==a.source.name]
     if len(rows)!=1:raise ValueError('one_inventory_record_required')
     convert(a.source,a.output,rows[0]['sha256'])
