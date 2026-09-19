@@ -70,7 +70,7 @@ def start_output(output, identity, resume):
 
 def finish(output, report, start):
     report.update(schema_version=2, completed_at=datetime.now(timezone.utc).isoformat(), duration_seconds=time.monotonic()-start,
-        code_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+        code_commit=report.get('code_commit') or subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
         code={n:hash_file(Path(__file__).with_name(n)) for n in CODE},
         runtime={'python':sys.version,'packages':{p:importlib.metadata.version(p) for p in ['numpy','scipy','pandas','h5py','pyarrow']},
                  'uv_lock_sha256':hash_file(Path(__file__).with_name('uv.lock'))}, reproduce=sys.argv)
@@ -139,6 +139,7 @@ def construct_agreement(summaries, output):
 
 def responses(structure,context,output,resume=False,workers=4):
     t0=time.monotonic()
+    run_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
     source,cells,mapping,genes,tasks,raw=source_context(structure,context)
     identity={'structure_sha256':hash_file(structure/'report.json'),'context':context,'parameters':PARAMETERS,
               'code':{n:hash_file(Path(__file__).with_name(n)) for n in CODE},
@@ -197,7 +198,7 @@ def responses(structure,context,output,resume=False,workers=4):
               'stability':s.get('stability'),'depth_sensitivity':s.get('depth_sensitivity')} for s in summaries]
     report={'bundle_id':context+'-response-'+uuid.uuid4().hex,'title':context+' 全构件扰动响应',
         'status':'completed' if len(summaries)==len(task_ids) and not changed else 'failed',
-        'identity':identity,'input_sha256':{str(raw.relative_to(ROOT)):cells.input_sha256.iloc[0]},'inputs_unchanged':not changed,
+        'identity':identity,'code_commit':run_commit,'input_sha256':{str(raw.relative_to(ROOT)):cells.input_sha256.iloc[0]},'inputs_unchanged':not changed,
         'context':context,'expected_tasks':len(task_ids),'actual_tasks':len(summaries),'n_cells':len(cells),'n_NTC_cells':len(ids),
         'task_status_counts':dict(Counter(s['status'] for s in summaries)),
         'DE_status_counts':dict(Counter(s.get('DE',{}).get('status','not_estimable') for s in summaries)),
@@ -218,6 +219,7 @@ def responses(structure,context,output,resume=False,workers=4):
 
 def annotate_context(structure,context,response,references,output,resume=False,chunk=1024):
     t0=time.monotonic()
+    run_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
     source,cells,mapping,genes,tasks,raw=source_context(structure,context)
     parent=json.loads((response/'report.json').read_text())
     if parent['status']!='completed' or parent['context']!=context:raise ValueError('completed_same_context_response_required')
@@ -272,7 +274,7 @@ def annotate_context(structure,context,response,references,output,resume=False,c
     unchanged=hash_file(raw)==cells.input_sha256.iloc[0]
     compact_states=states[['task','target','state','difference','q10','median','q90','status']]
     report={'bundle_id':context+'-annotation-'+uuid.uuid4().hex,'title':context+' 逐细胞推断与组成状态分布',
-        'status':'completed' if unchanged else 'failed','inputs_unchanged':unchanged,'identity':identity,'context':context,
+        'status':'completed' if unchanged else 'failed','inputs_unchanged':unchanged,'identity':identity,'context':context,'code_commit':run_commit,
         'record_count':len(combined),'uncalibrated_records':int((combined.confidence_calibration=='uncalibrated').sum()),
         'pooled_types':combined.inferred_type.value_counts().to_dict(),'pooled_lineages':combined.inferred_lineage.value_counts().to_dict(),
         'method_conflicts':int(combined.method_conflict.sum()),'target_marker_label_changes':int(combined.target_marker_label_changed.sum()),
