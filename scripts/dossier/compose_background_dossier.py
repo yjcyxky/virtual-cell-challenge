@@ -18,6 +18,11 @@ from rna import hash_file,quantiles
 from render import render
 
 
+def archive_reference(record,kind):
+    value=record.get(kind+'_ref')
+    return value if isinstance(value,str) and value else 'unresolved:'+record['experiment_accession']
+
+
 def compose(source,provenance,output):
     original=json.loads((source/'report.json').read_text())
     if original['status']!='completed' or original['completed_files']!=1808 or original['failed_files']!=0:raise ValueError('full_successful_expression_scope_required')
@@ -43,14 +48,14 @@ def compose(source,provenance,output):
         eligibility[item['inference_eligibility']['reason']]+=1
         row={**{k:v for k,v in item.items() if k not in ['numeric','states']},
             'source_studies':origin.get('study_accessions',[]),'source_samples':origin.get('sample_accessions',[]),
+            'canonical_study':archive_reference(origin,'study'),'canonical_sample':archive_reference(origin,'sample'),
             'source_title':origin.get('experiment_title'),'source_library':origin.get('library_name'),
             'report':f'expression/{accession}/report.json'}
         records.append(row)
         identity_rows.append({'experiment':accession,'records':len(cells),'row_sequence_verified':True,'unique_record_ids':True,
             'source_identity_verified':True,'source_labels_separate':True,'uncalibrated_probability_null':True,'all_state_columns_present':True})
-        for study in origin.get('study_accessions',[]) or ['unresolved']:
-            by_study[study].append(row)
-        for sample in origin.get('sample_accessions',[]):by_sample[sample].append(row)
+        by_study[row['canonical_study']].append(row)
+        by_sample[row['canonical_sample']].append(row)
         for state in item['states']:
             states.append({'experiment':accession,'studies':row['source_studies'],'state':state['state'],'status':state['status'],
                 'distribution':state['distribution'],'baseline':state['baseline'],'cross_sample_calibration':'unavailable; sample-specific background'})
@@ -59,7 +64,7 @@ def compose(source,provenance,output):
     studies=[]
     for name,group in sorted(by_study.items()):
         counts=Counter();coarse=Counter();source_samples=set()
-        for row in group:counts.update(row['inferred_types']);coarse.update(row['inferred_lineages']);source_samples.update(row['source_samples'])
+        for row in group:counts.update(row['inferred_types']);coarse.update(row['inferred_lineages']);source_samples.add(row['canonical_sample'])
         total=sum(r['n_cells'] for r in group)
         studies.append({'source_study':name,'files':len(group),'source_samples':len(source_samples),'stored_records':total,
             'inferred_types':dict(counts),'inferred_lineages':dict(coarse),'unknown_fraction':counts.get('unknown',0)/total,
@@ -82,7 +87,7 @@ def compose(source,provenance,output):
         'all_source_inputs_unchanged':all(r['inputs_unchanged'] for r in samples),'numeric_invalid_cells':sum(r['numeric_invalid_cells'] for r in samples),
         'zero_libraries':sum(r['zero_libraries'] for r in samples),'inferred_types':dict(types),'inferred_lineages':dict(lineages),
         'method_conflicts':sum(r['method_conflicts'] for r in samples),'eligibility_file_counts':dict(eligibility),
-        'source_QC_disagreements':dict(sum((Counter({k:v for k,v in r['source_QC_disagreements'].items() if v is not None}) for r in samples),Counter())),
+        'source_QC_disagreements':{k:sum(r['source_QC_disagreements'].get(k) or 0 for r in samples) for k in sorted({k for r in samples for k in r['source_QC_disagreements']})},
         'shared_sample_groups':len(candidates),'all_probabilities_null':True,'not_deduplicated':True}
     write_json(output/'overview.json',overview)
     report={'schema_version':2,'bundle_id':'scbase-dossier-'+uuid.uuid4().hex,'title':'scBaseCount 全表达、样本与研究组成评估',
@@ -90,7 +95,7 @@ def compose(source,provenance,output):
         'expression_bundle':original['bundle_id'],'expression_report_sha256':hash_file(source/'report.json'),
         'provenance_report_sha256':hash_file(provenance/'report.json'),'identity':original['identity'],
         'code_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'composer_sha256':hash_file(Path(__file__)),
-        'methods':{**original['methods'],'aggregation':'Types/counts pooled descriptively by source study; sample states retain each file-specific background. Shared BioSample groups are candidates, not proven duplicates.',
+        'methods':{**original['methods'],'aggregation':'Types/counts pooled descriptively by source study_ref, sample candidates by sample_ref; accession aliases do not create extra studies/samples, unresolved references stay separate per experiment. Sample states retain each file-specific background. Shared sample groups are candidates, not proven duplicates.',
             'contract_verification':'Every source row, sequential source index, within-file unique identity, input/experiment labels, separate source/inferred fields, all state columns and null uncalibrated probability checked'},
         'limitations':original['limitations']+['研究汇总按来源关系计数，未去重；共享样本不证明相同细胞或技术重复，更不增加独立生物重复。',
             '每个样本的状态背景不同；状态分位数不能直接作为跨研究的统一活性尺度。研究深度分布是样本中位数的分布，不是合并细胞中位数。'],
