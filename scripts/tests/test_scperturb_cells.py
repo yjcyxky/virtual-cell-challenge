@@ -35,7 +35,7 @@ class ScperturbCellTests(unittest.TestCase):
             pd.DataFrame({'gene_name':symbols}).to_csv(raw/'arc_vcc2026_controls/gene_names.csv',index=False)
             path=raw/'scperturb/Joung_test.h5ad';x=sparse.csc_matrix(np.array([[1.5]*12,[0.]*12,[2.5]*12]))
             with h5py.File(path,'w') as h:
-                frame(h.create_group('obs'),pd.DataFrame({'cell_line':['line']*3,'perturbation':['G0','control',None]},index=['a','b','c']))
+                frame(h.create_group('obs'),pd.DataFrame({'cell_line':['line']*3,'perturbation':['G0','control',None],'barcode':['guideA','guideB','guideC']},index=['a','b','c']))
                 frame(h.create_group('var'),pd.DataFrame({'ensembl_id':ids},index=symbols))
                 m=h.create_group('X');m.attrs['encoding-type']='csc_matrix';m.attrs['shape']=x.shape;m['data']=x.data;m['indices']=x.indices;m['indptr']=x.indptr
             references=root/'references';references.mkdir();profiles={n:{'lineage':l,'genes':symbols} for n,l in [('neuron_like','neural'),('pluripotent_like','pluripotent')]}
@@ -45,6 +45,8 @@ class ScperturbCellTests(unittest.TestCase):
             self.assertTrue((cells.inferred_type=='unknown').all());self.assertTrue((cells.inference_status=='not_estimable').all());self.assertFalse(cells.probability_correct.notna().any())
             np.testing.assert_allclose(np.load(root/'out/Joung_test/state-backgrounds.npz')['mean_expression'],np.full((1,12),4/3),rtol=1e-6)
             self.assertEqual(cells.source_barcode.tolist(),['a','b','c']);self.assertEqual(cells.computed_on_source_identity_axis_sha256.str.len().tolist(),[64,64,64])
+            self.assertEqual(cells.source_obs__barcode.tolist(),['guideA','guideB','guideC'])
+            self.assertNotIn('computed_total_is_UMI',cells)
 
 
 if __name__=='__main__':unittest.main()

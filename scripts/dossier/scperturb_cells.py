@@ -90,7 +90,7 @@ def scan_file(entry,output_string,human_string,mouse_string,identity):
         native,identity_axis,mapping,resolved=mapped_axis(file,source.var,species,reference_path);mapping.to_parquet(output/'gene-mapping.parquet',index=False)
         axis_hash=value_hash(native);identity_axis_hash=value_hash(identity_axis);codes,backgrounds=biological_background(file,obs);k=len(backgrounds)
         if k>1000:raise ValueError('unreviewed_high_cardinality_biological_background')
-        qc=obs.add_prefix('source_');qc.insert(0,'source_barcode',source.obs.index.astype(str));qc.insert(0,'row_index',np.arange(n))
+        qc=obs.add_prefix('source_obs__');qc.insert(0,'source_barcode',source.obs.index.astype(str));qc.insert(0,'row_index',np.arange(n))
         qc.insert(0,'input_sha256',entry['input_sha256']);qc.insert(0,'record_id',[value_hash([entry['input_sha256'],i]) for i in range(n)])
         qc['study_id']=file.removesuffix('.h5ad');qc['background_index']=codes;qc['gene_axis_sha256']=axis_hash;qc['source_identity_axis_sha256']=identity_axis_hash
         means=np.zeros((k,g),float);sizes=np.bincount(codes,minlength=k);totals=np.empty(n);detected=np.empty(n,np.int32);valid=np.empty(n,bool)
@@ -119,7 +119,9 @@ def scan_file(entry,output_string,human_string,mouse_string,identity):
             x=expression_view(matrix,count_compatible)
             for code in np.unique(codes[start:stop]):means[code]+=np.asarray(x[codes[start:stop]==code].sum(axis=0,dtype=float)).ravel()
         means/=sizes[:,None];qc['computed_total_expression']=totals;qc['computed_detected_genes']=detected;qc['computed_numeric_valid']=valid
-        qc['computed_count_sha256']=hashes;qc['computed_on_source_identity_axis_sha256']=identity_hashes;qc['computed_total_is_UMI']=count_compatible
+        qc['computed_count_sha256']=hashes;qc['computed_on_source_identity_axis_sha256']=identity_hashes
+        qc['source_count_compatible_numeric_values']=count_compatible
+        qc['total_measurement_interpretation']='sum_of_source_X_values_not_independently_verified_UMI_count'
         pd.DataFrame({'source_gene':native,'source_identity_gene':identity_axis,'computed_sum':gene_sums,'computed_detected_cells':gene_detected}).to_parquet(output/'genes.parquet',index=False)
         weights=[];coverage=[]
         for code in range(k):
@@ -171,7 +173,7 @@ def scan_file(entry,output_string,human_string,mouse_string,identity):
         'methods':{'type':'Conservative rank/expression marker agreement with unknown; species-specific frozen references; target-excluded marker sensitivity',
             'states':'12 fixed RNA proxies; expression-bin backgrounds from all observed endpoints within registered source biological contexts; not NTC or pre-intervention covariates',
             'continuous':'Provided nonnegative X retained without a second normalization/log; unknown final types when transform/reference scale is unverified',
-            'identity':'Every source obs/var retained; input+row record IDs; complete ordered-native-axis and, when unique, source-Ensembl-axis count fingerprints; no copies removed'},
+            'identity':'Every original obs field retained under source_obs__; source_barcode is original obs index, independently of any obs barcode column; original var retained; input+row record IDs; complete ordered-native-axis and, when unique, source-Ensembl-axis count fingerprints; no copies removed'},
         'limitations':['类型/状态均未校准，概率为空，不是ground truth。','原始细胞系、细胞类型、Mixscape、周期等作者标签单独保留，不作为校准真值。',
             '状态背景由全部观察终点构造；不同背景/物种/变换的绝对状态值不在同一校准刻度。','此阶段只完成逐细胞及数值身份；对照资格与全任务响应在独立阶段执行。'],
         'tables':[{'title':'逐来源背景','rows':backgrounds},{'title':'类型参考覆盖','rows':model['coverage']},{'title':'各背景状态分布','rows':state_summary}],
