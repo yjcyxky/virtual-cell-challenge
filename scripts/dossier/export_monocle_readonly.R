@@ -9,7 +9,15 @@ write_frame<-function(frame,path) {
 }
 export_cds<-function(x,directory) {
   dir.create(directory,recursive=TRUE)
-  counts<-attr(attr(attr(x,'assays'),'data'),'listData')[['counts']]
+  assays<-attr(x,'assays')
+  if('ShallowSimpleListAssays' %in% class(assays)) {
+    # Older SummarizedExperiment serialization uses a reference-class environment.
+    # Read its stored backing field, avoiding package-loading active bindings.
+    environment<-attr(assays,'.xData')
+    if(!is.environment(environment) || !exists('.->data',envir=environment,inherits=FALSE)) stop('unsupported_shallow_assay_storage')
+    assay_data<-get('.->data',envir=environment,inherits=FALSE)
+  } else assay_data<-attr(assays,'data')
+  counts<-attr(assay_data,'listData')[['counts']]
   if(is.null(counts) || !('dgCMatrix' %in% class(counts))) stop('explicit_dgCMatrix_counts_required')
   dims<-attr(counts,'Dim');axes<-attr(counts,'Dimnames');metadata<-attr(x,'colData');fields<-attr(metadata,'listData')
   if(!identical(axes[[2]],attr(metadata,'rownames'))) stop('CDS_metadata_axis_mismatch')
