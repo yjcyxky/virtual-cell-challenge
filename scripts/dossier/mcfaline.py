@@ -68,7 +68,8 @@ def parse_gxe1_hash(label):
     if not np.isfinite(dose) or dose<0:raise ValueError('invalid_source_dose')
     return {'hash_plate':fields[0],'hash_well':fields[1],'cell_line':fields[2],'effector':fields[3],'guide_library':fields[4],
         'dose_value':dose,'drug':fields[6],'source_last_hash_field':fields[7],
-        'exposure_hours_from_primary_methods':96,'dose_unit_from_primary_methods':'uM'}
+        'exposure_hours_from_primary_methods':96,'dose_unit_from_primary_methods':None if fields[6]=='dmso' else 'uM',
+        'vehicle_percent_vv_from_primary_methods':0.1,'vehicle_source_dose_is_placeholder':fields[6]=='dmso'}
 
 
 def assigned_design(cds_metadata):
@@ -79,10 +80,12 @@ def assigned_design(cds_metadata):
         target_set=sorted(set(str(r.gene_id).split(','))) if pd.notna(r.gene_id) else []
         effectors=set(str(r.CRISPR_gRNA).split(',')) if pd.notna(r.CRISPR_gRNA) else set()
         guide_conflict=bool(effectors-{'control',facts['effector']})
+        library_targets={'HPRT1':{'HPRT1','NTC'},'MMR':{'MGMT','MLH1','MSH2','MSH3','MSH6','PMS2','NTC'}}
+        library_conflict=bool(set(target_set)-library_targets[facts['guide_library']])
         hash_supported=pd.notna(r.hash_umis_W) and r.hash_umis_W>=5 and pd.notna(r.top_to_second_best_ratio_W) and r.top_to_second_best_ratio_W>=2.5
-        reason='metadata_vs_hash_condition_conflict' if not consistent else 'insufficient_or_ambiguous_hash' if not hash_supported else 'unassigned_guide' if not target_set else 'hash_vs_guide_effector_conflict' if guide_conflict else 'multiple_source_target_genes' if len(target_set)>1 else None
+        reason='metadata_vs_hash_condition_conflict' if not consistent else 'insufficient_or_ambiguous_hash' if not hash_supported else 'unassigned_guide' if not target_set else 'hash_vs_guide_effector_conflict' if guide_conflict else 'multiple_source_target_genes' if len(target_set)>1 else 'hash_library_vs_guide_target_conflict' if library_conflict else None
         rows.append({'source_barcode':barcode,**facts,'hash_condition_consistent':consistent,'hash_supported':hash_supported,
-            'source_targets':target_set,'guide_effector_conflict':guide_conflict,'analysis_target':target_set[0] if len(target_set)==1 else None,
+            'source_targets':target_set,'guide_effector_conflict':guide_conflict,'guide_library_conflict':library_conflict,'analysis_target':target_set[0] if len(target_set)==1 else None,
             'genetic_response_assignment_status':'eligible' if reason is None else 'not_estimable','assignment_limitation':reason,
             'labels_are_source_inferences':True})
     return pd.DataFrame(rows)

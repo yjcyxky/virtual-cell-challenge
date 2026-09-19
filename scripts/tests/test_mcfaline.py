@@ -33,6 +33,12 @@ class McfalineTests(unittest.TestCase):
         self.assertEqual(result.genetic_response_assignment_status.tolist(),['eligible','not_estimable','not_estimable','not_estimable'])
         self.assertEqual(result.assignment_limitation.iloc[1],'hash_vs_guide_effector_conflict')
         self.assertEqual(frame.dose.iloc[3],1)
+        conflict=assigned_design(pd.DataFrame([{**common,'gene_id':'HPRT1'}]))
+        self.assertTrue(conflict.guide_library_conflict.iloc[0])
+        self.assertEqual(conflict.assignment_limitation.iloc[0],'hash_library_vs_guide_target_conflict')
+        vehicle=parse_gxe1_hash('plate10_A1_A172_CRISPRi_MMR_0_dmso_96')
+        self.assertIsNone(vehicle['dose_unit_from_primary_methods'])
+        self.assertEqual(vehicle['vehicle_percent_vv_from_primary_methods'],0.1)
         with self.assertRaisesRegex(ValueError,'unrecognized_GxE1_hash_condition'):parse_gxe1_hash('other_background')
 
 if __name__=='__main__':unittest.main()
