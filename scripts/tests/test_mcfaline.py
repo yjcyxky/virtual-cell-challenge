@@ -24,6 +24,8 @@ class McfalineTests(unittest.TestCase):
         self.assertEqual(drug['target_RNA']['status'],'not_applicable');self.assertFalse(features.is_target.any())
         unavailable,features,draws=contrast(log,log,cells,np.arange(70,75),np.arange(40),strata,[f'G{i}' for i in range(12)],'G0',set(),3,'genetic_response')
         self.assertEqual(unavailable['status'],'not_estimable');self.assertIsNone(features)
+        unavailable,_,_=contrast(log,log,cells,np.arange(70,75),np.arange(40),strata,[f'G{i}' for i in range(12)],'__chemical_intervention__',set(),3,'chemical_response')
+        self.assertEqual(unavailable['target_RNA']['status'],'not_applicable')
 
     def test_one_based_coordinate_axes_and_full_CDS_comparison(self):
         with tempfile.TemporaryDirectory() as root:

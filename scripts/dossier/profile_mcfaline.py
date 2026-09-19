@@ -36,7 +36,9 @@ def contrast(log,thin,cells,target_ids,control_ids,strata,genes,target_feature,c
     names=sorted(set(strata[control_ids]) & set(strata[target_ids]))
     keep=np.isin(strata[target_ids],names);used=target_ids[keep]
     if not len(used) or not len(control_ids):
-        return {'status':'not_estimable','reason':'no_target_or_matching_control','observed_target_cells':original_n,'matched_target_cells':0,'control_cells':len(control_ids),'role':role},None,[]
+        result={'status':'not_estimable','reason':'no_target_or_matching_control','observed_target_cells':original_n,'matched_target_cells':0,'control_cells':len(control_ids),'role':role}
+        result['target_RNA']={'status':'not_applicable','reason':'chemical_intervention_has_no_single_genetic_target'} if role=='chemical_response' else {'status':'not_estimable','reason':'no_target_or_matching_control'}
+        return result,None,[]
     rows=cells.iloc[used].copy();rows['source_batch']=strata[used]
     control=log[control_ids];control_thin=thin[control_ids];cb=strata[control_ids]
     moments=grouped_moments(control,cb,names);thin_moments=grouped_moments(control_thin,cb,names)
