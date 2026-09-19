@@ -96,6 +96,8 @@ def single_target(file,row,safe_symbols):
             return None,'source_guide_match_or_coverage_not_supported'
     # A single source symbol is required; inferred composite nperts is not used.
     if p in safe_symbols:return (safe_symbols[p] if isinstance(safe_symbols,dict) else p),'single_gene_source_target'
+    if file.startswith(('Tian','Sunshine','Xu','Adamson','Replogle','Nadig','Gasperini')) and re.fullmatch(r'[A-Za-z][A-Za-z0-9.-]*',p):
+        return p,'source_single_gene_label_not_resolved_in_HGNC'
     return None,'unresolved_or_multiple_source_target_genes'
 
 
@@ -115,6 +117,13 @@ def build_design(file,obs,safe_symbols,recovered=None):
         # Use the published collection label, with a separately verified identity
         # concordance gate. Never replace it with a reconstructed guide call.
         obs['original_GEM_group']=recovered.original_GEM_group.to_numpy();technical=['original_GEM_group']
+        if '10X005' in file:
+            chemical=recovered.original_GEM_group.map({1:'tunicamycin',2:'thapsigargin',3:'DMSO'})
+            if chemical.isna().any():raise ValueError('unreviewed_original_Adamson_chemical_GEM')
+            keys=[json.dumps([bgs[int(b)]['background_key'],drug],separators=(',',':')) for b,drug in zip(bio,chemical)]
+            bio,unique=pd.factorize(keys,sort=True)
+            bgs=[{'background_index':i,'background_key':key,'source_fields':['collection_biological_background','original_GEO_GEM_author_chemical_mapping'],
+                  'source_values':json.loads(key),'interpretation':'Recovered author chemical condition; per-cell inference retains its independently documented pooled endpoint background'} for i,key in enumerate(unique)]
     else:recovered=None
     results=[];deep=file.startswith(DEEP_PREFIXES)
     for i,row in enumerate(obs.to_dict('records')):

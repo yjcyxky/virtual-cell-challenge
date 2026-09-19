@@ -39,5 +39,12 @@ class ScperturbDesignTests(unittest.TestCase):
         self.assertTrue(pd.isna(r.collection_source_guide_label[1]));self.assertEqual(r.original_GEO_guide_label[1],'H')
         with self.assertRaisesRegex(ValueError,'row_scope'):identity_rows(['BBB-1','AAA-2'],meta,obs)
 
+    def test_Adamson_chemical_GEM_groups_are_distinct_biological_contexts(self):
+        obs=pd.DataFrame({'perturbation':['PERK_only_pMJ146']*3,'cell_line':['K562']*3})
+        recovered=pd.DataFrame({'row_index':range(3),'original_GEM_group':[1,2,3],'source_guide_label_concordant':[True]*3})
+        design,methods=build_design('AdamsonWeissman2016_GSM2406677_10X005.h5ad',obs,{'EIF2AK3'},recovered)
+        self.assertEqual(design.biological_background_index.nunique(),3)
+        self.assertEqual(design.single_target.tolist(),['EIF2AK3']*3)
+
 
 if __name__=='__main__':unittest.main()
