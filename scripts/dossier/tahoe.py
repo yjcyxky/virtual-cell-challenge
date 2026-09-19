@@ -51,3 +51,13 @@ def metadata_join(local,observations,samples):
     result['sample_condition_match']=(result.plate==result.source_sample_plate)&(result.drug==result.source_sample_drug)
     result['metadata_condition_consistent']=result[[c for c in result if c.startswith('metadata_match_')]+['sample_condition_match']].all(axis=1)
     return result
+
+
+def condition_eligibility(frame):
+    """A documented whitespace alias is separate from unchanged source labels."""
+    identity=frame[['metadata_match_plate','metadata_match_sample','metadata_match_cell_line_id']].all(axis=1)
+    sample_plate=frame.plate==frame.source_sample_plate
+    names=(frame.drug.str.strip()==frame.source_obs_drug.str.strip())&(frame.drug.str.strip()==frame.source_sample_drug.str.strip())
+    valid=identity&sample_plate&names&frame.metadata_obs_present&frame.metadata_sample_present
+    reason=np.where(frame.metadata_condition_consistent,'exact_source_labels',np.where(valid,'explicit_trailing_whitespace_alias','unresolved_metadata_condition_conflict'))
+    return valid.to_numpy(dtype=bool),reason
