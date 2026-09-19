@@ -1,0 +1,361 @@
+{
+  "started_at": "2026-09-19T02:05:29.653957+00:00",
+  "completed_at": "2026-09-19T02:05:33.206235+00:00",
+  "duration_seconds": 3.55,
+  "workers": 2,
+  "input_sha256": {
+    "docs/README.md": "d87cadbefd02a157af45395f82125ceb4a058c5741c9ecbacdbbbd980de1ac45",
+    "data/sources.json": "593d9a292431d3d2025947bd0fa6e3a8b27356e0994edfcd71982b8c28692606",
+    "data/registry.lock.json": "7e945c8f612795ef5333a9cf0c8b00d3ce81a22cb3282a8e24e1938ed4f805d4",
+    "data/MANIFEST.tsv": "0fb9e1f62426bc7bd7def5a2981754340bcaa1e45c2046276727550f1d70e62f"
+  },
+  "registry_inputs_unchanged": true,
+  "files": 33,
+  "bytes_read": 13392023219,
+  "issue_files": 0,
+  "sources": [
+    {
+      "id": "mcfaline_figueroa2024",
+      "tier": "b",
+      "directory": "data/raw/mcfaline_figueroa2024",
+      "source_json_present": true,
+      "locked_files": 33,
+      "locked_bytes": 13392023219,
+      "verified_files": 33,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    }
+  ],
+  "file_results": [
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSE225775_family.soft.gz",
+      "issues": [],
+      "bytes": 4855,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "16fbe809e6924af4352ee2707456019ad16ef056d246e4d2ac5353551ff3d33e",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_UMI.count.matrix.gz",
+      "issues": [],
+      "bytes": 180261589,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "4e25e3593661a71b6b2eb0b4fdc4c8e79816c678ce033223c1ed8e8120d6f902",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_cell.annotations.txt.gz",
+      "issues": [],
+      "bytes": 61764,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3b0c448a9c2155568f413c86535030f576bc27b5ece5d10123908c78b402d069",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_gene.annotations.txt.gz",
+      "issues": [],
+      "bytes": 430161,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "54a7545912b56f7a75b339e5d4b1963cce3e34aef0a4299e4541d3c62f1f7d85",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_hashTable.out.txt.gz",
+      "issues": [],
+      "bytes": 4521716,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "cc6724808e1e244123e8cc295230278b1edb06399b451eac7f0b3e402091ca8e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_hash_sample_sheet.txt.gz",
+      "issues": [],
+      "bytes": 1979,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b6c55e51d4ac21eb71a217f9b3869a0a3fb7ff9fef9956958962365c0057bdff",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_preprocessed_cds.rds.gz",
+      "issues": [],
+      "bytes": 140095456,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "21e9cc92da3d44aab27d763f04bfe1e1131b0478c96d9aab43f846a2d7d7e31d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_sgRNATable_out.rds.gz",
+      "issues": [],
+      "bytes": 23622181,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "5254e00e14b500e507f6578466530745acc522bbeef0e948a6cf48e087af6681",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056148_sciPlexGxE_1_sgRNA_sequences.txt.gz",
+      "issues": [],
+      "bytes": 473,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "5d10655084d5b2a3a5de3c8ca54bd53a8699f224c09a316b425af4e6315201f0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_UMI.count.matrix.gz",
+      "issues": [],
+      "bytes": 6035886428,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "a1443d71dc890056bfb804d57bdef19d21942563ff088dcd1fadf08dd52f5359",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_cell.annotations.txt.gz",
+      "issues": [],
+      "bytes": 115324478,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7fffab7b4c323bdda5c21d6a71d499d9fde2748fc98e6150ba2342f3ab660156",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_gRNASampleSheet.txt.gz",
+      "issues": [],
+      "bytes": 28449,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "39c8aaf26d4327219db844260d178d25b9b4ed0fea74492c3739659349054147",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_gRNATable_reads.out.txt.gz",
+      "issues": [],
+      "bytes": 656028109,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7fa62a7dd7225b931be064b32557d873a4639759ee5eb27c5907f68835a11ba6",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_gRNA_sequences.txt.gz",
+      "issues": [],
+      "bytes": 28786,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "bb285a38bd9669cb12e2637d886bfde5fa566897ff10f87d5d1e629f002fedef",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_gene.annotations.txt.gz",
+      "issues": [],
+      "bytes": 430161,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "60b62120c4d45fd49f4ef2fe778f969ce23df062c9dbe6af95ac0d8f02eb8938",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_hashTable.out.txt.gz",
+      "issues": [],
+      "bytes": 724394500,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "04f22eb32e251478e08ecda657e0f68237fba53ce08913c22fae48d36c8b2e21",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_hash_sample_sheet.txt.gz",
+      "issues": [],
+      "bytes": 9213,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9282147247fee2445952099760097ff753a8186a855649a1a4b8d029a520407e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_hash_whitelist_rep1.txt.gz",
+      "issues": [],
+      "bytes": 3145,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "8442ff836b9f0cd305338a8f6ee237042e12443059a8ee7a084113c8ede13e4b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_hash_whitelist_rep2.txt.gz",
+      "issues": [],
+      "bytes": 2979,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b28365aff9ef675325fe94bfb4bea89978b958b412db4951d41327c5cd6b16db",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056149_sciPlexGxE_2_preprocessed_cds.list.RDS.gz",
+      "issues": [],
+      "bytes": 3619987565,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3e5c6755c737dba099c61db637568f81835e8c692f77cba1cb1f62ac4a794207",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056150_sciPlex_3_UMI.count.matrix.gz",
+      "issues": [],
+      "bytes": 265432576,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "5682cb683d1b17631be4605bb5efd2d26051e8f0e0d6251b24cfe6680c8c373d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056150_sciPlex_3_cell.annotations.txt.gz",
+      "issues": [],
+      "bytes": 538733,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7bd644c569669e3c3d012886d2e1310d0a9ee2660ef890e1bbf697ff26827065",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056150_sciPlex_3_gene.annotations.txt.gz",
+      "issues": [],
+      "bytes": 430158,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e2ebae280a129585cc95cd465d1a17ec0003a2a471f9a647122a400fea0d86f8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056150_sciPlex_3_hashTable.out.txt.gz",
+      "issues": [],
+      "bytes": 10982366,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7ed402e6d23c08c57602a012f4a4134f92e9d263954610fa665d055bc4770269",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056150_sciPlex_3_hash_sample_sheet.txt.gz",
+      "issues": [],
+      "bytes": 6691,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3814164c4e38cf09be8505bf0b23d244ab2faa5d57e6e0db8c29d14b346d8631",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056150_sciPlex_3_preprocessed_cds.list.rds.gz",
+      "issues": [],
+      "bytes": 143511185,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9d34a54ff506bb6823249968d78f94b1cf1848936dd86ece3a448e5a9b42f306",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056151_sciPlex_4_UMI.count.matrix.gz",
+      "issues": [],
+      "bytes": 590579159,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "1710e238558182026e0b66e05f1b8d5853fc89f941a9751def32d6dc35147455",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056151_sciPlex_4_cell.annotations.txt.gz",
+      "issues": [],
+      "bytes": 832570,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "5704448d55cca51021586c593921e050dad350c2afc0329f5f7eb6a16edbf5aa",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056151_sciPlex_4_gene.annotations.txt.gz",
+      "issues": [],
+      "bytes": 430158,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "cbeed4e110b3593b4d8ec8fb481f66697b730cca0f9d1730cc20d5fe10a05990",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056151_sciPlex_4_hashTable.out.txt.gz",
+      "issues": [],
+      "bytes": 19793477,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3825a8db558af63a846d72e237bcd1b719b8fd1eaaeec36cc3defcf01767cd5c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056151_sciPlex_4_hash_sample_sheet.txt.gz",
+      "issues": [],
+      "bytes": 3335,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "ffb4083bcff9e8cb283c89817d7d4e534f753c075b94f5ffa90d8de8dc6fed9c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/GSM7056151_sciPlex_4_preprocessed_cds.list.rds.gz",
+      "issues": [],
+      "bytes": 858356130,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "24a282cea364af103668cb2e0efc3cebce64c08a22de8d85a1cad687a728ef27",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "mcfaline_figueroa2024",
+      "file": "data/raw/mcfaline_figueroa2024/filelist.txt",
+      "issues": [],
+      "bytes": 2694,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9db7a72380bcc8e8d0dc6b25303fd6998c9086d3cf85ce6aa451acd7151e4c7e",
+      "locked_checksum_verified": null
+    }
+  ]
+}

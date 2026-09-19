@@ -1,0 +1,4313 @@
+{
+  "started_at": "2026-09-19T01:20:46.454748+00:00",
+  "completed_at": "2026-09-19T01:23:54.256432+00:00",
+  "duration_seconds": 187.8,
+  "workers": 2,
+  "input_sha256": {
+    "docs/README.md": "d87cadbefd02a157af45395f82125ceb4a058c5741c9ecbacdbbbd980de1ac45",
+    "data/sources.json": "915ae074b0203655dc989507221b56b94f77de6dc435d325f9ed100b4ea3bb26",
+    "data/registry.lock.json": "72c1a7cd2d0f1967c27cbb839ea58f0ba77e6cdf6762fc3ed19fae50c89bb4a6",
+    "data/MANIFEST.tsv": "e9f2ffe0ad938bdd55b7c7b285298935676e7f1e1a388795589d9b9d27feab46"
+  },
+  "registry_inputs_unchanged": true,
+  "files": 415,
+  "bytes_read": 263437480419,
+  "issue_files": 0,
+  "sources": [
+    {
+      "id": "arc_vcc2025_h1",
+      "tier": "a",
+      "directory": "data/raw/arc_vcc2025_h1",
+      "source_json_present": true,
+      "locked_files": 6,
+      "locked_bytes": 34362209866,
+      "verified_files": 6,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "scperturb",
+      "tier": "a",
+      "directory": "data/raw/scperturb",
+      "source_json_present": true,
+      "locked_files": 54,
+      "locked_bytes": 43042767207,
+      "verified_files": 54,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "replogle2022",
+      "tier": "b",
+      "directory": "data/raw/replogle2022",
+      "source_json_present": true,
+      "locked_files": 6,
+      "locked_bytes": 85743400581,
+      "verified_files": 6,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "jiang2025",
+      "tier": "b",
+      "directory": "data/raw/jiang2025",
+      "source_json_present": true,
+      "locked_files": 9,
+      "locked_bytes": 20141713377,
+      "verified_files": 9,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "nadig2025",
+      "tier": "b",
+      "directory": "data/raw/nadig2025",
+      "source_json_present": true,
+      "locked_files": 2,
+      "locked_bytes": 14980951205,
+      "verified_files": 2,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "depmap_24q4",
+      "tier": "c",
+      "directory": "data/raw/depmap_24q4",
+      "source_json_present": true,
+      "locked_files": 5,
+      "locked_bytes": 1867035076,
+      "verified_files": 5,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "networks",
+      "tier": "c",
+      "directory": "data/raw/networks",
+      "source_json_present": true,
+      "locked_files": 6,
+      "locked_bytes": 126342798,
+      "verified_files": 6,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "tahoe100m",
+      "tier": "d",
+      "directory": "data/raw/tahoe100m",
+      "source_json_present": true,
+      "locked_files": 306,
+      "locked_bytes": 32220094009,
+      "verified_files": 306,
+      "writable_files": 0,
+      "basename_only_provenance": 306
+    },
+    {
+      "id": "lincs_l1000",
+      "tier": "d",
+      "directory": "data/raw/lincs_l1000",
+      "source_json_present": true,
+      "locked_files": 5,
+      "locked_bytes": 21340515881,
+      "verified_files": 5,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "vcc_gene_axis",
+      "tier": "c",
+      "directory": "data/raw/vcc_gene_axis",
+      "source_json_present": true,
+      "locked_files": 1,
+      "locked_bytes": 116023,
+      "verified_files": 1,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "esm2_650m",
+      "tier": "c",
+      "directory": "models/esm2_650m",
+      "source_json_present": true,
+      "locked_files": 5,
+      "locked_bytes": 2609507429,
+      "verified_files": 5,
+      "writable_files": 5,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "arc_se600m",
+      "tier": "c",
+      "directory": "models/arc_se600m",
+      "source_json_present": true,
+      "locked_files": 3,
+      "locked_bytes": 5678590253,
+      "verified_files": 3,
+      "writable_files": 3,
+      "basename_only_provenance": 0
+    },
+    {
+      "id": "arc_vcc2026_controls",
+      "tier": "a",
+      "directory": "data/raw/arc_vcc2026_controls",
+      "source_json_present": true,
+      "locked_files": 7,
+      "locked_bytes": 1324236714,
+      "verified_files": 7,
+      "writable_files": 0,
+      "basename_only_provenance": 0
+    }
+  ],
+  "file_results": [
+    {
+      "source_id": "arc_vcc2025_h1",
+      "file": "data/raw/arc_vcc2025_h1/adata_Test.h5ad",
+      "issues": [],
+      "bytes": 11950739168,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "ba5ce66729e4c8e50b6f147c7d73d3f9f28f76c91fa43ff33e3f6bc2ed831f03",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "arc_vcc2025_h1",
+      "file": "data/raw/arc_vcc2025_h1/adata_Training.h5ad",
+      "issues": [],
+      "bytes": 15482497461,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "a09977104fefb622368ca74b50c9d3c1e891733e6c83db07acfca49b0219c02b",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "arc_vcc2025_h1",
+      "file": "data/raw/arc_vcc2025_h1/adata_Validation.h5ad",
+      "issues": [],
+      "bytes": 6928967541,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "376f0bab27d9f22e00dfd888668d3602006d035edc182721c378f4802c77bfe1",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "arc_vcc2025_h1",
+      "file": "data/raw/arc_vcc2025_h1/pert_counts_Test.csv",
+      "issues": [],
+      "bytes": 1894,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "c4f0ba439d7c3121562ca1f79fa3854d8f96fc7c3de24dca23eb9e7c41c8923a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2025_h1",
+      "file": "data/raw/arc_vcc2025_h1/pert_counts_Training.csv",
+      "issues": [],
+      "bytes": 2824,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "633d202be221418bdbac16efd8cb169666de0ef6469a4e9bfdfb64666ea81a89",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2025_h1",
+      "file": "data/raw/arc_vcc2025_h1/pert_counts_Validation.csv",
+      "issues": [],
+      "bytes": 978,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9da5dec8c25aff1bddc01cf76897cf94ec65f8f877beee29482c543bf1e7e43b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2026_controls",
+      "file": "data/raw/arc_vcc2026_controls/context_A.h5ad",
+      "issues": [],
+      "bytes": 224973316,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "f22e71968487d3da9402769dcd0c73a47851fad4cd7dd25510283c923031fe3e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2026_controls",
+      "file": "data/raw/arc_vcc2026_controls/context_B.h5ad",
+      "issues": [],
+      "bytes": 210966111,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "41557555b3febf6db19fd930b4dd7db88941840077bf985d14dfff959c782380",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2026_controls",
+      "file": "data/raw/arc_vcc2026_controls/context_C.h5ad",
+      "issues": [],
+      "bytes": 226056691,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e090e7c7cfdd0006f689214ba38ba0cd2669578e89c9bc325b65f0bd940c02e0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2026_controls",
+      "file": "data/raw/arc_vcc2026_controls/gene_names.csv",
+      "issues": [],
+      "bytes": 119295,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "25bfa66715e186bebabce7ac788bbcea47e2bf59ca70be1f8f3a06f2f0e47201",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2026_controls",
+      "file": "data/raw/arc_vcc2026_controls/manifest.json",
+      "issues": [],
+      "bytes": 715,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "2c2b5d425df817ca35e9edf08282d12494ce42913ba824375bf0f98a1cc676f5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2026_controls",
+      "file": "data/raw/arc_vcc2026_controls/pert_counts.csv",
+      "issues": [],
+      "bytes": 1906,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "f57edd7b912ebd718efc7ee9d0f334772513e7cc418d133ce525470e373b3276",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_vcc2026_controls",
+      "file": "data/raw/arc_vcc2026_controls/vcc_2026_controls.zip",
+      "issues": [],
+      "bytes": 662118680,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "329a22bc29cac4f43ad0b846b9bb1a383f7a945c83a8cb0450c465f6dc5cc4b5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "depmap_24q4",
+      "file": "data/raw/depmap_24q4/CRISPRGeneDependency.csv",
+      "issues": [],
+      "bytes": 421115594,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "76f2df90bc2a0d70bac667dda83a052d04a1220cdc70e01ce0f6508d59ebea40",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "depmap_24q4",
+      "file": "data/raw/depmap_24q4/CRISPRGeneEffect.csv",
+      "issues": [],
+      "bytes": 428678699,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3d8f3ec6dbf2db7ff834b79b508622ec0b226f3518003fe96ecf5a4fcf167e3b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "depmap_24q4",
+      "file": "data/raw/depmap_24q4/Model.csv",
+      "issues": [],
+      "bytes": 645696,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b7a0c1385e6cef30132b56aff61f1261d11e3f490490b355c430d32ee0dbdcfa",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "depmap_24q4",
+      "file": "data/raw/depmap_24q4/OmicsExpressionAllGenesTPMLogp1Profile.csv",
+      "issues": [],
+      "bytes": 1016340354,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "57aa034ec15c48109333aad9d09d31bf8080ce222c45f3b0465fe8e7e7b88d7a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "depmap_24q4",
+      "file": "data/raw/depmap_24q4/OmicsProfiles.csv",
+      "issues": [],
+      "bytes": 254733,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "0bb19ee57935d4b213d378a4db9caacaa1db7318a63ae81485d84f91c20a3bf2",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/A_readme.txt",
+      "issues": [],
+      "bytes": 1539,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "83acf8d77751cdc41ab2a468a651382f289827613c19caf08a9062bf81623f8f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/HClust_Pathway_celltype_specific_genelist.rds",
+      "issues": [],
+      "bytes": 69497,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7ffb60f2dfe47c5105cdac52e87f0e0c5e8ee1e7056ae25bd7d035697b528925",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/Pathway_Exclusive_genelist.rds",
+      "issues": [],
+      "bytes": 9038,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "469adef08c086b0f292b490d6fd0add2aa7dbab9086d39c51f1c023d857d84d0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/Pathway_genelist.rds",
+      "issues": [],
+      "bytes": 20666,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "bff3ea9a80dd83bc7c7a21cbb33dee2e948de1e46d78bbdd0d8b3e1af6bd56ee",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/Seurat_object_IFNB_Perturb_seq.rds",
+      "issues": [],
+      "bytes": 4326548669,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "a7c8bec3d1375786f92ecfcdba48cb7403ed4c4b1814130119cd0e7630d9d4b4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/Seurat_object_IFNG_Perturb_seq.rds",
+      "issues": [],
+      "bytes": 2915636149,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "735c843adad7bae3f93c34191a9dea3dcc4fd329815559355c15b040d506eab0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/Seurat_object_INS_Perturb_seq.rds",
+      "issues": [],
+      "bytes": 5601176410,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "233991fd7d6708bdb7e46b500c9534a6bc19424b980a440264fc71c876786734",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/Seurat_object_TGFB_Perturb_seq.rds",
+      "issues": [],
+      "bytes": 2642041433,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "cd338cf6d05df9d3d377f82a5f8ee534696c065bc7556fcf2087d508723fa3ea",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "jiang2025",
+      "file": "data/raw/jiang2025/Seurat_object_TNFA_Perturb_seq.rds",
+      "issues": [],
+      "bytes": 4656209976,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "0a899ed50bca589717380a6044d9f15364e97d7693697f7e7ad324e6823a9113",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "lincs_l1000",
+      "file": "data/raw/lincs_l1000/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz",
+      "issues": [],
+      "bytes": 21328033748,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "790f6c94b90c8b79ca5c1d338501a6bfdf0639dba591ee094b2cc23912670ce5",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "lincs_l1000",
+      "file": "data/raw/lincs_l1000/GSE92742_Broad_LINCS_cell_info.txt.gz",
+      "issues": [],
+      "bytes": 2528,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "88c6ca5ff8bb3cf3af22c2eb8cbe769f9ae8e305a760959b18711877d730d61c",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "lincs_l1000",
+      "file": "data/raw/lincs_l1000/GSE92742_Broad_LINCS_gene_info.txt.gz",
+      "issues": [],
+      "bytes": 216692,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "741216ccc53320119b47ab006de3bcad48963c57087c9e07f50f0d6cd088711a",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "lincs_l1000",
+      "file": "data/raw/lincs_l1000/GSE92742_Broad_LINCS_pert_info.txt.gz",
+      "issues": [],
+      "bytes": 1138509,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b1945b3fde51021865b12269929cc78ccf2665be27f53a4da9336e4ddcf4b42f",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "lincs_l1000",
+      "file": "data/raw/lincs_l1000/GSE92742_Broad_LINCS_sig_info.txt.gz",
+      "issues": [],
+      "bytes": 11124404,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "19da29c0ee12ddf27f9698cd0da40beaff58657dcde9d382aae068737e831299",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "nadig2025",
+      "file": "data/raw/nadig2025/GSE264667_hepg2_raw_singlecell_01.h5ad",
+      "issues": [],
+      "bytes": 5614460941,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e1ad7c3c5a201c861a207a858aa7e59f5e6ac1955674c415f7de0d1dadadb52e",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "nadig2025",
+      "file": "data/raw/nadig2025/GSE264667_jurkat_raw_singlecell_01.h5ad",
+      "issues": [],
+      "bytes": 9366490264,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "ffbe15f2c8f7ffcfd7b0ba9e6937d4ebc2d03b0179fa8234648a59bcb82c04a3",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "networks",
+      "file": "data/raw/networks/9606.protein.info.v12.0.txt.gz",
+      "issues": [],
+      "bytes": 1970090,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "144de4b0d98c6a7dfde6ddc2591cf88657f27b989eadff4f501450c3ed1f0f1c",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "networks",
+      "file": "data/raw/networks/9606.protein.links.v12.0.txt.gz",
+      "issues": [],
+      "bytes": 83164437,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3e22f32572211aa341d5b4bd08d30c32e693e294603202120936872f87719d4f",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "networks",
+      "file": "data/raw/networks/9606.protein.physical.links.v12.0.txt.gz",
+      "issues": [],
+      "bytes": 8954065,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "1ca87209a93cf7685e9c2997fbcfbfc69fedc6a803ccc1df917318a651df0823",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "networks",
+      "file": "data/raw/networks/ReactomePathways.gmt.zip",
+      "issues": [],
+      "bytes": 298479,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "networks",
+      "file": "data/raw/networks/goa_human.gaf.gz",
+      "issues": [],
+      "bytes": 15041996,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "db472faff1785878521693af62646546cea6af4a386609dd01c72c0554a46a30",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "networks",
+      "file": "data/raw/networks/hgnc_complete_set.txt",
+      "issues": [],
+      "bytes": 16913731,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9e07bb49393c12aca8bc931a4349010404c24994a8a58745c14676b8c2b74492",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "replogle2022",
+      "file": "data/raw/replogle2022/K562_essential_raw_bulk_01.h5ad",
+      "issues": [],
+      "bytes": 79766954,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "80de95e54fcbca0e0537d569b43ec92fde6bd0482801505504baebe3118dcadf",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "replogle2022",
+      "file": "data/raw/replogle2022/K562_essential_raw_singlecell_01.h5ad",
+      "issues": [],
+      "bytes": 10661879995,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3e5a63a9e892b21029bb55fca4e12517a49aad7af6c14133ca63d12cf68c6cee",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "replogle2022",
+      "file": "data/raw/replogle2022/K562_gwps_raw_bulk_01.h5ad",
+      "issues": [],
+      "bytes": 374587922,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7cec96b3b76169abbf6b6ab9d10bf00d71d942d89e63292351f745e130b154db",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "replogle2022",
+      "file": "data/raw/replogle2022/K562_gwps_raw_singlecell_01.h5ad",
+      "issues": [],
+      "bytes": 65830941948,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b697ef7fedcec2972ec334608f86f2a29cb25e70c81b6725195f4cda60a9de2c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "replogle2022",
+      "file": "data/raw/replogle2022/rpe1_raw_bulk_01.h5ad",
+      "issues": [],
+      "bytes": 95350546,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "603c655f1cfa41d649baf3ae63fca224cc11f297e40d4ed59d390b1e8d2e2db2",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "replogle2022",
+      "file": "data/raw/replogle2022/rpe1_raw_singlecell_01.h5ad",
+      "issues": [],
+      "bytes": 8700873216,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9b05ef1f81526216fa008d677e9e0d03dce9a2f7a95499a4fb81e505e9d88ef1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/AdamsonWeissman2016_GSM2406675_10X001.h5ad",
+      "issues": [],
+      "bytes": 34557246,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "119e3c1cf7dede4e13f887b86f9bcd797a9dc29213ee57d36aa80012d93f1c1c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/AdamsonWeissman2016_GSM2406677_10X005.h5ad",
+      "issues": [],
+      "bytes": 139059637,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "6c6eca0f53f8887b86597e2a4ff512ff2b2d3d9c78ee7deec9a6e7d6ae859d01",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/AdamsonWeissman2016_GSM2406681_10X010.h5ad",
+      "issues": [],
+      "bytes": 471286951,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e70fcd49808cab8d724de8d5a332940911206e1c8ef44cc7b568d048ed795c85",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/AissaBenevolenskaya2021.h5ad",
+      "issues": [],
+      "bytes": 45919115,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b15a47195aae031dfcba94c6f7f080f1d7e5c69d46b070d49132ee2a1bb8bb99",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/ChangYe2021.h5ad",
+      "issues": [],
+      "bytes": 501823050,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "79101d91992404772f590439d4ac5bd825c25866682c7ef439189f577613ca04",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/CuiHacohen2023.h5ad",
+      "issues": [],
+      "bytes": 472111867,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b312e0e3caec24f6adf6d009729b73ff0cf8c87fec8ec1362efc74675a60ec16",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/DatlingerBock2017.h5ad",
+      "issues": [],
+      "bytes": 39085166,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "2ee8b95ef1b2567ce5cbf83fc3a20bf4318f32dc007e1228f064fe428125f7da",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/DatlingerBock2021.h5ad",
+      "issues": [],
+      "bytes": 33600780,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9f8c35058d71442a904391dabf6574bbb24ae31ed00cef5d4e4ed498828f3592",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/DixitRegev2016_K562_TFs_13_days.h5ad",
+      "issues": [],
+      "bytes": 121166672,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "f7c483fa2a3cb79740ee816850ad7b8432f2c4c17fb4ac6fdd2cbe32a29f11a1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/DixitRegev2016_K562_TFs_7_days.h5ad",
+      "issues": [],
+      "bytes": 256685252,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "03802e358de0568cfe32de26d78bee2805687412f5fbb6b788213aca31e973a0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/DixitRegev2016_K562_TFs_High_MOI.h5ad",
+      "issues": [],
+      "bytes": 319735470,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "57d4e51930ba3d526caaba8d657a72dba6c6a3ff1e7f5e5fd8c0553539d6db54",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/FrangiehIzar2021_RNA.h5ad",
+      "issues": [],
+      "bytes": 1458928348,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "cc42ef38bcf703a00e0c77c7945dd53159b12d814c438ae8afeaed9bc71f48d1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/FrangiehIzar2021_protein.h5ad",
+      "issues": [],
+      "bytes": 24714445,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "1f85827b5afad11a30d8ac99399772231110a1c3723bed6ecf7981a12cc3dbcc",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/GasperiniShendure2019_atscale.h5ad",
+      "issues": [],
+      "bytes": 1866293566,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "6933c9312ea4a38d0225212a7bc940282c48f70baebf0441fa02108cad0ab9ee",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/GasperiniShendure2019_highMOI.h5ad",
+      "issues": [],
+      "bytes": 418337592,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "b342ca237496764066a8b96115d551c48411049f52e3a7d9e89d864ece4ab90b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/GasperiniShendure2019_lowMOI.h5ad",
+      "issues": [],
+      "bytes": 322716827,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e5d43d9c0ea12299ca2880dece131db07d766a9779ac0f9ba792ed7b7d85a213",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/GehringPachter2019.h5ad",
+      "issues": [],
+      "bytes": 73274146,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3f3a3968f0d20a3635619971da17049e2ac1b94b9c1ab6c61280caf70855ba3d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/JoungZhang2023_atlas.h5ad",
+      "issues": [],
+      "bytes": 5804454475,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "8bd00eac883b469a1e82a2beca18f647e8023904920f233dbb8568e13503fc22",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/JoungZhang2023_combinatorial.h5ad",
+      "issues": [],
+      "bytes": 834073300,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "ce5188bd3f924f9c79fea6d0b2fb49e48a71d0cf6a2a5010ee9a9bd6e3289a01",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/LaraAstiasoHuntly2023_exvivo.h5ad",
+      "issues": [],
+      "bytes": 1080740763,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "5659e681da47419b8401ca65ca2ca4156933a38b98ac65d61af3445295b7346f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/LaraAstiasoHuntly2023_invivo.h5ad",
+      "issues": [],
+      "bytes": 760312556,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "8dbf3c96aef2f68b75495ae72251ff42ba8362d2e900b2dba7c6aad11d90465f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/LaraAstiasoHuntly2023_leukemia.h5ad",
+      "issues": [],
+      "bytes": 1176002572,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "c39f3b64d985958d172699761f1e7600bd1df653cf57da40798943100e53cd0f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/LiangWang2023.h5ad",
+      "issues": [],
+      "bytes": 364166137,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3a58c9b9045ff96897ec378ad012e36cd0dc9d85ff0969e6d5e2c196ced665b7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/LotfollahiTheis2023.h5ad",
+      "issues": [],
+      "bytes": 235963662,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9ceb9ad597b0ca9f529b147146962dccb3449c80eb446cdca8d4150c8d557811",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/McFarlandTsherniak2020.h5ad",
+      "issues": [],
+      "bytes": 1459410830,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "94a7240047b9ce6822dc2aa1e7a66c1fd8b00be842e5a95fc72cbeb6f2834d2c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/NadigOConner2024_hepg2.h5ad",
+      "issues": [],
+      "bytes": 850590740,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "1af2f7b3e692ad3d077e6027d68a1f800619e29aa3f7a0efa70146fb7223a4bf",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/NadigOConner2024_jurkat.h5ad",
+      "issues": [],
+      "bytes": 1293665804,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "ade3d83150fd6944212363cd11da77c0d2143fa6df1febb3f15a66d4dab0677f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/NormanWeissman2019_filtered.h5ad",
+      "issues": [],
+      "bytes": 698680199,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "efde6f5301fe256725dce1d980f37bd96a13481a9a16135515897368e631affc",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/PapalexiSatija2021_eccite_RNA.h5ad",
+      "issues": [],
+      "bytes": 147215278,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "03e9602d124c261281936717d5795445805e6e704a52b0310bcde94225aa0929",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/PapalexiSatija2021_eccite_arrayed_RNA.h5ad",
+      "issues": [],
+      "bytes": 52339395,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7f8b06d92955940c453b7bec5dec879d64c1b2e2667aa5b6f7bb4bbc6665d976",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/PapalexiSatija2021_eccite_arrayed_protein.h5ad",
+      "issues": [],
+      "bytes": 550922,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "45aa4e2279ca7b6522eacfe61d74fb5f107cd177814a94f70b58549913a094f4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/PapalexiSatija2021_eccite_protein.h5ad",
+      "issues": [],
+      "bytes": 1191551,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e1e293c75dfebe09301bf32093703cfd5f50c17d6fb53144d8213e52e0e4e150",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/ReplogleWeissman2022_K562_essential.h5ad",
+      "issues": [],
+      "bytes": 1546729675,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "412fd0df8c4ccea9f4db91cd88033c49200838b29d40945e48574be588b48789",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/ReplogleWeissman2022_K562_gwps.h5ad",
+      "issues": [],
+      "bytes": 8805466154,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "d3269d9c863d96555eba768b42ab330cc1b57493cd33b4ac8fe7fbab8278f104",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/ReplogleWeissman2022_rpe1.h5ad",
+      "issues": [],
+      "bytes": 1236886900,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "12d6a0cf9378c4f09411e27f0ce07b59f1d97731bd576d6fadf112f6f088d1a4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SantinhaPlatt2023.h5ad",
+      "issues": [],
+      "bytes": 939335004,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "c81d29d0dd33b991be9fcc01d853f38af2ba93447b3a3267f4121ba340fd5003",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SchiebingerLander2019_GSE106340.h5ad",
+      "issues": [],
+      "bytes": 378858726,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "fcc4da2d1f24566d926e5c61a7bf1dc8a362b7aa4d07e1061434dab2e2845ff9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SchiebingerLander2019_GSE115943.h5ad",
+      "issues": [],
+      "bytes": 1640956517,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "393f4a8a171c5aadc38ed37f69bcccd03777d4d4175e5476fa363d49c4277144",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SchraivogelSteinmetz2020_TAP_SCREEN__chromosome_11_screen.h5ad",
+      "issues": [],
+      "bytes": 21815981,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3fa86ab3ff23232da931e8adebb38c985c906982b8a84e83ddba96557c14cd61",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SchraivogelSteinmetz2020_TAP_SCREEN__chromosome_8_screen.h5ad",
+      "issues": [],
+      "bytes": 21015792,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "63b02470db1c0adfba35356cf4d788484142324ee5b6a4dff4d4b5dc38330517",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/ShifrutMarson2018.h5ad",
+      "issues": [],
+      "bytes": 871481676,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "73c92a61ccc49d3a8c1bfc18ebfd002c2439294c98eb11b3ca8a2c2d7e3d1b19",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SrivatsanTrapnell2020_sciplex2.h5ad",
+      "issues": [],
+      "bytes": 145178504,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "0adabca03632ac9421a769fc9eaa4178447d4d572f4c2c54e4fde93a81acde67",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SrivatsanTrapnell2020_sciplex3.h5ad",
+      "issues": [],
+      "bytes": 2526631614,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "603ed16c5e25401c8a7f5bb0b2b045179701017d65dcfc6aeea71722a66cd10a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SrivatsanTrapnell2020_sciplex4.h5ad",
+      "issues": [],
+      "bytes": 253335945,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "29db0c7a1372d96b70200946c11651aa62905b1d3091f89947bc19795d236b9f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/SunshineHein2023.h5ad",
+      "issues": [],
+      "bytes": 743672579,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "4dd14fb68dc16057e1cf4a05d0bcd2efd26c1a9e4ef8c7d21afccaf2cfc84270",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/TianKampmann2019_day7neuron.h5ad",
+      "issues": [],
+      "bytes": 268921535,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e5883ffef02c0da955b8d6f1dd3c92ee1dc4d73f43d6a1ed9562444097fca5df",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/TianKampmann2019_iPSC.h5ad",
+      "issues": [],
+      "bytes": 350848489,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "9a3157e15abc3c739a545581d4196eed7717217598344192b1a3dafd370dabf9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/TianKampmann2021_CRISPRa.h5ad",
+      "issues": [],
+      "bytes": 154788473,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "0f9f8845a77861025175242a8f4e67ff3c3b40ac997a9955ff5accb309e6760f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/TianKampmann2021_CRISPRi.h5ad",
+      "issues": [],
+      "bytes": 289389479,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "7ea6689359964e23da78f93bb54c4eb08d9cd95c16ee769375fc5ac7edb62fa9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/WeinrebKlein2020.h5ad",
+      "issues": [],
+      "bytes": 228524613,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "51b70f06df6fd6a22a2b1d6f7b2e1616f1dac1a77985ec4568107f1b5f5726c3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/WesselsSatija2023.h5ad",
+      "issues": [],
+      "bytes": 219393529,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "5da0485aed81b23bda57b4a7b4510a394682d54911416db89b4846ff6dd34732",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/XieHon2017.h5ad",
+      "issues": [],
+      "bytes": 117356359,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "3a9a4532786652613a8dbb5ba864c35f278233be0c26e2b91a2a471082918353",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/XuCao2023.h5ad",
+      "issues": [],
+      "bytes": 336637209,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "0065ac9524f103fcb7903125b4d2d22e8f2c29e427db31b7cefd5a8f1ea846e0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "scperturb",
+      "file": "data/raw/scperturb/ZhaoSims2021.h5ad",
+      "issues": [],
+      "bytes": 586888140,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "5d5d3c403453e9813d0f0babd1504c09e5e3061eba5dd09098917cc8c81f06d1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00000-of-03388.parquet",
+      "issues": [],
+      "bytes": 71186527,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "50c176f5986283a54a9dddab232b291328b6a906b2f2651534618692e03714a1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00011-of-03388.parquet",
+      "issues": [],
+      "bytes": 78424121,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "6e133038b232f8155a29438e93229063458e0c328d89f3e2cbc7760786d58629",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00022-of-03388.parquet",
+      "issues": [],
+      "bytes": 88124451,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5e1dc4291e887cf2f33127f8a345e7fb47b8de4e441ed72e499c8a029deb70d3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00033-of-03388.parquet",
+      "issues": [],
+      "bytes": 94197119,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3bef465193bd4d0637a2f59d1b08a489a4840c88715f4f4aeedc6824dd2e98e9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00044-of-03388.parquet",
+      "issues": [],
+      "bytes": 91523571,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0455d204b2ae4704060b634d7f27c24c5bb870092e34c44a0eae4d29ed2ba62e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00055-of-03388.parquet",
+      "issues": [],
+      "bytes": 83841697,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ed871a4f396548a6ea8a3b3756924d871fcde9d61e6345fbd7a958a0b3e7e853",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00066-of-03388.parquet",
+      "issues": [],
+      "bytes": 103623928,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5e3cb9081bfc41e4dd4c5034a08b97bdac1d7fa59ecb6eb6a743296d13fdd48c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00077-of-03388.parquet",
+      "issues": [],
+      "bytes": 104511083,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3a3237b6662bf4a07b3f67964372faadeefd7deb446b0afd9aaca873e8fd9222",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00088-of-03388.parquet",
+      "issues": [],
+      "bytes": 106242444,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a99f43275e2e194247c495de34b54a6ac719dda8052fd0b0ddea42cafb8595cc",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00099-of-03388.parquet",
+      "issues": [],
+      "bytes": 101664630,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "24bbbc614ef313ce156cf5eb9d5fbbcc2abd09d4395cf646ec56ec3ec1cae180",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00110-of-03388.parquet",
+      "issues": [],
+      "bytes": 107480194,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a8184f7bc2cabb5d7d68e5f7e75fe3966882f951a6f17cb83b25f627aecf5af3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00121-of-03388.parquet",
+      "issues": [],
+      "bytes": 106214051,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3095c54995b3ed0416c5944b21640becc477393faff23c72dc4f9e691b999736",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00132-of-03388.parquet",
+      "issues": [],
+      "bytes": 105605226,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "eaa0f06c4b387416f88eaf86bef938f8396106b44090828d4a427111603db9f1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00143-of-03388.parquet",
+      "issues": [],
+      "bytes": 111978204,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "efe6ec2da0177c8c09b5fa3d45ca57d012741290e17703623c1f14cc217aa290",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00154-of-03388.parquet",
+      "issues": [],
+      "bytes": 104363122,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "985a44c4655bb7408eef7917c1db1e7d8aaa757efe6b46af2c2eb602cbab7321",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00165-of-03388.parquet",
+      "issues": [],
+      "bytes": 101321728,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "508cd6945846c1fcf61d7227889d501e710593e78feebe3640eb9c0a0f748127",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00176-of-03388.parquet",
+      "issues": [],
+      "bytes": 109251597,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "2f2cadad47395fda8b36f7fa30fbe37a349b25c730182a5e47c76b9876fe6b1e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00187-of-03388.parquet",
+      "issues": [],
+      "bytes": 108649447,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d502ec717419de9093b6e3a3d159951cd643d7e8a26d6cb2db982201ff69527b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00198-of-03388.parquet",
+      "issues": [],
+      "bytes": 96358116,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "71938eec1aeb98facb80d0ed578033a8bc1c44aaa0bcce0633604dc0e6745f8e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00209-of-03388.parquet",
+      "issues": [],
+      "bytes": 105174137,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "28fc4affa74fb6ad1caf3a680cb5c237b28bf32af3449087a814ed7ace66725d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00220-of-03388.parquet",
+      "issues": [],
+      "bytes": 103547381,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "65e3256e070f98570835ce827ea08b9d686d31096bf4931ea2a921332aa88a2f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00231-of-03388.parquet",
+      "issues": [],
+      "bytes": 109668066,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "60b0d78b287eae76c19449a5a21de021cc4158911da3afd2ad0df60948216258",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00242-of-03388.parquet",
+      "issues": [],
+      "bytes": 94481526,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ce7ec4594b65972b39b7f0dfd5b7026138cad5b5717bacb994f6a892081c702b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00253-of-03388.parquet",
+      "issues": [],
+      "bytes": 90520786,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ed000238ba49805b62dbed202f0de9e88274d62ecb2b7d7c063d8216aef727dc",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00264-of-03388.parquet",
+      "issues": [],
+      "bytes": 94331626,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "426ec145ce95bba525ffce6a4294f01de4e0d9113a6475dce4860b3ca8de3176",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00275-of-03388.parquet",
+      "issues": [],
+      "bytes": 94775404,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "8e21910f6a90afe8e971067cd2113f5ff6ebd6c8b82d130c0281f4b2bf284be8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00286-of-03388.parquet",
+      "issues": [],
+      "bytes": 101093889,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "28e7c8b21f42fa2be5fec30b75be901b2c7562f444f396fe6de7da293d9d2e8e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00297-of-03388.parquet",
+      "issues": [],
+      "bytes": 98244808,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ce4a6175b5df646b7468e55e5d9714477a170d5278e3fe2391041b62b0a00538",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00308-of-03388.parquet",
+      "issues": [],
+      "bytes": 98834909,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "688de85d6ade701e45c8e38c5718548f73c48a319970b581de4c31f535fd8b34",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00319-of-03388.parquet",
+      "issues": [],
+      "bytes": 93191223,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "744da5a0137afb03320bba90aa840e16f01ba067b7e2b816cd73fc62c2760529",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00330-of-03388.parquet",
+      "issues": [],
+      "bytes": 90745085,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "6ec65c53bbfef3676cc6e7a016e49c76a03d1710b93fe4cd24b8667fbf1ee5a7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00341-of-03388.parquet",
+      "issues": [],
+      "bytes": 91416735,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7d6e3187ebd9a9cb7f9f0f63bba94352559dfb4d304b4f9b9985af87b66b2a9f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00352-of-03388.parquet",
+      "issues": [],
+      "bytes": 95399103,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "bf32970f92f6fb2019b46aabc7af555760e8ea568332cd91e19dcd941d18f27b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00363-of-03388.parquet",
+      "issues": [],
+      "bytes": 92112041,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3b884a8b0d58093759e9dc28a14c8659206acc3dc1c7e9cce27bc4a3677c75e7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00374-of-03388.parquet",
+      "issues": [],
+      "bytes": 84758644,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d22319fd40b2b3a494cc2f685b356e5f5dcd1afdee278edd1b99b809486f7c38",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00385-of-03388.parquet",
+      "issues": [],
+      "bytes": 91746826,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "58a1274034078aadec7eaa4c5243122eb72b1fa202c0a0c8a49af1eb133707a5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00396-of-03388.parquet",
+      "issues": [],
+      "bytes": 95236839,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "274676aa013d61fa17887690e34ef2213bc08a6da9636f442c736426b60cc593",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00407-of-03388.parquet",
+      "issues": [],
+      "bytes": 81282294,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b6ad24664a72a2ce5565ca28c874eaeeea02b68bf2ce42b8af8aac6029e5dcc5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00418-of-03388.parquet",
+      "issues": [],
+      "bytes": 79350027,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "75ae04ad1fd377ad8428374ff9c51d1836ac1d67f1177d528b406c4b838bb293",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00429-of-03388.parquet",
+      "issues": [],
+      "bytes": 115793743,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0ca4e634c083c7e89de12f3215160ac604455219e4266f4b683d4233006c68c8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00440-of-03388.parquet",
+      "issues": [],
+      "bytes": 92868515,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7a52b3696c4857c4a319ac7f790e291d56f538f176eb31d472d5e0fa3fb66c00",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00451-of-03388.parquet",
+      "issues": [],
+      "bytes": 103860469,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "794c133080af01d0847a09402db5feef08fdcd17588156947dcd47de28fca2f6",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00462-of-03388.parquet",
+      "issues": [],
+      "bytes": 118159196,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9453b84eef65c3526915553ca88c18065768b9ae0d6ed2f6bc645e57a97ad8eb",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00473-of-03388.parquet",
+      "issues": [],
+      "bytes": 111378837,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f3960e4297910af2c5262476870d321e8d3b4b303ee00bb44279bb174087bc02",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00484-of-03388.parquet",
+      "issues": [],
+      "bytes": 115378839,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "be95dd2b1283632b06deabf82683a7f5bdf000f23b22e0406612d740cfcdee91",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00495-of-03388.parquet",
+      "issues": [],
+      "bytes": 110108564,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4cacde681bb3b4a6532eb68c5e599fde13766e02b1bfebdadc90b5572bcc1da2",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00506-of-03388.parquet",
+      "issues": [],
+      "bytes": 118454417,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d6d5ba8e183b09cfb6b3325c34258819584cac2472474bd8d9c2ecac74c0e851",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00517-of-03388.parquet",
+      "issues": [],
+      "bytes": 124847563,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "899b741acb99cb2c030a48a9fbc0cd6643fd9fc86d8d8ad5b96cd2c772633984",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00528-of-03388.parquet",
+      "issues": [],
+      "bytes": 115619688,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b585144a1435286d7c6ba57ec8732701767ba1d7b3747be9173d9ae4083def73",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00539-of-03388.parquet",
+      "issues": [],
+      "bytes": 106070221,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "23e6be106db0f4c22b1b4316762032166997c5a2f734771b89999f6dca3cb770",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00550-of-03388.parquet",
+      "issues": [],
+      "bytes": 112591657,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7d8e8dfca1e84be7a91426f0de2d2ee75e747a9b3aec50107b26ad76a37d5c80",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00561-of-03388.parquet",
+      "issues": [],
+      "bytes": 99804129,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9185e8070a50a09e96554ea2cb6ded96169867cbc23080010783cb9735b6baef",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00572-of-03388.parquet",
+      "issues": [],
+      "bytes": 115646688,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e532af8b1a5ec39c6f7b4654b87fcf1a59518c7bb2a56aa1690dbcbbbb39c1d1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00583-of-03388.parquet",
+      "issues": [],
+      "bytes": 110130444,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f20cbcc60608347b9d2ec206d8d35b97a2adb6a39d2c9ae7b38d354486bb2293",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00594-of-03388.parquet",
+      "issues": [],
+      "bytes": 127176598,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f8474bce5cfe51e27a120fd1dcbb3781e1f64d8ea588548b974124573406c1c9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00605-of-03388.parquet",
+      "issues": [],
+      "bytes": 98484526,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a39a7f4223ee5d98270907ca1a8c9d76c733adea84265de6b628d788a4494345",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00616-of-03388.parquet",
+      "issues": [],
+      "bytes": 120165900,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "dd3f5ba1b4248954cde47742d38c2b32c85f28924d16c1fe39d382a499e431b4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00627-of-03388.parquet",
+      "issues": [],
+      "bytes": 110070513,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0a1246444c763d97756f7560f0f42d544d05d7e28e51be446fbcaece9bb836d4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00638-of-03388.parquet",
+      "issues": [],
+      "bytes": 114210437,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a1b7b25c48291833dbcfd95124eaf9713c9203c438e4dfdefcb9993c97dc1df9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00649-of-03388.parquet",
+      "issues": [],
+      "bytes": 121443206,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "24cca6b007153c0c3a394173e98122cc26ca83f7a73e5e31ee9e1dd3491dfb19",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00660-of-03388.parquet",
+      "issues": [],
+      "bytes": 108970427,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9fb21c7b80536b588fc695bfc076967822faa088247982d2e464de7196bbf33c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00671-of-03388.parquet",
+      "issues": [],
+      "bytes": 111961659,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1fa53d3ba77604a11afef325041fc09d86bfa8e16a905c86f86f4bc7d84607df",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00682-of-03388.parquet",
+      "issues": [],
+      "bytes": 125557514,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "695b765d0fd2cc5d4fab1a7b0cbfb2ed85502ed21b7d0ac917a7f55a7575763c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00693-of-03388.parquet",
+      "issues": [],
+      "bytes": 117757294,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "646333ea894e8505a20b913c3c1ff0d2c0b3decce7f8611af339853b3446b165",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00704-of-03388.parquet",
+      "issues": [],
+      "bytes": 84845848,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "19240f4df4e71819c93a7e080e92111dd53c98256c6cccb78fcf500de214ae49",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00715-of-03388.parquet",
+      "issues": [],
+      "bytes": 88653189,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4ab58b1315befe74fc94a65c0376dcf5d56d692bdf6f39798b791acc0268251c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00726-of-03388.parquet",
+      "issues": [],
+      "bytes": 78826563,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "281cd3d3bc6d79e6c8da80096deb2a9c3b06ea29b008db79ce22f001459170e8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00737-of-03388.parquet",
+      "issues": [],
+      "bytes": 92266235,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "39aad14a1181078f0207a88f3c44be055ac42c997a91cd91a7fc497d3d3d3f5f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00748-of-03388.parquet",
+      "issues": [],
+      "bytes": 94111534,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c77a81bc9d490bb349ebf04fdd4f834fe6923532b022ddf880a70b561eb0de38",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00759-of-03388.parquet",
+      "issues": [],
+      "bytes": 85568013,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0e5f3f51cee6e474ed802165c616cbbf586c10f75bc32d3b4ba6d3ebe5ba1f81",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00770-of-03388.parquet",
+      "issues": [],
+      "bytes": 84536564,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "65dfb035d186525e9c8522f0339c0da8aee821f9f54b6b0b8fc9b32233069b7e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00781-of-03388.parquet",
+      "issues": [],
+      "bytes": 90474437,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d0174728ce86cc7c4a6e9b29538c2e6b865541baa62fdc2e5c040e1b8dcb5442",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00792-of-03388.parquet",
+      "issues": [],
+      "bytes": 86187204,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "70f5d424dd6fc323767b46dca188bdbab76094bbee0d5b4a63633d7cd7386093",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00803-of-03388.parquet",
+      "issues": [],
+      "bytes": 99205179,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4c9e70f59f0dd86b3401c546589d91b2a1d9dbcd5df80c669f74359d6ffacdbf",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00814-of-03388.parquet",
+      "issues": [],
+      "bytes": 81213883,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0243f8cc23a90bcaa99de8f744b34e7aab65ebbc0bfadde3b412dc1716b07ba9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00825-of-03388.parquet",
+      "issues": [],
+      "bytes": 94427831,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "609e1296d360e7c9718d9a1c45ba4a6e755b77bdcf89aab0a5ece3e5f12c1e1f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00836-of-03388.parquet",
+      "issues": [],
+      "bytes": 87245551,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "42c42c3d506948eb8feb937602f84322f0794d583c420c88432aa1725ea83e57",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00847-of-03388.parquet",
+      "issues": [],
+      "bytes": 77995673,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "91dff54b90faf9a0fbeba7e8b899e86339e5046c0799ef1a6fa548011d9da0bc",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00858-of-03388.parquet",
+      "issues": [],
+      "bytes": 83210934,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9a7ee0df2e437a64d85d0794057efe1c3f8bdbbaf7b0179f5a12bc9ee83c770f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00869-of-03388.parquet",
+      "issues": [],
+      "bytes": 85682946,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5a4c648860fdf76f70b0a36d79a84376395ee91a985d200d8910510020acdf91",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00880-of-03388.parquet",
+      "issues": [],
+      "bytes": 97274737,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "907d1cd445ef9029f9c1a24c9e8be409262c619c25e135b71614a670249df33f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00891-of-03388.parquet",
+      "issues": [],
+      "bytes": 106341587,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5072b5b8e40ac511594576ff72f5bbd697b1e22f1c91beaee3fa1c96b0276815",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00902-of-03388.parquet",
+      "issues": [],
+      "bytes": 109077648,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "8952afcf8a8f15ac29b435d15060427905133ac455d8d0431645bf814377f0a7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00913-of-03388.parquet",
+      "issues": [],
+      "bytes": 108608487,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9198d3922fa089060c3e2a5b7259e87d0f15246ddaf30ea297042f2e083142b3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00924-of-03388.parquet",
+      "issues": [],
+      "bytes": 102134718,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7af9d79885165be3a254ae377f5c1db1afe794156e1f2538dfc0f2ce2704e8f9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00935-of-03388.parquet",
+      "issues": [],
+      "bytes": 101811008,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ecf5e1a95807075055fa5a850ca8817c6b431f0ab63725e8dc89c00a076cc4a0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00946-of-03388.parquet",
+      "issues": [],
+      "bytes": 102251816,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "cd082bc08cd5ee7fd70ded86fb30ec7df88f48c7a7b61bda7839d72b92e6cf6f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00957-of-03388.parquet",
+      "issues": [],
+      "bytes": 98387296,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "2574a528bb27ffc696ccf827a34d8fc382727191bca24cc9c96bb7ffbe85eddf",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00968-of-03388.parquet",
+      "issues": [],
+      "bytes": 95437797,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "512c8e2181d15e8a169fb8f6df32667c4a090ade99482fe97f179f5a1dcf875d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00979-of-03388.parquet",
+      "issues": [],
+      "bytes": 99024469,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5531ff5dd1fd1dd46d14134fea6a7893e61d9201b9ba13a3239bafffe371134e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-00990-of-03388.parquet",
+      "issues": [],
+      "bytes": 90733805,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1099c77fa4be5a4f6d0acad2c530ac2ff81842e785bf51c78676decc6c12fa55",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01001-of-03388.parquet",
+      "issues": [],
+      "bytes": 111354960,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ed2b6aff578901c8ff15bf39b72cbc918b40226350b0acf91cd79c1131711045",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01012-of-03388.parquet",
+      "issues": [],
+      "bytes": 113523742,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f787e0ff73f285e4c6944392ded7a7e8e58d8fc4f2d5acb5c9a0aa4d9a425d99",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01023-of-03388.parquet",
+      "issues": [],
+      "bytes": 99830746,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4d72a9a1b183cf39a54fa5a0f90a1b52c87b3f81aab8825e131d31c82af54e95",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01034-of-03388.parquet",
+      "issues": [],
+      "bytes": 104142859,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "112dc11c1c115b90f3c6127146b7cbb1840f23e97543adc18717160dd5d49fce",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01045-of-03388.parquet",
+      "issues": [],
+      "bytes": 110332036,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4ebabc2cb70a49a99e815a1ef68cae75cfe762b6d9d317170bdd9ff2d8deb838",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01056-of-03388.parquet",
+      "issues": [],
+      "bytes": 97554879,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4d26d43e931149c928f0c1ac90eb97d80f7109d74f07e994f25e2e4adbe8792c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01067-of-03388.parquet",
+      "issues": [],
+      "bytes": 94092563,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "827e0538463083d6dd9106a56d2b44554b65030d3c0968ef43a855092349fdeb",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01078-of-03388.parquet",
+      "issues": [],
+      "bytes": 108100142,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "65ff703e2d4c9468c224ffe2f22c21c20b38c296c10c5c9d3efd53385bb5c895",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01089-of-03388.parquet",
+      "issues": [],
+      "bytes": 100965743,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "67c0d79d70a252a130afea8517cea1fc82581279d4ca5386d48e938389052da2",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01100-of-03388.parquet",
+      "issues": [],
+      "bytes": 93113676,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f6dacb219ae1d0d9884fe4665de4bd587d49c7a6807e0f7c4c428dcaef8f5854",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01111-of-03388.parquet",
+      "issues": [],
+      "bytes": 95760251,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "32cc94d5e27c6fabf1e9f9a05fc8746e0e3fe26daaef785e30ebbf4458fbb33d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01122-of-03388.parquet",
+      "issues": [],
+      "bytes": 116516781,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "76031d5afd17dc071b2527fb342d9c149d3f80473093b5cd1db70d369e185745",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01133-of-03388.parquet",
+      "issues": [],
+      "bytes": 89460165,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4ce126cb28b65939f5fa302597a243e10aa5b50865979be7ff6627dede0b520c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01144-of-03388.parquet",
+      "issues": [],
+      "bytes": 88947690,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "82b33dd0c454c4de6f953c4e2a022fb1aba05ce49eb2a0707f916dd79ed49379",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01155-of-03388.parquet",
+      "issues": [],
+      "bytes": 97445775,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5ccdf4ebf5f81d9fa8419f6b05635a3ae97a7495bc21463485b065b47b48b62e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01166-of-03388.parquet",
+      "issues": [],
+      "bytes": 93353128,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0de290d2a34d56cb614231f031c0467a6d14247f86d1f6ce1b189c4a69f992e1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01177-of-03388.parquet",
+      "issues": [],
+      "bytes": 91083117,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "09ee194816149ac8e96cb39e29568660785e3b4e8029fa1e16ed45fa6d4d1283",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01188-of-03388.parquet",
+      "issues": [],
+      "bytes": 95091179,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ca0a3df35358d0a6e07e0b142de6f193dfaa37f456aa1b7d1a2304faf286d05f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01199-of-03388.parquet",
+      "issues": [],
+      "bytes": 93088162,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "19c390db3625eee9c336f0b386e708bd576d3011fa1300338eeb43e5e2c87fec",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01210-of-03388.parquet",
+      "issues": [],
+      "bytes": 87266658,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "84c9a85509b810b838513fd3ee41989cc342db213c0f0cc8eafcba5384bcdc27",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01221-of-03388.parquet",
+      "issues": [],
+      "bytes": 84569946,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a7a4210db2678b014ffe7645b152fbd827c827b000f98277a81fad2548a1bfb3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01232-of-03388.parquet",
+      "issues": [],
+      "bytes": 87722250,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "dd9b5384f55b8bddcf1f05a7fdb5bbbdc5a597c71d608cfe211095bcf757c687",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01243-of-03388.parquet",
+      "issues": [],
+      "bytes": 88775218,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "754b45994ae334d21024245e3710bf6163e43ba3ca15a62454109e074b955e29",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01254-of-03388.parquet",
+      "issues": [],
+      "bytes": 89047179,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "06a67b9addd61be40f49d30c8fdb35af18fdebf4951f3411920e519dbbf561e7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01265-of-03388.parquet",
+      "issues": [],
+      "bytes": 93521159,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "390227d20bd13d92af5ac598756d2d233e8c73accedd7e0b152ea70368358218",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01276-of-03388.parquet",
+      "issues": [],
+      "bytes": 95046283,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "43f99d507acb2029cdacd6051ef7856dbf705d02ded85217187053b8235858fc",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01287-of-03388.parquet",
+      "issues": [],
+      "bytes": 93031286,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "acb3f3b2fa403f0af4c9b9dac50745a6d37e342a265577ee758fc12bd9bc7d7a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01298-of-03388.parquet",
+      "issues": [],
+      "bytes": 93036662,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "895b3d339c48895601ff2964a784950a4c5f304addd5e6922f3d3f132661b24a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01309-of-03388.parquet",
+      "issues": [],
+      "bytes": 97303958,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b51c0c75c6b3780d8a3fb89f7e54fd0511791792326249bc7c337362db01f2dd",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01320-of-03388.parquet",
+      "issues": [],
+      "bytes": 95963035,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "93c840e64bdc1178655db68769146ac046a59e1d93481568693900afcb947815",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01331-of-03388.parquet",
+      "issues": [],
+      "bytes": 113229138,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e10b5aaf38186849924b651b127dc43679ace7553635448efc8a8aeed156a3be",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01342-of-03388.parquet",
+      "issues": [],
+      "bytes": 89751220,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "65595f498c59cb18fd3722ff1e32b7a1f8b9b66c3d2a0f15d441dd1354e23197",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01353-of-03388.parquet",
+      "issues": [],
+      "bytes": 88256473,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0d74cc321fe5dee5c71e8bb3d4955dc48c1dd3d27d7cf99a061d5e9359434fba",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01364-of-03388.parquet",
+      "issues": [],
+      "bytes": 97892775,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "68191ee65b6079da5abcb870b8cc731a9ebe44d21bc5446316157b39277211d8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01375-of-03388.parquet",
+      "issues": [],
+      "bytes": 125848542,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "51fde9d527bb58c1b18c7e02af8845f8a5ac2baf480b0e48b7147b0c717fb0b8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01386-of-03388.parquet",
+      "issues": [],
+      "bytes": 95110098,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "cc00969b5d9fd989949744f8247b9119377d056ba5ab5c24c72dc81b5302fda6",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01397-of-03388.parquet",
+      "issues": [],
+      "bytes": 92067689,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e9159cc601a872da4753748b59e4a1ebbfc6565dbcd119e0c653a60d718c4090",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01408-of-03388.parquet",
+      "issues": [],
+      "bytes": 98859519,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "37f4438e8ceb788631053dec024eaf733c256e147053c8fa4e30309972960ded",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01419-of-03388.parquet",
+      "issues": [],
+      "bytes": 97157206,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "85c9b0b31583713b9a226be8c6e7f4480a6418182b4d93b1799fbfa8ceb28304",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01430-of-03388.parquet",
+      "issues": [],
+      "bytes": 88123050,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "31df0d9a6574be48e4869b91f7f9f6cd993f4ad67909c88a70547b063bed570c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01441-of-03388.parquet",
+      "issues": [],
+      "bytes": 98634025,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e1fccfd0167cffbd93451985f53b392101e0a1617a26067a967098b11cec4993",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01452-of-03388.parquet",
+      "issues": [],
+      "bytes": 96763608,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d724797a99220ff90166619551556d2566f6aed3a4b3c9f89e0ee254c9a5748b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01463-of-03388.parquet",
+      "issues": [],
+      "bytes": 97853960,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "25354957f63442014700ac4a30284c6f63433f76ca816e6b4b7a55fb502a9ba2",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01474-of-03388.parquet",
+      "issues": [],
+      "bytes": 97588882,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "346fc692a39bf3b71ec1ade28c47fdf06cbb44c80ce2b3857fd8549e4317b8ff",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01485-of-03388.parquet",
+      "issues": [],
+      "bytes": 93434525,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c8760d7a03b08d4df89f029601cf9c48b64b6101dc2d1e26e42f4ec39c046f5d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01496-of-03388.parquet",
+      "issues": [],
+      "bytes": 109015981,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "15ce0fdb83c8a813b2716faed2d8a02ee7c304d2f73e203c306a12aa9fc10ffb",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01507-of-03388.parquet",
+      "issues": [],
+      "bytes": 82219054,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "52d2f2cb18248d9cc4f44e2d247c3b49667c504bff4772672d1583a75f4248e9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01518-of-03388.parquet",
+      "issues": [],
+      "bytes": 96591242,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "36f16bc84b4e1b3763159a4cc8709c686dcde0ec10e18e540d89a1ab02ee35ec",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01529-of-03388.parquet",
+      "issues": [],
+      "bytes": 100806544,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "29691ae1827aa71cc4774aa3316ba4852e99bffbda15e31c596db1d75e81bbd8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01540-of-03388.parquet",
+      "issues": [],
+      "bytes": 107065414,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "694f09761c251220a5124b2a9ddad1179e7861e9149ebb38f4751e5df39f51cb",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01551-of-03388.parquet",
+      "issues": [],
+      "bytes": 91977276,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "253d0a65e376ae7faa641c3dc4ae8ac6d5b54df8cd1881512e26cfa6b3220afd",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01562-of-03388.parquet",
+      "issues": [],
+      "bytes": 101829432,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "24d263afaaf86d335ea9ce7a01f74b7c047bba2328bc69f3ca361af18e4ec5db",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01573-of-03388.parquet",
+      "issues": [],
+      "bytes": 95341386,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f8acb4db68490209ae80c875b2ced28726b0427cc17deb59d4209adfbd58d13d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01584-of-03388.parquet",
+      "issues": [],
+      "bytes": 93316546,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "89f0558815ed54d96a5ecca09a59b2234015d8ceaff355f1ec737abd80fd54e9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01595-of-03388.parquet",
+      "issues": [],
+      "bytes": 98340411,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1c1095299531c246e9b35958779a4a9bc43f0b13189fe4eed088e6671727972a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01606-of-03388.parquet",
+      "issues": [],
+      "bytes": 86222959,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3c84172bcfd479444a897b9a950c341e30a7ca57a5c46d5fef9ff877a4770085",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01617-of-03388.parquet",
+      "issues": [],
+      "bytes": 88296148,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "325b1ed365c39fc52766c899a91ea51094b050d821204b6192a1be31a605dc0e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01628-of-03388.parquet",
+      "issues": [],
+      "bytes": 104434090,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ba9c52cf55addb41818a232691b98bfd40538343023384b0d38785bf9777aaa5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01639-of-03388.parquet",
+      "issues": [],
+      "bytes": 92926743,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "876c933bfd655d28f185c946158125bf18c31b6eccc2e0c30d3e51a98949f70a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01650-of-03388.parquet",
+      "issues": [],
+      "bytes": 94713659,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a062c66b12b4304a7b24cabe9f0815a01064689e43feb4908e920bc4a363147c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01661-of-03388.parquet",
+      "issues": [],
+      "bytes": 89571583,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f935c31e237e1adcf83bdac06d5dfe14e16d848331f77e8e56c60e9ecdf5da0c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01672-of-03388.parquet",
+      "issues": [],
+      "bytes": 90136019,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b4ae8befdbb3a23f5e3a8ae0c2d7c573c2aa290b1d5e522ab14bcf1f0919ef02",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01683-of-03388.parquet",
+      "issues": [],
+      "bytes": 95831734,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a97a5e46e288ea6593351dc1354502360c2eb68acb6443d20bb7a6418b0f6001",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01694-of-03388.parquet",
+      "issues": [],
+      "bytes": 91962218,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "75f97dbdb7d043e970b77da9beb2896eac36d4fb4f0b66e4aaa8dd995c616f07",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01705-of-03388.parquet",
+      "issues": [],
+      "bytes": 91332889,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5198188ace5c4b673d92cf6497c916acb251a8bd84ab24f272b0d3b6554c7ee4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01716-of-03388.parquet",
+      "issues": [],
+      "bytes": 88086167,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5d98738a6fea3f0530bfbce5edbd7958ef917044081d7ebb4bfe969c1b3aeda9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01727-of-03388.parquet",
+      "issues": [],
+      "bytes": 98240105,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "661e42fc56f733de13148a8c3d6894ebd9d980025e2c5bdc8126682c74e24fe5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01738-of-03388.parquet",
+      "issues": [],
+      "bytes": 95883216,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d06bad03b3e89d62e79b16af34e77a110bde773acd64292b196e374d6f45207c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01749-of-03388.parquet",
+      "issues": [],
+      "bytes": 90605915,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "be59f36f0213d2a264c4de50eeb51b58c6d198ef9fb92c7cbe4a065bf7236400",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01760-of-03388.parquet",
+      "issues": [],
+      "bytes": 91355864,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "32882b7c01373f7a4427e286b177a12af1715045ff1fa4fd8e3c0729da6554ad",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01771-of-03388.parquet",
+      "issues": [],
+      "bytes": 94378544,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b2264c2ea5c552a81b4a89d7acdfda9ffae785ed21bdd87593816e3b00920677",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01782-of-03388.parquet",
+      "issues": [],
+      "bytes": 96641855,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "83ce771bad15be08cb3af3ea136356591153edb518bf4993cea91c0585f0d980",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01793-of-03388.parquet",
+      "issues": [],
+      "bytes": 100597472,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "940af9a7b32e16ded254f96b786546c97c3c3f3bda8b3e89bc412a161052b7cb",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01804-of-03388.parquet",
+      "issues": [],
+      "bytes": 105720658,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "dc2da787d792350227a30259a1b8fb072e54a98deb1a9801e139c18cd7c3e034",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01815-of-03388.parquet",
+      "issues": [],
+      "bytes": 98398123,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e38f21a63a9b7c3405eb427d90d6f0813e88522bd62861c8da52d2311fb5a833",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01826-of-03388.parquet",
+      "issues": [],
+      "bytes": 88381420,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "fe17103cceed943e3d3e158b0c3a9ab89f85ea2c790252c357e1af51d8d83854",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01837-of-03388.parquet",
+      "issues": [],
+      "bytes": 91609205,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c8db02ff97f54fd76f9c7899b844a022ccaa97bb424c30c47675afcab639736c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01848-of-03388.parquet",
+      "issues": [],
+      "bytes": 95491397,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "66be04121c1b88612e026779bf932462e3225303a1f8509fb1bff03750e973d1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01859-of-03388.parquet",
+      "issues": [],
+      "bytes": 89967371,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "fb93c5629499f08506640f8e6f495b9c853ab2660e4e2ae844d24c0b9d7d1d8e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01870-of-03388.parquet",
+      "issues": [],
+      "bytes": 99743152,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3f5390765e6ce055a35bb540df3e040db37147ba09e431049702bfba56d63910",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01881-of-03388.parquet",
+      "issues": [],
+      "bytes": 89884540,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9e490e1e10b20d8749c4071145c0fa96aa96cedd06a8cbd8805699f7159f01c8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01892-of-03388.parquet",
+      "issues": [],
+      "bytes": 80244454,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f24ac50f34f4b2cb3e50f14ba0e77c721ec2c40399d6ab856c0919d3b4066e3c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01903-of-03388.parquet",
+      "issues": [],
+      "bytes": 75064825,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0cd7c34535c19e6e8456fbdb6b23508f11b9d6bf96738a69a39146a3a3b914c0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01914-of-03388.parquet",
+      "issues": [],
+      "bytes": 103813343,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "cdce1ff8b6fc9ed692e63dda834d209b1a55585aa1b5a484dd3e8b079bacd4d9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01925-of-03388.parquet",
+      "issues": [],
+      "bytes": 94016692,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1efbff04aa25761c810bd2c3742dae47aea3cdbe2a9ea0b64f7d90249d5cd271",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01936-of-03388.parquet",
+      "issues": [],
+      "bytes": 122384587,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "350a88a7002830750cfcb7d0b6cd28ccee1319ca563dae7716fde94993cb2580",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01947-of-03388.parquet",
+      "issues": [],
+      "bytes": 103265830,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9bc4f4dfdc940779938cee76879a12a9fe3bfb4536e310dface799acd591cad5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01958-of-03388.parquet",
+      "issues": [],
+      "bytes": 100852531,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1651fd4de473330af7ea41c684784ee35d9261d11e37254eaedc22d89d7396ab",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01969-of-03388.parquet",
+      "issues": [],
+      "bytes": 118515019,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d285d1e53b8aae1b92fde74e31a003142be9a2b2c624c46dea7ed5baf8fec7a9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01980-of-03388.parquet",
+      "issues": [],
+      "bytes": 126792585,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1d79222c1ca7f6f2778a9839a9f6cb82d703daa282d31ae8f047890f831b717c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-01991-of-03388.parquet",
+      "issues": [],
+      "bytes": 104742076,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5cb12ff8ef2befd671b27b43828bf854bfe7bb13e7a60b4795118f921cfe94d0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02002-of-03388.parquet",
+      "issues": [],
+      "bytes": 107095434,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7495f5d6d81b1c50c18642fcbaf80e4d1293de71ca0c106db6b40ad18344943a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02013-of-03388.parquet",
+      "issues": [],
+      "bytes": 115343590,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f7b411441aab2ca2e452ff30b0866c1b013e1c151ee440012fd1659ffebf9e9f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02024-of-03388.parquet",
+      "issues": [],
+      "bytes": 103454870,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "652864ba1f8977a365980a8fe15c1775bd6082b99522c631272fa4dd077c45d4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02035-of-03388.parquet",
+      "issues": [],
+      "bytes": 101946117,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7fd0d071facdbdfc92bbe69e079205f1f3879417fa5ae1dc1ed42bc65e2ce65d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02046-of-03388.parquet",
+      "issues": [],
+      "bytes": 101649952,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "806836a1390114ded1516ea4983a6ad8b8ec1d0dba82a6c9f2b7ac5837904e6f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02057-of-03388.parquet",
+      "issues": [],
+      "bytes": 103041119,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "8805d0b903a40801082acabe0d8a747363190039bb5e3d9349014e353ffdb9da",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02068-of-03388.parquet",
+      "issues": [],
+      "bytes": 102093939,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a8c7f17f6933803cdc2b18cd6171b1602e5673e30cdaccbbe5d58bb970c54e1c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02079-of-03388.parquet",
+      "issues": [],
+      "bytes": 103294407,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9612f8cbcfbdd98a76c8b413670c9b7e10651f64cbd804732fcb8c0307812a91",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02090-of-03388.parquet",
+      "issues": [],
+      "bytes": 106292452,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5440d5c3a9b4f003385442f0c77b9f74e79a78ef23fddec4abdd25a3233f4da7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02101-of-03388.parquet",
+      "issues": [],
+      "bytes": 109981522,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c5e8f7f1ec5099156cf2cc1ac18516d0155701ff29ca96ac882e4b407b8a5ba0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02112-of-03388.parquet",
+      "issues": [],
+      "bytes": 103503315,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5dec6b8254969b69a7f4e79f7b76af95cd4c9e2ba37703966444aba3d7b0e0fe",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02123-of-03388.parquet",
+      "issues": [],
+      "bytes": 102701772,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a52b5c479abde5df645ae21a9f4f352e0a4c9ca53f22c889b8586044143a7de8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02134-of-03388.parquet",
+      "issues": [],
+      "bytes": 107799630,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "461ca51f50b8b5f3398525d7223cc326865f4550b57bb709104619562e9343b0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02145-of-03388.parquet",
+      "issues": [],
+      "bytes": 107556831,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c97ade91118fe479087210ac585472e8b768bce8b3c26682d9e22280e5dd4456",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02156-of-03388.parquet",
+      "issues": [],
+      "bytes": 106293208,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "65ac26ed5ccaa46e3b6642c92a8a8a8ba8565bb7ad44f5c0238b7eb125e86e6f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02167-of-03388.parquet",
+      "issues": [],
+      "bytes": 105328640,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "45ab3b178a2133ef3b84dc7a2fdda8c0094c56160b6aad4dbffd97d28750f1d3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02178-of-03388.parquet",
+      "issues": [],
+      "bytes": 93588797,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1c471ad01f2ab81c704345c45abc485323d8e07917421eb64d692e5dfc512749",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02189-of-03388.parquet",
+      "issues": [],
+      "bytes": 92056834,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7fddff1e55e3f8a20a2d5c8469c462dac61715c7ca0bc6b481403e639476e0a7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02200-of-03388.parquet",
+      "issues": [],
+      "bytes": 99088880,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "acd4b59ff8b5ce708891d67c2f1ed8dd6d6f8430ba51cc4327ffbc8d4be2b0b3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02211-of-03388.parquet",
+      "issues": [],
+      "bytes": 104140468,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3a9480423bbbec12b4bec9f8b9200f112e05cb2a2c4eaf56cbaa470c18993bab",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02222-of-03388.parquet",
+      "issues": [],
+      "bytes": 94429930,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0c783ede4434162c5ac0357942d3472ee53fd8583bddd6316055ca396cb87f67",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02233-of-03388.parquet",
+      "issues": [],
+      "bytes": 103486421,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "091c4126fde2e1e7954422690382a5070670c1ea2d0561dc21e62d9ab4a3dca8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02244-of-03388.parquet",
+      "issues": [],
+      "bytes": 84459006,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c89148a45506b22d927c296b3754d5e1f97bbdc76565c05f1919076982398faa",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02255-of-03388.parquet",
+      "issues": [],
+      "bytes": 123253901,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "2d6d286afb365840dc947e2a70984ceecd61804a47f690c86534e6f9d0e46acb",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02266-of-03388.parquet",
+      "issues": [],
+      "bytes": 103908568,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "624305ef85dec7eb7536e08bdd7093f3479377936865be34fe2979cd361bbc77",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02277-of-03388.parquet",
+      "issues": [],
+      "bytes": 107307941,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4d07926350b2c63b2ddbc29c4827824b629eb2e5e7b86d824b757e507b469bb9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02288-of-03388.parquet",
+      "issues": [],
+      "bytes": 95680737,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "02e28b947bc1aa65c216dd0be1d5b8d7448f493ddbf736b28b71263fc38cb879",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02299-of-03388.parquet",
+      "issues": [],
+      "bytes": 94769786,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "04b96206c67ce216bc287519ae1400c9f899715e8fd80b3eefb5b7d19bbfb276",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02310-of-03388.parquet",
+      "issues": [],
+      "bytes": 92741817,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "80282bdca98c23225507d4d538c09d2072a099d99a36474733da6bd9f2f47c61",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02321-of-03388.parquet",
+      "issues": [],
+      "bytes": 86632032,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ed35d9ec82b83b2b10cbf5ff2643c6c083869777313f9ab6df0ca66a415973e7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02332-of-03388.parquet",
+      "issues": [],
+      "bytes": 110396872,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "fdd90e8bd74dddb50b6fe023640bd49b3b21e9a0598f868576436e28a1f165a5",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02343-of-03388.parquet",
+      "issues": [],
+      "bytes": 88093082,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f5a7e807157a3bf7c46d437a5b580805a7e989b2426830516b3b44568d722949",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02354-of-03388.parquet",
+      "issues": [],
+      "bytes": 104406977,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "02a817ae2fa702837baca2c087ef61d1aedbc28093e6671cff8c645e8374ddc4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02365-of-03388.parquet",
+      "issues": [],
+      "bytes": 101913525,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0bb4fd49e059bee185810f33908c7e3bc3ae49bfcb966f10428468a4309e8d04",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02376-of-03388.parquet",
+      "issues": [],
+      "bytes": 103902455,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0c7c1f093c62710f0defed39af07739056f16bb81bdec78b6071a50c17891aa8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02387-of-03388.parquet",
+      "issues": [],
+      "bytes": 100932373,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ecfb580934cbb19742b54192dabbf1e4e5ef317164e768637fdd281af8bd2f95",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02398-of-03388.parquet",
+      "issues": [],
+      "bytes": 92869505,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "75de41ee0c9be6640f06d9d277dbb2200b7459a1a1d5c7d549deb8b394488f98",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02409-of-03388.parquet",
+      "issues": [],
+      "bytes": 97279209,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3f299089150dc03eedd78656789a0a52dc1bb8027f77a3db4cbc97f2d01d0a62",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02420-of-03388.parquet",
+      "issues": [],
+      "bytes": 96036123,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c42755472729c48c456b9f6a0c78e1c3b275d29e67e5a6a281ef8978bc47c65f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02431-of-03388.parquet",
+      "issues": [],
+      "bytes": 92316289,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "45d41cbcf5965c471962f8ed11f395be041c26bb7274bdda65def4a5b439a26d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02442-of-03388.parquet",
+      "issues": [],
+      "bytes": 101983585,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "eee34be0eca43db712607c5985a1a3e25d6c2634bd9baec7571930b9ae684a18",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02453-of-03388.parquet",
+      "issues": [],
+      "bytes": 92082756,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "87acacb0979557d7a9440db9e8e5c1e64a46c40be3ea7a745561ed3c8127e80d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02464-of-03388.parquet",
+      "issues": [],
+      "bytes": 97204745,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0146073d4f4bf5771149a08c4c5d11df8e1c9697fdf49ea6e170977d6586086d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02475-of-03388.parquet",
+      "issues": [],
+      "bytes": 116497748,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a1aa385d33f54a48ecefd8554415fbb7c8924375c2527b419cfc6e19e7a86581",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02486-of-03388.parquet",
+      "issues": [],
+      "bytes": 95907451,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "37f754b504806aabff31a090b74edd592abd44234c9a1946ac4765335bce37a3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02497-of-03388.parquet",
+      "issues": [],
+      "bytes": 94740252,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a7c94e4b1645886a9d9fb28c87228d553d960ce9480ea38b5e30db94b48534df",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02508-of-03388.parquet",
+      "issues": [],
+      "bytes": 99766472,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "37cfc3bfc8a78ec04594281da7b5bb0aeea72aeee7ba4e573fec5250f71e6498",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02519-of-03388.parquet",
+      "issues": [],
+      "bytes": 98435507,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "68ae5bfc0baee6e74851d86b2b5819b076cbe0c5d2f0078b0ed55b8d616d59bb",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02530-of-03388.parquet",
+      "issues": [],
+      "bytes": 109384256,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3df3e57510c431e7198e4e5cb6e0a19348290c660684074e2ca77ba875ceba54",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02541-of-03388.parquet",
+      "issues": [],
+      "bytes": 100095830,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ccec2992abb60dae4841f00bf1b1e1d5e14d3d4bd3512ed4bc79203701ec5fc1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02552-of-03388.parquet",
+      "issues": [],
+      "bytes": 99201376,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e8d314e50e410222511248fc651d92825c6ef4e9b13c55a5fc1c64a96323be9a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02563-of-03388.parquet",
+      "issues": [],
+      "bytes": 85435237,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b0f95f64c86afc8ba76e0725454424affbc797df65878d658dacb28937c02f28",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02574-of-03388.parquet",
+      "issues": [],
+      "bytes": 100062251,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1063ad4dc3df1f33875ff20a02e6f013f1768ff363fa6b3c03cd90670710ea16",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02585-of-03388.parquet",
+      "issues": [],
+      "bytes": 88093816,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "30f8364c2476a81826bae725aa55f1299994d6c595ba30bcfc972a33deee79c6",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02596-of-03388.parquet",
+      "issues": [],
+      "bytes": 103541787,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b2beb3c63ef28b4a6c2989f778b46e56f3b06a979cb5776aa4950bd56c3b70b4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02607-of-03388.parquet",
+      "issues": [],
+      "bytes": 105872971,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b572fb7198bb831810148d5e81f2a1d2264aed2b3d111e13970062b3135177fe",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02618-of-03388.parquet",
+      "issues": [],
+      "bytes": 102972059,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f166b3b6ebc3fdec20b9b7724aa4bdd669f6837d1f11534adef143134a812266",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02629-of-03388.parquet",
+      "issues": [],
+      "bytes": 111665081,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "111ed62c218472e1d781a341d6a41cf08876e93c4fb8b75b60953cd8ea5e0329",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02640-of-03388.parquet",
+      "issues": [],
+      "bytes": 96630358,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "76b87822f3cfe944f43eec961b65297f3364fb7d03dfab437fac575060fd365a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02651-of-03388.parquet",
+      "issues": [],
+      "bytes": 114705924,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "77d497d40e0c2b58c7cb5d0d45d2b72a61283fd2bfdf2472d2683943fa74b2db",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02662-of-03388.parquet",
+      "issues": [],
+      "bytes": 81742712,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "de6cfa65f8b789746cee50e0bb36631b0a04858a18a3c049de5bce3be8c816f4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02673-of-03388.parquet",
+      "issues": [],
+      "bytes": 104115942,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e3b8d4664869df84a437921d9da78778d1e47f0a7db5467b02a42e912756a6d7",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02684-of-03388.parquet",
+      "issues": [],
+      "bytes": 94329462,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "eeee63165718918d1aca4858720bc8f7e88d5571625f180e956004115afd92db",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02695-of-03388.parquet",
+      "issues": [],
+      "bytes": 111649403,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c6d0b037f53384d7c93c7714490388ffe4b5f82b7a31566306de86a9f02a3265",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02706-of-03388.parquet",
+      "issues": [],
+      "bytes": 97429863,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a164dd95c44665e6f4ffa5c91eeb35576c6c827406e8c7e3b91a43eb2cd0ff93",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02717-of-03388.parquet",
+      "issues": [],
+      "bytes": 64843970,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3b765413f37e4ce1be52419849b8fb9064bf325ce49205040970d8b600fe7f1b",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02728-of-03388.parquet",
+      "issues": [],
+      "bytes": 109132623,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "125643b38eff2cf20bcfe338a8e13d13c70904e3a53c60c70523e9563ac838d8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02739-of-03388.parquet",
+      "issues": [],
+      "bytes": 106427577,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9f37789771a41457010fb34e25ed01e848419794c7ff68144d36c8df32626eb4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02750-of-03388.parquet",
+      "issues": [],
+      "bytes": 110752326,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "fe8e079778fd10a122b42c521fa686b5c1206d7a021d8c2ca884e3e0bbf44e54",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02761-of-03388.parquet",
+      "issues": [],
+      "bytes": 111337629,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "61aaab7ef60d7c7e1888cd06a84252494c3c2733ed484406705888faa8d07db1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02772-of-03388.parquet",
+      "issues": [],
+      "bytes": 107005692,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b929339038b7fc9d9c9689a105831aa9d3c472e986bc316dddd3bb5867c4bc78",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02783-of-03388.parquet",
+      "issues": [],
+      "bytes": 94072573,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5bb66e8dc97d72ff7ba28177a6df585912c82e44e2b782dd8d317e983f879a89",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02794-of-03388.parquet",
+      "issues": [],
+      "bytes": 93051489,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "cff033a362b62080e08f054df63ce85ceb6565b9eea68ddfaac2477395503750",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02805-of-03388.parquet",
+      "issues": [],
+      "bytes": 94740369,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "88bb998c966f69ef2f3c1d113e45c2802c509943fd24b607cd1126359107c0a1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02816-of-03388.parquet",
+      "issues": [],
+      "bytes": 105139662,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4c384471094349438a7c682f9810892659f94ad1ee537102f11ccde6cc7c2085",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02827-of-03388.parquet",
+      "issues": [],
+      "bytes": 103601147,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ab53458b3b9b39be633f5797afb15e80897c3544736d6645156a32e985db671d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02838-of-03388.parquet",
+      "issues": [],
+      "bytes": 96405795,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "368bc2a00481b65da2353d02b0266bc39465ce4340551e46f98093084c1a5707",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02849-of-03388.parquet",
+      "issues": [],
+      "bytes": 120045574,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1682270d8a3e2fd149acb579a26e9665bf29114df0ec319279cadc5111d3fac3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02860-of-03388.parquet",
+      "issues": [],
+      "bytes": 103894697,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c2e9a2a9698bc4f9964ba4863d9beef6545287029188ee374b2b449ad2163337",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02871-of-03388.parquet",
+      "issues": [],
+      "bytes": 103186775,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "67bc481bbdd7c0c3e73629b85ee92b5e820780862da5e68fc2e50c86d106dad4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02882-of-03388.parquet",
+      "issues": [],
+      "bytes": 99650122,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "0d52e6125277167603ad5fc5f4c274ce2c30add9a6b4e8587a4aa608ee68396a",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02893-of-03388.parquet",
+      "issues": [],
+      "bytes": 96185577,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "70f34b1dc888d48f05eeda69cc37bbe4f9cb947e3378694927ecbbcfe7196c06",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02904-of-03388.parquet",
+      "issues": [],
+      "bytes": 110693686,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "6acfad56217ec1ff4bd326c28eb2908f690102bb75696118db93e63fa6688d38",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02915-of-03388.parquet",
+      "issues": [],
+      "bytes": 96153691,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d6f317068e9beef87d2f2b3ba811cdafc48ad40f985ab8e384ed52dc2f573cbf",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02926-of-03388.parquet",
+      "issues": [],
+      "bytes": 112217225,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "fa09627606c0f6d305f163774931fdf85ea396fa2b4ac9aef105f24e915de342",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02937-of-03388.parquet",
+      "issues": [],
+      "bytes": 99850569,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "bd0c4b99e72fb111778f6f944d4bcc114d4ebc0aebecd3b20c79fc2eb0cb44f9",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02948-of-03388.parquet",
+      "issues": [],
+      "bytes": 92378458,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "6856c811fb38aff5a22893d343d2fc59d70550c97f3a91fe34da6f932852d21c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02959-of-03388.parquet",
+      "issues": [],
+      "bytes": 97529732,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5a6aa7d2eddc8818ec1a0167155d3007833ade3c79e73ba96b7256ade6519cef",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02970-of-03388.parquet",
+      "issues": [],
+      "bytes": 106917628,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "aed8bc7d9a89cbfbb68205a032e341f1ef6106508a7b4a5d73db1cf0d64ace6e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02981-of-03388.parquet",
+      "issues": [],
+      "bytes": 113852214,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c40ff9da9d14cc9b02b71d5b7b4b6e33446a2bc92cea6a7aae271d497d0ddb14",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-02992-of-03388.parquet",
+      "issues": [],
+      "bytes": 130709524,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "1d857afec5f468803f758d65e1459d9894f1b2a2597baaf1ac49fc37d9301670",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03003-of-03388.parquet",
+      "issues": [],
+      "bytes": 135126070,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7c8a3d38f643a8cdad2a9e00233d7c507bb81aeeff5fa39129074e4856831d70",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03014-of-03388.parquet",
+      "issues": [],
+      "bytes": 105415324,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7665021779bcdfc590c5fc96fe5612404784ff5eb72c27b5bf95627c7ae97d97",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03025-of-03388.parquet",
+      "issues": [],
+      "bytes": 88791544,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a259a014b784d790f3bd7e3a7bdfd2425a262acca5bf77d307e247919037e8c0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03036-of-03388.parquet",
+      "issues": [],
+      "bytes": 106299426,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "734a63783c05638c34a9237b081935f82a9de44182dd352f11ff45fd8da541c4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03047-of-03388.parquet",
+      "issues": [],
+      "bytes": 129485256,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9cf984810420ea9104e22eebd088b9f128fd593272e3d2d83e573f1f3672a9c2",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03058-of-03388.parquet",
+      "issues": [],
+      "bytes": 109854952,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "19fde1b923938a734d7a2afed010f379f42d0bec32dd226c6884bcee8585d040",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03069-of-03388.parquet",
+      "issues": [],
+      "bytes": 105134110,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "65f24c6391813582121defb73489fef1cc966b95827ef0423bb10bcd88f42dfe",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03080-of-03388.parquet",
+      "issues": [],
+      "bytes": 88124557,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "3910ecc0cc073215193e1749d3ba00f6b7dd3c482aa7a6de5473c5a044bfd713",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03091-of-03388.parquet",
+      "issues": [],
+      "bytes": 92455548,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d0a001ccb4c8f07bc206bf9c2bce314c22c4e1ac485463702c754c0df7568973",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03102-of-03388.parquet",
+      "issues": [],
+      "bytes": 93426368,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "ba20657e98c00d6be02fc5ee7d541056aa49104333c0e0656a2945daf53409ae",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03113-of-03388.parquet",
+      "issues": [],
+      "bytes": 110815407,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "4a402f48c4b7b9bc6ba3eb365f9d4e45fd5cff336eb960f80619aeeeaf779539",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03124-of-03388.parquet",
+      "issues": [],
+      "bytes": 96266512,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9ffb205340886d458acc6ac52ccb4a5161955dbb7c9e4e798b7247732d445afc",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03135-of-03388.parquet",
+      "issues": [],
+      "bytes": 124632700,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "178befb1b3b93dce34631a160d2d81fb0e9d6d638fd301e6bcf90bd3477aa700",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03146-of-03388.parquet",
+      "issues": [],
+      "bytes": 109444243,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a00dd6d6640a4c3e77c46861942ae28d922f1ed766acf1f7bf74082449b75bf2",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03157-of-03388.parquet",
+      "issues": [],
+      "bytes": 124039097,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "9972d1f79c5372728dfc1f56e5ed20712845fe3476f1d4001851fb1f8fa7f364",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03168-of-03388.parquet",
+      "issues": [],
+      "bytes": 120369850,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c30465bed59e7c2365fb4f3cb688d3e490bacc6cff1e9972ec5426ceca26da74",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03179-of-03388.parquet",
+      "issues": [],
+      "bytes": 102583457,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "a3b884fb9fef2ee405d8cdf55c6c4ce936e9ae687544fff0be4c8cf293222a66",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03190-of-03388.parquet",
+      "issues": [],
+      "bytes": 114594348,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "47dd0814d659eb5b99f5f13bc952ce4d289892b045a7d0f16f35ba35d9fde2f4",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03201-of-03388.parquet",
+      "issues": [],
+      "bytes": 115903124,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "11a703f41026140e62ef67b6e10e7abbcafb9d5c1446b8705b0a20d8cf75743d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03212-of-03388.parquet",
+      "issues": [],
+      "bytes": 77336442,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "5f1a30e780cabd403745c529b1a377eccb3e059ac47301fe3e9d6c38f442e98f",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03223-of-03388.parquet",
+      "issues": [],
+      "bytes": 95917471,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "c499f62800e3b651266762675b1581c186a8bf61ef4587d4b445bf62cdbe3635",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03234-of-03388.parquet",
+      "issues": [],
+      "bytes": 117495001,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "24ab66676e4916aaa0588f9750f92e4faf651786590352618591fcb14ae5900e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03245-of-03388.parquet",
+      "issues": [],
+      "bytes": 81249193,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "36ea6c677f57f635607dc8f8d3fd3666f1a4826751675e9ede1f667f03b63fd3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03256-of-03388.parquet",
+      "issues": [],
+      "bytes": 96503405,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "f1f8371fdefc5efcadfd2f7c138187f89a66726f996c26e56ec9ddce20291d41",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03267-of-03388.parquet",
+      "issues": [],
+      "bytes": 75142568,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "2ca3ff97a929b86c25a812e3860f01bb0ecd3cfb8e708c8421d160ebf8f3c584",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03278-of-03388.parquet",
+      "issues": [],
+      "bytes": 84606086,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "b62f14b24bd351ee84052aef9dbfba471b4ecad64042560a7d77c74625602ad1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/data/train-03289-of-03388.parquet",
+      "issues": [],
+      "bytes": 78773336,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "531e01997dfbb249ddeeebbea743bbbef73cf7b447ae5b894f169cfcf7dfc8b8",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/metadata/cell_line_metadata.parquet",
+      "issues": [],
+      "bytes": 19040,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "67641f5bdd3fb077978ff1fec4d0d617490674bcd42850515ae3997194c29d4d",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/metadata/drug_metadata.parquet",
+      "issues": [],
+      "bytes": 40475,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "7a04c7a6611e74c92253163b994ff0a47191928ee7511f1c2ca508cee0e79f28",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/metadata/gene_metadata.parquet",
+      "issues": [],
+      "bytes": 1326799,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "d6104d1ca570d94832be0d27ffe8b7e4e54cfd366c9080239219f9c406eb751c",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/metadata/gene_vocabulary.json",
+      "issues": [],
+      "bytes": 1744784,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "71f172b0b9701bf41d9020ab670a4a3279c5da7270d230968e640e2818c11ddf",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/metadata/obs_metadata.parquet",
+      "issues": [],
+      "bytes": 2293981573,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "e51b24f3666f5f433c59ff01dd6fa33934627091455e89d929f2c1ddc87401fe",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "tahoe100m",
+      "file": "data/raw/tahoe100m/metadata/sample_metadata.parquet",
+      "issues": [],
+      "bytes": 65636,
+      "writable": false,
+      "source_path_match": "basename_and_url",
+      "sha256": "33167f0ce28cff8357c503cda67d1c7fea200bff6918ee1de3c4f3549175b9d3",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "vcc_gene_axis",
+      "file": "data/raw/vcc_gene_axis/gene_names.csv",
+      "issues": [],
+      "bytes": 116023,
+      "writable": false,
+      "source_path_match": "relative_path",
+      "sha256": "e29ff3512b4c2440759bfb2a34577049b2f49df786b3e19c2a91b565de47b38e",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_se600m",
+      "file": "models/arc_se600m/config.yaml",
+      "issues": [],
+      "bytes": 4597,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "807d9f741a7b3c1243f361fa5672c92b3d7f775fccf890136cd8bff41618881a",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "arc_se600m",
+      "file": "models/arc_se600m/model.safetensors",
+      "issues": [],
+      "bytes": 2860276816,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "3ebec58bd9e9c07f0a76de25b900dad13d015768fbff1e68e5dcbdfb3b2245de",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "arc_se600m",
+      "file": "models/arc_se600m/se600m_epoch4.safetensors",
+      "issues": [],
+      "bytes": 2818308840,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "9d0cc6fc5aa89ed27c6c2ae336aa304ada4357518e40ad95351388e671d452e1",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "esm2_650m",
+      "file": "models/esm2_650m/config.json",
+      "issues": [],
+      "bytes": 724,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "539095c22efc52a09d6147074ba4ca119f76a890df5901213b2b55f7d2f96b2b",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "esm2_650m",
+      "file": "models/esm2_650m/model.safetensors",
+      "issues": [],
+      "bytes": 2609506392,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "a08adabb949fa67ad3c14b509d04fd60368b35007b0095e3358f81200c4f4db0",
+      "locked_checksum_verified": true
+    },
+    {
+      "source_id": "esm2_650m",
+      "file": "models/esm2_650m/special_tokens_map.json",
+      "issues": [],
+      "bytes": 125,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "3aedcd4211c0d43aec4e607ff60a63255f3174ead795e997350f09a5f8cd9ee1",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "esm2_650m",
+      "file": "models/esm2_650m/tokenizer_config.json",
+      "issues": [],
+      "bytes": 95,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "7e9161ecdb548ec45a41cbc6b24aa4476fdd418461f491c4207baa99419a29ad",
+      "locked_checksum_verified": null
+    },
+    {
+      "source_id": "esm2_650m",
+      "file": "models/esm2_650m/vocab.txt",
+      "issues": [],
+      "bytes": 93,
+      "writable": true,
+      "source_path_match": "relative_path",
+      "sha256": "0b82cc0a7c7cf9e567b1e5892d793285b9fbae822c964ca48696f7db44598e03",
+      "locked_checksum_verified": null
+    }
+  ]
+}

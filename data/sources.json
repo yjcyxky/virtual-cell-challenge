@@ -1,0 +1,585 @@
+{
+  "_comment": "Hand-maintained source registry for the VCC 2026 training corpus. Edit THIS file; run scripts/build_lock.py to expand it into registry.lock.json (per-file URLs, sizes, upstream checksums), then scripts/fetch_data.py to download. Never edit the lock by hand.",
+  "_gene_axis": "All processed data is remapped to the challenge axis: 18,533 genes in the order of gene_names.csv from the official controls bundle.",
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "arc_vcc2025_h1",
+      "tier": "a",
+      "title": "Virtual Cell Challenge 2025 dataset (H1 hESC, CRISPRi, 10x Flex)",
+      "citation": "Arc Institute, Virtual Cell Challenge 2025. Cell 188 (2025).",
+      "license": "CC-BY-4.0 (Arc Virtual Cell Atlas)",
+      "why": "Only public corpus sharing this year's chemistry (10x Flex), CRISPRi modality and high-knockdown target selection. Highest per-byte value.",
+      "caveat": "Median depth ~53k UMI/cell vs 20k in the 2026 evaluation - must be downsampled before use in mock rounds.",
+      "kind": "gcs_public",
+      "bucket": "arc-institute-virtual-cell-atlas",
+      "objects": [
+        "virtual-cell-challenge/2025/train/adata_Training.h5ad",
+        "virtual-cell-challenge/2025/train/pert_counts_Training.csv",
+        "virtual-cell-challenge/2025/validation/adata_Validation.h5ad",
+        "virtual-cell-challenge/2025/validation/pert_counts_Validation.csv",
+        "virtual-cell-challenge/2025/test/adata_Test.h5ad",
+        "virtual-cell-challenge/2025/test/pert_counts_Test.csv"
+      ]
+    },
+    {
+      "id": "scperturb",
+      "tier": "a",
+      "title": "scPerturb: harmonized single-cell perturbation datasets (RNA)",
+      "citation": "Peidli et al., Nature Methods 21 (2024) 531-540.",
+      "license": "CC-BY-4.0",
+      "why": "54 datasets already harmonized at the metadata level (uniform obs keys, perturbation and control labelling). One download yields 15-20 distinct cell contexts - the single largest source of cross-context signal available.",
+      "caveat": "Harmonization stops at metadata: the gene axis still has to be remapped. Overlaps replogle2022 and nadig2025 by design; keep both and pick per-task.",
+      "kind": "zenodo",
+      "record": "13350497",
+      "include": [
+        "*.h5ad"
+      ]
+    },
+    {
+      "id": "replogle2022",
+      "tier": "b",
+      "title": "Genome-scale Perturb-seq (CRISPRi) in K562 and RPE1",
+      "citation": "Replogle et al., Cell 185 (2022) 2559-2575.",
+      "license": "CC-BY-4.0",
+      "why": "The reference genome-wide CRISPRi corpus, >2.5M cells. The *_raw_bulk files are per-perturbation pseudobulk at 1/175th the size - use those for stage-B modelling and pull single-cell only for sampler calibration.",
+      "caveat": "Only raw (not normalized) variants are fetched; scoring and training both run in counts space.",
+      "kind": "figshare",
+      "article": "20029387",
+      "include_names": [
+        "K562_gwps_raw_bulk_01.h5ad",
+        "K562_essential_raw_bulk_01.h5ad",
+        "rpe1_raw_bulk_01.h5ad",
+        "K562_essential_raw_singlecell_01.h5ad",
+        "rpe1_raw_singlecell_01.h5ad",
+        "K562_gwps_raw_singlecell_01.h5ad"
+      ]
+    },
+    {
+      "id": "jiang2025",
+      "tier": "b",
+      "title": "Pathway-signature Perturb-seq across six cancer cell lines under five cytokine contexts",
+      "citation": "Jiang et al., Nature Cell Biology 27 (2025).",
+      "license": "CC-BY-4.0",
+      "why": "Structurally the closest public analogue of the challenge: the same perturbation panel measured across A549, MCF7, HT29, HAP1, BxPC3 and K562. Primary material for leave-one-cell-line-out validation.",
+      "caveat": "Seurat .rds - needs an R conversion pass (scripts/convert_seurat.R) before it joins the corpus.",
+      "kind": "zenodo",
+      "record": "14518762",
+      "include": [
+        "Seurat_object_*.rds",
+        "*genelist.rds",
+        "A_readme.txt"
+      ]
+    },
+    {
+      "id": "nadig2025",
+      "tier": "b",
+      "title": "Single-cell CRISPR screens of DepMap common-essential genes in Jurkat and HepG2",
+      "citation": "Nadig et al., Nature Genetics 57 (2025).",
+      "license": "public (GEO GSE264667)",
+      "why": "Two extra tissue lineages, targeting the same class of high-effect essential genes the challenge panel is drawn from.",
+      "caveat": "scPerturb ships a harmonized copy; this is the untouched upstream version for when raw counts matter.",
+      "kind": "http",
+      "files": [
+        {
+          "name": "GSE264667_hepg2_raw_singlecell_01.h5ad",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE264nnn/GSE264667/suppl/GSE264667_hepg2_raw_singlecell_01.h5ad"
+        },
+        {
+          "name": "GSE264667_jurkat_raw_singlecell_01.h5ad",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE264nnn/GSE264667/suppl/GSE264667_jurkat_raw_singlecell_01.h5ad"
+        }
+      ]
+    },
+    {
+      "id": "mcfaline_figueroa2024",
+      "tier": "b",
+      "title": "sci-Plex-GxE: four genetic and chemical perturbation screens in glioblastoma cells (GSE225775)",
+      "citation": "McFaline-Figueroa et al., Cell Genomics 4(2), 100487 (2024). DOI: 10.1016/j.xgen.2023.100487. GEO: GSE225775. Author code: https://github.com/cole-trapnell-lab/sci-Plex-GxE",
+      "license": "Public GEO deposit; no dataset-specific license statement in the retrieved GEO SOFT metadata. The author code repository has an MIT license, which is not assumed to cover the GEO data.",
+      "why": "Adds glioblastoma cell contexts with genetic perturbations measured across chemical conditions. The complete GEO supplementary deposit preserves counts, cell/gene annotations, guide and hash assignments, and processed Monocle objects for condition-aware training and validation.",
+      "caveat": "All 31 GEO supplementary files from GSM7056148/GSM7056149/GSM7056150/GSM7056151 plus the GEO file list and SOFT metadata are included; SRA sequencing reads are outside this expression-data download. Contains CRISPRi, CRISPRa, drug-only and combined perturbations; preserve cell line, guide, drug, dose and batch labels and select appropriate controls before training. Gzipped coordinate-count/text/RDS files (the four UMI matrices lack a Matrix Market header and dimension line) are original inputs; conversion and gene-axis alignment belong in experiment outputs. GEO does not supply per-file cryptographic checksums in filelist.txt. All 31 payloads are pinned to LFS SHA-256 from the public VirtualCell2025/datasets mirror at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d, with exact sizes cross-checked against GEO. Ten completed payloads came directly from GEO and have identical SHA-256; the other 21 payloads are fetched or resumed from the mirror. origin_url preserves the GEO URL. Local SHA-256 and full gzip CRC checks are recorded.",
+      "kind": "http",
+      "files": [
+        {
+          "name": "GSM7056148_sciPlexGxE_1_UMI.count.matrix.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_UMI.count.matrix.gz",
+          "bytes": 180261589,
+          "checksum": "sha256:4e25e3593661a71b6b2eb0b4fdc4c8e79816c678ce033223c1ed8e8120d6f902",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_UMI.count.matrix.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056148_sciPlexGxE_1_cell.annotations.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_cell.annotations.txt.gz",
+          "bytes": 61764,
+          "checksum": "sha256:3b0c448a9c2155568f413c86535030f576bc27b5ece5d10123908c78b402d069",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_cell.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056148_sciPlexGxE_1_gene.annotations.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_gene.annotations.txt.gz",
+          "bytes": 430161,
+          "checksum": "sha256:54a7545912b56f7a75b339e5d4b1963cce3e34aef0a4299e4541d3c62f1f7d85",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_gene.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056148_sciPlexGxE_1_hashTable.out.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_hashTable.out.txt.gz",
+          "bytes": 4521716,
+          "checksum": "sha256:cc6724808e1e244123e8cc295230278b1edb06399b451eac7f0b3e402091ca8e",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_hashTable.out.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056148_sciPlexGxE_1_hash_sample_sheet.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_hash_sample_sheet.txt.gz",
+          "bytes": 1979,
+          "checksum": "sha256:b6c55e51d4ac21eb71a217f9b3869a0a3fb7ff9fef9956958962365c0057bdff",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_hash_sample_sheet.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056148_sciPlexGxE_1_preprocessed_cds.rds.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_preprocessed_cds.rds.gz",
+          "bytes": 140095456,
+          "checksum": "sha256:21e9cc92da3d44aab27d763f04bfe1e1131b0478c96d9aab43f846a2d7d7e31d",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_preprocessed_cds.rds.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056148_sciPlexGxE_1_sgRNATable_out.rds.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_sgRNATable_out.rds.gz",
+          "bytes": 23622181,
+          "checksum": "sha256:5254e00e14b500e507f6578466530745acc522bbeef0e948a6cf48e087af6681",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_sgRNATable_out.rds.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056148_sciPlexGxE_1_sgRNA_sequences.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_sgRNA_sequences.txt.gz",
+          "bytes": 473,
+          "checksum": "sha256:5d10655084d5b2a3a5de3c8ca54bd53a8699f224c09a316b425af4e6315201f0",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056148/suppl/GSM7056148_sciPlexGxE_1_sgRNA_sequences.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_UMI.count.matrix.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_UMI.count.matrix.gz",
+          "bytes": 6035886428,
+          "checksum": "sha256:a1443d71dc890056bfb804d57bdef19d21942563ff088dcd1fadf08dd52f5359",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_UMI.count.matrix.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_cell.annotations.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_cell.annotations.txt.gz",
+          "bytes": 115324478,
+          "checksum": "sha256:7fffab7b4c323bdda5c21d6a71d499d9fde2748fc98e6150ba2342f3ab660156",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_cell.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_gRNASampleSheet.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_gRNASampleSheet.txt.gz",
+          "bytes": 28449,
+          "checksum": "sha256:39c8aaf26d4327219db844260d178d25b9b4ed0fea74492c3739659349054147",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_gRNASampleSheet.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_gRNATable_reads.out.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_gRNATable_reads.out.txt.gz",
+          "bytes": 656028109,
+          "checksum": "sha256:7fa62a7dd7225b931be064b32557d873a4639759ee5eb27c5907f68835a11ba6",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_gRNATable_reads.out.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_gRNA_sequences.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_gRNA_sequences.txt.gz",
+          "bytes": 28786,
+          "checksum": "sha256:bb285a38bd9669cb12e2637d886bfde5fa566897ff10f87d5d1e629f002fedef",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_gRNA_sequences.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_gene.annotations.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_gene.annotations.txt.gz",
+          "bytes": 430161,
+          "checksum": "sha256:60b62120c4d45fd49f4ef2fe778f969ce23df062c9dbe6af95ac0d8f02eb8938",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_gene.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_hashTable.out.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_hashTable.out.txt.gz",
+          "bytes": 724394500,
+          "checksum": "sha256:04f22eb32e251478e08ecda657e0f68237fba53ce08913c22fae48d36c8b2e21",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_hashTable.out.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_hash_sample_sheet.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_hash_sample_sheet.txt.gz",
+          "bytes": 9213,
+          "checksum": "sha256:9282147247fee2445952099760097ff753a8186a855649a1a4b8d029a520407e",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_hash_sample_sheet.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_hash_whitelist_rep1.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_hash_whitelist_rep1.txt.gz",
+          "bytes": 3145,
+          "checksum": "sha256:8442ff836b9f0cd305338a8f6ee237042e12443059a8ee7a084113c8ede13e4b",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_hash_whitelist_rep1.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_hash_whitelist_rep2.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_hash_whitelist_rep2.txt.gz",
+          "bytes": 2979,
+          "checksum": "sha256:b28365aff9ef675325fe94bfb4bea89978b958b412db4951d41327c5cd6b16db",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_hash_whitelist_rep2.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056149_sciPlexGxE_2_preprocessed_cds.list.RDS.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056149_sciPlexGxE_2_preprocessed_cds.list.RDS.gz",
+          "bytes": 3619987565,
+          "checksum": "sha256:3e5c6755c737dba099c61db637568f81835e8c692f77cba1cb1f62ac4a794207",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056149/suppl/GSM7056149_sciPlexGxE_2_preprocessed_cds.list.RDS.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056150_sciPlex_3_UMI.count.matrix.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056150_sciPlex_3_UMI.count.matrix.gz",
+          "bytes": 265432576,
+          "checksum": "sha256:5682cb683d1b17631be4605bb5efd2d26051e8f0e0d6251b24cfe6680c8c373d",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056150/suppl/GSM7056150_sciPlex_3_UMI.count.matrix.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056150_sciPlex_3_cell.annotations.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056150_sciPlex_3_cell.annotations.txt.gz",
+          "bytes": 538733,
+          "checksum": "sha256:7bd644c569669e3c3d012886d2e1310d0a9ee2660ef890e1bbf697ff26827065",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056150/suppl/GSM7056150_sciPlex_3_cell.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056150_sciPlex_3_gene.annotations.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056150_sciPlex_3_gene.annotations.txt.gz",
+          "bytes": 430158,
+          "checksum": "sha256:e2ebae280a129585cc95cd465d1a17ec0003a2a471f9a647122a400fea0d86f8",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056150/suppl/GSM7056150_sciPlex_3_gene.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056150_sciPlex_3_hashTable.out.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056150_sciPlex_3_hashTable.out.txt.gz",
+          "bytes": 10982366,
+          "checksum": "sha256:7ed402e6d23c08c57602a012f4a4134f92e9d263954610fa665d055bc4770269",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056150/suppl/GSM7056150_sciPlex_3_hashTable.out.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056150_sciPlex_3_hash_sample_sheet.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056150_sciPlex_3_hash_sample_sheet.txt.gz",
+          "bytes": 6691,
+          "checksum": "sha256:3814164c4e38cf09be8505bf0b23d244ab2faa5d57e6e0db8c29d14b346d8631",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056150/suppl/GSM7056150_sciPlex_3_hash_sample_sheet.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056150_sciPlex_3_preprocessed_cds.list.rds.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056150_sciPlex_3_preprocessed_cds.list.rds.gz",
+          "bytes": 143511185,
+          "checksum": "sha256:9d34a54ff506bb6823249968d78f94b1cf1848936dd86ece3a448e5a9b42f306",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056150/suppl/GSM7056150_sciPlex_3_preprocessed_cds.list.rds.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056151_sciPlex_4_UMI.count.matrix.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056151_sciPlex_4_UMI.count.matrix.gz",
+          "bytes": 590579159,
+          "checksum": "sha256:1710e238558182026e0b66e05f1b8d5853fc89f941a9751def32d6dc35147455",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056151/suppl/GSM7056151_sciPlex_4_UMI.count.matrix.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056151_sciPlex_4_cell.annotations.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056151_sciPlex_4_cell.annotations.txt.gz",
+          "bytes": 832570,
+          "checksum": "sha256:5704448d55cca51021586c593921e050dad350c2afc0329f5f7eb6a16edbf5aa",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056151/suppl/GSM7056151_sciPlex_4_cell.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056151_sciPlex_4_gene.annotations.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056151_sciPlex_4_gene.annotations.txt.gz",
+          "bytes": 430158,
+          "checksum": "sha256:cbeed4e110b3593b4d8ec8fb481f66697b730cca0f9d1730cc20d5fe10a05990",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056151/suppl/GSM7056151_sciPlex_4_gene.annotations.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056151_sciPlex_4_hashTable.out.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056151_sciPlex_4_hashTable.out.txt.gz",
+          "bytes": 19793477,
+          "checksum": "sha256:3825a8db558af63a846d72e237bcd1b719b8fd1eaaeec36cc3defcf01767cd5c",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056151/suppl/GSM7056151_sciPlex_4_hashTable.out.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056151_sciPlex_4_hash_sample_sheet.txt.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056151_sciPlex_4_hash_sample_sheet.txt.gz",
+          "bytes": 3335,
+          "checksum": "sha256:ffb4083bcff9e8cb283c89817d7d4e534f753c075b94f5ffa90d8de8dc6fed9c",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056151/suppl/GSM7056151_sciPlex_4_hash_sample_sheet.txt.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "GSM7056151_sciPlex_4_preprocessed_cds.list.rds.gz",
+          "url": "https://huggingface.co/datasets/VirtualCell2025/datasets/resolve/abee070ba0d9066d3d5a7315de3ca4aabe5eca9d/public/GSE225775-sciPlexGxE-McFalineFigueroa_et_al_2024_20250802/data/GSM7056151_sciPlex_4_preprocessed_cds.list.rds.gz",
+          "bytes": 858356130,
+          "checksum": "sha256:24a282cea364af103668cb2e0efc3cebce64c08a22de8d85a1cad687a728ef27",
+          "origin_url": "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7056nnn/GSM7056151/suppl/GSM7056151_sciPlex_4_preprocessed_cds.list.rds.gz",
+          "checksum_source": "Hugging Face VirtualCell2025/datasets at abee070ba0d9066d3d5a7315de3ca4aabe5eca9d (mirror LFS SHA-256; not an NCBI-published checksum)"
+        },
+        {
+          "name": "filelist.txt",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE225nnn/GSE225775/suppl/filelist.txt"
+        },
+        {
+          "name": "GSE225775_family.soft.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE225nnn/GSE225775/soft/GSE225775_family.soft.gz"
+        }
+      ]
+    },
+    {
+      "id": "depmap_24q4",
+      "tier": "c",
+      "title": "DepMap Public 24Q4: CRISPR gene effect, expression, model metadata",
+      "citation": "Broad Institute DepMap, Public 24Q4 (2024).",
+      "license": "CC-BY-4.0",
+      "why": "Two jobs. (1) Lineage-specific essentiality is among the strongest single predictors of response magnitude. (2) Correlating a context's control pseudobulk against the CCLE expression matrix is the practical route to identifying which cell line A/B/C actually are.",
+      "kind": "figshare",
+      "article": "27993248",
+      "include_names": [
+        "CRISPRGeneEffect.csv",
+        "CRISPRGeneDependency.csv",
+        "OmicsExpressionAllGenesTPMLogp1Profile.csv",
+        "Model.csv",
+        "OmicsProfiles.csv"
+      ]
+    },
+    {
+      "id": "networks",
+      "tier": "c",
+      "title": "Prior-knowledge graphs: STRING, Reactome, GO, HGNC",
+      "citation": "STRING v12.0; Reactome; Gene Ontology; HGNC.",
+      "license": "CC-BY-4.0 (STRING, Reactome, GO); HGNC open",
+      "why": "Backbone of the perturbation embedding in stage B: which genes sit in the same complex or pathway is what makes a response transferable. HGNC is also the alias table for remapping every dataset onto the 18,533-gene axis.",
+      "kind": "http",
+      "files": [
+        {
+          "name": "9606.protein.links.v12.0.txt.gz",
+          "url": "https://stringdb-downloads.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz"
+        },
+        {
+          "name": "9606.protein.physical.links.v12.0.txt.gz",
+          "url": "https://stringdb-downloads.org/download/protein.physical.links.v12.0/9606.protein.physical.links.v12.0.txt.gz"
+        },
+        {
+          "name": "9606.protein.info.v12.0.txt.gz",
+          "url": "https://stringdb-downloads.org/download/protein.info.v12.0/9606.protein.info.v12.0.txt.gz"
+        },
+        {
+          "name": "ReactomePathways.gmt.zip",
+          "url": "https://reactome.org/download/current/ReactomePathways.gmt.zip"
+        },
+        {
+          "name": "goa_human.gaf.gz",
+          "url": "https://current.geneontology.org/annotations/goa_human.gaf.gz"
+        },
+        {
+          "name": "hgnc_complete_set.txt",
+          "url": "https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt"
+        }
+      ]
+    },
+    {
+      "id": "tahoe100m",
+      "tier": "d",
+      "title": "Tahoe-100M (subsample): 100M cells, 50 cancer lines, 1100+ drugs",
+      "citation": "Tahoe Therapeutics / Arc Institute, 2025.",
+      "license": "CC-BY-4.0",
+      "why": "Not for genetic-perturbation transfer - for the context encoder. The unperturbed/DMSO arm spans 50 cell lines, which is more distinct basal states than every Perturb-seq dataset combined.",
+      "caveat": "Full release is ~390 GB over 3388 shards. Only obs_metadata plus a shard subsample is fetched; raise n_shards if the context encoder turns out to be data-limited.",
+      "kind": "hf_dataset",
+      "repo": "tahoebio/Tahoe-100M",
+      "patterns": [
+        "metadata/cell_line_metadata.parquet",
+        "metadata/drug_metadata.parquet",
+        "metadata/gene_metadata.parquet",
+        "metadata/sample_metadata.parquet",
+        "metadata/gene_vocabulary.json",
+        "metadata/obs_metadata.parquet"
+      ],
+      "shard_glob": "data/train-{i:05d}-of-03388.parquet",
+      "n_shards": 300,
+      "shard_stride": 11
+    },
+    {
+      "id": "lincs_l1000",
+      "tier": "d",
+      "title": "CMap/LINCS L1000 Phase 1, Level 5 signatures",
+      "citation": "Subramanian et al., Cell 171 (2017) 1437-1452. GEO GSE92742.",
+      "license": "public (GEO)",
+      "why": "473,647 signatures x 12,328 genes across ~70 cell lines, including shRNA and CRISPR knockdown. The largest same-perturbation-across-many-cell-lines matrix in existence, which is exactly the transfer function this challenge asks for.",
+      "caveat": "Luminex bead platform, not scRNA-seq, and most of the 12,328 genes are inferred rather than measured. Treat as a prior over transfer, never as ground truth.",
+      "kind": "http",
+      "files": [
+        {
+          "name": "GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_Level5_COMPZ.MODZ_n473647x12328.gctx.gz"
+        },
+        {
+          "name": "GSE92742_Broad_LINCS_sig_info.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_sig_info.txt.gz"
+        },
+        {
+          "name": "GSE92742_Broad_LINCS_cell_info.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_cell_info.txt.gz"
+        },
+        {
+          "name": "GSE92742_Broad_LINCS_gene_info.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_gene_info.txt.gz"
+        },
+        {
+          "name": "GSE92742_Broad_LINCS_pert_info.txt.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE92nnn/GSE92742/suppl/GSE92742_Broad_LINCS_pert_info.txt.gz"
+        }
+      ]
+    },
+    {
+      "id": "vcc_gene_axis",
+      "tier": "c",
+      "title": "Virtual Cell Challenge canonical gene axis (gene_names.csv)",
+      "citation": "Arc Institute, Virtual Cell Challenge. Cell 188 (2025).",
+      "license": "CC-BY-4.0 (Arc Virtual Cell Atlas)",
+      "why": "The axis every processed matrix is remapped onto. Held as its own id rather than inside arc_vcc2025_h1 because every dataset depends on it, and because arc_vcc2025_h1 is already frozen - a new id adds a directory instead of rewriting a read-only one.",
+      "caveat": "This is the 2025 axis (18,080 genes) and it matches the 2025 H1 h5ad var order byte for byte. The 2026 submission axis is 18,533 genes and ships only inside the authenticated controls bundle (`vcc datasets download controls`), which is not publicly reachable. Measured properties of this axis: 17,412 of 19,297 HGNC protein-coding genes, ~0 pseudogenes and ncRNA, ZERO ribosomal protein genes (no RPL*/RPS*), 11 of 13 MT genes. The missing ribosomal genes are why 10x 3-prime datasets share only ~6.2k genes with it.",
+      "kind": "gcs_public",
+      "bucket": "arc-institute-virtual-cell-atlas",
+      "objects": [
+        "virtual-cell-challenge/2025/gene_names.csv"
+      ]
+    },
+    {
+      "id": "esm2_650m",
+      "tier": "c",
+      "root": "models",
+      "title": "ESM-2 650M protein language model",
+      "citation": "Lin et al., Science 379 (2023) 1123-1130.",
+      "license": "MIT",
+      "why": "Sequence-derived embedding for the target gene, so the model can say something about a knockdown it never saw in training.",
+      "kind": "hf_model",
+      "repo": "facebook/esm2_t33_650M_UR50D",
+      "patterns": [
+        "*.json",
+        "*.txt",
+        "model.safetensors"
+      ]
+    },
+    {
+      "id": "arc_se600m",
+      "tier": "c",
+      "root": "models",
+      "title": "Arc State Embedding model SE-600M",
+      "citation": "Arc Institute, State (2025).",
+      "license": "see repo MODEL_LICENSE",
+      "why": "Arc's own cell embedding, the input representation the STATE transition models expect. Starting point for the STATE fine-tuning line.",
+      "kind": "hf_model",
+      "repo": "arcinstitute/SE-600M",
+      "patterns": [
+        "*.json",
+        "*.yaml",
+        "*.txt",
+        "*.safetensors"
+      ]
+    },
+    {
+      "id": "arc_vcc2026_controls",
+      "tier": "a",
+      "title": "VCC 2026 official validation controls and canonical gene axis (A/B/C)",
+      "citation": "Arc Institute, Virtual Cell Challenge 2026, validation panel vcc2026-val-1.",
+      "license": "Authenticated Challenge data; use under the Challenge portal terms. No public redistribution license assumed.",
+      "why": "Official 18,533-gene axis, 300-target task list and unperturbed profiles of the three validation contexts; required inputs, not perturbation training labels.",
+      "caveat": "Authentication required. This immutable snapshot is validation A/B/C only; final D/E/F or changed upstream content requires a separately registered source. CSV files have headers. Signed URLs are never persisted.",
+      "kind": "vcc_cli",
+      "dataset_id": "controls",
+      "endpoint": "https://virtualcellchallenge.org",
+      "partition": "val",
+      "panel_id": "vcc2026-val-1",
+      "snapshot_version": "vcc2026-val-1-sha256-329a22bc29cac4f4",
+      "restore_command": "micromamba run -n virtual-cell python scripts/fetch_vcc_controls.py",
+      "documentation_url": "https://vcc-cli-wiki.virtualcellchallenge.org/"
+    },
+    {
+      "id": "scbasecount_2026_01_12_human",
+      "tier": "d",
+      "kind": "gcs_snapshot",
+      "title": "scBaseCount 2026-01-12 human metadata-selected subset (GeneFull_Ex50pAS)",
+      "citation": "Youngblut et al., scBaseCount; publication release 2026-01-12.",
+      "license": "CC0 1.0 (Arc Virtual Cell Atlas); retain original study provenance.",
+      "why": "Human cell-state representation data for VCC; complements the public CRISPRi training corpus.",
+      "caveat": "A <=200 GB expression subset, not full scBaseCount. Metadata-reported no-perturbation labels are not proof of homogeneous untreated cells. X is the Unique count matrix; other mapping layers must not be mixed into raw-count training.",
+      "release": "2026-01-12",
+      "organism": "Homo sapiens",
+      "count_feature": "GeneFull_Ex50pAS",
+      "snapshot_version": "2026-01-12-human-19101c93522f44e1",
+      "selection_manifest": "data/selections/scbasecount_2026_01_12_human.json",
+      "selection_manifest_sha256": "19101c93522f44e10761d64143fda4189f526253ad1fd5161977776afa8da821",
+      "selection": {
+        "seed": "scbasecount-vcc-20260918",
+        "expression_budget_bytes": 200000000000,
+        "release": "2026-01-12",
+        "organism": "Homo sapiens",
+        "count_feature": "GeneFull_Ex50pAS",
+        "full_human_files": 35263,
+        "full_human_bytes": 3443076330519,
+        "eligible_files": 4760,
+        "selected_files": 1808,
+        "selected_bytes": 199997832434,
+        "selected_cells_from_metadata": 13255146,
+        "priority_cell_line_files": 221,
+        "tissue_strata_available": 912,
+        "allowed_perturbation_labels": [
+          "control",
+          "no perturbation",
+          "no perturbations",
+          "none",
+          "none indicated",
+          "none reported",
+          "none specified",
+          "not applicable",
+          "not_applicable",
+          "unperturbed",
+          "untreated"
+        ],
+        "min_cells": 500,
+        "cell_prep": "single_cell",
+        "selection_order": "priority cell lines first; then round-robin tissue ontology strata; SHA-256 ordering within strata",
+        "priority_cell_line_regex": "\\b(k562|rpe1|jurkat|hepg2|a549|mcf7|mcf-7|ht29|ht-29|hap1|bxpc3|bxpc-3|h1|h9|hesc|ipsc|ipscs|hela|hek293|hek293t|u2os)\\b",
+        "caveat": "Metadata-based candidates, not verified per-cell untreated controls. Disease/control labels require downstream validation.",
+        "metadata_sha256": "e227fb5e1760b64bd54e04e76677891b935ba2c2cbec980f157ca64990719659",
+        "catalog_sha256": "bf31d168f5b7b5e6fac73a7f657464ce663238fc1f86f422a3e8c79516a578e7"
+      },
+      "documentation_url": "https://github.com/ArcInstitute/arc-virtual-cell-atlas/tree/main/scBaseCount"
+    }
+  ]
+}

@@ -1,0 +1,1091 @@
+<title>Arc H1 扰动档案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --paper: #eceeea;
+  --surface: #fbfcfa;
+  --surface-2: #f3f6f1;
+  --ink: #121c19;
+  --ink-2: #4b5b55;
+  --ink-3: #7c8c85;
+  --rule: #d5dbd3;
+  --rule-strong: #b6c0b8;
+  --accent: #0d5f63;
+  --accent-soft: #dbe9e8;
+  --good: #2f6f4a;
+  --warn: #8f6205;
+  --crit: #a63a2e;
+  --s1: #2a78d6;   /* Training */
+  --s2: #eb6834;   /* Validation */
+  --s3: #1baf7a;   /* Test */
+  --shadow: 0 1px 2px rgba(18, 28, 25, .05);
+  --serif: "Source Serif 4", "Noto Serif SC", Georgia, serif;
+  --sans: "Noto Sans SC", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #0d1412;
+    --surface: #151d1a;
+    --surface-2: #1b2421;
+    --ink: #e7ece9;
+    --ink-2: #a3b2ab;
+    --ink-3: #79887f;
+    --rule: #263029;
+    --rule-strong: #3b463f;
+    --accent: #58b6b3;
+    --accent-soft: #12302f;
+    --good: #5fab7c;
+    --warn: #d09a33;
+    --crit: #e0776a;
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0d1412;
+  --surface: #151d1a;
+  --surface-2: #1b2421;
+  --ink: #e7ece9;
+  --ink-2: #a3b2ab;
+  --ink-3: #79887f;
+  --rule: #263029;
+  --rule-strong: #3b463f;
+  --accent: #58b6b3;
+  --accent-soft: #12302f;
+  --good: #5fab7c;
+  --warn: #d09a33;
+  --crit: #e0776a;
+  --s1: #3987e5;
+  --s2: #d95926;
+  --s3: #199e70;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-block: 40px 72px;
+  padding-inline: 24px;
+}
+@media (max-width: 560px) { .wrap { padding-inline: 16px; } }
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 700; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.12; letter-spacing: -.01em; }
+h2 { font-size: clamp(21px, 3vw, 27px); line-height: 1.25; }
+h3 { font-size: 16px; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+code, .mono, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* ── 头部 ───────────────────────────────────────── */
+.masthead { border-top: 2px solid var(--ink); padding-top: 18px; }
+.ident {
+  display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+  font-family: var(--mono); font-size: 12px; letter-spacing: .06em;
+  color: var(--ink-2); text-transform: uppercase;
+}
+.tier {
+  background: var(--accent); color: var(--surface);
+  padding: 1px 8px; border-radius: 2px; font-weight: 500; letter-spacing: .1em;
+}
+.masthead h1 { margin: 14px 0 10px; }
+.subtitle { font-size: 17px; color: var(--ink-2); max-width: 62ch; }
+.cite { font-size: 13px; color: var(--ink-3); margin-top: 10px; max-width: 72ch; }
+
+.readouts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+  margin-top: 26px;
+}
+.readout { background: var(--surface); padding: 14px 16px; }
+.readout .k {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.readout .v {
+  font-family: var(--mono); font-size: 25px; font-weight: 500;
+  line-height: 1.25; margin-top: 4px; font-variant-numeric: tabular-nums;
+}
+.readout .u { font-size: 13px; color: var(--ink-2); }
+.readout .n { font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+
+/* ── 目录 ───────────────────────────────────────── */
+.toc {
+  display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 22px;
+  font-family: var(--mono); font-size: 12px;
+}
+.toc a {
+  text-decoration: none; color: var(--ink-2); border: 1px solid var(--rule);
+  background: var(--surface); padding: 3px 9px; border-radius: 2px;
+}
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── 章节 ───────────────────────────────────────── */
+.sec { margin-top: 64px; scroll-margin-top: 16px; }
+.sec-head { border-top: 1px solid var(--rule-strong); padding-top: 16px; }
+.eyebrow {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+}
+.eyebrow .dot { width: 6px; height: 6px; background: var(--accent); flex: none; }
+.lede { margin-top: 12px; color: var(--ink-2); max-width: 66ch; }
+.sec > * + * { margin-top: 20px; }
+
+.impact {
+  border-left: 2px solid var(--accent); background: var(--surface-2);
+  padding: 14px 18px; max-width: 76ch;
+}
+.impact .label {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+}
+.impact p + p { margin-top: 8px; }
+
+.panel {
+  background: var(--surface); border: 1px solid var(--rule);
+  padding: 18px; box-shadow: var(--shadow);
+}
+.fig-head {
+  display: flex; flex-wrap: wrap; gap: 8px 16px;
+  align-items: baseline; justify-content: space-between; margin-bottom: 14px;
+}
+.fig-title { font-family: var(--serif); font-weight: 600; font-size: 15px; }
+.fig-note { font-size: 12px; color: var(--ink-3); font-family: var(--mono); }
+
+.two-col { display: grid; grid-template-columns: 1fr; gap: 18px; }
+@media (min-width: 860px) { .two-col.split-7-3 { grid-template-columns: minmax(0, 7fr) minmax(0, 3fr); } }
+@media (min-width: 860px) { .two-col.split-1-1 { grid-template-columns: 1fr 1fr; } }
+
+/* ── 表格 ───────────────────────────────────────── */
+.tbl-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--rule); }
+th {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-3); font-weight: 400;
+  white-space: nowrap; position: sticky; top: 0; background: var(--surface);
+}
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--surface-2); }
+tbody tr.on { background: var(--accent-soft); }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: var(--accent); }
+th.sortable[aria-sort]:not([aria-sort="none"]) { color: var(--accent); }
+th.sortable[aria-sort="ascending"]::after { content: " ↑"; }
+th.sortable[aria-sort="descending"]::after { content: " ↓"; }
+
+/* ── 控件 ───────────────────────────────────────── */
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip {
+  font-family: var(--mono); font-size: 12px; padding: 4px 11px;
+  border: 1px solid var(--rule-strong); background: var(--surface);
+  color: var(--ink-2); border-radius: 2px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.chip[aria-pressed="true"] { border-color: currentColor; background: var(--surface-2); }
+.chip .sw { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.chip:focus-visible, input:focus-visible, th:focus-visible, .toc a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+input[type="search"] {
+  font-family: var(--mono); font-size: 12.5px; padding: 5px 10px;
+  border: 1px solid var(--rule-strong); background: var(--surface);
+  color: var(--ink); border-radius: 2px; min-width: 150px;
+}
+.count { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+
+/* ── 图表 ───────────────────────────────────────── */
+figure { margin: 0; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+.tick text { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+.tick line { stroke: var(--rule); stroke-width: 1; }
+.axis-label { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-3); letter-spacing: .06em; }
+.mark-label { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-2); }
+.tip {
+  position: fixed; pointer-events: none; z-index: 20; opacity: 0;
+  transition: opacity .1s; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--rule-strong); box-shadow: var(--shadow);
+  padding: 8px 10px; font-family: var(--mono); font-size: 11.5px;
+  line-height: 1.55; max-width: 250px;
+}
+.tip b { font-weight: 500; }
+.tip .muted { color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ── 小件 ───────────────────────────────────────── */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 16px; font-size: 13px; }
+.kv dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+.kv dd { margin: 0; }
+.flag {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em;
+  padding: 1px 7px; border-radius: 2px; border: 1px solid currentColor; white-space: nowrap;
+}
+.flag.good { color: var(--good); }
+.flag.warn { color: var(--warn); }
+.flag.crit { color: var(--crit); }
+.bar-cell { display: flex; align-items: center; gap: 7px; }
+.bar-cell .track { flex: 1; height: 4px; background: var(--rule); min-width: 34px; }
+.bar-cell .fill { height: 4px; display: block; }
+.stack { display: flex; height: 26px; border: 1px solid var(--rule); background: var(--surface-2); }
+.stack div { height: 100%; }
+.footnote { font-size: 12.5px; color: var(--ink-3); max-width: 76ch; }
+ol.todo { margin: 0; padding-left: 0; list-style: none; counter-reset: t; }
+ol.todo li {
+  counter-increment: t; border-top: 1px solid var(--rule); padding: 12px 0 12px 42px;
+  position: relative; max-width: 80ch;
+}
+ol.todo li::before {
+  content: counter(t, decimal-leading-zero); position: absolute; left: 0; top: 12px;
+  font-family: var(--mono); font-size: 12px; color: var(--accent);
+}
+ol.todo b { font-weight: 500; }
+ol.todo .why { color: var(--ink-2); font-size: 13.5px; display: block; margin-top: 2px; }
+footer {
+  margin-top: 64px; border-top: 1px solid var(--rule-strong); padding-top: 14px;
+  font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
+  display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: space-between;
+}
+</style>
+
+<div class="wrap">
+
+<!-- ════ 头部 ════ -->
+<header class="masthead">
+  <p class="ident">
+    <span class="tier">TIER A</span>
+    <span class="mono">arc_vcc2025_h1</span>
+    <span>10x Flex · CRISPRi · H1 hESC</span>
+    <span>CC-BY-4.0 (Arc Virtual Cell Atlas)</span>
+  </p>
+  <h1>唯一与评测同源的公开语料，但深度、对照臂和基因轴三处都对不上</h1>
+  <p class="subtitle">Only public corpus sharing this year's chemistry (10x Flex), CRISPRi modality and high-knockdown target selection. Highest per-byte value.</p>
+  <p class="cite">Arc Institute, Virtual Cell Challenge 2025. Cell 188 (2025). · 取回于 2026-09-14T04:34:34+00:00 · 6 个文件 / 32.0 GiB · 逐文件 sha256 见下方出处一节</p>
+
+  <div class="readouts">
+    <div class="readout">
+      <p class="k">唯一细胞</p><p class="v">376,531</p>
+      <p class="n">三个文件拼起来是 491,046 行，23% 是重复的对照</p>
+    </div>
+    <div class="readout">
+      <p class="k">扰动靶基因</p><p class="v">300</p>
+      <p class="n">150 / 50 / 100 分属 train / val / test，三者零交集</p>
+    </div>
+    <div class="readout">
+      <p class="k">基因轴</p><p class="v">18,080</p>
+      <p class="n">官方 2026 轴为 18,533，缺 453 个待映射</p>
+    </div>
+    <div class="readout">
+      <p class="k">中位深度</p><p class="v">54<span class="u">k UMI</span></p>
+      <p class="n">评测端为 20k，训练前须逐细胞下采样对齐</p>
+    </div>
+    <div class="readout">
+      <p class="k">中位残留表达</p><p class="v">5.0<span class="u">%</span></p>
+      <p class="n">CRISPRi 敲低干净，但 11 个扰动残留 &gt; 40%</p>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <a href="#prov">出处</a><a href="#shape">形状</a><a href="#controls">对照</a><a href="#panel">扰动面板</a>
+    <a href="#depth">深度</a><a href="#kd">敲低</a><a href="#effect">效应量</a><a href="#batch">批次</a>
+    <a href="#axis">基因轴</a><a href="#todo">待办</a>
+  </nav>
+</header>
+
+<!-- ════ 出处 ════ -->
+<section class="sec" id="prov">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Provenance · 生辰八字</p>
+    <h2>32.0 GiB，六个文件，每一个都能回溯到上游校验和</h2>
+    <p class="lede">这一节是六个月后回看时唯一能说清 <code>raw/</code> 里那堆 h5ad 从哪来的凭据。数字全部取自 <code>SOURCE.json</code>，由 <code>fetch_data.py</code> 落盘时写入。</p>
+  </div>
+  <div class="two-col split-7-3">
+    <div class="panel">
+      <div class="fig-head"><span class="fig-title">落盘清单</span><span class="fig-note">sha256 前 16 位</span></div>
+      <div class="tbl-scroll"><table id="file-table"><thead><tr>
+        <th>文件</th><th class="num">字节</th><th>sha256</th><th>上游</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="panel">
+      <div class="fig-head"><span class="fig-title">身份</span></div>
+      <dl class="kv">
+        <dt>id</dt><dd class="mono">arc_vcc2025_h1</dd>
+        <dt>tier</dt><dd>A — 与评测分布同源</dd>
+        <dt>许可</dt><dd>CC-BY-4.0 (Arc Virtual Cell Atlas)</dd>
+        <dt>取回</dt><dd class="mono">2026-09-14T04:34:34+00:00</dd>
+        <dt>取回方式</dt><dd class="mono">scripts/fetch_data.py from data/registry.lock.json</dd>
+        <dt>上游</dt><dd class="mono">gs://arc-institute-virtual-cell-atlas</dd>
+        <dt>档案生成</dt><dd class="mono">2026-09-14 17:46:41</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>本页所有统计量由 <code>scripts/dossier/profile_arc_vcc2025_h1.py</code> 单次流式扫描重算，不依赖任何中间产物；<code>raw/</code> 全程只读。上游若悄悄改版，会先表现为 lock 的 diff，再表现为这一节 sha256 对不上——而不是训练结果的莫名漂移。</p>
+  </div>
+</section>
+
+<!-- ════ 形状 ════ -->
+<section class="sec" id="shape">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Shape · 形状</p>
+    <h2>矩阵是整数计数，obs 只有三列</h2>
+    <p class="lede">没有细胞类型、没有 QC 指标、没有时间点。除了 <code>target_gene</code>、<code>guide_id</code>、<code>batch</code>，任何协变量都得自己从计数矩阵里造出来——这正是本页其余部分在做的事。</p>
+  </div>
+  <div class="panel">
+    <div class="fig-head"><span class="fig-title">三个 split 的结构</span><span class="fig-note">X: csr_matrix float32 · 值均为整数</span></div>
+    <div class="tbl-scroll"><table id="shape-table"><thead><tr>
+      <th>split</th><th class="num">细胞</th><th class="num">基因</th><th class="num">非零元</th>
+      <th class="num">密度</th><th class="num">靶基因</th><th class="num">guide id</th>
+      <th class="num">批次</th><th class="num">NTC 细胞</th><th class="num">中位检出基因</th>
+    </tr></thead><tbody></tbody></table></div>
+  </div>
+  <p class="footnote">密度接近 48% 是 10x Flex 深测序的直接后果：一个细胞里有一半以上的基因至少被读到一次。这意味着按稀疏矩阵存储的收益有限，而按 <code>float32</code> 存 18,080 维稠密向量每细胞 72 KB——建语料时应直接落 pseudobulk 或降采样后的计数。</p>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p><code>guide_id</code> 形如 <code class="mono">ACAT2_P1P2_A|ACAT2_P1P2_B</code>：双 guide 构件，每个靶基因 1–2 个构件，NTC 有 31 个。若要做 guide 级随机效应，可用的层级只有这一层；想要 donor / 时间 / 批内位置这些协变量，这份数据里不存在。</p>
+  </div>
+</section>
+
+<!-- ════ 对照 ════ -->
+<section class="sec" id="controls">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Controls · 对照</p>
+    <h2>同一批 38,176 个对照细胞，在三个文件里各出现了一次</h2>
+    <p class="lede">不是数量相同——是 barcode 逐一相同。三个 h5ad 各自携带完整的 NTC 臂，直接 <code>concat</code> 会把对照记三遍。</p>
+  </div>
+  <div class="panel">
+    <div class="fig-head"><span class="fig-title">每个文件的细胞构成</span><span class="fig-note">深色段 = 共享的 NTC 臂</span></div>
+    <div id="controls-fig"></div>
+  </div>
+  <div class="two-col split-1-1">
+    <div class="panel">
+      <div class="fig-head"><span class="fig-title">barcode 集合比对</span></div>
+      <div class="tbl-scroll"><table id="ntc-table"><thead><tr>
+        <th>文件对</th><th>NTC barcode 集合</th><th>扰动细胞交集</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="panel">
+      <div class="fig-head"><span class="fig-title">拼接后的账</span></div>
+      <dl class="kv">
+        <dt>naive concat</dt><dd class="mono">491,046 行</dd>
+        <dt>唯一细胞</dt><dd class="mono">376,531 个</dd>
+        <dt>重复行</dt><dd class="mono">114,515 行（23%）</dd>
+        <dt>对照占比</dt><dd class="mono">去重后 10%，拼接后 23%</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>建语料时按 barcode 去重，NTC 只保留一份，否则对照的 pseudobulk 被三倍加权，所有 Δ 表达都会偏向这一份对照的批次噪声。</p>
+    <p>做 mock round 更要紧：如果用 Training 的 NTC 训练、用 Test 的 NTC 当评测基线，那是同一批细胞——基线被泄漏，mock 分数会系统性偏高。拆分必须在去重后的 barcode 上做。</p>
+  </div>
+</section>
+
+<!-- ════ 扰动面板 ════ -->
+<section class="sec" id="panel">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Panel · 扰动面板</p>
+    <h2>300 个靶基因，三个 split 之间零交集</h2>
+    <p class="lede">这是一个"扰动零样本、细胞系固定"的设定：细胞背景恒为 H1 hESC，被留出的是扰动本身。2026 评测要的是跨细胞系零样本——两者只重合一半，这份数据能校准的是扰动泛化那一半。</p>
+  </div>
+  <div class="two-col split-1-1">
+    <div class="panel">
+      <div class="fig-head"><span class="fig-title">靶基因交集矩阵</span><span class="fig-note">对角线 = 各自的靶基因数</span></div>
+      <div class="tbl-scroll"><table id="overlap-table"><thead><tr><th></th><th class="num">Training</th><th class="num">Validation</th><th class="num">Test</th></tr></thead><tbody></tbody></table></div>
+      <p class="footnote" style="margin-top:12px">细胞背景在三个 split 之间完全相同（同一 48 个批次、同一 NTC 臂），唯一被留出的维度是扰动身份。</p>
+    </div>
+    <div class="panel">
+      <div class="fig-head"><span class="fig-title">每个扰动的细胞数</span><span class="fig-note">300 个扰动 · 对数轴</span></div>
+      <div id="cells-fig"></div>
+    </div>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>细胞数跨越 33 到 4,760，相差两个数量级。评测端每个扰动的细胞数是固定的，所以任何"按细胞数加权"的训练目标都会把这里的采样不均当成生物信号学进去；要么按扰动重采样到等细胞数，要么在损失里显式除掉细胞数的影响（见<a href="#effect">效应量</a>一节给出的噪声地板）。</p>
+  </div>
+</section>
+
+<!-- ════ 深度 ════ -->
+<section class="sec" id="depth">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Depth · 测序深度</p>
+    <h2>中位 53,912 UMI，是评测端的 2.7 倍；最浅的细胞也有 19,981</h2>
+    <p class="lede">最小值卡在 20,000 附近不是巧合，是上游的 QC 地板。好消息：99.99% 的细胞深于评测深度，全语料只有 21 个细胞在 20k 以下——下采样到 20k 几乎不用丢细胞。</p>
+  </div>
+  <div class="two-col split-7-3">
+    <div class="panel">
+      <div class="fig-head">
+        <span class="fig-title">每细胞总 UMI 分布</span>
+        <span class="legend" id="depth-legend"></span>
+      </div>
+      <figure id="depth-fig"></figure>
+    </div>
+    <div class="panel">
+      <div class="fig-head"><span class="fig-title">分位数</span><span class="fig-note">UMI / 细胞</span></div>
+      <div class="tbl-scroll"><table id="depth-table"><thead><tr>
+        <th>分位</th><th class="num">Train</th><th class="num">Val</th><th class="num">Test</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>建 mock round 和训练前必须逐细胞二项下采样到 20k UMI。跳过这一步，DE 检验的功效会比评测端高出一截，所有基于 mock 分数的模型选择都建立在一个比真实评测更宽松的基准上。</p>
+    <p>下采样要在<strong>细胞级</strong>做，不能按批次统一比例：批次中位深度在 42k 到 66k 之间差着 1.6 倍（见<a href="#batch">批次</a>一节），统一比例会把这个差异原封不动留下来。</p>
+  </div>
+</section>
+
+<!-- ════ 敲低 ════ -->
+<section class="sec" id="kd">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Knockdown · 敲低效率</p>
+    <h2>中位残留 5.0%，但有 11 个扰动几乎没敲下去</h2>
+    <p class="lede">残留 = 靶基因自身的 CP10K（该扰动的细胞 ÷ NTC 细胞）。CRISPRi 整体非常干净，可尾巴上的那几个是"标着扰动、实际没扰动"的细胞——它们会教模型把噪声当成效应。</p>
+  </div>
+  <div class="panel">
+    <div class="fig-head">
+      <span class="fig-title">每个扰动的靶基因残留表达</span>
+      <span class="fig-note">300 个扰动 · 越靠左敲得越干净</span>
+    </div>
+    <figure id="kd-fig"></figure>
+  </div>
+  <div class="panel">
+    <div class="fig-head"><span class="fig-title">敲低最差的 12 个</span><span class="fig-note">残留 &gt; 40% 记为失败</span></div>
+    <div class="tbl-scroll"><table id="kd-table"><thead><tr>
+      <th>靶基因</th><th>split</th><th class="num">残留</th><th class="num">细胞</th>
+      <th class="num">L2 / 噪声地板</th><th class="num">被推动基因</th><th>判定</th>
+    </tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>把残留当成样本权重（或直接剔除残留 &gt; 0.4 的扰动）。特别注意 <code>HIRA</code>：残留 89%，却有 3,407 个细胞——它是训练集里细胞数最多的扰动之一，不处理就是最大的一块标签噪声。</p>
+    <p>反过来，残留极低而效应量也极低的扰动是另一类信息：敲低成功但转录组没反应，说明该基因在 H1 背景下无功能。这类样本对"预测无效应"同样有价值，不该和失败的敲低混为一谈。</p>
+  </div>
+</section>
+
+<!-- ════ 效应量 ════ -->
+<section class="sec" id="effect">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Effect · 效应量</p>
+    <h2>裸 L2 测的是细胞数，不是效应</h2>
+    <p class="lede">把每个扰动的 pseudobulk 与 NTC 比，取 log1p CP10K 空间的 L2 距离，结果与细胞数的相关系数是 -0.55——细胞越少"效应"越大。原因不神秘：pseudobulk 的抽样噪声按 n<sup>-1/2</sup> 走。下图的虚线是从 NTC 自抽样测出来的噪声地板，除掉它之后相关系数降到 +0.08。</p>
+  </div>
+  <div class="panel">
+    <div class="fig-head">
+      <span class="fig-title">效应量 vs 细胞数</span>
+      <span class="controls" id="effect-chips"></span>
+    </div>
+    <figure id="effect-fig"></figure>
+    <p class="footnote" style="margin-top:12px">虚线：从 38,176 个 NTC 细胞里随机抽 k 个做 pseudobulk，与完整 NTC 比的 L2（每个 k 重复 12 次，取 p90）。它就是"什么都没发生"时该有的距离，拟合斜率 -0.50，与 n<sup>-1/2</sup> 一致。所有 300 个扰动都在地板之上，79% 在两倍之上。</p>
+  </div>
+  <div class="panel">
+    <div class="fig-head">
+      <span class="fig-title">扰动浏览器</span>
+      <span class="controls">
+        <input type="search" id="pert-search" placeholder="搜靶基因…" aria-label="搜索靶基因">
+        <span class="count" id="pert-count"></span>
+      </span>
+    </div>
+    <div class="tbl-scroll" style="max-height:440px; overflow-y:auto">
+      <table id="pert-table"><thead><tr>
+        <th class="sortable" data-k="target">靶基因</th>
+        <th class="sortable" data-k="split">split</th>
+        <th class="sortable num" data-k="n_cells">细胞</th>
+        <th class="sortable num" data-k="n_guides">guide</th>
+        <th class="sortable num" data-k="residual">残留</th>
+        <th class="sortable num" data-k="l2">L2</th>
+        <th class="sortable num" data-k="ratio">L2 / 地板</th>
+        <th class="sortable num" data-k="n_shift">被推动基因</th>
+        <th class="sortable num" data-k="n_batches">跨批次</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+    <p class="footnote" style="margin-top:12px">「被推动基因」= |Δ log1p CP10K| &gt; 0.25 的基因数。同一套 NTC 自抽样下，它的零假设中位数是 <b>0</b>、p90 ≤ 2（哪怕只抽 40 个细胞），所以它比裸 L2 稳健得多。全体扰动里 65% 达到 ≥ 3 个基因，40% 达到 ≥ 10 个。</p>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>筛"有效应的扰动"时用 <code>L2 / 噪声地板</code> 或「被推动基因数」，别用裸 L2——后者会把细胞数少的扰动误判成强效应，正好是训练时最该降权的那批。</p>
+    <p>同一件事对评测指标也成立：VCC 的 DE score 在细胞数不同的扰动之间不可直接比较。自建 mock round 时，要么把每个扰动重采样到同一细胞数，要么给每个扰动配一条等细胞数的 NTC 零假设基线，再报相对值。</p>
+  </div>
+</section>
+
+<!-- ════ 批次 ════ -->
+<section class="sec" id="batch">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Batch · 批次结构</p>
+    <h2>48 个批次，每个扰动铺满几乎所有批次</h2>
+    <p class="lede">扰动与批次近乎正交：单个扰动的细胞最多只有 9% 落在同一批次，中位 3.2%。批次间 pseudobulk 相关系数最低 0.9921。这份数据的批次效应小到可以先不建模。</p>
+  </div>
+  <div class="panel">
+    <div class="fig-head">
+      <span class="fig-title">每个批次的中位测序深度</span>
+      <span class="legend" id="batch-legend"></span>
+    </div>
+    <figure id="batch-fig"></figure>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>可以把 batch 当随机效应，也可以先忽略——但<strong>不能忽略批次间的深度差</strong>：42k 到 66k 是 1.6 倍的差距，且三个 split 在同一批次上的深度几乎重合，说明这是文库制备而非生物学。下采样对齐之后它就消失了，这是又一条"先下采样再干别的"的理由。</p>
+  </div>
+</section>
+
+<!-- ════ 基因轴 ════ -->
+<section class="sec" id="axis">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Gene axis · 基因轴</p>
+    <h2>18,080 对 18,533：差着 453 个基因和一份 gene_names.csv</h2>
+    <p class="lede">三个 split 的基因顺序完全一致（sha <code>3b5f6934eda9fd8d</code>），可以直接按位置对齐。但官方 2026 轴是 18,533 个基因，而 <code>data/</code> 里还没有那份 <code>gene_names.csv</code>——这是目前语料侧最靠前的一个缺口。</p>
+  </div>
+  <div class="panel">
+    <div class="fig-head"><span class="fig-title">对齐状态</span></div>
+    <dl class="kv">
+      <dt>本数据集</dt><dd class="mono">18,080 基因 · 三 split 一致 · sha 3b5f6934eda9fd8d</dd>
+      <dt>官方 2026 轴</dt><dd class="mono">18,533 基因 · gene_names.csv <span class="flag warn">尚未取回</span></dd>
+      <dt>差额</dt><dd class="mono">453 个基因位置待确定</dd>
+      <dt>别名表</dt><dd class="mono">data/raw/networks/hgnc_complete_set.txt <span class="flag good">已就位</span></dd>
+      <dt>var 列</dt><dd class="mono">Training 只有 gene_id；Val/Test 另带 mt / ribo / n_cells 等 QC 列</dd>
+    </dl>
+  </div>
+  <div class="impact">
+    <p class="label">对流程的影响</p>
+    <p>在取回官方轴之前，任何跨数据集的语料拼接都不要开工——重映射一次就要重跑一次全部 pseudobulk。差额基因的处理策略（填零 / 掩码 / 从损失里剔除）也必须在训练前定死，因为它直接改变 MAE 与 DE score 的分母。</p>
+  </div>
+</section>
+
+<!-- ════ 待办 ════ -->
+<section class="sec" id="todo">
+  <div class="sec-head">
+    <p class="eyebrow"><span class="dot"></span>Next · 进入训练前</p>
+    <h2>这份数据能用之前要做的六件事</h2>
+    <p class="lede">每一条都直接来自上面的某个测量，按依赖顺序排列。</p>
+  </div>
+  <ol class="todo">
+    <li><b>按 barcode 去重，NTC 只留一份。</b><span class="why">38,176 个对照细胞在三个文件里各出现一次；naive concat 的 491,046 行里有 23% 是重复。→ <a href="#controls">对照</a></span></li>
+    <li><b>逐细胞二项下采样到 20,000 UMI。</b><span class="why">中位深度是评测端的 2.7 倍，而 99.99% 的细胞深于阈值，只有 21 个细胞需要特殊处理。→ <a href="#depth">深度</a></span></li>
+    <li><b>取回官方 gene_names.csv，用 HGNC 别名表重映射到 18,533 轴。</b><span class="why">当前 18,080 个基因，差额 453 个；这一步不定，后面全部要重做。→ <a href="#axis">基因轴</a></span></li>
+    <li><b>标记或剔除敲低失败的扰动。</b><span class="why">11 个扰动残留 &gt; 40%，其中 <code>HIRA</code> 残留 89% 且带着 3,407 个细胞。→ <a href="#kd">敲低</a></span></li>
+    <li><b>效应量一律除以等细胞数的 NTC 噪声地板。</b><span class="why">裸 L2 与细胞数相关 -0.55，除掉地板后降到 +0.08；筛选扰动与给损失加权都应基于归一化后的值。→ <a href="#effect">效应量</a></span></li>
+    <li><b>mock round 的拆分在去重后的 barcode 上做，且给每个扰动配等细胞数基线。</b><span class="why">否则 NTC 泄漏会抬高分数、细胞数差异会扭曲 DE score，两个偏差都朝着"看起来更好"的方向。→ <a href="#effect">效应量</a></span></li>
+  </ol>
+</section>
+
+<footer>
+  <span>arc_vcc2025_h1 · 数据档案 · 由 scripts/dossier/ 生成于 2026-09-14 17:46:41</span>
+  <span>统计量重算自 raw/ 原始计数，未使用任何中间产物</span>
+</footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+const D = {"id":"arc_vcc2025_h1","generated_at":"2026-09-14T17:46:41-0400","eval_depth":20000,"shift_threshold":0.25,"source":{"title":"Virtual Cell Challenge 2025 dataset (H1 hESC, CRISPRi, 10x Flex)","citation":"Arc Institute, Virtual Cell Challenge 2025. Cell 188 (2025).","license":"CC-BY-4.0 (Arc Virtual Cell Atlas)","retrieved_at":"2026-09-14T04:34:34+00:00","files":[{"name":"pert_counts_Validation.csv","bytes":978,"sha256":"9da5dec8c25aff1bddc01cf76897cf94ec65f8f877beee29482c543bf1e7e43b","url":"https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/validation/pert_counts_Validation.csv"},{"name":"pert_counts_Test.csv","bytes":1894,"sha256":"c4f0ba439d7c3121562ca1f79fa3854d8f96fc7c3de24dca23eb9e7c41c8923a","url":"https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/test/pert_counts_Test.csv"},{"name":"pert_counts_Training.csv","bytes":2824,"sha256":"633d202be221418bdbac16efd8cb169666de0ef6469a4e9bfdfb64666ea81a89","url":"https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/train/pert_counts_Training.csv"},{"name":"adata_Validation.h5ad","bytes":6928967541,"sha256":"376f0bab27d9f22e00dfd888668d3602006d035edc182721c378f4802c77bfe1","url":"https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/validation/adata_Validation.h5ad"},{"name":"adata_Test.h5ad","bytes":11950739168,"sha256":"ba5ce66729e4c8e50b6f147c7d73d3f9f28f76c91fa43ff33e3f6bc2ed831f03","url":"https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/test/adata_Test.h5ad"},{"name":"adata_Training.h5ad","bytes":15482497461,"sha256":"a09977104fefb622368ca74b50c9d3c1e891733e6c83db07acfca49b0219c02b","url":"https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/train/adata_Training.h5ad"}]},"cross":{"target_overlap":{"Training|Validation":[],"Test|Training":[],"Test|Validation":[]},"ntc_identical":{"Training|Validation":true,"Test|Training":true,"Test|Validation":true},"ntc_cells":38176,"rows_if_concatenated":491046,"unique_cells":376531,"gene_axis_identical":true},"perts":[{"target":"EP300","split":"Test","n_cells":2217,"n_guides":1,"cp10k_pert":0.185,"cp10k_ctrl":2.855,"residual":0.0647,"l2":8.345,"n_shift":167,"max_abs":1.157,"n_batches":48,"top_batch_share":0.0271,"ratio":17.322},{"target":"MED19","split":"Test","n_cells":1511,"n_guides":1,"cp10k_pert":0.007,"cp10k_ctrl":0.147,"residual":0.0494,"l2":9.579,"n_shift":260,"max_abs":0.922,"n_batches":48,"top_batch_share":0.0311,"ratio":16.389},{"target":"SMARCA4","split":"Training","n_cells":1015,"n_guides":1,"cp10k_pert":0.166,"cp10k_ctrl":2.596,"residual":0.064,"l2":11.471,"n_shift":395,"max_abs":1.328,"n_batches":48,"top_batch_share":0.0345,"ratio":16.058},{"target":"TADA1","split":"Training","n_cells":4035,"n_guides":1,"cp10k_pert":0.008,"cp10k_ctrl":0.202,"residual":0.0407,"l2":5.503,"n_shift":54,"max_abs":0.739,"n_batches":48,"top_batch_share":0.029,"ratio":15.45},{"target":"PHF12","split":"Test","n_cells":2069,"n_guides":1,"cp10k_pert":0.17,"cp10k_ctrl":1.431,"residual":0.1185,"l2":7.585,"n_shift":123,"max_abs":1.23,"n_batches":48,"top_batch_share":0.0285,"ratio":15.206},{"target":"DHX36","split":"Training","n_cells":1392,"n_guides":1,"cp10k_pert":0.128,"cp10k_ctrl":2.832,"residual":0.0452,"l2":8.95,"n_shift":225,"max_abs":1.217,"n_batches":48,"top_batch_share":0.0359,"ratio":14.692},{"target":"DOT1L","split":"Validation","n_cells":1484,"n_guides":1,"cp10k_pert":0.18,"cp10k_ctrl":2.14,"residual":0.0843,"l2":8.589,"n_shift":218,"max_abs":1.362,"n_batches":48,"top_batch_share":0.0317,"ratio":14.562},{"target":"KAT2A","split":"Training","n_cells":2120,"n_guides":1,"cp10k_pert":0.002,"cp10k_ctrl":0.033,"residual":0.0725,"l2":6.823,"n_shift":90,"max_abs":0.968,"n_batches":48,"top_batch_share":0.0311,"ratio":13.847},{"target":"METTL3","split":"Training","n_cells":498,"n_guides":1,"cp10k_pert":0.042,"cp10k_ctrl":0.909,"residual":0.0459,"l2":12.8,"n_shift":632,"max_abs":0.841,"n_batches":48,"top_batch_share":0.0341,"ratio":12.514},{"target":"METTL14","split":"Training","n_cells":468,"n_guides":1,"cp10k_pert":0.04,"cp10k_ctrl":0.52,"residual":0.0778,"l2":13.052,"n_shift":655,"max_abs":0.857,"n_batches":48,"top_batch_share":0.0449,"ratio":12.367},{"target":"SMARCA5","split":"Training","n_cells":1795,"n_guides":1,"cp10k_pert":0.13,"cp10k_ctrl":3.245,"residual":0.04,"l2":6.466,"n_shift":79,"max_abs":1.297,"n_batches":48,"top_batch_share":0.0284,"ratio":12.066},{"target":"USF2","split":"Validation","n_cells":1207,"n_guides":1,"cp10k_pert":0.606,"cp10k_ctrl":1.578,"residual":0.3839,"l2":7.356,"n_shift":98,"max_abs":1.488,"n_batches":48,"top_batch_share":0.0315,"ratio":11.238},{"target":"DNMT1","split":"Training","n_cells":893,"n_guides":1,"cp10k_pert":0.178,"cp10k_ctrl":2.576,"residual":0.069,"l2":8.485,"n_shift":134,"max_abs":2.03,"n_batches":48,"top_batch_share":0.0325,"ratio":11.135},{"target":"PRDM14","split":"Training","n_cells":359,"n_guides":1,"cp10k_pert":0.042,"cp10k_ctrl":0.588,"residual":0.0719,"l2":13.072,"n_shift":526,"max_abs":1.688,"n_batches":48,"top_batch_share":0.0362,"ratio":10.836},{"target":"SETDB1","split":"Test","n_cells":1044,"n_guides":1,"cp10k_pert":0.044,"cp10k_ctrl":0.788,"residual":0.0565,"l2":7.465,"n_shift":102,"max_abs":2.873,"n_batches":48,"top_batch_share":0.0297,"ratio":10.6},{"target":"SAFB2","split":"Test","n_cells":2144,"n_guides":1,"cp10k_pert":0.129,"cp10k_ctrl":1.746,"residual":0.0739,"l2":5.151,"n_shift":62,"max_abs":1.267,"n_batches":48,"top_batch_share":0.0261,"ratio":10.513},{"target":"SMARCB1","split":"Validation","n_cells":1706,"n_guides":2,"cp10k_pert":0.596,"cp10k_ctrl":2.964,"residual":0.201,"l2":5.762,"n_shift":70,"max_abs":1.332,"n_batches":48,"top_batch_share":0.0305,"ratio":10.48},{"target":"MAU2","split":"Training","n_cells":1021,"n_guides":1,"cp10k_pert":0.002,"cp10k_ctrl":0.032,"residual":0.0575,"l2":7.273,"n_shift":134,"max_abs":0.83,"n_batches":48,"top_batch_share":0.0323,"ratio":10.212},{"target":"PAXIP1","split":"Validation","n_cells":1644,"n_guides":1,"cp10k_pert":0.037,"cp10k_ctrl":0.738,"residual":0.0503,"l2":5.603,"n_shift":66,"max_abs":0.723,"n_batches":48,"top_batch_share":0.0286,"ratio":10.003},{"target":"KDM1A","split":"Training","n_cells":352,"n_guides":1,"cp10k_pert":0.355,"cp10k_ctrl":7.423,"residual":0.0478,"l2":11.959,"n_shift":367,"max_abs":1.741,"n_batches":48,"top_batch_share":0.0369,"ratio":9.815},{"target":"SOX2","split":"Training","n_cells":806,"n_guides":1,"cp10k_pert":0.101,"cp10k_ctrl":1.532,"residual":0.0659,"l2":7.713,"n_shift":165,"max_abs":1.224,"n_batches":48,"top_batch_share":0.0323,"ratio":9.612},{"target":"ARID3A","split":"Test","n_cells":1447,"n_guides":1,"cp10k_pert":0.057,"cp10k_ctrl":1.117,"residual":0.0507,"l2":5.631,"n_shift":70,"max_abs":0.799,"n_batches":48,"top_batch_share":0.0276,"ratio":9.426},{"target":"STAG2","split":"Training","n_cells":1573,"n_guides":2,"cp10k_pert":0.347,"cp10k_ctrl":2.038,"residual":0.1703,"l2":5.079,"n_shift":53,"max_abs":0.801,"n_batches":48,"top_batch_share":0.0305,"ratio":8.868},{"target":"SOX4","split":"Test","n_cells":3343,"n_guides":2,"cp10k_pert":0.364,"cp10k_ctrl":3.57,"residual":0.102,"l2":3.447,"n_shift":8,"max_abs":1.201,"n_batches":48,"top_batch_share":0.0302,"ratio":8.802},{"target":"CTNNB1","split":"Test","n_cells":1652,"n_guides":1,"cp10k_pert":0.028,"cp10k_ctrl":0.546,"residual":0.0516,"l2":4.902,"n_shift":40,"max_abs":1.486,"n_batches":48,"top_batch_share":0.0297,"ratio":8.773},{"target":"PSME1","split":"Test","n_cells":1065,"n_guides":1,"cp10k_pert":0.063,"cp10k_ctrl":1.439,"residual":0.0438,"l2":5.983,"n_shift":80,"max_abs":0.998,"n_batches":48,"top_batch_share":0.0319,"ratio":8.581},{"target":"SIN3B","split":"Training","n_cells":586,"n_guides":1,"cp10k_pert":0.069,"cp10k_ctrl":1.058,"residual":0.065,"l2":8.007,"n_shift":143,"max_abs":0.744,"n_batches":48,"top_batch_share":0.0341,"ratio":8.497},{"target":"RNF2","split":"Training","n_cells":1844,"n_guides":1,"cp10k_pert":0.05,"cp10k_ctrl":1.406,"residual":0.0354,"l2":4.427,"n_shift":22,"max_abs":0.825,"n_batches":48,"top_batch_share":0.0304,"ratio":8.374},{"target":"EHMT2","split":"Test","n_cells":1499,"n_guides":1,"cp10k_pert":0.154,"cp10k_ctrl":3.165,"residual":0.0485,"l2":4.911,"n_shift":43,"max_abs":1.267,"n_batches":48,"top_batch_share":0.0294,"ratio":8.369},{"target":"SMARCE1","split":"Validation","n_cells":597,"n_guides":1,"cp10k_pert":0.083,"cp10k_ctrl":1.938,"residual":0.0428,"l2":7.476,"n_shift":161,"max_abs":0.988,"n_batches":48,"top_batch_share":0.0335,"ratio":8.008},{"target":"MED25","split":"Test","n_cells":2028,"n_guides":1,"cp10k_pert":0.071,"cp10k_ctrl":1.666,"residual":0.0424,"l2":3.935,"n_shift":24,"max_abs":0.898,"n_batches":48,"top_batch_share":0.0325,"ratio":7.809},{"target":"STRAP","split":"Validation","n_cells":644,"n_guides":1,"cp10k_pert":0.079,"cp10k_ctrl":2.987,"residual":0.0264,"l2":6.988,"n_shift":76,"max_abs":1.296,"n_batches":48,"top_batch_share":0.0419,"ratio":7.777},{"target":"PGAM1","split":"Test","n_cells":972,"n_guides":1,"cp10k_pert":0.018,"cp10k_ctrl":0.47,"residual":0.0383,"l2":5.649,"n_shift":45,"max_abs":1.057,"n_batches":48,"top_batch_share":0.0298,"ratio":7.737},{"target":"NSDHL","split":"Test","n_cells":374,"n_guides":1,"cp10k_pert":0.049,"cp10k_ctrl":1.211,"residual":0.0405,"l2":9.129,"n_shift":163,"max_abs":2.0,"n_batches":48,"top_batch_share":0.0348,"ratio":7.725},{"target":"TMSB4X","split":"Training","n_cells":4760,"n_guides":2,"cp10k_pert":0.984,"cp10k_ctrl":23.524,"residual":0.0418,"l2":2.499,"n_shift":1,"max_abs":2.445,"n_batches":48,"top_batch_share":0.0254,"ratio":7.625},{"target":"THAP11","split":"Test","n_cells":807,"n_guides":1,"cp10k_pert":0.06,"cp10k_ctrl":1.12,"residual":0.0538,"l2":6.102,"n_shift":91,"max_abs":0.686,"n_batches":48,"top_batch_share":0.031,"ratio":7.609},{"target":"MAX","split":"Validation","n_cells":161,"n_guides":1,"cp10k_pert":0.064,"cp10k_ctrl":1.13,"residual":0.0562,"l2":13.716,"n_shift":709,"max_abs":1.334,"n_batches":47,"top_batch_share":0.0435,"ratio":7.588},{"target":"SUPT4H1","split":"Training","n_cells":364,"n_guides":1,"cp10k_pert":0.071,"cp10k_ctrl":1.482,"residual":0.0477,"l2":8.893,"n_shift":207,"max_abs":1.239,"n_batches":48,"top_batch_share":0.0467,"ratio":7.423},{"target":"ACAT2","split":"Training","n_cells":1765,"n_guides":1,"cp10k_pert":0.038,"cp10k_ctrl":1.063,"residual":0.0358,"l2":3.969,"n_shift":28,"max_abs":0.699,"n_batches":48,"top_batch_share":0.0312,"ratio":7.344},{"target":"INSIG1","split":"Training","n_cells":1363,"n_guides":1,"cp10k_pert":0.015,"cp10k_ctrl":0.354,"residual":0.0412,"l2":4.508,"n_shift":28,"max_abs":0.722,"n_batches":48,"top_batch_share":0.0323,"ratio":7.322},{"target":"TMSB10","split":"Training","n_cells":872,"n_guides":1,"cp10k_pert":0.3,"cp10k_ctrl":8.045,"residual":0.0373,"l2":5.539,"n_shift":65,"max_abs":1.921,"n_batches":48,"top_batch_share":0.0413,"ratio":7.183},{"target":"PPP2R3C","split":"Validation","n_cells":624,"n_guides":1,"cp10k_pert":0.019,"cp10k_ctrl":0.343,"residual":0.0555,"l2":6.411,"n_shift":95,"max_abs":1.491,"n_batches":48,"top_batch_share":0.0433,"ratio":7.023},{"target":"EHMT1","split":"Validation","n_cells":1601,"n_guides":1,"cp10k_pert":0.422,"cp10k_ctrl":3.487,"residual":0.121,"l2":3.931,"n_shift":22,"max_abs":1.135,"n_batches":48,"top_batch_share":0.0281,"ratio":6.925},{"target":"MBTPS1","split":"Training","n_cells":626,"n_guides":1,"cp10k_pert":0.067,"cp10k_ctrl":1.49,"residual":0.0451,"l2":6.311,"n_shift":82,"max_abs":1.369,"n_batches":48,"top_batch_share":0.0383,"ratio":6.924},{"target":"MED13","split":"Training","n_cells":2787,"n_guides":1,"cp10k_pert":0.05,"cp10k_ctrl":1.044,"residual":0.0482,"l2":2.952,"n_shift":10,"max_abs":0.661,"n_batches":48,"top_batch_share":0.0276,"ratio":6.877},{"target":"CSNK1E","split":"Test","n_cells":1139,"n_guides":1,"cp10k_pert":0.129,"cp10k_ctrl":0.928,"residual":0.1385,"l2":4.593,"n_shift":20,"max_abs":0.647,"n_batches":48,"top_batch_share":0.0316,"ratio":6.815},{"target":"CASP3","split":"Training","n_cells":1037,"n_guides":1,"cp10k_pert":0.079,"cp10k_ctrl":1.895,"residual":0.0419,"l2":4.807,"n_shift":40,"max_abs":0.967,"n_batches":48,"top_batch_share":0.0328,"ratio":6.803},{"target":"EIF3H","split":"Validation","n_cells":323,"n_guides":1,"cp10k_pert":0.066,"cp10k_ctrl":1.559,"residual":0.0422,"l2":8.589,"n_shift":197,"max_abs":0.86,"n_batches":48,"top_batch_share":0.0433,"ratio":6.75},{"target":"DPH2","split":"Validation","n_cells":670,"n_guides":1,"cp10k_pert":0.021,"cp10k_ctrl":0.442,"residual":0.0477,"l2":5.797,"n_shift":43,"max_abs":0.741,"n_batches":48,"top_batch_share":0.0358,"ratio":6.582},{"target":"LZTR1","split":"Training","n_cells":1381,"n_guides":1,"cp10k_pert":0.012,"cp10k_ctrl":0.16,"residual":0.0731,"l2":3.99,"n_shift":29,"max_abs":0.766,"n_batches":48,"top_batch_share":0.029,"ratio":6.524},{"target":"EIF4B","split":"Training","n_cells":1585,"n_guides":1,"cp10k_pert":0.108,"cp10k_ctrl":2.714,"residual":0.04,"l2":3.652,"n_shift":9,"max_abs":1.185,"n_batches":48,"top_batch_share":0.0315,"ratio":6.401},{"target":"MED15","split":"Test","n_cells":3637,"n_guides":2,"cp10k_pert":0.471,"cp10k_ctrl":0.805,"residual":0.5846,"l2":2.402,"n_shift":0,"max_abs":0.22,"n_batches":48,"top_batch_share":0.0258,"ratio":6.4},{"target":"MED12","split":"Training","n_cells":2766,"n_guides":1,"cp10k_pert":0.028,"cp10k_ctrl":0.707,"residual":0.0397,"l2":2.71,"n_shift":6,"max_abs":0.505,"n_batches":48,"top_batch_share":0.0307,"ratio":6.289},{"target":"SBDS","split":"Test","n_cells":916,"n_guides":1,"cp10k_pert":0.008,"cp10k_ctrl":0.086,"residual":0.0891,"l2":4.695,"n_shift":32,"max_abs":0.511,"n_batches":48,"top_batch_share":0.0328,"ratio":6.241},{"target":"TGFBR2","split":"Training","n_cells":1474,"n_guides":1,"cp10k_pert":0.018,"cp10k_ctrl":0.328,"residual":0.0552,"l2":3.604,"n_shift":16,"max_abs":0.554,"n_batches":48,"top_batch_share":0.0319,"ratio":6.09},{"target":"TSFM","split":"Test","n_cells":1364,"n_guides":1,"cp10k_pert":0.054,"cp10k_ctrl":1.091,"residual":0.0497,"l2":3.746,"n_shift":27,"max_abs":0.846,"n_batches":48,"top_batch_share":0.0308,"ratio":6.087},{"target":"HDAC3","split":"Validation","n_cells":504,"n_guides":1,"cp10k_pert":0.065,"cp10k_ctrl":1.296,"residual":0.05,"l2":6.121,"n_shift":81,"max_abs":1.118,"n_batches":48,"top_batch_share":0.0397,"ratio":6.02},{"target":"NIT1","split":"Training","n_cells":1287,"n_guides":1,"cp10k_pert":0.021,"cp10k_ctrl":0.486,"residual":0.0424,"l2":3.785,"n_shift":8,"max_abs":0.685,"n_batches":48,"top_batch_share":0.0287,"ratio":5.973},{"target":"LRPPRC","split":"Training","n_cells":1053,"n_guides":1,"cp10k_pert":0.228,"cp10k_ctrl":5.863,"residual":0.0389,"l2":4.121,"n_shift":28,"max_abs":1.694,"n_batches":48,"top_batch_share":0.0323,"ratio":5.877},{"target":"ACLY","split":"Validation","n_cells":1026,"n_guides":1,"cp10k_pert":0.155,"cp10k_ctrl":3.703,"residual":0.042,"l2":4.062,"n_shift":28,"max_abs":1.386,"n_batches":48,"top_batch_share":0.0312,"ratio":5.717},{"target":"NGRN","split":"Test","n_cells":1548,"n_guides":1,"cp10k_pert":0.012,"cp10k_ctrl":0.286,"residual":0.0419,"l2":3.251,"n_shift":17,"max_abs":0.963,"n_batches":48,"top_batch_share":0.0284,"ratio":5.63},{"target":"TFAM","split":"Training","n_cells":1105,"n_guides":1,"cp10k_pert":0.071,"cp10k_ctrl":1.699,"residual":0.0421,"l2":3.85,"n_shift":26,"max_abs":0.913,"n_batches":48,"top_batch_share":0.0344,"ratio":5.626},{"target":"NCKAP1","split":"Test","n_cells":1056,"n_guides":1,"cp10k_pert":0.178,"cp10k_ctrl":4.714,"residual":0.0378,"l2":3.939,"n_shift":23,"max_abs":1.534,"n_batches":48,"top_batch_share":0.0331,"ratio":5.625},{"target":"ARID1A","split":"Training","n_cells":1256,"n_guides":1,"cp10k_pert":0.39,"cp10k_ctrl":0.784,"residual":0.4975,"l2":3.608,"n_shift":14,"max_abs":1.184,"n_batches":48,"top_batch_share":0.0295,"ratio":5.624},{"target":"MED24","split":"Training","n_cells":455,"n_guides":1,"cp10k_pert":0.061,"cp10k_ctrl":1.157,"residual":0.0526,"l2":5.952,"n_shift":75,"max_abs":0.89,"n_batches":48,"top_batch_share":0.0374,"ratio":5.56},{"target":"FGFR1","split":"Test","n_cells":1061,"n_guides":1,"cp10k_pert":1.116,"cp10k_ctrl":3.511,"residual":0.3178,"l2":3.862,"n_shift":26,"max_abs":0.751,"n_batches":48,"top_batch_share":0.033,"ratio":5.529},{"target":"WAC","split":"Validation","n_cells":267,"n_guides":1,"cp10k_pert":0.034,"cp10k_ctrl":0.185,"residual":0.1815,"l2":7.675,"n_shift":115,"max_abs":0.932,"n_batches":48,"top_batch_share":0.0412,"ratio":5.48},{"target":"TAF11","split":"Test","n_cells":257,"n_guides":1,"cp10k_pert":0.055,"cp10k_ctrl":1.094,"residual":0.0499,"l2":7.788,"n_shift":149,"max_abs":0.918,"n_batches":48,"top_batch_share":0.0389,"ratio":5.454},{"target":"SCCPDH","split":"Test","n_cells":1300,"n_guides":1,"cp10k_pert":0.05,"cp10k_ctrl":1.119,"residual":0.045,"l2":3.417,"n_shift":16,"max_abs":1.404,"n_batches":48,"top_batch_share":0.03,"ratio":5.419},{"target":"GSK3B","split":"Training","n_cells":1059,"n_guides":1,"cp10k_pert":0.126,"cp10k_ctrl":1.574,"residual":0.0803,"l2":3.769,"n_shift":33,"max_abs":0.825,"n_batches":48,"top_batch_share":0.0321,"ratio":5.39},{"target":"HIRA","split":"Training","n_cells":3407,"n_guides":2,"cp10k_pert":1.414,"cp10k_ctrl":1.58,"residual":0.8948,"l2":2.09,"n_shift":8,"max_abs":0.72,"n_batches":48,"top_batch_share":0.0255,"ratio":5.388},{"target":"FDPS","split":"Training","n_cells":154,"n_guides":1,"cp10k_pert":0.024,"cp10k_ctrl":0.229,"residual":0.1064,"l2":9.893,"n_shift":179,"max_abs":2.107,"n_batches":46,"top_batch_share":0.0455,"ratio":5.352},{"target":"DCK","split":"Test","n_cells":1737,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":0.641,"residual":0.0709,"l2":2.89,"n_shift":15,"max_abs":0.901,"n_batches":48,"top_batch_share":0.0276,"ratio":5.305},{"target":"CDC25B","split":"Test","n_cells":913,"n_guides":1,"cp10k_pert":0.028,"cp10k_ctrl":0.576,"residual":0.0482,"l2":3.968,"n_shift":21,"max_abs":0.554,"n_batches":48,"top_batch_share":0.034,"ratio":5.266},{"target":"USP22","split":"Training","n_cells":2491,"n_guides":1,"cp10k_pert":0.139,"cp10k_ctrl":3.619,"residual":0.0385,"l2":2.307,"n_shift":1,"max_abs":1.378,"n_batches":48,"top_batch_share":0.0257,"ratio":5.079},{"target":"HDGF","split":"Test","n_cells":3271,"n_guides":1,"cp10k_pert":0.273,"cp10k_ctrl":2.892,"residual":0.0943,"l2":2.011,"n_shift":4,"max_abs":1.292,"n_batches":48,"top_batch_share":0.0248,"ratio":5.079},{"target":"MGST1","split":"Validation","n_cells":2096,"n_guides":1,"cp10k_pert":0.433,"cp10k_ctrl":10.876,"residual":0.0398,"l2":2.48,"n_shift":3,"max_abs":2.053,"n_batches":48,"top_batch_share":0.0272,"ratio":5.004},{"target":"UBE3C","split":"Training","n_cells":1590,"n_guides":1,"cp10k_pert":0.082,"cp10k_ctrl":1.706,"residual":0.0478,"l2":2.843,"n_shift":9,"max_abs":1.162,"n_batches":48,"top_batch_share":0.0289,"ratio":4.991},{"target":"HMGCS1","split":"Test","n_cells":910,"n_guides":1,"cp10k_pert":0.285,"cp10k_ctrl":7.357,"residual":0.0387,"l2":3.749,"n_shift":32,"max_abs":1.825,"n_batches":48,"top_batch_share":0.033,"ratio":4.967},{"target":"EPB41L2","split":"Training","n_cells":219,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":1.334,"residual":0.0341,"l2":7.646,"n_shift":122,"max_abs":1.123,"n_batches":48,"top_batch_share":0.0457,"ratio":4.94},{"target":"SUPV3L1","split":"Validation","n_cells":339,"n_guides":1,"cp10k_pert":0.037,"cp10k_ctrl":0.715,"residual":0.0515,"l2":6.042,"n_shift":71,"max_abs":0.864,"n_batches":48,"top_batch_share":0.0442,"ratio":4.866},{"target":"GRB10","split":"Test","n_cells":4074,"n_guides":2,"cp10k_pert":0.386,"cp10k_ctrl":0.775,"residual":0.498,"l2":1.706,"n_shift":6,"max_abs":0.486,"n_batches":48,"top_batch_share":0.026,"ratio":4.813},{"target":"KDM2B","split":"Training","n_cells":2142,"n_guides":2,"cp10k_pert":0.344,"cp10k_ctrl":1.398,"residual":0.2464,"l2":2.333,"n_shift":8,"max_abs":0.569,"n_batches":48,"top_batch_share":0.0285,"ratio":4.759},{"target":"MTA1","split":"Training","n_cells":1434,"n_guides":1,"cp10k_pert":0.103,"cp10k_ctrl":2.097,"residual":0.0492,"l2":2.833,"n_shift":7,"max_abs":1.103,"n_batches":48,"top_batch_share":0.03,"ratio":4.721},{"target":"RNF40","split":"Test","n_cells":150,"n_guides":1,"cp10k_pert":0.145,"cp10k_ctrl":0.982,"residual":0.148,"l2":8.839,"n_shift":171,"max_abs":1.363,"n_batches":47,"top_batch_share":0.0467,"ratio":4.719},{"target":"KIF20A","split":"Training","n_cells":183,"n_guides":1,"cp10k_pert":0.054,"cp10k_ctrl":1.169,"residual":0.0465,"l2":7.919,"n_shift":145,"max_abs":0.94,"n_batches":46,"top_batch_share":0.0601,"ratio":4.673},{"target":"MED23","split":"Test","n_cells":955,"n_guides":1,"cp10k_pert":0.02,"cp10k_ctrl":0.443,"residual":0.0456,"l2":3.419,"n_shift":20,"max_abs":0.665,"n_batches":48,"top_batch_share":0.0325,"ratio":4.641},{"target":"HTATSF1","split":"Validation","n_cells":892,"n_guides":1,"cp10k_pert":0.104,"cp10k_ctrl":0.986,"residual":0.1052,"l2":3.536,"n_shift":4,"max_abs":0.582,"n_batches":48,"top_batch_share":0.0336,"ratio":4.638},{"target":"HSP90B1","split":"Test","n_cells":503,"n_guides":1,"cp10k_pert":0.32,"cp10k_ctrl":5.208,"residual":0.0614,"l2":4.666,"n_shift":34,"max_abs":1.496,"n_batches":48,"top_batch_share":0.0378,"ratio":4.585},{"target":"OXCT1","split":"Training","n_cells":740,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":0.992,"residual":0.0455,"l2":3.836,"n_shift":15,"max_abs":1.86,"n_batches":48,"top_batch_share":0.0324,"ratio":4.579},{"target":"CAST","split":"Training","n_cells":2252,"n_guides":2,"cp10k_pert":0.262,"cp10k_ctrl":0.446,"residual":0.5865,"l2":2.168,"n_shift":14,"max_abs":0.433,"n_batches":48,"top_batch_share":0.0289,"ratio":4.536},{"target":"METTL17","split":"Training","n_cells":790,"n_guides":1,"cp10k_pert":0.072,"cp10k_ctrl":1.359,"residual":0.0528,"l2":3.673,"n_shift":18,"max_abs":0.775,"n_batches":48,"top_batch_share":0.0329,"ratio":4.532},{"target":"HMGCR","split":"Validation","n_cells":843,"n_guides":1,"cp10k_pert":0.304,"cp10k_ctrl":6.107,"residual":0.0498,"l2":3.546,"n_shift":29,"max_abs":1.661,"n_batches":48,"top_batch_share":0.0368,"ratio":4.52},{"target":"ADNP","split":"Test","n_cells":291,"n_guides":1,"cp10k_pert":0.085,"cp10k_ctrl":1.085,"residual":0.0784,"l2":6.018,"n_shift":66,"max_abs":0.917,"n_batches":47,"top_batch_share":0.0412,"ratio":4.487},{"target":"CTBP2","split":"Test","n_cells":538,"n_guides":1,"cp10k_pert":4.696,"cp10k_ctrl":8.964,"residual":0.5238,"l2":4.38,"n_shift":29,"max_abs":0.572,"n_batches":48,"top_batch_share":0.0372,"ratio":4.452},{"target":"SLIRP","split":"Validation","n_cells":2000,"n_guides":1,"cp10k_pert":0.068,"cp10k_ctrl":1.386,"residual":0.0494,"l2":2.256,"n_shift":8,"max_abs":0.798,"n_batches":48,"top_batch_share":0.0305,"ratio":4.446},{"target":"SAFB","split":"Training","n_cells":827,"n_guides":1,"cp10k_pert":0.117,"cp10k_ctrl":2.243,"residual":0.0521,"l2":3.494,"n_shift":10,"max_abs":1.062,"n_batches":48,"top_batch_share":0.0339,"ratio":4.411},{"target":"DHCR24","split":"Training","n_cells":1420,"n_guides":1,"cp10k_pert":0.286,"cp10k_ctrl":6.99,"residual":0.0409,"l2":2.625,"n_shift":11,"max_abs":1.798,"n_batches":48,"top_batch_share":0.0303,"ratio":4.353},{"target":"CHMP3","split":"Training","n_cells":1168,"n_guides":1,"cp10k_pert":0.019,"cp10k_ctrl":0.413,"residual":0.0468,"l2":2.889,"n_shift":9,"max_abs":0.63,"n_batches":48,"top_batch_share":0.03,"ratio":4.341},{"target":"TAF13","split":"Training","n_cells":138,"n_guides":1,"cp10k_pert":0.12,"cp10k_ctrl":2.006,"residual":0.0597,"l2":8.408,"n_shift":171,"max_abs":1.088,"n_batches":46,"top_batch_share":0.058,"ratio":4.304},{"target":"KRT18","split":"Validation","n_cells":1602,"n_guides":1,"cp10k_pert":0.29,"cp10k_ctrl":7.507,"residual":0.0387,"l2":2.42,"n_shift":3,"max_abs":1.859,"n_batches":48,"top_batch_share":0.0287,"ratio":4.264},{"target":"ACTN1","split":"Test","n_cells":1278,"n_guides":1,"cp10k_pert":0.332,"cp10k_ctrl":6.417,"residual":0.0518,"l2":2.683,"n_shift":8,"max_abs":1.683,"n_batches":48,"top_batch_share":0.0352,"ratio":4.219},{"target":"HMGN1","split":"Training","n_cells":2004,"n_guides":1,"cp10k_pert":0.215,"cp10k_ctrl":5.496,"residual":0.0391,"l2":2.128,"n_shift":2,"max_abs":1.657,"n_batches":48,"top_batch_share":0.0279,"ratio":4.198},{"target":"SALL4","split":"Training","n_cells":180,"n_guides":1,"cp10k_pert":0.112,"cp10k_ctrl":1.744,"residual":0.0641,"l2":7.164,"n_shift":127,"max_abs":1.345,"n_batches":45,"top_batch_share":0.05,"ratio":4.193},{"target":"IGF1R","split":"Validation","n_cells":2056,"n_guides":2,"cp10k_pert":1.108,"cp10k_ctrl":3.363,"residual":0.3294,"l2":2.092,"n_shift":3,"max_abs":0.706,"n_batches":48,"top_batch_share":0.0311,"ratio":4.181},{"target":"NELFE","split":"Test","n_cells":67,"n_guides":1,"cp10k_pert":0.02,"cp10k_ctrl":0.36,"residual":0.0567,"l2":11.681,"n_shift":387,"max_abs":1.75,"n_batches":38,"top_batch_share":0.0597,"ratio":4.153},{"target":"CNN3","split":"Test","n_cells":2496,"n_guides":1,"cp10k_pert":0.255,"cp10k_ctrl":6.929,"residual":0.0368,"l2":1.878,"n_shift":1,"max_abs":1.805,"n_batches":48,"top_batch_share":0.026,"ratio":4.138},{"target":"PLAGL2","split":"Test","n_cells":3642,"n_guides":1,"cp10k_pert":0.025,"cp10k_ctrl":0.702,"residual":0.035,"l2":1.532,"n_shift":3,"max_abs":0.503,"n_batches":48,"top_batch_share":0.0272,"ratio":4.084},{"target":"UQCRQ","split":"Training","n_cells":1161,"n_guides":1,"cp10k_pert":0.09,"cp10k_ctrl":1.922,"residual":0.0468,"l2":2.711,"n_shift":5,"max_abs":0.977,"n_batches":48,"top_batch_share":0.0276,"ratio":4.061},{"target":"ETV4","split":"Training","n_cells":263,"n_guides":1,"cp10k_pert":0.388,"cp10k_ctrl":2.489,"residual":0.1558,"l2":5.725,"n_shift":49,"max_abs":1.275,"n_batches":48,"top_batch_share":0.0494,"ratio":4.056},{"target":"PRR12","split":"Training","n_cells":1286,"n_guides":1,"cp10k_pert":0.094,"cp10k_ctrl":0.971,"residual":0.097,"l2":2.557,"n_shift":5,"max_abs":0.592,"n_batches":48,"top_batch_share":0.0272,"ratio":4.033},{"target":"BRPF1","split":"Test","n_cells":366,"n_guides":1,"cp10k_pert":0.019,"cp10k_ctrl":0.289,"residual":0.0653,"l2":4.751,"n_shift":30,"max_abs":0.73,"n_batches":48,"top_batch_share":0.0383,"ratio":3.977},{"target":"FUBP1","split":"Validation","n_cells":288,"n_guides":1,"cp10k_pert":0.15,"cp10k_ctrl":3.383,"residual":0.0443,"l2":5.345,"n_shift":27,"max_abs":1.341,"n_batches":48,"top_batch_share":0.0417,"ratio":3.965},{"target":"SEC62","split":"Training","n_cells":286,"n_guides":1,"cp10k_pert":0.074,"cp10k_ctrl":1.841,"residual":0.0401,"l2":5.339,"n_shift":47,"max_abs":0.958,"n_batches":47,"top_batch_share":0.0385,"ratio":3.946},{"target":"ATF4","split":"Test","n_cells":570,"n_guides":1,"cp10k_pert":0.012,"cp10k_ctrl":0.392,"residual":0.0316,"l2":3.748,"n_shift":33,"max_abs":0.886,"n_batches":48,"top_batch_share":0.0421,"ratio":3.922},{"target":"MLLT1","split":"Test","n_cells":1629,"n_guides":1,"cp10k_pert":0.124,"cp10k_ctrl":0.896,"residual":0.1383,"l2":2.177,"n_shift":3,"max_abs":0.522,"n_batches":48,"top_batch_share":0.0289,"ratio":3.869},{"target":"CYCS","split":"Test","n_cells":770,"n_guides":1,"cp10k_pert":0.151,"cp10k_ctrl":3.767,"residual":0.0402,"l2":3.172,"n_shift":7,"max_abs":1.399,"n_batches":48,"top_batch_share":0.0312,"ratio":3.863},{"target":"INO80B","split":"Test","n_cells":170,"n_guides":1,"cp10k_pert":0.019,"cp10k_ctrl":0.38,"residual":0.05,"l2":6.774,"n_shift":77,"max_abs":0.624,"n_batches":46,"top_batch_share":0.0588,"ratio":3.852},{"target":"NDUFB4","split":"Training","n_cells":1413,"n_guides":1,"cp10k_pert":0.15,"cp10k_ctrl":3.385,"residual":0.0443,"l2":2.324,"n_shift":2,"max_abs":1.308,"n_batches":48,"top_batch_share":0.0304,"ratio":3.844},{"target":"TET1","split":"Training","n_cells":2428,"n_guides":1,"cp10k_pert":0.294,"cp10k_ctrl":2.199,"residual":0.1338,"l2":1.766,"n_shift":2,"max_abs":0.875,"n_batches":48,"top_batch_share":0.0255,"ratio":3.838},{"target":"EWSR1","split":"Training","n_cells":538,"n_guides":1,"cp10k_pert":0.207,"cp10k_ctrl":1.959,"residual":0.1057,"l2":3.774,"n_shift":8,"max_abs":0.883,"n_batches":48,"top_batch_share":0.0372,"ratio":3.836},{"target":"CSK","split":"Validation","n_cells":1572,"n_guides":1,"cp10k_pert":0.025,"cp10k_ctrl":0.505,"residual":0.0491,"l2":2.198,"n_shift":8,"max_abs":0.796,"n_batches":48,"top_batch_share":0.0324,"ratio":3.836},{"target":"RNF20","split":"Training","n_cells":47,"n_guides":1,"cp10k_pert":0.115,"cp10k_ctrl":0.932,"residual":0.1235,"l2":12.841,"n_shift":540,"max_abs":1.642,"n_batches":31,"top_batch_share":0.0638,"ratio":3.818},{"target":"UQCRB","split":"Validation","n_cells":959,"n_guides":1,"cp10k_pert":0.111,"cp10k_ctrl":2.776,"residual":0.0398,"l2":2.785,"n_shift":7,"max_abs":1.199,"n_batches":48,"top_batch_share":0.0302,"ratio":3.789},{"target":"SSBP1","split":"Training","n_cells":905,"n_guides":1,"cp10k_pert":0.0,"cp10k_ctrl":0.028,"residual":0.0078,"l2":2.866,"n_shift":13,"max_abs":0.454,"n_batches":48,"top_batch_share":0.0309,"ratio":3.787},{"target":"TRAPPC6A","split":"Training","n_cells":589,"n_guides":1,"cp10k_pert":0.021,"cp10k_ctrl":0.415,"residual":0.0502,"l2":3.55,"n_shift":19,"max_abs":1.173,"n_batches":48,"top_batch_share":0.0323,"ratio":3.777},{"target":"PHF10","split":"Training","n_cells":450,"n_guides":1,"cp10k_pert":0.083,"cp10k_ctrl":1.262,"residual":0.066,"l2":4.06,"n_shift":9,"max_abs":2.111,"n_batches":48,"top_batch_share":0.0333,"ratio":3.771},{"target":"ELAC2","split":"Test","n_cells":184,"n_guides":1,"cp10k_pert":0.138,"cp10k_ctrl":2.306,"residual":0.0597,"l2":6.362,"n_shift":80,"max_abs":1.049,"n_batches":48,"top_batch_share":0.0435,"ratio":3.765},{"target":"CTSV","split":"Validation","n_cells":1989,"n_guides":1,"cp10k_pert":0.053,"cp10k_ctrl":1.029,"residual":0.0516,"l2":1.91,"n_shift":6,"max_abs":0.822,"n_batches":48,"top_batch_share":0.0271,"ratio":3.754},{"target":"SMAGP","split":"Training","n_cells":788,"n_guides":1,"cp10k_pert":0.01,"cp10k_ctrl":0.185,"residual":0.0559,"l2":3.046,"n_shift":15,"max_abs":1.086,"n_batches":48,"top_batch_share":0.0343,"ratio":3.753},{"target":"MED1","split":"Training","n_cells":407,"n_guides":1,"cp10k_pert":0.05,"cp10k_ctrl":1.054,"residual":0.0472,"l2":4.241,"n_shift":22,"max_abs":0.659,"n_batches":48,"top_batch_share":0.0442,"ratio":3.745},{"target":"SLC39A6","split":"Training","n_cells":178,"n_guides":1,"cp10k_pert":0.047,"cp10k_ctrl":1.636,"residual":0.0288,"l2":6.414,"n_shift":69,"max_abs":1.177,"n_batches":48,"top_batch_share":0.0449,"ratio":3.733},{"target":"UGDH","split":"Test","n_cells":1474,"n_guides":1,"cp10k_pert":0.299,"cp10k_ctrl":3.418,"residual":0.0876,"l2":2.192,"n_shift":7,"max_abs":1.191,"n_batches":48,"top_batch_share":0.0305,"ratio":3.704},{"target":"BIRC2","split":"Training","n_cells":1116,"n_guides":1,"cp10k_pert":0.013,"cp10k_ctrl":0.301,"residual":0.0434,"l2":2.521,"n_shift":3,"max_abs":0.63,"n_batches":48,"top_batch_share":0.0358,"ratio":3.702},{"target":"LTBR","split":"Test","n_cells":1206,"n_guides":1,"cp10k_pert":0.004,"cp10k_ctrl":0.081,"residual":0.0529,"l2":2.391,"n_shift":7,"max_abs":0.981,"n_batches":48,"top_batch_share":0.0307,"ratio":3.651},{"target":"APOE","split":"Test","n_cells":1798,"n_guides":1,"cp10k_pert":0.81,"cp10k_ctrl":11.183,"residual":0.0724,"l2":1.953,"n_shift":1,"max_abs":1.869,"n_batches":48,"top_batch_share":0.0289,"ratio":3.648},{"target":"MED13L","split":"Training","n_cells":2469,"n_guides":1,"cp10k_pert":0.022,"cp10k_ctrl":0.378,"residual":0.0595,"l2":1.647,"n_shift":1,"max_abs":0.3,"n_batches":48,"top_batch_share":0.0255,"ratio":3.61},{"target":"NREP","split":"Training","n_cells":352,"n_guides":1,"cp10k_pert":0.311,"cp10k_ctrl":8.095,"residual":0.0385,"l2":4.367,"n_shift":26,"max_abs":1.923,"n_batches":48,"top_batch_share":0.0312,"ratio":3.584},{"target":"NDUFC2","split":"Test","n_cells":1595,"n_guides":1,"cp10k_pert":0.029,"cp10k_ctrl":0.781,"residual":0.0367,"l2":2.031,"n_shift":2,"max_abs":0.542,"n_batches":48,"top_batch_share":0.0282,"ratio":3.571},{"target":"FOXH1","split":"Training","n_cells":1967,"n_guides":1,"cp10k_pert":0.01,"cp10k_ctrl":0.274,"residual":0.0372,"l2":1.821,"n_shift":5,"max_abs":0.698,"n_batches":48,"top_batch_share":0.0275,"ratio":3.559},{"target":"NDUFB9","split":"Test","n_cells":1059,"n_guides":1,"cp10k_pert":0.261,"cp10k_ctrl":4.335,"residual":0.0601,"l2":2.477,"n_shift":3,"max_abs":1.406,"n_batches":48,"top_batch_share":0.0331,"ratio":3.543},{"target":"PAGR1","split":"Training","n_cells":1953,"n_guides":1,"cp10k_pert":0.218,"cp10k_ctrl":2.071,"residual":0.105,"l2":1.796,"n_shift":1,"max_abs":0.919,"n_batches":48,"top_batch_share":0.0297,"ratio":3.497},{"target":"COX6C","split":"Validation","n_cells":1025,"n_guides":1,"cp10k_pert":0.118,"cp10k_ctrl":2.25,"residual":0.0523,"l2":2.483,"n_shift":2,"max_abs":1.04,"n_batches":48,"top_batch_share":0.0302,"ratio":3.493},{"target":"STAT6","split":"Training","n_cells":858,"n_guides":1,"cp10k_pert":0.003,"cp10k_ctrl":0.054,"residual":0.0625,"l2":2.702,"n_shift":12,"max_abs":0.907,"n_batches":48,"top_batch_share":0.035,"ratio":3.475},{"target":"RRM2","split":"Test","n_cells":1881,"n_guides":1,"cp10k_pert":0.11,"cp10k_ctrl":2.995,"residual":0.0366,"l2":1.81,"n_shift":2,"max_abs":1.258,"n_batches":48,"top_batch_share":0.0292,"ratio":3.458},{"target":"AASS","split":"Test","n_cells":1376,"n_guides":1,"cp10k_pert":0.768,"cp10k_ctrl":10.359,"residual":0.0742,"l2":2.094,"n_shift":3,"max_abs":1.8,"n_batches":48,"top_batch_share":0.0305,"ratio":3.418},{"target":"WSB2","split":"Training","n_cells":712,"n_guides":1,"cp10k_pert":0.303,"cp10k_ctrl":1.752,"residual":0.1732,"l2":2.918,"n_shift":13,"max_abs":0.733,"n_batches":48,"top_batch_share":0.0351,"ratio":3.416},{"target":"PSMG1","split":"Test","n_cells":139,"n_guides":1,"cp10k_pert":0.096,"cp10k_ctrl":1.806,"residual":0.0532,"l2":6.603,"n_shift":50,"max_abs":0.93,"n_batches":45,"top_batch_share":0.0647,"ratio":3.392},{"target":"ZFP62","split":"Test","n_cells":204,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":0.621,"residual":0.0721,"l2":5.423,"n_shift":57,"max_abs":0.857,"n_batches":47,"top_batch_share":0.049,"ratio":3.381},{"target":"SLC25A3","split":"Training","n_cells":805,"n_guides":1,"cp10k_pert":0.181,"cp10k_ctrl":4.616,"residual":0.0393,"l2":2.702,"n_shift":3,"max_abs":1.537,"n_batches":48,"top_batch_share":0.0298,"ratio":3.365},{"target":"HMGB2","split":"Training","n_cells":1487,"n_guides":1,"cp10k_pert":0.082,"cp10k_ctrl":2.012,"residual":0.0407,"l2":1.971,"n_shift":4,"max_abs":1.019,"n_batches":48,"top_batch_share":0.0303,"ratio":3.345},{"target":"DLG5","split":"Training","n_cells":864,"n_guides":1,"cp10k_pert":0.035,"cp10k_ctrl":0.643,"residual":0.0539,"l2":2.537,"n_shift":9,"max_abs":0.71,"n_batches":48,"top_batch_share":0.0324,"ratio":3.275},{"target":"CLDN6","split":"Training","n_cells":864,"n_guides":1,"cp10k_pert":0.61,"cp10k_ctrl":15.815,"residual":0.0385,"l2":2.523,"n_shift":1,"max_abs":2.297,"n_batches":48,"top_batch_share":0.0312,"ratio":3.256},{"target":"DAXX","split":"Training","n_cells":1332,"n_guides":2,"cp10k_pert":0.2,"cp10k_ctrl":1.283,"residual":0.1556,"l2":2.022,"n_shift":4,"max_abs":0.636,"n_batches":48,"top_batch_share":0.0285,"ratio":3.246},{"target":"ZBTB39","split":"Test","n_cells":417,"n_guides":1,"cp10k_pert":0.039,"cp10k_ctrl":0.842,"residual":0.0463,"l2":3.555,"n_shift":16,"max_abs":0.914,"n_batches":48,"top_batch_share":0.0456,"ratio":3.178},{"target":"PIAS1","split":"Test","n_cells":1123,"n_guides":1,"cp10k_pert":0.031,"cp10k_ctrl":0.409,"residual":0.0749,"l2":2.156,"n_shift":1,"max_abs":0.314,"n_batches":48,"top_batch_share":0.0347,"ratio":3.176},{"target":"KLF10","split":"Training","n_cells":1932,"n_guides":2,"cp10k_pert":0.123,"cp10k_ctrl":0.465,"residual":0.2643,"l2":1.634,"n_shift":3,"max_abs":0.582,"n_batches":48,"top_batch_share":0.029,"ratio":3.164},{"target":"C1QBP","split":"Training","n_cells":711,"n_guides":1,"cp10k_pert":0.059,"cp10k_ctrl":1.099,"residual":0.0536,"l2":2.652,"n_shift":1,"max_abs":0.674,"n_batches":48,"top_batch_share":0.0352,"ratio":3.103},{"target":"DHX9","split":"Test","n_cells":273,"n_guides":1,"cp10k_pert":0.372,"cp10k_ctrl":3.677,"residual":0.1011,"l2":4.293,"n_shift":10,"max_abs":1.211,"n_batches":48,"top_batch_share":0.0366,"ratio":3.1},{"target":"CYFIP1","split":"Test","n_cells":2040,"n_guides":1,"cp10k_pert":0.053,"cp10k_ctrl":1.084,"residual":0.0492,"l2":1.554,"n_shift":2,"max_abs":0.675,"n_batches":48,"top_batch_share":0.0289,"ratio":3.093},{"target":"PRCP","split":"Training","n_cells":4331,"n_guides":2,"cp10k_pert":0.054,"cp10k_ctrl":1.052,"residual":0.0517,"l2":1.038,"n_shift":2,"max_abs":0.656,"n_batches":48,"top_batch_share":0.0275,"ratio":3.02},{"target":"COX4I1","split":"Validation","n_cells":1058,"n_guides":1,"cp10k_pert":0.255,"cp10k_ctrl":3.407,"residual":0.0748,"l2":2.093,"n_shift":1,"max_abs":1.229,"n_batches":48,"top_batch_share":0.0312,"ratio":2.992},{"target":"EPHB4","split":"Training","n_cells":241,"n_guides":1,"cp10k_pert":0.079,"cp10k_ctrl":1.039,"residual":0.0764,"l2":4.394,"n_shift":35,"max_abs":0.619,"n_batches":48,"top_batch_share":0.0373,"ratio":2.979},{"target":"GNG12","split":"Validation","n_cells":677,"n_guides":1,"cp10k_pert":0.024,"cp10k_ctrl":0.596,"residual":0.0397,"l2":2.602,"n_shift":3,"max_abs":0.85,"n_batches":48,"top_batch_share":0.034,"ratio":2.97},{"target":"CDCA2","split":"Training","n_cells":1717,"n_guides":1,"cp10k_pert":0.092,"cp10k_ctrl":1.741,"residual":0.053,"l2":1.622,"n_shift":2,"max_abs":0.936,"n_batches":48,"top_batch_share":0.0309,"ratio":2.96},{"target":"NISCH","split":"Training","n_cells":2101,"n_guides":1,"cp10k_pert":0.036,"cp10k_ctrl":0.664,"residual":0.0535,"l2":1.463,"n_shift":5,"max_abs":0.623,"n_batches":48,"top_batch_share":0.0286,"ratio":2.956},{"target":"AKT2","split":"Training","n_cells":938,"n_guides":1,"cp10k_pert":0.066,"cp10k_ctrl":1.273,"residual":0.052,"l2":2.191,"n_shift":7,"max_abs":0.755,"n_batches":48,"top_batch_share":0.0309,"ratio":2.948},{"target":"TCF3","split":"Training","n_cells":1343,"n_guides":1,"cp10k_pert":0.162,"cp10k_ctrl":3.787,"residual":0.0428,"l2":1.816,"n_shift":1,"max_abs":1.39,"n_batches":48,"top_batch_share":0.032,"ratio":2.928},{"target":"JAZF1","split":"Validation","n_cells":709,"n_guides":1,"cp10k_pert":0.192,"cp10k_ctrl":0.52,"residual":0.3688,"l2":2.503,"n_shift":16,"max_abs":0.743,"n_batches":48,"top_batch_share":0.031,"ratio":2.924},{"target":"ANKZF1","split":"Test","n_cells":1063,"n_guides":1,"cp10k_pert":0.018,"cp10k_ctrl":0.291,"residual":0.0624,"l2":2.011,"n_shift":7,"max_abs":0.537,"n_batches":48,"top_batch_share":0.0329,"ratio":2.882},{"target":"KIF1B","split":"Training","n_cells":2407,"n_guides":1,"cp10k_pert":0.105,"cp10k_ctrl":2.475,"residual":0.0426,"l2":1.322,"n_shift":1,"max_abs":1.119,"n_batches":48,"top_batch_share":0.0266,"ratio":2.86},{"target":"DNAJA3","split":"Training","n_cells":65,"n_guides":1,"cp10k_pert":0.115,"cp10k_ctrl":1.939,"residual":0.0595,"l2":8.164,"n_shift":151,"max_abs":0.951,"n_batches":35,"top_batch_share":0.0615,"ratio":2.859},{"target":"XRCC4","split":"Training","n_cells":591,"n_guides":1,"cp10k_pert":0.02,"cp10k_ctrl":0.31,"residual":0.0644,"l2":2.671,"n_shift":2,"max_abs":1.544,"n_batches":48,"top_batch_share":0.0321,"ratio":2.847},{"target":"STXBP1","split":"Test","n_cells":3751,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":1.094,"residual":0.0416,"l2":1.043,"n_shift":2,"max_abs":0.692,"n_batches":48,"top_batch_share":0.0272,"ratio":2.822},{"target":"FIBP","split":"Test","n_cells":2094,"n_guides":1,"cp10k_pert":0.052,"cp10k_ctrl":1.443,"residual":0.0357,"l2":1.389,"n_shift":3,"max_abs":0.837,"n_batches":48,"top_batch_share":0.0282,"ratio":2.801},{"target":"OXA1L","split":"Training","n_cells":63,"n_guides":1,"cp10k_pert":0.277,"cp10k_ctrl":3.724,"residual":0.0745,"l2":8.096,"n_shift":143,"max_abs":1.312,"n_batches":38,"top_batch_share":0.0635,"ratio":2.791},{"target":"ATM","split":"Training","n_cells":455,"n_guides":1,"cp10k_pert":0.097,"cp10k_ctrl":1.235,"residual":0.0781,"l2":2.979,"n_shift":12,"max_abs":0.708,"n_batches":48,"top_batch_share":0.0396,"ratio":2.783},{"target":"PBX1","split":"Training","n_cells":2313,"n_guides":1,"cp10k_pert":0.12,"cp10k_ctrl":2.252,"residual":0.0534,"l2":1.308,"n_shift":1,"max_abs":1.034,"n_batches":48,"top_batch_share":0.0272,"ratio":2.774},{"target":"NDUFB6","split":"Training","n_cells":863,"n_guides":1,"cp10k_pert":0.075,"cp10k_ctrl":1.619,"residual":0.0465,"l2":2.142,"n_shift":4,"max_abs":0.872,"n_batches":48,"top_batch_share":0.0359,"ratio":2.763},{"target":"UGP2","split":"Test","n_cells":2027,"n_guides":1,"cp10k_pert":0.078,"cp10k_ctrl":1.818,"residual":0.0427,"l2":1.385,"n_shift":3,"max_abs":0.945,"n_batches":48,"top_batch_share":0.0306,"ratio":2.748},{"target":"PHF14","split":"Training","n_cells":899,"n_guides":1,"cp10k_pert":0.111,"cp10k_ctrl":2.68,"residual":0.0415,"l2":2.08,"n_shift":3,"max_abs":1.172,"n_batches":48,"top_batch_share":0.0323,"ratio":2.739},{"target":"BECN1","split":"Test","n_cells":349,"n_guides":1,"cp10k_pert":0.023,"cp10k_ctrl":0.473,"residual":0.0476,"l2":3.334,"n_shift":14,"max_abs":0.517,"n_batches":48,"top_batch_share":0.0401,"ratio":2.725},{"target":"NEK2","split":"Test","n_cells":1523,"n_guides":1,"cp10k_pert":0.018,"cp10k_ctrl":0.448,"residual":0.0405,"l2":1.583,"n_shift":3,"max_abs":0.577,"n_batches":48,"top_batch_share":0.0289,"ratio":2.719},{"target":"ZRSR2","split":"Test","n_cells":76,"n_guides":1,"cp10k_pert":0.01,"cp10k_ctrl":0.123,"residual":0.0817,"l2":7.147,"n_shift":101,"max_abs":0.767,"n_batches":38,"top_batch_share":0.0789,"ratio":2.708},{"target":"KDR","split":"Training","n_cells":2056,"n_guides":1,"cp10k_pert":0.1,"cp10k_ctrl":1.628,"residual":0.0612,"l2":1.348,"n_shift":3,"max_abs":0.866,"n_batches":48,"top_batch_share":0.0311,"ratio":2.694},{"target":"HAT1","split":"Training","n_cells":1025,"n_guides":1,"cp10k_pert":0.077,"cp10k_ctrl":2.013,"residual":0.0381,"l2":1.913,"n_shift":1,"max_abs":1.016,"n_batches":48,"top_batch_share":0.0312,"ratio":2.691},{"target":"CREM","split":"Test","n_cells":2247,"n_guides":1,"cp10k_pert":0.062,"cp10k_ctrl":1.057,"residual":0.0588,"l2":1.268,"n_shift":2,"max_abs":0.649,"n_batches":48,"top_batch_share":0.0285,"ratio":2.65},{"target":"HSBP1","split":"Training","n_cells":166,"n_guides":1,"cp10k_pert":0.107,"cp10k_ctrl":2.22,"residual":0.0483,"l2":4.687,"n_shift":26,"max_abs":1.068,"n_batches":46,"top_batch_share":0.0602,"ratio":2.633},{"target":"ASF1A","split":"Test","n_cells":537,"n_guides":1,"cp10k_pert":0.061,"cp10k_ctrl":1.583,"residual":0.0387,"l2":2.576,"n_shift":8,"max_abs":0.885,"n_batches":48,"top_batch_share":0.0354,"ratio":2.616},{"target":"STUB1","split":"Test","n_cells":2615,"n_guides":1,"cp10k_pert":0.078,"cp10k_ctrl":1.693,"residual":0.0462,"l2":1.158,"n_shift":1,"max_abs":0.902,"n_batches":48,"top_batch_share":0.0264,"ratio":2.612},{"target":"ARPC2","split":"Validation","n_cells":980,"n_guides":2,"cp10k_pert":0.487,"cp10k_ctrl":1.045,"residual":0.4663,"l2":1.886,"n_shift":1,"max_abs":0.297,"n_batches":48,"top_batch_share":0.0306,"ratio":2.594},{"target":"ACVR1B","split":"Training","n_cells":1400,"n_guides":1,"cp10k_pert":0.028,"cp10k_ctrl":0.609,"residual":0.0457,"l2":1.557,"n_shift":3,"max_abs":0.44,"n_batches":48,"top_batch_share":0.03,"ratio":2.563},{"target":"RBPJ","split":"Test","n_cells":710,"n_guides":1,"cp10k_pert":0.215,"cp10k_ctrl":1.464,"residual":0.1468,"l2":2.184,"n_shift":4,"max_abs":0.7,"n_batches":48,"top_batch_share":0.0296,"ratio":2.553},{"target":"RAF1","split":"Training","n_cells":791,"n_guides":1,"cp10k_pert":0.09,"cp10k_ctrl":1.157,"residual":0.0782,"l2":2.063,"n_shift":5,"max_abs":0.661,"n_batches":48,"top_batch_share":0.0341,"ratio":2.547},{"target":"OSTC","split":"Test","n_cells":159,"n_guides":1,"cp10k_pert":0.11,"cp10k_ctrl":2.526,"residual":0.0436,"l2":4.595,"n_shift":28,"max_abs":1.129,"n_batches":48,"top_batch_share":0.044,"ratio":2.526},{"target":"THY1","split":"Validation","n_cells":1104,"n_guides":1,"cp10k_pert":0.238,"cp10k_ctrl":4.755,"residual":0.05,"l2":1.729,"n_shift":1,"max_abs":1.497,"n_batches":48,"top_batch_share":0.0344,"ratio":2.525},{"target":"TARBP2","split":"Training","n_cells":2032,"n_guides":1,"cp10k_pert":0.022,"cp10k_ctrl":0.515,"residual":0.0435,"l2":1.269,"n_shift":1,"max_abs":0.392,"n_batches":48,"top_batch_share":0.033,"ratio":2.521},{"target":"STX4","split":"Training","n_cells":1249,"n_guides":1,"cp10k_pert":0.025,"cp10k_ctrl":0.594,"residual":0.0428,"l2":1.604,"n_shift":3,"max_abs":0.437,"n_batches":48,"top_batch_share":0.032,"ratio":2.493},{"target":"VCL","split":"Validation","n_cells":894,"n_guides":1,"cp10k_pert":0.116,"cp10k_ctrl":2.428,"residual":0.0478,"l2":1.85,"n_shift":2,"max_abs":1.118,"n_batches":48,"top_batch_share":0.0324,"ratio":2.429},{"target":"HDAC8","split":"Validation","n_cells":1204,"n_guides":1,"cp10k_pert":0.029,"cp10k_ctrl":0.64,"residual":0.0447,"l2":1.59,"n_shift":3,"max_abs":0.465,"n_batches":48,"top_batch_share":0.0316,"ratio":2.426},{"target":"SRC","split":"Training","n_cells":2403,"n_guides":1,"cp10k_pert":0.043,"cp10k_ctrl":0.609,"residual":0.0714,"l2":1.099,"n_shift":1,"max_abs":0.432,"n_batches":48,"top_batch_share":0.0275,"ratio":2.376},{"target":"MAP3K7","split":"Training","n_cells":2019,"n_guides":1,"cp10k_pert":0.07,"cp10k_ctrl":1.49,"residual":0.0471,"l2":1.192,"n_shift":1,"max_abs":0.832,"n_batches":48,"top_batch_share":0.0312,"ratio":2.36},{"target":"MAT2A","split":"Validation","n_cells":1428,"n_guides":1,"cp10k_pert":0.184,"cp10k_ctrl":3.052,"residual":0.0602,"l2":1.416,"n_shift":1,"max_abs":1.22,"n_batches":48,"top_batch_share":0.0308,"ratio":2.355},{"target":"NFX1","split":"Test","n_cells":1530,"n_guides":1,"cp10k_pert":0.05,"cp10k_ctrl":0.939,"residual":0.0538,"l2":1.367,"n_shift":2,"max_abs":0.702,"n_batches":48,"top_batch_share":0.0307,"ratio":2.354},{"target":"IKBKG","split":"Training","n_cells":790,"n_guides":1,"cp10k_pert":0.03,"cp10k_ctrl":0.425,"residual":0.07,"l2":1.903,"n_shift":4,"max_abs":0.767,"n_batches":48,"top_batch_share":0.0316,"ratio":2.348},{"target":"EPHX1","split":"Test","n_cells":1042,"n_guides":1,"cp10k_pert":0.111,"cp10k_ctrl":1.741,"residual":0.0639,"l2":1.647,"n_shift":3,"max_abs":0.977,"n_batches":48,"top_batch_share":0.0298,"ratio":2.336},{"target":"POLB","split":"Training","n_cells":1905,"n_guides":1,"cp10k_pert":0.047,"cp10k_ctrl":1.019,"residual":0.0462,"l2":1.213,"n_shift":3,"max_abs":0.641,"n_batches":48,"top_batch_share":0.0273,"ratio":2.333},{"target":"NUDT9","split":"Test","n_cells":2484,"n_guides":1,"cp10k_pert":0.046,"cp10k_ctrl":0.967,"residual":0.0471,"l2":1.06,"n_shift":3,"max_abs":0.626,"n_batches":48,"top_batch_share":0.0262,"ratio":2.33},{"target":"CLDN7","split":"Training","n_cells":1303,"n_guides":1,"cp10k_pert":0.041,"cp10k_ctrl":0.896,"residual":0.0459,"l2":1.464,"n_shift":1,"max_abs":0.588,"n_batches":48,"top_batch_share":0.0284,"ratio":2.325},{"target":"SET","split":"Test","n_cells":1225,"n_guides":1,"cp10k_pert":0.547,"cp10k_ctrl":0.812,"residual":0.6741,"l2":1.49,"n_shift":0,"max_abs":0.225,"n_batches":48,"top_batch_share":0.0327,"ratio":2.293},{"target":"PACSIN3","split":"Validation","n_cells":2101,"n_guides":1,"cp10k_pert":0.042,"cp10k_ctrl":1.096,"residual":0.0381,"l2":1.121,"n_shift":1,"max_abs":0.698,"n_batches":48,"top_batch_share":0.0276,"ratio":2.265},{"target":"NFE2L1","split":"Validation","n_cells":926,"n_guides":1,"cp10k_pert":1.56,"cp10k_ctrl":3.025,"residual":0.5158,"l2":1.682,"n_shift":1,"max_abs":0.443,"n_batches":48,"top_batch_share":0.0313,"ratio":2.248},{"target":"ZNF593","split":"Training","n_cells":797,"n_guides":1,"cp10k_pert":0.02,"cp10k_ctrl":0.551,"residual":0.0361,"l2":1.812,"n_shift":1,"max_abs":0.421,"n_batches":48,"top_batch_share":0.0339,"ratio":2.245},{"target":"LBR","split":"Test","n_cells":930,"n_guides":1,"cp10k_pert":0.132,"cp10k_ctrl":2.736,"residual":0.0481,"l2":1.671,"n_shift":1,"max_abs":1.178,"n_batches":48,"top_batch_share":0.0344,"ratio":2.238},{"target":"JMJD1C","split":"Test","n_cells":438,"n_guides":1,"cp10k_pert":1.398,"cp10k_ctrl":5.149,"residual":0.2715,"l2":2.429,"n_shift":2,"max_abs":0.925,"n_batches":48,"top_batch_share":0.0365,"ratio":2.226},{"target":"SNCA","split":"Training","n_cells":386,"n_guides":1,"cp10k_pert":0.019,"cp10k_ctrl":0.378,"residual":0.0492,"l2":2.575,"n_shift":7,"max_abs":1.329,"n_batches":48,"top_batch_share":0.044,"ratio":2.214},{"target":"TOR1A","split":"Test","n_cells":1640,"n_guides":1,"cp10k_pert":0.049,"cp10k_ctrl":1.051,"residual":0.0462,"l2":1.237,"n_shift":2,"max_abs":0.656,"n_batches":48,"top_batch_share":0.0274,"ratio":2.206},{"target":"TCF7L2","split":"Validation","n_cells":484,"n_guides":1,"cp10k_pert":0.042,"cp10k_ctrl":0.576,"residual":0.0734,"l2":2.244,"n_shift":2,"max_abs":0.409,"n_batches":48,"top_batch_share":0.0393,"ratio":2.162},{"target":"CD276","split":"Test","n_cells":1552,"n_guides":1,"cp10k_pert":0.109,"cp10k_ctrl":1.978,"residual":0.055,"l2":1.243,"n_shift":1,"max_abs":0.972,"n_batches":48,"top_batch_share":0.029,"ratio":2.156},{"target":"SV2A","split":"Training","n_cells":580,"n_guides":1,"cp10k_pert":0.048,"cp10k_ctrl":0.954,"residual":0.0505,"l2":2.039,"n_shift":7,"max_abs":0.759,"n_batches":48,"top_batch_share":0.0414,"ratio":2.153},{"target":"GULP1","split":"Test","n_cells":1065,"n_guides":1,"cp10k_pert":0.137,"cp10k_ctrl":2.698,"residual":0.0508,"l2":1.496,"n_shift":2,"max_abs":1.172,"n_batches":48,"top_batch_share":0.0329,"ratio":2.146},{"target":"TSC22D4","split":"Training","n_cells":1970,"n_guides":1,"cp10k_pert":0.012,"cp10k_ctrl":0.341,"residual":0.0359,"l2":1.096,"n_shift":2,"max_abs":0.415,"n_batches":48,"top_batch_share":0.0279,"ratio":2.144},{"target":"HMGXB4","split":"Validation","n_cells":1594,"n_guides":1,"cp10k_pert":0.051,"cp10k_ctrl":1.132,"residual":0.0454,"l2":1.22,"n_shift":1,"max_abs":0.704,"n_batches":48,"top_batch_share":0.0295,"ratio":2.144},{"target":"NRAS","split":"Training","n_cells":1172,"n_guides":1,"cp10k_pert":0.13,"cp10k_ctrl":2.138,"residual":0.0608,"l2":1.422,"n_shift":2,"max_abs":1.011,"n_batches":48,"top_batch_share":0.0299,"ratio":2.14},{"target":"MAPKAPK2","split":"Training","n_cells":2196,"n_guides":1,"cp10k_pert":0.03,"cp10k_ctrl":0.72,"residual":0.0414,"l2":1.031,"n_shift":3,"max_abs":0.544,"n_batches":48,"top_batch_share":0.0301,"ratio":2.13},{"target":"ZNF581","split":"Validation","n_cells":2502,"n_guides":2,"cp10k_pert":0.495,"cp10k_ctrl":1.279,"residual":0.3868,"l2":0.961,"n_shift":1,"max_abs":0.427,"n_batches":48,"top_batch_share":0.0284,"ratio":2.12},{"target":"CENPO","split":"Training","n_cells":1193,"n_guides":1,"cp10k_pert":0.034,"cp10k_ctrl":0.659,"residual":0.0519,"l2":1.392,"n_shift":3,"max_abs":0.558,"n_batches":48,"top_batch_share":0.0327,"ratio":2.114},{"target":"NCAPH2","split":"Test","n_cells":98,"n_guides":1,"cp10k_pert":0.054,"cp10k_ctrl":1.142,"residual":0.0476,"l2":4.893,"n_shift":31,"max_abs":0.862,"n_batches":41,"top_batch_share":0.0612,"ratio":2.108},{"target":"HAX1","split":"Test","n_cells":780,"n_guides":1,"cp10k_pert":0.071,"cp10k_ctrl":1.473,"residual":0.0481,"l2":1.716,"n_shift":3,"max_abs":0.829,"n_batches":48,"top_batch_share":0.0385,"ratio":2.104},{"target":"PLCB3","split":"Training","n_cells":1110,"n_guides":1,"cp10k_pert":0.083,"cp10k_ctrl":2.496,"residual":0.0332,"l2":1.435,"n_shift":1,"max_abs":1.164,"n_batches":48,"top_batch_share":0.0324,"ratio":2.102},{"target":"TAZ","split":"Training","n_cells":749,"n_guides":1,"cp10k_pert":0.01,"cp10k_ctrl":0.198,"residual":0.0487,"l2":1.741,"n_shift":6,"max_abs":0.47,"n_batches":48,"top_batch_share":0.0374,"ratio":2.091},{"target":"TXNDC9","split":"Training","n_cells":514,"n_guides":1,"cp10k_pert":0.039,"cp10k_ctrl":0.835,"residual":0.0464,"l2":2.101,"n_shift":2,"max_abs":0.582,"n_batches":48,"top_batch_share":0.0447,"ratio":2.087},{"target":"KLHDC2","split":"Validation","n_cells":1763,"n_guides":1,"cp10k_pert":0.07,"cp10k_ctrl":1.474,"residual":0.0473,"l2":1.128,"n_shift":1,"max_abs":0.822,"n_batches":48,"top_batch_share":0.0272,"ratio":2.086},{"target":"ZNF598","split":"Validation","n_cells":255,"n_guides":1,"cp10k_pert":0.03,"cp10k_ctrl":0.273,"residual":0.1104,"l2":2.972,"n_shift":13,"max_abs":0.416,"n_batches":48,"top_batch_share":0.051,"ratio":2.073},{"target":"WFS1","split":"Training","n_cells":2043,"n_guides":1,"cp10k_pert":0.033,"cp10k_ctrl":0.45,"residual":0.0726,"l2":1.04,"n_shift":4,"max_abs":0.481,"n_batches":48,"top_batch_share":0.0294,"ratio":2.072},{"target":"ANXA6","split":"Validation","n_cells":2496,"n_guides":1,"cp10k_pert":0.053,"cp10k_ctrl":1.333,"residual":0.0397,"l2":0.934,"n_shift":1,"max_abs":0.794,"n_batches":48,"top_batch_share":0.026,"ratio":2.058},{"target":"RRM1","split":"Training","n_cells":638,"n_guides":1,"cp10k_pert":0.098,"cp10k_ctrl":2.494,"residual":0.0393,"l2":1.848,"n_shift":2,"max_abs":1.141,"n_batches":48,"top_batch_share":0.0392,"ratio":2.047},{"target":"SDC1","split":"Training","n_cells":215,"n_guides":1,"cp10k_pert":0.015,"cp10k_ctrl":0.309,"residual":0.0489,"l2":3.189,"n_shift":14,"max_abs":1.02,"n_batches":48,"top_batch_share":0.0558,"ratio":2.041},{"target":"ATP1B1","split":"Training","n_cells":2121,"n_guides":1,"cp10k_pert":0.038,"cp10k_ctrl":0.798,"residual":0.0475,"l2":0.976,"n_shift":2,"max_abs":0.562,"n_batches":48,"top_batch_share":0.0302,"ratio":1.981},{"target":"IGF2R","split":"Training","n_cells":3109,"n_guides":1,"cp10k_pert":0.055,"cp10k_ctrl":0.618,"residual":0.0886,"l2":0.801,"n_shift":2,"max_abs":0.417,"n_batches":48,"top_batch_share":0.028,"ratio":1.972},{"target":"ZNF92","split":"Test","n_cells":886,"n_guides":1,"cp10k_pert":0.078,"cp10k_ctrl":1.245,"residual":0.0626,"l2":1.499,"n_shift":3,"max_abs":0.734,"n_batches":48,"top_batch_share":0.0305,"ratio":1.959},{"target":"ZNF850","split":"Test","n_cells":1305,"n_guides":1,"cp10k_pert":0.053,"cp10k_ctrl":1.106,"residual":0.0481,"l2":1.232,"n_shift":2,"max_abs":0.714,"n_batches":48,"top_batch_share":0.0322,"ratio":1.958},{"target":"STAT1","split":"Training","n_cells":2493,"n_guides":1,"cp10k_pert":0.025,"cp10k_ctrl":0.556,"residual":0.0456,"l2":0.863,"n_shift":3,"max_abs":0.413,"n_batches":48,"top_batch_share":0.0269,"ratio":1.901},{"target":"SIX4","split":"Training","n_cells":642,"n_guides":1,"cp10k_pert":0.089,"cp10k_ctrl":1.164,"residual":0.0764,"l2":1.71,"n_shift":1,"max_abs":0.678,"n_batches":48,"top_batch_share":0.0421,"ratio":1.9},{"target":"SH3BP4","split":"Validation","n_cells":2925,"n_guides":1,"cp10k_pert":0.035,"cp10k_ctrl":0.638,"residual":0.0547,"l2":0.796,"n_shift":1,"max_abs":0.463,"n_batches":48,"top_batch_share":0.0274,"ratio":1.9},{"target":"COL6A1","split":"Test","n_cells":1744,"n_guides":1,"cp10k_pert":0.138,"cp10k_ctrl":1.703,"residual":0.0808,"l2":1.02,"n_shift":1,"max_abs":0.842,"n_batches":48,"top_batch_share":0.0269,"ratio":1.876},{"target":"ZNF664","split":"Test","n_cells":2318,"n_guides":1,"cp10k_pert":0.031,"cp10k_ctrl":0.732,"residual":0.0429,"l2":0.874,"n_shift":1,"max_abs":0.514,"n_batches":48,"top_batch_share":0.0267,"ratio":1.855},{"target":"IDE","split":"Training","n_cells":2248,"n_guides":1,"cp10k_pert":0.039,"cp10k_ctrl":0.874,"residual":0.0442,"l2":0.885,"n_shift":1,"max_abs":0.587,"n_batches":48,"top_batch_share":0.0271,"ratio":1.85},{"target":"TUSC3","split":"Validation","n_cells":1287,"n_guides":1,"cp10k_pert":0.083,"cp10k_ctrl":1.692,"residual":0.0492,"l2":1.168,"n_shift":2,"max_abs":0.895,"n_batches":48,"top_batch_share":0.0287,"ratio":1.843},{"target":"TRAM2","split":"Training","n_cells":1756,"n_guides":1,"cp10k_pert":0.017,"cp10k_ctrl":0.391,"residual":0.043,"l2":0.998,"n_shift":1,"max_abs":0.315,"n_batches":48,"top_batch_share":0.0296,"ratio":1.842},{"target":"ZNF107","split":"Test","n_cells":1527,"n_guides":1,"cp10k_pert":0.042,"cp10k_ctrl":0.555,"residual":0.0754,"l2":1.058,"n_shift":3,"max_abs":0.565,"n_batches":48,"top_batch_share":0.0334,"ratio":1.82},{"target":"CXCL12","split":"Validation","n_cells":1201,"n_guides":1,"cp10k_pert":0.086,"cp10k_ctrl":1.579,"residual":0.0547,"l2":1.189,"n_shift":2,"max_abs":0.855,"n_batches":48,"top_batch_share":0.03,"ratio":1.812},{"target":"PMS1","split":"Training","n_cells":1100,"n_guides":1,"cp10k_pert":0.042,"cp10k_ctrl":0.875,"residual":0.0482,"l2":1.23,"n_shift":2,"max_abs":0.844,"n_batches":48,"top_batch_share":0.0318,"ratio":1.793},{"target":"LAP3","split":"Test","n_cells":703,"n_guides":1,"cp10k_pert":0.04,"cp10k_ctrl":0.852,"residual":0.0468,"l2":1.523,"n_shift":7,"max_abs":0.575,"n_batches":48,"top_batch_share":0.0341,"ratio":1.772},{"target":"MKI67","split":"Training","n_cells":968,"n_guides":1,"cp10k_pert":0.108,"cp10k_ctrl":1.743,"residual":0.0619,"l2":1.29,"n_shift":1,"max_abs":0.928,"n_batches":48,"top_batch_share":0.032,"ratio":1.763},{"target":"TWF2","split":"Training","n_cells":1008,"n_guides":1,"cp10k_pert":0.06,"cp10k_ctrl":1.717,"residual":0.0349,"l2":1.264,"n_shift":2,"max_abs":0.935,"n_batches":48,"top_batch_share":0.0327,"ratio":1.763},{"target":"PTPN1","split":"Training","n_cells":2195,"n_guides":1,"cp10k_pert":0.029,"cp10k_ctrl":0.854,"residual":0.0344,"l2":0.849,"n_shift":2,"max_abs":0.585,"n_batches":48,"top_batch_share":0.0305,"ratio":1.753},{"target":"JMJD8","split":"Validation","n_cells":767,"n_guides":1,"cp10k_pert":0.038,"cp10k_ctrl":0.785,"residual":0.0487,"l2":1.428,"n_shift":3,"max_abs":0.865,"n_batches":48,"top_batch_share":0.0365,"ratio":1.736},{"target":"MFSD10","split":"Test","n_cells":2300,"n_guides":1,"cp10k_pert":0.059,"cp10k_ctrl":0.885,"residual":0.0662,"l2":0.815,"n_shift":1,"max_abs":0.567,"n_batches":48,"top_batch_share":0.0287,"ratio":1.723},{"target":"MORN2","split":"Test","n_cells":1987,"n_guides":1,"cp10k_pert":0.027,"cp10k_ctrl":0.656,"residual":0.041,"l2":0.87,"n_shift":2,"max_abs":0.474,"n_batches":48,"top_batch_share":0.0282,"ratio":1.709},{"target":"IRF3","split":"Training","n_cells":985,"n_guides":1,"cp10k_pert":0.03,"cp10k_ctrl":0.525,"residual":0.0569,"l2":1.239,"n_shift":2,"max_abs":0.756,"n_batches":48,"top_batch_share":0.0305,"ratio":1.708},{"target":"ZNF426","split":"Training","n_cells":1132,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":0.786,"residual":0.0571,"l2":1.153,"n_shift":2,"max_abs":0.624,"n_batches":48,"top_batch_share":0.0327,"ratio":1.705},{"target":"PMEL","split":"Training","n_cells":356,"n_guides":1,"cp10k_pert":0.046,"cp10k_ctrl":0.936,"residual":0.0494,"l2":2.057,"n_shift":2,"max_abs":0.609,"n_batches":48,"top_batch_share":0.0365,"ratio":1.698},{"target":"OAZ1","split":"Test","n_cells":813,"n_guides":1,"cp10k_pert":11.854,"cp10k_ctrl":23.866,"residual":0.4967,"l2":1.35,"n_shift":4,"max_abs":0.644,"n_batches":48,"top_batch_share":0.032,"ratio":1.69},{"target":"ITGAV","split":"Validation","n_cells":2034,"n_guides":1,"cp10k_pert":0.043,"cp10k_ctrl":0.783,"residual":0.0549,"l2":0.848,"n_shift":2,"max_abs":0.523,"n_batches":48,"top_batch_share":0.0275,"ratio":1.685},{"target":"COASY","split":"Test","n_cells":1937,"n_guides":1,"cp10k_pert":0.033,"cp10k_ctrl":0.736,"residual":0.0442,"l2":0.867,"n_shift":2,"max_abs":0.512,"n_batches":48,"top_batch_share":0.0289,"ratio":1.681},{"target":"ZNF714","split":"Training","n_cells":852,"n_guides":1,"cp10k_pert":0.043,"cp10k_ctrl":0.591,"residual":0.0731,"l2":1.311,"n_shift":4,"max_abs":0.539,"n_batches":48,"top_batch_share":0.0282,"ratio":1.68},{"target":"PCCB","split":"Test","n_cells":2751,"n_guides":2,"cp10k_pert":0.159,"cp10k_ctrl":1.051,"residual":0.1508,"l2":0.725,"n_shift":1,"max_abs":0.565,"n_batches":48,"top_batch_share":0.0302,"ratio":1.678},{"target":"ATP6V0B","split":"Training","n_cells":245,"n_guides":1,"cp10k_pert":0.111,"cp10k_ctrl":1.236,"residual":0.09,"l2":2.452,"n_shift":5,"max_abs":0.693,"n_batches":48,"top_batch_share":0.0449,"ratio":1.676},{"target":"SLC5A6","split":"Test","n_cells":677,"n_guides":1,"cp10k_pert":0.124,"cp10k_ctrl":2.261,"residual":0.0547,"l2":1.463,"n_shift":2,"max_abs":1.049,"n_batches":48,"top_batch_share":0.0325,"ratio":1.67},{"target":"EID2","split":"Training","n_cells":1167,"n_guides":1,"cp10k_pert":0.028,"cp10k_ctrl":0.601,"residual":0.046,"l2":1.091,"n_shift":3,"max_abs":0.488,"n_batches":48,"top_batch_share":0.0291,"ratio":1.639},{"target":"CASP2","split":"Training","n_cells":1590,"n_guides":1,"cp10k_pert":0.022,"cp10k_ctrl":0.476,"residual":0.0452,"l2":0.921,"n_shift":1,"max_abs":0.362,"n_batches":48,"top_batch_share":0.027,"ratio":1.617},{"target":"MAST2","split":"Training","n_cells":1029,"n_guides":1,"cp10k_pert":0.016,"cp10k_ctrl":0.307,"residual":0.0521,"l2":1.135,"n_shift":1,"max_abs":0.252,"n_batches":48,"top_batch_share":0.0311,"ratio":1.6},{"target":"SHPRH","split":"Training","n_cells":241,"n_guides":1,"cp10k_pert":0.038,"cp10k_ctrl":0.607,"residual":0.0626,"l2":2.353,"n_shift":8,"max_abs":1.061,"n_batches":48,"top_batch_share":0.0456,"ratio":1.595},{"target":"MAP1B","split":"Training","n_cells":784,"n_guides":1,"cp10k_pert":0.108,"cp10k_ctrl":1.761,"residual":0.0616,"l2":1.293,"n_shift":1,"max_abs":0.909,"n_batches":48,"top_batch_share":0.0319,"ratio":1.589},{"target":"ATP6V0C","split":"Training","n_cells":33,"n_guides":1,"cp10k_pert":0.065,"cp10k_ctrl":0.517,"residual":0.1261,"l2":6.378,"n_shift":62,"max_abs":1.08,"n_batches":22,"top_batch_share":0.0909,"ratio":1.587},{"target":"BRD9","split":"Training","n_cells":67,"n_guides":1,"cp10k_pert":0.119,"cp10k_ctrl":1.308,"residual":0.0913,"l2":4.454,"n_shift":16,"max_abs":0.719,"n_batches":36,"top_batch_share":0.0896,"ratio":1.584},{"target":"PBX3","split":"Test","n_cells":1196,"n_guides":1,"cp10k_pert":0.037,"cp10k_ctrl":0.835,"residual":0.0449,"l2":1.041,"n_shift":2,"max_abs":0.566,"n_batches":48,"top_batch_share":0.0276,"ratio":1.583},{"target":"MTFR1","split":"Validation","n_cells":1787,"n_guides":1,"cp10k_pert":0.037,"cp10k_ctrl":0.873,"residual":0.0429,"l2":0.838,"n_shift":1,"max_abs":0.581,"n_batches":48,"top_batch_share":0.0291,"ratio":1.56},{"target":"NCK2","split":"Training","n_cells":2929,"n_guides":1,"cp10k_pert":0.016,"cp10k_ctrl":0.357,"residual":0.0437,"l2":0.635,"n_shift":1,"max_abs":0.288,"n_batches":48,"top_batch_share":0.0287,"ratio":1.517},{"target":"CREG1","split":"Training","n_cells":1703,"n_guides":1,"cp10k_pert":0.021,"cp10k_ctrl":0.47,"residual":0.0439,"l2":0.824,"n_shift":1,"max_abs":0.358,"n_batches":48,"top_batch_share":0.0294,"ratio":1.497},{"target":"CAMSAP2","split":"Training","n_cells":1750,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":0.723,"residual":0.0623,"l2":0.809,"n_shift":1,"max_abs":0.494,"n_batches":48,"top_batch_share":0.0303,"ratio":1.49},{"target":"TNFRSF12A","split":"Test","n_cells":1725,"n_guides":1,"cp10k_pert":0.003,"cp10k_ctrl":0.07,"residual":0.0438,"l2":0.809,"n_shift":2,"max_abs":0.431,"n_batches":48,"top_batch_share":0.029,"ratio":1.48},{"target":"TMBIM6","split":"Training","n_cells":505,"n_guides":1,"cp10k_pert":0.045,"cp10k_ctrl":1.079,"residual":0.0413,"l2":1.499,"n_shift":2,"max_abs":0.675,"n_batches":48,"top_batch_share":0.0376,"ratio":1.476},{"target":"RFX5","split":"Test","n_cells":919,"n_guides":1,"cp10k_pert":0.041,"cp10k_ctrl":0.647,"residual":0.0635,"l2":1.063,"n_shift":2,"max_abs":0.456,"n_batches":48,"top_batch_share":0.037,"ratio":1.415},{"target":"CALM3","split":"Training","n_cells":681,"n_guides":1,"cp10k_pert":0.038,"cp10k_ctrl":0.902,"residual":0.042,"l2":1.235,"n_shift":1,"max_abs":0.601,"n_batches":48,"top_batch_share":0.0352,"ratio":1.414},{"target":"ZNF32","split":"Test","n_cells":699,"n_guides":1,"cp10k_pert":0.03,"cp10k_ctrl":0.762,"residual":0.0389,"l2":1.214,"n_shift":2,"max_abs":0.535,"n_batches":48,"top_batch_share":0.0386,"ratio":1.408},{"target":"ZNF286A","split":"Training","n_cells":1059,"n_guides":1,"cp10k_pert":0.053,"cp10k_ctrl":0.926,"residual":0.0572,"l2":0.979,"n_shift":2,"max_abs":0.595,"n_batches":48,"top_batch_share":0.0312,"ratio":1.4},{"target":"DPF2","split":"Test","n_cells":1144,"n_guides":2,"cp10k_pert":0.684,"cp10k_ctrl":1.125,"residual":0.6082,"l2":0.93,"n_shift":1,"max_abs":0.358,"n_batches":48,"top_batch_share":0.0315,"ratio":1.383},{"target":"TRAFD1","split":"Test","n_cells":1627,"n_guides":1,"cp10k_pert":0.014,"cp10k_ctrl":0.402,"residual":0.034,"l2":0.755,"n_shift":1,"max_abs":0.323,"n_batches":48,"top_batch_share":0.035,"ratio":1.341},{"target":"ANTXR1","split":"Training","n_cells":1448,"n_guides":1,"cp10k_pert":0.036,"cp10k_ctrl":0.692,"residual":0.0526,"l2":0.788,"n_shift":1,"max_abs":0.485,"n_batches":48,"top_batch_share":0.0311,"ratio":1.32},{"target":"CENPB","split":"Validation","n_cells":1379,"n_guides":1,"cp10k_pert":0.024,"cp10k_ctrl":0.624,"residual":0.0385,"l2":0.777,"n_shift":1,"max_abs":0.46,"n_batches":48,"top_batch_share":0.029,"ratio":1.269},{"target":"ZNF562","split":"Training","n_cells":418,"n_guides":1,"cp10k_pert":0.024,"cp10k_ctrl":0.517,"residual":0.0468,"l2":1.37,"n_shift":1,"max_abs":0.387,"n_batches":48,"top_batch_share":0.0359,"ratio":1.226},{"target":"TSKU","split":"Test","n_cells":886,"n_guides":1,"cp10k_pert":0.025,"cp10k_ctrl":0.388,"residual":0.0644,"l2":0.905,"n_shift":1,"max_abs":0.304,"n_batches":48,"top_batch_share":0.0361,"ratio":1.183},{"target":"NFATC3","split":"Test","n_cells":1050,"n_guides":1,"cp10k_pert":0.02,"cp10k_ctrl":0.325,"residual":0.0622,"l2":0.816,"n_shift":2,"max_abs":0.33,"n_batches":48,"top_batch_share":0.0343,"ratio":1.162},{"target":"MPC2","split":"Test","n_cells":992,"n_guides":1,"cp10k_pert":0.009,"cp10k_ctrl":0.276,"residual":0.0324,"l2":0.831,"n_shift":0,"max_abs":0.234,"n_batches":48,"top_batch_share":0.0323,"ratio":1.15},{"target":"LAD1","split":"Training","n_cells":1361,"n_guides":1,"cp10k_pert":0.018,"cp10k_ctrl":0.404,"residual":0.0452,"l2":0.7,"n_shift":1,"max_abs":0.326,"n_batches":48,"top_batch_share":0.0301,"ratio":1.136},{"target":"GSTZ1","split":"Validation","n_cells":1077,"n_guides":1,"cp10k_pert":0.013,"cp10k_ctrl":0.313,"residual":0.0401,"l2":0.779,"n_shift":1,"max_abs":0.257,"n_batches":48,"top_batch_share":0.0297,"ratio":1.124},{"target":"DZIP3","split":"Training","n_cells":447,"n_guides":1,"cp10k_pert":0.032,"cp10k_ctrl":0.728,"residual":0.0433,"l2":1.196,"n_shift":2,"max_abs":0.514,"n_batches":48,"top_batch_share":0.038,"ratio":1.107},{"target":"RAB3B","split":"Training","n_cells":594,"n_guides":1,"cp10k_pert":0.023,"cp10k_ctrl":0.407,"residual":0.0576,"l2":1.004,"n_shift":1,"max_abs":0.314,"n_batches":48,"top_batch_share":0.0337,"ratio":1.073}],"splits":{"Training":{"split":"Training","n_cells":221273,"n_genes":18080,"nnz":1932554688,"density":0.4831,"counts_are_integer":true,"n_targets":150,"n_guide_ids":189,"n_batches":48,"ntc_cells":38176,"ntc_guides":31,"guide_example":"ACAT2_P1P2_A|ACAT2_P1P2_B","umi":{"median":53912.0,"p01":22641.0,"p05":29430.6,"p25":42976.0,"p75":67576.0,"p95":93741.4,"p99":117718.28,"mean":56903.59952637692,"min":19981.0,"max":431281.0,"frac_above_eval":0.9999548069579207,"frac_above_hist_range":0.0017444514242587212,"hist":[0,0,0,0,0,0,0,10,2063,2508,3312,4193,5259,6971,8290,9797,10784,11969,12742,12939,12912,12082,11753,10822,10012,9063,8248,7119,6445,5585,5173,4358,3879,3398,2906,2493,2166,1897,1579,1383,1113,926,816,660,569,459,376,304,270,204,170,172,166,106,99,86,85,64,67,65],"edges":[0.0,2500.0,5000.0,7500.0,10000.0,12500.0,15000.0,17500.0,20000.0,22500.0,25000.0,27500.0,30000.0,32500.0,35000.0,37500.0,40000.0,42500.0,45000.0,47500.0,50000.0,52500.0,55000.0,57500.0,60000.0,62500.0,65000.0,67500.0,70000.0,72500.0,75000.0,77500.0,80000.0,82500.0,85000.0,87500.0,90000.0,92500.0,95000.0,97500.0,100000.0,102500.0,105000.0,107500.0,110000.0,112500.0,115000.0,117500.0,120000.0,122500.0,125000.0,127500.0,130000.0,132500.0,135000.0,137500.0,140000.0,142500.0,145000.0,147500.0,150000.0]},"genes_detected":{"median":8761.0,"p05":7364.0,"p95":9947.0},"batches":[{"batch":"Flex_1_01","n_cells":4339,"median_umi":44374.0},{"batch":"Flex_1_02","n_cells":4299,"median_umi":42439.0},{"batch":"Flex_1_03","n_cells":4341,"median_umi":46221.0},{"batch":"Flex_1_04","n_cells":4406,"median_umi":46770.5},{"batch":"Flex_1_05","n_cells":4386,"median_umi":47434.0},{"batch":"Flex_1_06","n_cells":4565,"median_umi":48195.0},{"batch":"Flex_1_07","n_cells":4398,"median_umi":46367.5},{"batch":"Flex_1_08","n_cells":4438,"median_umi":46322.0},{"batch":"Flex_1_09","n_cells":4083,"median_umi":46249.0},{"batch":"Flex_1_10","n_cells":4512,"median_umi":47683.0},{"batch":"Flex_1_11","n_cells":4449,"median_umi":47590.0},{"batch":"Flex_1_12","n_cells":4292,"median_umi":50807.5},{"batch":"Flex_1_13","n_cells":4575,"median_umi":46202.0},{"batch":"Flex_1_14","n_cells":4336,"median_umi":48167.5},{"batch":"Flex_1_15","n_cells":4548,"median_umi":49321.0},{"batch":"Flex_1_16","n_cells":4256,"median_umi":47591.5},{"batch":"Flex_2_01","n_cells":4501,"median_umi":55033.0},{"batch":"Flex_2_02","n_cells":4527,"median_umi":52778.0},{"batch":"Flex_2_03","n_cells":4499,"median_umi":57595.0},{"batch":"Flex_2_04","n_cells":4575,"median_umi":58378.0},{"batch":"Flex_2_05","n_cells":4472,"median_umi":59631.0},{"batch":"Flex_2_06","n_cells":4680,"median_umi":59762.0},{"batch":"Flex_2_07","n_cells":4452,"median_umi":58262.0},{"batch":"Flex_2_08","n_cells":4493,"median_umi":57752.0},{"batch":"Flex_2_09","n_cells":4434,"median_umi":57903.5},{"batch":"Flex_2_10","n_cells":4526,"median_umi":60364.0},{"batch":"Flex_2_11","n_cells":4673,"median_umi":60234.0},{"batch":"Flex_2_12","n_cells":4191,"median_umi":63677.0},{"batch":"Flex_2_13","n_cells":4718,"median_umi":58345.0},{"batch":"Flex_2_14","n_cells":4614,"median_umi":60326.0},{"batch":"Flex_2_15","n_cells":4716,"median_umi":61271.0},{"batch":"Flex_2_16","n_cells":4427,"median_umi":60172.0},{"batch":"Flex_3_01","n_cells":4645,"median_umi":52498.0},{"batch":"Flex_3_02","n_cells":4895,"median_umi":50270.0},{"batch":"Flex_3_03","n_cells":4977,"median_umi":55435.0},{"batch":"Flex_3_04","n_cells":4936,"median_umi":54839.5},{"batch":"Flex_3_05","n_cells":4825,"median_umi":56631.0},{"batch":"Flex_3_06","n_cells":5068,"median_umi":57332.5},{"batch":"Flex_3_07","n_cells":4888,"median_umi":56126.5},{"batch":"Flex_3_08","n_cells":4988,"median_umi":54636.5},{"batch":"Flex_3_09","n_cells":4834,"median_umi":55180.5},{"batch":"Flex_3_10","n_cells":5082,"median_umi":57120.0},{"batch":"Flex_3_11","n_cells":4988,"median_umi":56901.5},{"batch":"Flex_3_12","n_cells":4627,"median_umi":61347.0},{"batch":"Flex_3_13","n_cells":4955,"median_umi":55699.0},{"batch":"Flex_3_14","n_cells":4980,"median_umi":57780.5},{"batch":"Flex_3_15","n_cells":5038,"median_umi":58396.5},{"batch":"Flex_3_16","n_cells":4826,"median_umi":56176.5}],"batch_corr":{"min":0.9921,"median":0.9975},"barcodes_sha":"09ae21a9fe7ec928","gene_axis_sha":"3b5f6934eda9fd8d","elapsed_s":21.9},"Validation":{"split":"Validation","n_cells":98927,"n_genes":18080,"nnz":864793017,"density":0.4835,"counts_are_integer":true,"n_targets":50,"n_guide_ids":85,"n_batches":48,"ntc_cells":38176,"ntc_guides":31,"guide_example":"ACLY_P1P2_A|ACLY_P1P2_B","umi":{"median":54312.0,"p01":22773.34,"p05":29542.3,"p25":43156.0,"p75":68143.0,"p95":94392.49999999999,"p99":118334.74,"mean":57263.18604627655,"min":19982.0,"max":338047.0,"frac_above_eval":0.9999494576809163,"frac_above_hist_range":0.0018700658060994471,"hist":[0,0,0,0,0,0,0,5,874,1124,1422,1901,2370,3001,3653,4253,4836,5183,5562,5716,5689,5348,5218,4885,4437,4108,3719,3373,2978,2597,2228,2066,1752,1535,1368,1157,964,852,709,635,574,445,364,339,257,209,176,148,122,94,81,79,85,57,42,29,37,36,27,23],"edges":[0.0,2500.0,5000.0,7500.0,10000.0,12500.0,15000.0,17500.0,20000.0,22500.0,25000.0,27500.0,30000.0,32500.0,35000.0,37500.0,40000.0,42500.0,45000.0,47500.0,50000.0,52500.0,55000.0,57500.0,60000.0,62500.0,65000.0,67500.0,70000.0,72500.0,75000.0,77500.0,80000.0,82500.0,85000.0,87500.0,90000.0,92500.0,95000.0,97500.0,100000.0,102500.0,105000.0,107500.0,110000.0,112500.0,115000.0,117500.0,120000.0,122500.0,125000.0,127500.0,130000.0,132500.0,135000.0,137500.0,140000.0,142500.0,145000.0,147500.0,150000.0]},"genes_detected":{"median":8770.0,"p05":7363.0,"p95":9951.0},"batches":[{"batch":"Flex_1_01","n_cells":1960,"median_umi":43834.0},{"batch":"Flex_1_02","n_cells":1901,"median_umi":42741.0},{"batch":"Flex_1_03","n_cells":1884,"median_umi":46217.5},{"batch":"Flex_1_04","n_cells":1954,"median_umi":47216.5},{"batch":"Flex_1_05","n_cells":1953,"median_umi":47686.0},{"batch":"Flex_1_06","n_cells":2065,"median_umi":48123.0},{"batch":"Flex_1_07","n_cells":1990,"median_umi":46687.5},{"batch":"Flex_1_08","n_cells":1946,"median_umi":46277.5},{"batch":"Flex_1_09","n_cells":1872,"median_umi":46931.0},{"batch":"Flex_1_10","n_cells":2036,"median_umi":48631.5},{"batch":"Flex_1_11","n_cells":1973,"median_umi":47920.0},{"batch":"Flex_1_12","n_cells":1922,"median_umi":51061.5},{"batch":"Flex_1_13","n_cells":2014,"median_umi":46669.0},{"batch":"Flex_1_14","n_cells":1974,"median_umi":49286.5},{"batch":"Flex_1_15","n_cells":2097,"median_umi":50098.0},{"batch":"Flex_1_16","n_cells":1907,"median_umi":48063.0},{"batch":"Flex_2_01","n_cells":2021,"median_umi":56357.0},{"batch":"Flex_2_02","n_cells":1908,"median_umi":53509.5},{"batch":"Flex_2_03","n_cells":2022,"median_umi":58640.0},{"batch":"Flex_2_04","n_cells":2072,"median_umi":58846.0},{"batch":"Flex_2_05","n_cells":2060,"median_umi":59236.5},{"batch":"Flex_2_06","n_cells":1996,"median_umi":61102.0},{"batch":"Flex_2_07","n_cells":2055,"median_umi":58716.0},{"batch":"Flex_2_08","n_cells":2038,"median_umi":58835.0},{"batch":"Flex_2_09","n_cells":2002,"median_umi":58189.0},{"batch":"Flex_2_10","n_cells":2027,"median_umi":60651.0},{"batch":"Flex_2_11","n_cells":2063,"median_umi":60001.0},{"batch":"Flex_2_12","n_cells":1878,"median_umi":65795.0},{"batch":"Flex_2_13","n_cells":2051,"median_umi":58604.0},{"batch":"Flex_2_14","n_cells":2102,"median_umi":60046.5},{"batch":"Flex_2_15","n_cells":2076,"median_umi":61965.0},{"batch":"Flex_2_16","n_cells":2040,"median_umi":59185.0},{"batch":"Flex_3_01","n_cells":2068,"median_umi":53449.0},{"batch":"Flex_3_02","n_cells":2319,"median_umi":51121.0},{"batch":"Flex_3_03","n_cells":2253,"median_umi":56241.0},{"batch":"Flex_3_04","n_cells":2187,"median_umi":55442.0},{"batch":"Flex_3_05","n_cells":2095,"median_umi":56293.0},{"batch":"Flex_3_06","n_cells":2293,"median_umi":58334.0},{"batch":"Flex_3_07","n_cells":2262,"median_umi":56120.5},{"batch":"Flex_3_08","n_cells":2150,"median_umi":54617.5},{"batch":"Flex_3_09","n_cells":2068,"median_umi":55603.0},{"batch":"Flex_3_10","n_cells":2267,"median_umi":56988.0},{"batch":"Flex_3_11","n_cells":2268,"median_umi":57422.0},{"batch":"Flex_3_12","n_cells":2053,"median_umi":61637.0},{"batch":"Flex_3_13","n_cells":2244,"median_umi":56139.0},{"batch":"Flex_3_14","n_cells":2190,"median_umi":57855.0},{"batch":"Flex_3_15","n_cells":2282,"median_umi":59191.5},{"batch":"Flex_3_16","n_cells":2069,"median_umi":56469.0}],"batch_corr":{"min":0.9922,"median":0.9975},"barcodes_sha":"68fa5e0ef578ce24","gene_axis_sha":"3b5f6934eda9fd8d","elapsed_s":9.1},"Test":{"split":"Test","n_cells":170846,"n_genes":18080,"nnz":1491619393,"density":0.4829,"counts_are_integer":true,"n_targets":100,"n_guide_ids":136,"n_batches":48,"ntc_cells":38176,"ntc_guides":31,"guide_example":"AASS_P1P2_A|AASS_P1P2_B","umi":{"median":54125.5,"p01":22655.45,"p05":29386.5,"p25":43016.0,"p75":67940.0,"p95":94225.25,"p99":118595.09999999998,"mean":57112.856941338985,"min":19982.0,"max":346239.0,"frac_above_eval":0.9999648806527516,"frac_above_hist_range":0.0018144996078339557,"hist":[0,0,0,0,0,0,0,6,1577,2008,2532,3321,4328,5290,6358,7354,8177,9118,9511,9936,9785,9409,8971,8309,7820,6993,6324,5571,4991,4340,3967,3424,3085,2646,2281,2031,1813,1466,1260,1041,960,765,603,525,444,371,309,251,209,177,148,143,123,91,90,70,67,53,50,44],"edges":[0.0,2500.0,5000.0,7500.0,10000.0,12500.0,15000.0,17500.0,20000.0,22500.0,25000.0,27500.0,30000.0,32500.0,35000.0,37500.0,40000.0,42500.0,45000.0,47500.0,50000.0,52500.0,55000.0,57500.0,60000.0,62500.0,65000.0,67500.0,70000.0,72500.0,75000.0,77500.0,80000.0,82500.0,85000.0,87500.0,90000.0,92500.0,95000.0,97500.0,100000.0,102500.0,105000.0,107500.0,110000.0,112500.0,115000.0,117500.0,120000.0,122500.0,125000.0,127500.0,130000.0,132500.0,135000.0,137500.0,140000.0,142500.0,145000.0,147500.0,150000.0]},"genes_detected":{"median":8761.0,"p05":7349.0,"p95":9950.0},"batches":[{"batch":"Flex_1_01","n_cells":3265,"median_umi":44008.0},{"batch":"Flex_1_02","n_cells":3356,"median_umi":42279.5},{"batch":"Flex_1_03","n_cells":3390,"median_umi":46754.0},{"batch":"Flex_1_04","n_cells":3417,"median_umi":46852.0},{"batch":"Flex_1_05","n_cells":3353,"median_umi":47633.0},{"batch":"Flex_1_06","n_cells":3405,"median_umi":48547.0},{"batch":"Flex_1_07","n_cells":3330,"median_umi":46287.0},{"batch":"Flex_1_08","n_cells":3383,"median_umi":46424.0},{"batch":"Flex_1_09","n_cells":3268,"median_umi":46660.0},{"batch":"Flex_1_10","n_cells":3536,"median_umi":48776.5},{"batch":"Flex_1_11","n_cells":3359,"median_umi":47364.0},{"batch":"Flex_1_12","n_cells":3342,"median_umi":50591.0},{"batch":"Flex_1_13","n_cells":3498,"median_umi":46718.0},{"batch":"Flex_1_14","n_cells":3496,"median_umi":48808.0},{"batch":"Flex_1_15","n_cells":3565,"median_umi":49081.0},{"batch":"Flex_1_16","n_cells":3289,"median_umi":47898.0},{"batch":"Flex_2_01","n_cells":3386,"median_umi":55111.5},{"batch":"Flex_2_02","n_cells":3371,"median_umi":53266.0},{"batch":"Flex_2_03","n_cells":3558,"median_umi":58529.5},{"batch":"Flex_2_04","n_cells":3511,"median_umi":58382.0},{"batch":"Flex_2_05","n_cells":3458,"median_umi":59459.5},{"batch":"Flex_2_06","n_cells":3484,"median_umi":60687.0},{"batch":"Flex_2_07","n_cells":3461,"median_umi":58343.0},{"batch":"Flex_2_08","n_cells":3475,"median_umi":57304.0},{"batch":"Flex_2_09","n_cells":3504,"median_umi":58142.5},{"batch":"Flex_2_10","n_cells":3504,"median_umi":60431.0},{"batch":"Flex_2_11","n_cells":3495,"median_umi":60473.0},{"batch":"Flex_2_12","n_cells":3315,"median_umi":64608.0},{"batch":"Flex_2_13","n_cells":3547,"median_umi":58169.0},{"batch":"Flex_2_14","n_cells":3560,"median_umi":59872.0},{"batch":"Flex_2_15","n_cells":3673,"median_umi":61795.0},{"batch":"Flex_2_16","n_cells":3482,"median_umi":60274.5},{"batch":"Flex_3_01","n_cells":3771,"median_umi":52677.0},{"batch":"Flex_3_02","n_cells":3890,"median_umi":50515.0},{"batch":"Flex_3_03","n_cells":3773,"median_umi":55684.0},{"batch":"Flex_3_04","n_cells":3918,"median_umi":55569.0},{"batch":"Flex_3_05","n_cells":3806,"median_umi":56408.0},{"batch":"Flex_3_06","n_cells":3830,"median_umi":57445.5},{"batch":"Flex_3_07","n_cells":3742,"median_umi":55591.0},{"batch":"Flex_3_08","n_cells":3752,"median_umi":55210.0},{"batch":"Flex_3_09","n_cells":3706,"median_umi":55479.0},{"batch":"Flex_3_10","n_cells":3851,"median_umi":58118.0},{"batch":"Flex_3_11","n_cells":3877,"median_umi":56845.0},{"batch":"Flex_3_12","n_cells":3665,"median_umi":61711.0},{"batch":"Flex_3_13","n_cells":3910,"median_umi":56207.5},{"batch":"Flex_3_14","n_cells":3757,"median_umi":57891.0},{"batch":"Flex_3_15","n_cells":3949,"median_umi":58174.0},{"batch":"Flex_3_16","n_cells":3613,"median_umi":57325.0}],"batch_corr":{"min":0.9922,"median":0.9975},"barcodes_sha":"ef657e6bc96c21a2","gene_axis_sha":"3b5f6934eda9fd8d","elapsed_s":16.3}},"derived":{"floor_curve":[{"k":25.0,"l2":4.6232},{"k":29.5,"l2":4.2531},{"k":34.8,"l2":3.9125},{"k":41.1,"l2":3.5993},{"k":48.5,"l2":3.3111},{"k":57.2,"l2":3.046},{"k":67.5,"l2":2.8021},{"k":79.6,"l2":2.5777},{"k":94.0,"l2":2.3713},{"k":110.9,"l2":2.1815},{"k":130.8,"l2":2.0068},{"k":154.4,"l2":1.8461},{"k":182.2,"l2":1.6983},{"k":215.0,"l2":1.5623},{"k":253.7,"l2":1.4372},{"k":299.3,"l2":1.3222},{"k":353.2,"l2":1.2163},{"k":416.8,"l2":1.1189},{"k":491.8,"l2":1.0293},{"k":580.4,"l2":0.9469},{"k":684.8,"l2":0.8711},{"k":808.1,"l2":0.8013},{"k":953.6,"l2":0.7372},{"k":1125.2,"l2":0.6782},{"k":1327.7,"l2":0.6239},{"k":1566.7,"l2":0.5739},{"k":1848.7,"l2":0.528},{"k":2181.5,"l2":0.4857},{"k":2574.2,"l2":0.4468},{"k":3037.5,"l2":0.411},{"k":3584.3,"l2":0.3781},{"k":4229.4,"l2":0.3478},{"k":4990.7,"l2":0.32},{"k":5889.1,"l2":0.2944}],"kd_median":0.0501,"floor_a":23.4321,"floor_b":-0.5042}};
+const SPLITS = ["Training", "Validation", "Test"];
+const SC = { Training: "var(--s1)", Validation: "var(--s2)", Test: "var(--s3)" };
+const SHORT = { Training: "Train", Validation: "Val", Test: "Test" };
+const NS = "http://www.w3.org/2000/svg";
+
+const fmt = n => n.toLocaleString("en-US");
+const fmt1 = n => n.toFixed(1);
+const el = (t, a = {}, kids = []) => {
+  const e = document.createElement(t);
+  for (const [k, v] of Object.entries(a)) k === "html" ? e.innerHTML = v : e.setAttribute(k, v);
+  kids.forEach(c => e.append(c));
+  return e;
+};
+const S = (t, a = {}) => {
+  const e = document.createElementNS(NS, t);
+  for (const [k, v] of Object.entries(a)) e.setAttribute(k, v);
+  return e;
+};
+const chart = (w, h) => {
+  const s = S("svg", { viewBox: `0 0 ${w} ${h}`, role: "img" });
+  s.style.maxWidth = "100%";
+  return s;
+};
+
+/* ── 浮层 ── */
+const tip = document.getElementById("tip");
+function showTip(ev, html) {
+  tip.innerHTML = html;
+  tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const hideTip = () => tip.style.opacity = 0;
+function hoverable(node, html) {
+  node.addEventListener("pointermove", e => showTip(e, html));
+  node.addEventListener("pointerleave", hideTip);
+}
+
+/* ── 出处：文件表 ── */
+(() => {
+  const tb = document.querySelector("#file-table tbody");
+  D.source.files.slice().sort((a, b) => b.bytes - a.bytes).forEach(f => {
+    const gib = f.bytes >= 2 ** 20 ? (f.bytes / 2 ** 30).toFixed(2) + " GiB" : fmt(f.bytes) + " B";
+    tb.append(el("tr", { html:
+      `<td class="mono">${f.name}</td><td class="num">${gib}</td>` +
+      `<td class="mono" style="color:var(--ink-3)">${f.sha256.slice(0, 16)}</td>` +
+      `<td><span class="flag good">已校验</span></td>` }));
+  });
+})();
+
+/* ── 形状表 ── */
+(() => {
+  const tb = document.querySelector("#shape-table tbody");
+  SPLITS.forEach(s => {
+    const d = D.splits[s];
+    tb.append(el("tr", { html:
+      `<td><span class="flag" style="color:${SC[s]}">${SHORT[s]}</span></td>` +
+      `<td class="num">${fmt(d.n_cells)}</td><td class="num">${fmt(d.n_genes)}</td>` +
+      `<td class="num">${(d.nnz / 1e9).toFixed(2)} B</td>` +
+      `<td class="num">${(d.density * 100).toFixed(1)}%</td>` +
+      `<td class="num">${d.n_targets}</td><td class="num">${d.n_guide_ids}</td>` +
+      `<td class="num">${d.n_batches}</td><td class="num">${fmt(d.ntc_cells)}</td>` +
+      `<td class="num">${fmt(d.genes_detected.median)}</td>` }));
+  });
+})();
+
+/* ── 对照：构成条 ── */
+(() => {
+  const host = document.getElementById("controls-fig");
+  const max = Math.max(...SPLITS.map(s => D.splits[s].n_cells));
+  SPLITS.forEach(s => {
+    const d = D.splits[s], pert = d.n_cells - d.ntc_cells;
+    const row = el("div", {}, [
+      el("div", { style: "display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin-bottom:4px", html:
+        `<span>${s}</span><span>${fmt(d.n_cells)} 细胞 &nbsp;=&nbsp; ${fmt(pert)} 扰动 &nbsp;+&nbsp; ${fmt(d.ntc_cells)} NTC</span>` }),
+      (() => {
+        const st = el("div", { class: "stack", style: `width:${(d.n_cells / max * 100).toFixed(1)}%` });
+        const a = el("div", { style: `width:${(pert / d.n_cells * 100).toFixed(1)}%;background:${SC[s]};opacity:.55` });
+        const b = el("div", { style: `width:${(d.ntc_cells / d.n_cells * 100).toFixed(1)}%;background:var(--ink-2)` });
+        hoverable(a, `<b>${s} · 扰动细胞</b><br>${fmt(pert)} 个 · ${d.n_targets} 个靶基因`);
+        hoverable(b, `<b>共享 NTC 臂</b><br>${fmt(d.ntc_cells)} 个细胞<br><span class="muted">三个文件里是同一批 barcode</span>`);
+        st.append(a, b); return st;
+      })()
+    ]);
+    row.style.marginBottom = "14px";
+    host.append(row);
+  });
+  host.append(el("p", { class: "footnote", html:
+    `灰色段在三条里指向同一批细胞。按上面的宽度看，它占了 Validation 的 ${(D.splits.Validation.ntc_cells / D.splits.Validation.n_cells * 100).toFixed(0)}%。` }));
+})();
+
+/* ── 对照：barcode 比对表 ── */
+(() => {
+  const tb = document.querySelector("#ntc-table tbody");
+  Object.entries(D.cross.ntc_identical).forEach(([pair, same]) => {
+    const [a, b] = pair.split("|");
+    tb.append(el("tr", { html:
+      `<td class="mono">${SHORT[a]} ↔ ${SHORT[b]}</td>` +
+      `<td>${same ? '<span class="flag crit">完全相同</span>' : '<span class="flag good">不同</span>'}</td>` +
+      `<td class="mono">0 个重叠</td>` }));
+  });
+})();
+
+/* ── 面板：交集矩阵 ── */
+(() => {
+  const tb = document.querySelector("#overlap-table tbody");
+  SPLITS.forEach(a => {
+    const tr = el("tr");
+    tr.append(el("th", { scope: "row", html: `<span class="flag" style="color:${SC[a]}">${SHORT[a]}</span>` }));
+    SPLITS.forEach(b => {
+      if (a === b) {
+        tr.append(el("td", { class: "num", style: "font-weight:500", html: `${D.splits[a].n_targets} <span style="color:var(--ink-3);font-size:11px">个靶基因</span>` }));
+      } else {
+        const key = [a, b].sort().join("|");
+        const n = (D.cross.target_overlap[key] || []).length;
+        tr.append(el("td", { class: "num", style: `color:${n ? "var(--crit)" : "var(--ink-3)"}`, html: n ? String(n) : "0" }));
+      }
+    });
+    tb.append(tr);
+  });
+})();
+
+/* ── 面板：每扰动细胞数（对数点带） ── */
+(() => {
+  const W = 480, H = 210, M = { l: 12, r: 12, t: 24, b: 40 };
+  const rows = D.perts;
+  const xs = v => M.l + (Math.log10(v) - Math.log10(20)) / (Math.log10(6000) - Math.log10(20)) * (W - M.l - M.r);
+  const s = chart(W, H);
+  [30, 100, 300, 1000, 3000].forEach(t => {
+    const g = S("g", { class: "tick" });
+    const ln = S("line", { x1: xs(t), x2: xs(t), y1: M.t - 8, y2: H - M.b, stroke: "var(--rule)" });
+    const tx = S("text", { x: xs(t), y: H - M.b + 16, "text-anchor": "middle" });
+    tx.textContent = fmt(t);
+    g.append(ln, tx); s.append(g);
+  });
+  const lanes = { Training: 0, Validation: 1, Test: 2 };
+  const laneH = (H - M.t - M.b) / 3;
+  SPLITS.forEach(sp => {
+    const y0 = M.t + lanes[sp] * laneH;
+    const lbl = S("text", { x: M.l, y: y0 + 10, class: "mark-label", fill: SC[sp] });
+    lbl.textContent = SHORT[sp];
+    s.append(lbl);
+    rows.filter(r => r.split === sp).forEach((r, i) => {
+      const c = S("circle", {
+        cx: xs(Math.max(r.n_cells, 20)), cy: y0 + 22 + ((i * 7) % 18) - 9,
+        r: 3, fill: SC[sp], "fill-opacity": .55, stroke: "var(--surface)", "stroke-width": 1
+      });
+      hoverable(c, `<b>${r.target}</b> · ${SHORT[sp]}<br>${fmt(r.n_cells)} 个细胞`);
+      s.append(c);
+    });
+  });
+  const ax = S("text", { x: W / 2, y: H - 6, class: "axis-label", "text-anchor": "middle" });
+  ax.textContent = "每个扰动的细胞数（对数）";
+  s.append(ax);
+  document.getElementById("cells-fig").append(s);
+})();
+
+/* ── 深度直方图 ── */
+(() => {
+  const W = 700, H = 320, M = { l: 52, r: 18, t: 16, b: 46 };
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const edges = D.splits.Training.umi.edges, xmax = edges[edges.length - 1];
+  const fracs = {};
+  SPLITS.forEach(s => {
+    const h = D.splits[s].umi.hist, n = D.splits[s].n_cells;
+    fracs[s] = h.map(v => v / n * 100);
+  });
+  const ymax = Math.max(...SPLITS.flatMap(s => fracs[s])) * 1.12;
+  const xs = v => M.l + v / xmax * iw;
+  const ys = v => M.t + ih - v / ymax * ih;
+  const s = chart(W, H);
+
+  [0, 1, 2, 3, 4].forEach(i => {
+    const v = ymax * i / 4, g = S("g", { class: "tick" });
+    g.append(S("line", { x1: M.l, x2: W - M.r, y1: ys(v), y2: ys(v), stroke: "var(--rule)" }));
+    const t = S("text", { x: M.l - 8, y: ys(v) + 3.5, "text-anchor": "end" });
+    t.textContent = v.toFixed(1) + "%";
+    g.append(t); s.append(g);
+  });
+  [0, 25000, 50000, 75000, 100000, 125000, 150000].forEach(v => {
+    const g = S("g", { class: "tick" });
+    const t = S("text", { x: xs(v), y: H - M.b + 16, "text-anchor": "middle" });
+    t.textContent = v === 0 ? "0" : (v / 1000) + "k";
+    g.append(t); s.append(g);
+  });
+
+  // 评测深度参照线
+  const ev = D.eval_depth;
+  s.append(S("line", { x1: xs(ev), x2: xs(ev), y1: M.t, y2: M.t + ih, stroke: "var(--crit)", "stroke-width": 1.5, "stroke-dasharray": "4 3" }));
+  const evl = S("text", { x: xs(ev) + 7, y: M.t + 12, class: "mark-label", fill: "var(--crit)" });
+  evl.textContent = `2026 评测 ${ev / 1000}k`;
+  s.append(evl);
+
+  SPLITS.forEach(sp => {
+    const pts = fracs[sp].map((v, i) => [xs((edges[i] + edges[i + 1]) / 2), ys(v)]);
+    const p = S("path", {
+      d: "M" + pts.map(q => q.map(n => n.toFixed(1)).join(",")).join("L"),
+      fill: "none", stroke: SC[sp], "stroke-width": 2, "stroke-linejoin": "round"
+    });
+    p.dataset.split = sp;
+    s.append(p);
+  });
+  // 中位数标记
+  SPLITS.forEach(sp => {
+    const m = D.splits[sp].umi.median;
+    s.append(S("line", { x1: xs(m), x2: xs(m), y1: M.t + ih, y2: M.t + ih + 6, stroke: SC[sp], "stroke-width": 2 }));
+  });
+  const med = D.splits.Training.umi.median;
+  const ml = S("text", { x: xs(med), y: M.t + ih + 26, class: "mark-label", "text-anchor": "middle" });
+  ml.textContent = "三个 split 的中位数 ≈ " + fmt(Math.round(med / 100) * 100);
+  s.append(ml);
+
+  const yl = S("text", { x: M.l - 40, y: M.t + ih / 2, class: "axis-label", transform: `rotate(-90 ${M.l - 40} ${M.t + ih / 2})`, "text-anchor": "middle" });
+  yl.textContent = "细胞占比";
+  s.append(yl);
+  const xl = S("text", { x: M.l + iw / 2, y: H - 6, class: "axis-label", "text-anchor": "middle" });
+  xl.textContent = "每细胞总 UMI";
+  s.append(xl);
+
+  // hover：读出三条线在该深度上的取值
+  const ov = S("rect", { x: M.l, y: M.t, width: iw, height: ih, fill: "transparent" });
+  const cross = S("line", { x1: 0, x2: 0, y1: M.t, y2: M.t + ih, stroke: "var(--ink-3)", "stroke-width": 1, opacity: 0 });
+  ov.addEventListener("pointermove", e => {
+    const r = s.getBoundingClientRect();
+    const vx = (e.clientX - r.left) / r.width * W;
+    const v = Math.max(0, Math.min(xmax, (vx - M.l) / iw * xmax));
+    let i = 0; while (i < edges.length - 2 && edges[i + 1] < v) i++;
+    cross.setAttribute("x1", xs((edges[i] + edges[i + 1]) / 2));
+    cross.setAttribute("x2", xs((edges[i] + edges[i + 1]) / 2));
+    cross.setAttribute("opacity", 1);
+    showTip(e, `<b>${fmt(Math.round(edges[i]))}–${fmt(Math.round(edges[i + 1]))} UMI</b><br>` +
+      SPLITS.map(sp => `<span style="color:${SC[sp]}">■</span> ${SHORT[sp]} ${fracs[sp][i].toFixed(2)}%`).join("<br>"));
+  });
+  ov.addEventListener("pointerleave", () => { hideTip(); cross.setAttribute("opacity", 0); });
+  s.append(cross, ov);
+  document.getElementById("depth-fig").append(s);
+
+  const lg = document.getElementById("depth-legend");
+  SPLITS.forEach(sp => lg.append(el("span", { html: `<i style="background:${SC[sp]}"></i>${SHORT[sp]}` })));
+  lg.append(el("span", { html: `<i style="background:var(--crit)"></i>评测深度` }));
+
+  const tb = document.querySelector("#depth-table tbody");
+  [["p05", "p05"], ["p25", "p25"], ["中位", "median"], ["p75", "p75"], ["p95", "p95"], ["最小", "min"], ["最大", "max"]].forEach(([lab, k]) => {
+    tb.append(el("tr", { html: `<td>${lab}</td>` + SPLITS.map(sp => `<td class="num">${fmt(Math.round(D.splits[sp].umi[k]))}</td>`).join("") }));
+  });
+})();
+
+/* ── 敲低残留点带 ── */
+(() => {
+  const W = 700, H = 200, M = { l: 20, r: 20, t: 20, b: 44 };
+  const iw = W - M.l - M.r;
+  const xs = v => M.l + Math.min(v, 1) * iw;
+  const s = chart(W, H);
+  [0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1].forEach(v => {
+    const g = S("g", { class: "tick" });
+    g.append(S("line", { x1: xs(v), x2: xs(v), y1: M.t, y2: H - M.b, stroke: "var(--rule)" }));
+    const t = S("text", { x: xs(v), y: H - M.b + 16, "text-anchor": "middle" });
+    t.textContent = (v * 100) + "%";
+    g.append(t); s.append(g);
+  });
+  s.append(S("line", { x1: xs(.4), x2: xs(.4), y1: M.t - 6, y2: H - M.b, stroke: "var(--crit)", "stroke-width": 1.5, "stroke-dasharray": "4 3" }));
+  const fl = S("text", { x: xs(.4) + 6, y: M.t + 2, class: "mark-label", fill: "var(--crit)" });
+  fl.textContent = "敲低失败判定线 40%";
+  s.append(fl);
+  const rows = D.perts.filter(r => r.residual != null);
+  rows.forEach((r, i) => {
+    const c = S("circle", {
+      cx: xs(r.residual), cy: M.t + 34 + ((i * 11) % 66),
+      r: 3.4, fill: SC[r.split], "fill-opacity": r.residual > .4 ? .95 : .5,
+      stroke: "var(--surface)", "stroke-width": 1
+    });
+    hoverable(c, `<b>${r.target}</b> · ${SHORT[r.split]}<br>残留 ${(r.residual * 100).toFixed(1)}%<br>` +
+      `<span class="muted">${fmt(r.n_cells)} 细胞 · 被推动 ${r.n_shift} 个基因</span>`);
+    s.append(c);
+  });
+  const md = D.derived.kd_median;
+  s.append(S("line", { x1: xs(md), x2: xs(md), y1: M.t + 20, y2: H - M.b, stroke: "var(--ink)", "stroke-width": 1.5 }));
+  const mt = S("text", { x: xs(md) + 6, y: M.t + 26, class: "mark-label" });
+  mt.textContent = `中位 ${(md * 100).toFixed(1)}%`;
+  s.append(mt);
+  const xl = S("text", { x: M.l + iw / 2, y: H - 6, class: "axis-label", "text-anchor": "middle" });
+  xl.textContent = "靶基因残留表达（扰动细胞 CP10K ÷ NTC 细胞 CP10K）";
+  s.append(xl);
+  document.getElementById("kd-fig").append(s);
+
+  const tb = document.querySelector("#kd-table tbody");
+  rows.slice().sort((a, b) => b.residual - a.residual).slice(0, 12).forEach(r => {
+    const bad = r.residual > .4;
+    tb.append(el("tr", { html:
+      `<td class="mono">${r.target}</td>` +
+      `<td><span class="flag" style="color:${SC[r.split]}">${SHORT[r.split]}</span></td>` +
+      `<td class="num">${(r.residual * 100).toFixed(1)}%</td>` +
+      `<td class="num">${fmt(r.n_cells)}</td>` +
+      `<td class="num">${r.ratio.toFixed(2)}</td>` +
+      `<td class="num">${r.n_shift}</td>` +
+      `<td><span class="flag ${bad ? "crit" : "warn"}">${bad ? "敲低失败" : "偏弱"}</span></td>` }));
+  });
+})();
+
+/* ── 效应量散点 + 扰动表 ── */
+(() => {
+  const active = new Set(SPLITS);
+  const W = 760, H = 420, M = { l: 54, r: 20, t: 18, b: 48 };
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const XMIN = 25, XMAX = 6000;
+  const ymax = Math.max(...D.perts.map(r => r.l2)) * 1.08;
+  const xs = v => M.l + (Math.log10(Math.max(v, XMIN)) - Math.log10(XMIN)) / (Math.log10(XMAX) - Math.log10(XMIN)) * iw;
+  const ys = v => M.t + ih - v / ymax * ih;
+  const s = chart(W, H);
+
+  [0, 3, 6, 9, 12, 15].filter(v => v <= ymax).forEach(v => {
+    const g = S("g", { class: "tick" });
+    g.append(S("line", { x1: M.l, x2: W - M.r, y1: ys(v), y2: ys(v), stroke: "var(--rule)" }));
+    const t = S("text", { x: M.l - 8, y: ys(v) + 3.5, "text-anchor": "end" });
+    t.textContent = v;
+    g.append(t); s.append(g);
+  });
+  [30, 100, 300, 1000, 3000].forEach(v => {
+    const g = S("g", { class: "tick" });
+    g.append(S("line", { x1: xs(v), x2: xs(v), y1: M.t, y2: M.t + ih, stroke: "var(--rule)" }));
+    const t = S("text", { x: xs(v), y: H - M.b + 16, "text-anchor": "middle" });
+    t.textContent = fmt(v);
+    g.append(t); s.append(g);
+  });
+
+  // 噪声地板
+  const fc = D.derived.floor_curve;
+  const fpath = "M" + fc.map(p => `${xs(p.k).toFixed(1)},${ys(p.l2).toFixed(1)}`).join("L");
+  s.append(S("path", { d: fpath, fill: "none", stroke: "var(--ink-2)", "stroke-width": 2, "stroke-dasharray": "6 4" }));
+  const fl = S("text", { x: xs(fc[Math.floor(fc.length * .55)].k), y: ys(fc[Math.floor(fc.length * .55)].l2) - 10, class: "mark-label" });
+  fl.textContent = "NTC 自抽样噪声地板 (p90)";
+  s.append(fl);
+
+  const dots = [];
+  D.perts.forEach(r => {
+    const c = S("circle", {
+      cx: xs(r.n_cells), cy: ys(r.l2), r: 4,
+      fill: SC[r.split], "fill-opacity": .6, stroke: "var(--surface)", "stroke-width": 1
+    });
+    c.dataset.target = r.target;
+    hoverable(c, `<b>${r.target}</b> · ${SHORT[r.split]}<br>` +
+      `${fmt(r.n_cells)} 细胞 · L2 ${r.l2.toFixed(2)}<br>` +
+      `地板归一化 <b>${r.ratio.toFixed(2)}×</b> · 被推动 ${r.n_shift} 基因<br>` +
+      `<span class="muted">残留表达 ${(r.residual * 100).toFixed(1)}%</span>`);
+    c.addEventListener("pointerenter", () => highlight(r.target));
+    c.addEventListener("pointerleave", () => highlight(null));
+    dots.push([r, c]);
+    s.append(c);
+  });
+  const yl = S("text", { x: M.l - 40, y: M.t + ih / 2, class: "axis-label", transform: `rotate(-90 ${M.l - 40} ${M.t + ih / 2})`, "text-anchor": "middle" });
+  yl.textContent = "L2( pseudobulk , NTC )";
+  s.append(yl);
+  const xl = S("text", { x: M.l + iw / 2, y: H - 6, class: "axis-label", "text-anchor": "middle" });
+  xl.textContent = "该扰动的细胞数（对数）";
+  s.append(xl);
+  document.getElementById("effect-fig").append(s);
+
+  // split 过滤
+  const chips = document.getElementById("effect-chips");
+  SPLITS.forEach(sp => {
+    const b = el("button", { class: "chip", "aria-pressed": "true", style: `color:${SC[sp]}`, html:
+      `<span class="sw" style="background:${SC[sp]}"></span>${SHORT[sp]}` });
+    b.addEventListener("click", () => {
+      active.has(sp) ? active.delete(sp) : active.add(sp);
+      if (!active.size) active.add(sp);
+      SPLITS.forEach(x => chips.querySelector(`[data-sp="${x}"]`).setAttribute("aria-pressed", active.has(x)));
+      dots.forEach(([r, c]) => c.style.display = active.has(r.split) ? "" : "none");
+      render();
+    });
+    b.dataset.sp = sp;
+    chips.append(b);
+  });
+
+  // 表格
+  const tb = document.querySelector("#pert-table tbody");
+  const counter = document.getElementById("pert-count");
+  const search = document.getElementById("pert-search");
+  let sortK = "ratio", sortDir = -1;
+  const maxRatio = Math.max(...D.perts.map(r => r.ratio));
+
+  function rowsNow() {
+    const q = search.value.trim().toUpperCase();
+    return D.perts
+      .filter(r => active.has(r.split) && (!q || r.target.includes(q)))
+      .sort((a, b) => {
+        const x = a[sortK], y = b[sortK];
+        return (typeof x === "string" ? x.localeCompare(y) : x - y) * sortDir;
+      });
+  }
+  function render() {
+    const rows = rowsNow();
+    counter.textContent = `${rows.length} / ${D.perts.length} 个扰动`;
+    tb.innerHTML = rows.map(r => {
+      const kdw = Math.min(r.residual, 1) * 100;
+      const kdc = r.residual > .4 ? "var(--crit)" : r.residual > .2 ? "var(--warn)" : "var(--good)";
+      return `<tr data-target="${r.target}">` +
+        `<td class="mono">${r.target}</td>` +
+        `<td><span class="flag" style="color:${SC[r.split]}">${SHORT[r.split]}</span></td>` +
+        `<td class="num">${fmt(r.n_cells)}</td>` +
+        `<td class="num">${r.n_guides}</td>` +
+        `<td class="num"><span class="bar-cell"><span class="track"><span class="fill" style="width:${kdw.toFixed(0)}%;background:${kdc}"></span></span>${(r.residual * 100).toFixed(0)}%</span></td>` +
+        `<td class="num">${r.l2.toFixed(2)}</td>` +
+        `<td class="num"><span class="bar-cell"><span class="track"><span class="fill" style="width:${(r.ratio / maxRatio * 100).toFixed(0)}%;background:${SC[r.split]}"></span></span>${r.ratio.toFixed(2)}</span></td>` +
+        `<td class="num">${r.n_shift}</td>` +
+        `<td class="num">${r.n_batches}</td></tr>`;
+    }).join("");
+  }
+  function highlight(target) {
+    tb.querySelectorAll("tr").forEach(tr => tr.classList.toggle("on", target && tr.dataset.target === target));
+    dots.forEach(([r, c]) => c.setAttribute("r", target && r.target === target ? 6.5 : 4));
+  }
+  document.querySelectorAll("#pert-table th.sortable").forEach(th => {
+    th.tabIndex = 0;
+    const go = () => {
+      const k = th.dataset.k;
+      sortDir = sortK === k ? -sortDir : (k === "target" || k === "split" ? 1 : -1);
+      sortK = k;
+      document.querySelectorAll("#pert-table th.sortable").forEach(o =>
+        o.setAttribute("aria-sort", o === th ? (sortDir === 1 ? "ascending" : "descending") : "none"));
+      render();
+    };
+    th.addEventListener("click", go);
+    th.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+  tb.addEventListener("pointerover", e => {
+    const tr = e.target.closest("tr");
+    if (tr) highlight(tr.dataset.target);
+  });
+  tb.addEventListener("pointerleave", () => highlight(null));
+  search.addEventListener("input", render);
+  document.querySelector('#pert-table th[data-k="ratio"]').setAttribute("aria-sort", "descending");
+  render();
+})();
+
+/* ── 批次深度 ── */
+(() => {
+  const W = 760, H = 260, M = { l: 54, r: 18, t: 18, b: 56 };
+  const iw = W - M.l - M.r, ih = H - M.t - M.b;
+  const bs = D.splits.Training.batches.map(b => b.batch);
+  const vals = SPLITS.flatMap(s => D.splits[s].batches.map(b => b.median_umi)).filter(v => v);
+  const ymin = Math.min(...vals) * .97, ymax = Math.max(...vals) * 1.03;
+  const xs = i => M.l + (i + .5) / bs.length * iw;
+  const ys = v => M.t + ih - (v - ymin) / (ymax - ymin) * ih;
+  const s = chart(W, H);
+  [40000, 45000, 50000, 55000, 60000, 65000].filter(v => v >= ymin && v <= ymax).forEach(v => {
+    const g = S("g", { class: "tick" });
+    g.append(S("line", { x1: M.l, x2: W - M.r, y1: ys(v), y2: ys(v), stroke: "var(--rule)" }));
+    const t = S("text", { x: M.l - 8, y: ys(v) + 3.5, "text-anchor": "end" });
+    t.textContent = (v / 1000) + "k";
+    g.append(t); s.append(g);
+  });
+  bs.forEach((b, i) => {
+    if (i % 6 === 0) {
+      const t = S("text", { x: xs(i), y: H - M.b + 16, "text-anchor": "middle", class: "tick" });
+      t.setAttribute("font-family", "var(--mono)");
+      t.setAttribute("font-size", "9.5");
+      t.setAttribute("fill", "var(--ink-3)");
+      t.textContent = b.replace(/^Flex_/, "");
+      s.append(t);
+    }
+  });
+  SPLITS.forEach(sp => {
+    const pts = D.splits[sp].batches.map((b, i) => [xs(i), ys(b.median_umi)]);
+    s.append(S("path", {
+      d: "M" + pts.map(p => p.map(n => n.toFixed(1)).join(",")).join("L"),
+      fill: "none", stroke: SC[sp], "stroke-width": 1.6, "stroke-opacity": .85, "stroke-linejoin": "round"
+    }));
+  });
+  D.splits.Training.batches.forEach((b, i) => {
+    const c = S("circle", { cx: xs(i), cy: ys(b.median_umi), r: 4.5, fill: "transparent" });
+    hoverable(c, `<b>${b.batch}</b><br>` + SPLITS.map(sp => {
+      const bb = D.splits[sp].batches[i];
+      return `<span style="color:${SC[sp]}">■</span> ${SHORT[sp]} 中位 ${fmt(Math.round(bb.median_umi))} · ${fmt(bb.n_cells)} 细胞`;
+    }).join("<br>"));
+    s.append(c);
+  });
+  const yl = S("text", { x: M.l - 40, y: M.t + ih / 2, class: "axis-label", transform: `rotate(-90 ${M.l - 40} ${M.t + ih / 2})`, "text-anchor": "middle" });
+  yl.textContent = "中位 UMI / 细胞";
+  s.append(yl);
+  const xl = S("text", { x: M.l + iw / 2, y: H - 8, class: "axis-label", "text-anchor": "middle" });
+  xl.textContent = "48 个 10x Flex 批次（三个 split 共用）";
+  s.append(xl);
+  document.getElementById("batch-fig").append(s);
+  const lg = document.getElementById("batch-legend");
+  SPLITS.forEach(sp => lg.append(el("span", { html: `<i style="background:${SC[sp]}"></i>${SHORT[sp]}` })));
+})();
+</script>

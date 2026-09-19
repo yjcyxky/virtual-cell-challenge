@@ -1,0 +1,13 @@
+# 上游能下载回来的一律不入库——凭 data/sources.json + registry.lock.json 复现
+# data/raw/ 是 237 GB 只读语料；models/ 是预训练权重，各自带 SOURCE.json 记着出处
+data/raw/
+models/
+
+# 噪声
+data/logs/
+.venv/
+__pycache__/
+*.pyc
+
+# 自己生成的派生语料（data/interim/ data/processed/）入库，
+# 其中 >10MB 的走 LFS——见 .gitattributes 与 .githooks/pre-commit

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# 按实际大小把 >10MB 的文件自动转入 LFS，不靠扩展名清单。
+#
+# gitattributes 只认路径通配、没有大小谓词，所以「按大小」这条规则没法写成
+# 一条静态 pattern。LFS 自带的 --above 只存在于 `git lfs migrate import`，
+# 那是改写历史的事后操作。要在入库当下分流，就得在这里量一次。
+#
+# 做法：量暂存区里每个 blob 的字节数，超线的用 git lfs track --filename 登记
+# 进 .gitattributes（逐文件精确条目，不会误伤同后缀的小文件），再 renormalize
+# 让 clean filter 把它换成指针，然后一并纳入本次提交。
+#
+# 已经被 LFS 管起来的文件天然过线：它们进索引的是百来字节的指针，量不到 10MB。
+#
+# 新克隆装一次：  ln -sf ../../.githooks/pre-commit .git/hooks/pre-commit
+# （不用 core.hooksPath——那会顶掉 git-lfs 装在 .git/hooks 里的 pre-push 和
+#   post-checkout，LFS 就推不上去了。）
+
+set -o pipefail
+
+LIMIT=$((10 * 1024 * 1024))
+converted=()
+
+while IFS= read -r -d '' f; do
+    size=$(git cat-file -s ":$f" 2>/dev/null) || continue
+    (( size > LIMIT )) || continue
+
+    git lfs track --filename "$f" >/dev/null || exit 1
+    git add --renormalize -- "$f" || exit 1
+
+    now=$(git cat-file -s ":$f" 2>/dev/null)
+    if (( now > LIMIT )); then
+        echo "转入 LFS 失败，仍是 $((now / 1024 / 1024))MB: $f" >&2
+        echo "LFS 装好了吗？ git lfs install --local" >&2
+        exit 1
+    fi
+    converted+=("$((size / 1024 / 1024))MB	$f")
+done < <(git diff --cached -z --name-only --diff-filter=AM)
+
+(( ${#converted[@]} == 0 )) && exit 0
+
+git add -- .gitattributes || exit 1
+
+{
+    echo "超过 10MB，已自动转入 LFS 并写进 .gitattributes —"
+    echo
+    printf '  %s\n' "${converted[@]}"
+    echo
+    echo "若其中有上游能重新下载的东西，它就不该入库。撤销："
+    echo "    git reset HEAD~ 1>/dev/null   # 提交后"
+    echo "    把路径加进 .gitignore，再 git rm --cached <file>"
+} >&2
+
+exit 0

@@ -1,0 +1,589 @@
+{
+  "started_at": "2026-09-19T02:40:21.228519+00:00",
+  "local_time": "2026-09-18T22:40:21.229638-04:00",
+  "registration_sha256": {
+    "data/sources.json": "593d9a292431d3d2025947bd0fa6e3a8b27356e0994edfcd71982b8c28692606",
+    "data/registry.lock.json": "7e945c8f612795ef5333a9cf0c8b00d3ce81a22cb3282a8e24e1938ed4f805d4"
+  },
+  "h1": {
+    "splits": {
+      "Training": {
+        "n_rows": 221273,
+        "ntc_rows": 38176,
+        "unique_batch_barcode": 221273,
+        "unique_ntc_batch_barcode": 38176,
+        "unique_ntc_barcode_without_batch": 38176,
+        "row_sum_counts": {
+          "n_cells": 221273,
+          "min": 19981.0,
+          "median": 53912.0,
+          "p05": 29430.6,
+          "p95": 93741.4,
+          "max": 431281.0,
+          "cells_exactly_20000": 2
+        }
+      },
+      "Validation": {
+        "n_rows": 98927,
+        "ntc_rows": 38176,
+        "unique_batch_barcode": 98927,
+        "unique_ntc_batch_barcode": 38176,
+        "unique_ntc_barcode_without_batch": 38176,
+        "row_sum_counts": {
+          "n_cells": 98927,
+          "min": 19982.0,
+          "median": 54312.0,
+          "p05": 29542.3,
+          "p95": 94392.49999999999,
+          "max": 338047.0,
+          "cells_exactly_20000": 1
+        }
+      },
+      "Test": {
+        "n_rows": 170846,
+        "ntc_rows": 38176,
+        "unique_batch_barcode": 170846,
+        "unique_ntc_batch_barcode": 38176,
+        "unique_ntc_barcode_without_batch": 38176,
+        "row_sum_counts": {
+          "n_cells": 170846,
+          "min": 19982.0,
+          "median": 54125.5,
+          "p05": 29386.5,
+          "p95": 94225.25,
+          "max": 346239.0,
+          "cells_exactly_20000": 0
+        }
+      }
+    },
+    "sum_rows": 491046,
+    "unique_batch_barcode": 414694,
+    "ntc_keys_identical": true,
+    "overlap_pairs": {
+      "Training-Validation": 38176,
+      "Training-Test": 38176,
+      "Validation-Test": 38176
+    },
+    "gene_axes_identical": true
+  },
+  "vcc2026_controls": {
+    "A": {
+      "shape": [
+        18400,
+        18533
+      ],
+      "row_sum_counts": {
+        "n_cells": 18400,
+        "min": 3275.0,
+        "median": 20109.0,
+        "p05": 6845.9,
+        "p95": 38877.45,
+        "max": 52420.0,
+        "cells_exactly_20000": 0
+      },
+      "ntc_id_counts": {
+        "non-targeting-11": 400,
+        "non-targeting-12": 400,
+        "non-targeting-13": 400,
+        "non-targeting-15": 400,
+        "non-targeting-17": 400,
+        "non-targeting-20": 400,
+        "non-targeting-21": 400,
+        "non-targeting-22": 400,
+        "non-targeting-24": 400,
+        "non-targeting-25": 400,
+        "non-targeting-28": 400,
+        "non-targeting-29": 400,
+        "non-targeting-3": 400,
+        "non-targeting-30": 400,
+        "non-targeting-36": 400,
+        "non-targeting-37": 400,
+        "non-targeting-39": 400,
+        "non-targeting-40": 400,
+        "non-targeting-44": 400,
+        "non-targeting-45": 400,
+        "non-targeting-52": 400,
+        "non-targeting-53": 400,
+        "non-targeting-55": 400,
+        "non-targeting-58": 400,
+        "non-targeting-59": 400,
+        "non-targeting-61": 400,
+        "non-targeting-65": 400,
+        "non-targeting-68": 400,
+        "non-targeting-7": 400,
+        "non-targeting-70": 400,
+        "non-targeting-71": 400,
+        "non-targeting-72": 400,
+        "non-targeting-73": 400,
+        "non-targeting-74": 400,
+        "non-targeting-77": 400,
+        "non-targeting-8": 400,
+        "non-targeting-80": 400,
+        "non-targeting-82": 400,
+        "non-targeting-83": 400,
+        "non-targeting-85": 400,
+        "non-targeting-88": 400,
+        "non-targeting-89": 400,
+        "non-targeting-91": 400,
+        "non-targeting-93": 400,
+        "non-targeting-98": 400,
+        "non-targeting-99": 400
+      }
+    },
+    "B": {
+      "shape": [
+        18400,
+        18533
+      ],
+      "row_sum_counts": {
+        "n_cells": 18400,
+        "min": 710.0,
+        "median": 19946.0,
+        "p05": 5328.9,
+        "p95": 32951.2,
+        "max": 42666.0,
+        "cells_exactly_20000": 2
+      },
+      "ntc_id_counts": {
+        "non-targeting-11": 400,
+        "non-targeting-12": 400,
+        "non-targeting-13": 400,
+        "non-targeting-15": 400,
+        "non-targeting-17": 400,
+        "non-targeting-20": 400,
+        "non-targeting-21": 400,
+        "non-targeting-22": 400,
+        "non-targeting-24": 400,
+        "non-targeting-25": 400,
+        "non-targeting-28": 400,
+        "non-targeting-29": 400,
+        "non-targeting-3": 400,
+        "non-targeting-30": 400,
+        "non-targeting-36": 400,
+        "non-targeting-37": 400,
+        "non-targeting-39": 400,
+        "non-targeting-40": 400,
+        "non-targeting-44": 400,
+        "non-targeting-45": 400,
+        "non-targeting-52": 400,
+        "non-targeting-53": 400,
+        "non-targeting-55": 400,
+        "non-targeting-58": 400,
+        "non-targeting-59": 400,
+        "non-targeting-61": 400,
+        "non-targeting-65": 400,
+        "non-targeting-68": 400,
+        "non-targeting-7": 400,
+        "non-targeting-70": 400,
+        "non-targeting-71": 400,
+        "non-targeting-72": 400,
+        "non-targeting-73": 400,
+        "non-targeting-74": 400,
+        "non-targeting-77": 400,
+        "non-targeting-8": 400,
+        "non-targeting-80": 400,
+        "non-targeting-82": 400,
+        "non-targeting-83": 400,
+        "non-targeting-85": 400,
+        "non-targeting-88": 400,
+        "non-targeting-89": 400,
+        "non-targeting-91": 400,
+        "non-targeting-93": 400,
+        "non-targeting-98": 400,
+        "non-targeting-99": 400
+      }
+    },
+    "C": {
+      "shape": [
+        18400,
+        18533
+      ],
+      "row_sum_counts": {
+        "n_cells": 18400,
+        "min": 3447.0,
+        "median": 20034.0,
+        "p05": 7614.9,
+        "p95": 38596.54999999999,
+        "max": 50965.0,
+        "cells_exactly_20000": 1
+      },
+      "ntc_id_counts": {
+        "non-targeting-11": 400,
+        "non-targeting-12": 400,
+        "non-targeting-13": 400,
+        "non-targeting-15": 400,
+        "non-targeting-17": 400,
+        "non-targeting-20": 400,
+        "non-targeting-21": 400,
+        "non-targeting-22": 400,
+        "non-targeting-24": 400,
+        "non-targeting-25": 400,
+        "non-targeting-28": 400,
+        "non-targeting-29": 400,
+        "non-targeting-3": 400,
+        "non-targeting-30": 400,
+        "non-targeting-36": 400,
+        "non-targeting-37": 400,
+        "non-targeting-39": 400,
+        "non-targeting-40": 400,
+        "non-targeting-44": 400,
+        "non-targeting-45": 400,
+        "non-targeting-52": 400,
+        "non-targeting-53": 400,
+        "non-targeting-55": 400,
+        "non-targeting-58": 400,
+        "non-targeting-59": 400,
+        "non-targeting-61": 400,
+        "non-targeting-65": 400,
+        "non-targeting-68": 400,
+        "non-targeting-7": 400,
+        "non-targeting-70": 400,
+        "non-targeting-71": 400,
+        "non-targeting-72": 400,
+        "non-targeting-73": 400,
+        "non-targeting-74": 400,
+        "non-targeting-77": 400,
+        "non-targeting-8": 400,
+        "non-targeting-80": 400,
+        "non-targeting-82": 400,
+        "non-targeting-83": 400,
+        "non-targeting-85": 400,
+        "non-targeting-88": 400,
+        "non-targeting-89": 400,
+        "non-targeting-91": 400,
+        "non-targeting-93": 400,
+        "non-targeting-98": 400,
+        "non-targeting-99": 400
+      }
+    }
+  },
+  "axis": {
+    "2025": 18080,
+    "2026": 18533,
+    "shared": 18077,
+    "only_2025": [
+      "HSPA14-1",
+      "TBCE-1",
+      "TMSB15B-1"
+    ],
+    "only_2026_count": 456
+  },
+  "gene_identifier_examples": [
+    {
+      "file": "replogle2022/K562_essential_raw_singlecell_01.h5ad",
+      "features": 8563,
+      "unique_symbols": 8561,
+      "literal_symbol_overlap_2026": 7940,
+      "index_example": [
+        "ENSG00000237491",
+        "ENSG00000228794",
+        "ENSG00000188976"
+      ]
+    },
+    {
+      "file": "replogle2022/K562_gwps_raw_singlecell_01.h5ad",
+      "features": 8248,
+      "unique_symbols": 8246,
+      "literal_symbol_overlap_2026": 7681,
+      "index_example": [
+        "ENSG00000237491",
+        "ENSG00000228794",
+        "ENSG00000188976"
+      ]
+    },
+    {
+      "file": "replogle2022/rpe1_raw_singlecell_01.h5ad",
+      "features": 8749,
+      "unique_symbols": 8748,
+      "literal_symbol_overlap_2026": 8260,
+      "index_example": [
+        "ENSG00000188976",
+        "ENSG00000187583",
+        "ENSG00000188290"
+      ]
+    },
+    {
+      "file": "nadig2025/GSE264667_hepg2_raw_singlecell_01.h5ad",
+      "features": 9624,
+      "unique_symbols": 9623,
+      "literal_symbol_overlap_2026": 9024,
+      "index_example": [
+        "ENSG00000228794",
+        "ENSG00000188976",
+        "ENSG00000187583"
+      ]
+    },
+    {
+      "file": "nadig2025/GSE264667_jurkat_raw_singlecell_01.h5ad",
+      "features": 8882,
+      "unique_symbols": 8881,
+      "literal_symbol_overlap_2026": 8284,
+      "index_example": [
+        "ENSG00000237491",
+        "ENSG00000228794",
+        "ENSG00000188976"
+      ]
+    }
+  ],
+  "lincs_gene_info": {
+    "rows": 12328,
+    "columns": [
+      "pr_gene_id",
+      "pr_gene_symbol",
+      "pr_gene_title",
+      "pr_is_lm",
+      "pr_is_bing"
+    ],
+    "pr_is_lm": {
+      "1": 978,
+      "0": 11350
+    },
+    "pr_is_bing": {
+      "1": 10174,
+      "0": 2154
+    }
+  },
+  "completed_at": "2026-09-19T02:40:31.151372+00:00",
+  "duration_seconds": 9.9,
+  "registration_unchanged": true,
+  "inventory_observed_at": "2026-09-18T22:43:10.387171-04:00",
+  "inventory": [
+    {
+      "id": "arc_vcc2025_h1",
+      "tier": "a",
+      "root": "data/raw/arc_vcc2025_h1",
+      "locked_files": 6,
+      "locked_bytes": 34362209866,
+      "size_complete_files": 6,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 34362209866,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "scperturb",
+      "tier": "a",
+      "root": "data/raw/scperturb",
+      "locked_files": 54,
+      "locked_bytes": 43042767207,
+      "size_complete_files": 54,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 43042767207,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "replogle2022",
+      "tier": "b",
+      "root": "data/raw/replogle2022",
+      "locked_files": 6,
+      "locked_bytes": 85743400581,
+      "size_complete_files": 6,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 85743400581,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "jiang2025",
+      "tier": "b",
+      "root": "data/raw/jiang2025",
+      "locked_files": 9,
+      "locked_bytes": 20141713377,
+      "size_complete_files": 9,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 20141713377,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "nadig2025",
+      "tier": "b",
+      "root": "data/raw/nadig2025",
+      "locked_files": 2,
+      "locked_bytes": 14980951205,
+      "size_complete_files": 2,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 14980951205,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "mcfaline_figueroa2024",
+      "tier": "b",
+      "root": "data/raw/mcfaline_figueroa2024",
+      "locked_files": 33,
+      "locked_bytes": 13392023219,
+      "size_complete_files": 33,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 13392023219,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "depmap_24q4",
+      "tier": "c",
+      "root": "data/raw/depmap_24q4",
+      "locked_files": 5,
+      "locked_bytes": 1867035076,
+      "size_complete_files": 5,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 1867035076,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "networks",
+      "tier": "c",
+      "root": "data/raw/networks",
+      "locked_files": 6,
+      "locked_bytes": 126342798,
+      "size_complete_files": 6,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 126342798,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "tahoe100m",
+      "tier": "d",
+      "root": "data/raw/tahoe100m",
+      "locked_files": 306,
+      "locked_bytes": 32220094009,
+      "size_complete_files": 306,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 32220094009,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "lincs_l1000",
+      "tier": "d",
+      "root": "data/raw/lincs_l1000",
+      "locked_files": 5,
+      "locked_bytes": 21340515881,
+      "size_complete_files": 5,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 21340515881,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "vcc_gene_axis",
+      "tier": "c",
+      "root": "data/raw/vcc_gene_axis",
+      "locked_files": 1,
+      "locked_bytes": 116023,
+      "size_complete_files": 1,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 116023,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "esm2_650m",
+      "tier": "c",
+      "root": "models/esm2_650m",
+      "locked_files": 5,
+      "locked_bytes": 2609507429,
+      "size_complete_files": 5,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 2609507429,
+      "writable_files": 5,
+      "source_json_present": true
+    },
+    {
+      "id": "arc_se600m",
+      "tier": "c",
+      "root": "models/arc_se600m",
+      "locked_files": 3,
+      "locked_bytes": 5678590253,
+      "size_complete_files": 3,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 5678590253,
+      "writable_files": 3,
+      "source_json_present": true
+    },
+    {
+      "id": "arc_vcc2026_controls",
+      "tier": "a",
+      "root": "data/raw/arc_vcc2026_controls",
+      "locked_files": 7,
+      "locked_bytes": 1324236714,
+      "size_complete_files": 7,
+      "partial_files": 0,
+      "missing_files": 0,
+      "on_disk_bytes": 1324236714,
+      "writable_files": 0,
+      "source_json_present": true
+    },
+    {
+      "id": "scbasecount_2026_01_12_human",
+      "tier": "d",
+      "root": "data/raw/scbasecount_2026_01_12_human",
+      "locked_files": 1810,
+      "locked_bytes": 200001038092,
+      "size_complete_files": 1432,
+      "partial_files": 4,
+      "missing_files": 374,
+      "on_disk_bytes": 159844540884,
+      "writable_files": 1436,
+      "source_json_present": false
+    }
+  ],
+  "scperturb_structure_examples": [
+    {
+      "file": "FrangiehIzar2021_protein.h5ad",
+      "shape": [
+        218331,
+        24
+      ]
+    },
+    {
+      "file": "PapalexiSatija2021_eccite_protein.h5ad",
+      "shape": [
+        20729,
+        4
+      ]
+    },
+    {
+      "file": "PapalexiSatija2021_eccite_arrayed_protein.h5ad",
+      "shape": [
+        8984,
+        4
+      ]
+    },
+    {
+      "file": "TianKampmann2021_CRISPRa.h5ad",
+      "shape": [
+        21193,
+        33538
+      ]
+    },
+    {
+      "file": "SrivatsanTrapnell2020_sciplex3.h5ad",
+      "shape": [
+        799317,
+        110983
+      ]
+    }
+  ],
+  "upstream_references": [
+    "https://arcinstitute.org/news/virtual-cell-challenge-2026",
+    "https://clue.io/connectopedia/data_levels",
+    "https://github.com/cole-trapnell-lab/sci-Plex-GxE"
+  ]
+}

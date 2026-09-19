@@ -1,0 +1,14 @@
+# 这里不枚举格式。>10MB 的文件由 .githooks/pre-commit 在提交时按实际大小自动
+# 登记到本文件末尾（git lfs track --filename），所以下面的条目是长出来的，
+# 不是事先猜出来的——新格式不需要有人记得回来补一行。
+#
+# 为什么规则不能写在这个文件里：gitattributes 只认路径通配，没有大小谓词。
+# LFS 的按大小分流是 `git lfs migrate import --above=10MB`，那是改写历史的
+# 事后操作（且与 --include/--exclude 互斥）。要在入库当下就分流，只能由 hook 做。
+#
+# 事后补救（对已经进了历史的大文件）：
+#     git lfs migrate import --above=10MB
+#
+# 门槛之下的东西一律留在普通 git 里保持可 diff——registry.lock.json 和
+# MANIFEST.tsv 的价值恰恰在 diff：上游悄悄改版会表现为 lock 里的一行变化，
+# 进了 LFS 就只剩一个指针，那条信号就没了。

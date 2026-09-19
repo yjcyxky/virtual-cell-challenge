@@ -1,0 +1,226 @@
+{
+  "source_id": "mcfaline_figueroa2024",
+  "started_at": "2026-09-19T02:00:33.909021+00:00",
+  "completed_at": "2026-09-19T02:04:53.662261+00:00",
+  "gzip_files": 32,
+  "all_gzip_crc_verified": true,
+  "uncompressed_bytes": 61137185920,
+  "files": [
+    {
+      "file": "GSE225775_family.soft.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 4855,
+      "uncompressed_bytes": 38510
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_UMI.count.matrix.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 180261589,
+      "uncompressed_bytes": 767173220,
+      "text_lines": 60305899,
+      "first_line": "8\t1\t3"
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_cell.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 61764,
+      "uncompressed_bytes": 1015285,
+      "text_lines": 18588,
+      "first_line": "01B_A01_RT_BC_10_Lig_BC_12\tsci3_A172_MMR_HPRT1_CROPseq"
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_gene.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 430161,
+      "uncompressed_bytes": 1574353,
+      "text_lines": 58347,
+      "first_line": "ENSG00000000003.14\tTSPAN6"
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_hashTable.out.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 4521716,
+      "uncompressed_bytes": 94653570
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_hash_sample_sheet.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 1979,
+      "uncompressed_bytes": 11674
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_preprocessed_cds.rds.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 140095456,
+      "uncompressed_bytes": 141093004
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_sgRNATable_out.rds.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 23622181,
+      "uncompressed_bytes": 23627922
+    },
+    {
+      "file": "GSM7056148_sciPlexGxE_1_sgRNA_sequences.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 473,
+      "uncompressed_bytes": 1218
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_UMI.count.matrix.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 6035886428,
+      "uncompressed_bytes": 30138820750,
+      "text_lines": 1879036606,
+      "first_line": "17607\t1\t1"
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_cell.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 115324478,
+      "uncompressed_bytes": 2092229026,
+      "text_lines": 43209765,
+      "first_line": "01A_A01_RT_BC_100_Lig_BC_1\tsci3_CRISPRi_kinome"
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_gRNASampleSheet.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 28449,
+      "uncompressed_bytes": 88513
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_gRNATable_reads.out.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 656028109,
+      "uncompressed_bytes": 9367614981
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_gRNA_sequences.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 28786,
+      "uncompressed_bytes": 91711
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_gene.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 430161,
+      "uncompressed_bytes": 1574353,
+      "text_lines": 58347,
+      "first_line": "ENSG00000000003.14\tTSPAN6"
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_hashTable.out.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 724394500,
+      "uncompressed_bytes": 9525491146
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_hash_sample_sheet.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 9213,
+      "uncompressed_bytes": 33358
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_hash_whitelist_rep1.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 3145,
+      "uncompressed_bytes": 50744
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_hash_whitelist_rep2.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 2979,
+      "uncompressed_bytes": 50744
+    },
+    {
+      "file": "GSM7056149_sciPlexGxE_2_preprocessed_cds.list.RDS.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 3619987565,
+      "uncompressed_bytes": 3641798100
+    },
+    {
+      "file": "GSM7056150_sciPlex_3_UMI.count.matrix.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 265432576,
+      "uncompressed_bytes": 1169601484,
+      "text_lines": 85238651,
+      "first_line": "42\t1\t1"
+    },
+    {
+      "file": "GSM7056150_sciPlex_3_cell.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 538733,
+      "uncompressed_bytes": 7329283,
+      "text_lines": 179576,
+      "first_line": "01B_A01_RT_BC_10_Lig_BC_13\tsci3_Plex_GSC"
+    },
+    {
+      "file": "GSM7056150_sciPlex_3_gene.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 430158,
+      "uncompressed_bytes": 1574353,
+      "text_lines": 58347,
+      "first_line": "ENSG00000000003.14\tTSPAN6"
+    },
+    {
+      "file": "GSM7056150_sciPlex_3_hashTable.out.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 10982366,
+      "uncompressed_bytes": 148021947
+    },
+    {
+      "file": "GSM7056150_sciPlex_3_hash_sample_sheet.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 6691,
+      "uncompressed_bytes": 38398
+    },
+    {
+      "file": "GSM7056150_sciPlex_3_preprocessed_cds.list.rds.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 143511185,
+      "uncompressed_bytes": 144299383
+    },
+    {
+      "file": "GSM7056151_sciPlex_4_UMI.count.matrix.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 590579159,
+      "uncompressed_bytes": 2674070042,
+      "text_lines": 192432512,
+      "first_line": "12\t1\t1"
+    },
+    {
+      "file": "GSM7056151_sciPlex_4_cell.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 832570,
+      "uncompressed_bytes": 13276531,
+      "text_lines": 266662,
+      "first_line": "A01_G01_RT_BC_10_Lig_BC_4\tsci3_sciPlex8_FollowUp"
+    },
+    {
+      "file": "GSM7056151_sciPlex_4_gene.annotations.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 430158,
+      "uncompressed_bytes": 1574353,
+      "text_lines": 58347,
+      "first_line": "ENSG00000000003.14\tTSPAN6"
+    },
+    {
+      "file": "GSM7056151_sciPlex_4_hashTable.out.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 19793477,
+      "uncompressed_bytes": 313141127
+    },
+    {
+      "file": "GSM7056151_sciPlex_4_hash_sample_sheet.txt.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 3335,
+      "uncompressed_bytes": 16206
+    },
+    {
+      "file": "GSM7056151_sciPlex_4_preprocessed_cds.list.rds.gz",
+      "gzip_crc_verified": true,
+      "compressed_bytes": 858356130,
+      "uncompressed_bytes": 867210631
+    }
+  ]
+}
