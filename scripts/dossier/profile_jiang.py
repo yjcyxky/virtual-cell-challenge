@@ -27,13 +27,16 @@ PROTOCOL='https://github.com/yjcyxky/virtual-cell-challenge/issues/9#issuecommen
 
 def source_design(cells,stimulus):
     expected='TGFB1' if stimulus=='TGFB' else stimulus
-    for name in ['source_cell_type','source_pathway','source_Batch_info','source_bc1_well','source_sample_ID','source_guide','source_gene']:
+    for name in ['source_cell_type','source_pathway','source_Batch_info','source_sample_ID','source_guide','source_gene']:
         if name not in cells or cells[name].isna().any() or (cells[name].astype(str)=='').any():raise ValueError('required_condition_label_missing: '+name)
     if set(cells.source_pathway)!={expected}:raise ValueError('stimulus_file_vs_source_label_conflict')
     if not set(cells.source_cell_type)<=LINES:raise ValueError('unexpected_source_cell_line')
     cells=cells.copy()
     cells['source_context']='Jiang__'+cells.source_cell_type.astype(str)+'__'+cells.source_pathway.astype(str)
-    cells['source_batch']=[json.dumps([str(r),str(w),str(s)],separators=(',',':')) for r,w,s in zip(cells.source_Batch_info,cells.source_bc1_well,cells.source_sample_ID)]
+    if 'source_bc1_well' not in cells:raise ValueError('required_condition_column_missing: source_bc1_well')
+    cells['source_bc1_well_missing']=cells.source_bc1_well.isna() | (cells.source_bc1_well.astype(str)=='')
+    cells['control_stratum_resolution']=np.where(cells.source_bc1_well_missing,'Batch_info+sample_ID; source well unobserved','Batch_info+bc1_well+sample_ID')
+    cells['source_batch']=[json.dumps([str(r),None if missing else str(w),str(s)],separators=(',',':')) for r,w,s,missing in zip(cells.source_Batch_info,cells.source_bc1_well,cells.source_sample_ID,cells.source_bc1_well_missing)]
     cells['source_task']=cells.source_gene.astype(str)
     cells['source_target_gene']=cells.source_gene.where(cells.source_gene!='NT','non-targeting')
     cells['source_guide_id']=cells.source_guide
@@ -63,7 +66,36 @@ for (f in files) {x<-readRDS(f);stopifnot(is.list(x),!is.null(names(x)),all(vapp
     return rows
 
 
-def run(cache,references,evidence,inventory,output,workers=2,resume=False):
+def reuse_complete_sources(previous,output,identity):
+    """Reuse only fully completed, verified sources unaffected by missing-well handling."""
+    old=json.loads((previous/'identity.json').read_text())
+    for field in ['input_sha256','reference_sha256','engine_sha256']:
+        if old[field]!=identity[field]:raise ValueError('reuse_input_reference_or_engine_mismatch')
+    reused=[]
+    for source in sorted(previous.glob('source-*')):
+        if not (source/'structure.json').exists():continue
+        structure=json.loads((source/'structure.json').read_text())
+        for name,digest in structure['artifacts'].items():
+            if hash_file(source/name)!=digest:raise ValueError('reuse_structure_hash_mismatch')
+        cells=pd.read_parquet(source/'cells.parquet')
+        if cells.source_bc1_well.isna().any() or (cells.source_bc1_well.astype(str)=='').any():continue
+        contexts=sorted(cells.source_context.unique())
+        if any(not (previous/c/'report.json').exists() for c in contexts):continue
+        for context in contexts:
+            directory=previous/context;report=json.loads((directory/'report.json').read_text())
+            if report['status']!='completed' or not report['inputs_unchanged'] or report['source_identity']['structure_sha256']!=hash_file(source/'structure.json'):
+                raise ValueError('reuse_context_identity_mismatch')
+            for line in (directory/'SHA256SUMS').read_text().splitlines():
+                digest,name=line.split('  ',1)
+                if hash_file(directory/name)!=digest:raise ValueError('reuse_context_hash_mismatch')
+        shutil.copytree(source,output/source.name)
+        for context in contexts:
+            shutil.copytree(previous/context,output/context)
+            reused.append({'context':context,'source_directory':str(previous/context),'report_sha256':hash_file(previous/context/'report.json')})
+    write_json(output/'reused-completed-contexts.json',reused)
+
+
+def run(cache,references,evidence,inventory,output,workers=2,resume=False,reuse_completed=None):
     started=time.monotonic();commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
     inputs={};conversions={}
     inv=json.loads((inventory/'report.json').read_text());expected={x['file']:x['sha256'] for x in inv['file_results'] if x['source_id']=='jiang2025'}
@@ -81,7 +113,9 @@ def run(cache,references,evidence,inventory,output,workers=2,resume=False):
     if output.exists():
         if not resume or json.loads((output/'identity.json').read_text())!=identity:raise ValueError('resume_input_or_method_mismatch')
         if (output/'report.json').exists():raise ValueError('complete_outputs_immutable')
-    else:output.mkdir(parents=True);write_json(output/'identity.json',identity);shutil.copytree(references,output/'references');shutil.copytree(evidence,output/'evidence')
+    else:
+        output.mkdir(parents=True);write_json(output/'identity.json',identity);shutil.copytree(references,output/'references');shutil.copytree(evidence,output/'evidence')
+        if reuse_completed:reuse_complete_sources(reuse_completed,output,identity)
     hgnc=pd.read_csv(hgnc_path,sep='\t',low_memory=False);official=pd.read_csv(axis).gene_name.tolist()
     summaries=[];contexts=[];coverage=[];design_rows=[]
     for stimulus in STIMULI:
@@ -104,7 +138,7 @@ def run(cache,references,evidence,inventory,output,workers=2,resume=False):
         summaries.append(facts)
         mapped=set(mapping.loc[~mapping.many_to_one_mapping,'mapped_symbol'].dropna());literal=set(genes.source_gene)
         coverage.extend({'stimulus_file':stimulus,'official_gene':g,'literal_present':g in literal,'unambiguous_mapped_present':g in mapped,'missing_means':'not_measured_or_not_mapped_never_zero'} for g in official)
-        design=cells.groupby(['source_context','source_cell_type','source_pathway','source_Batch_info','source_bc1_well','source_sample_ID','source_task','source_target_gene'],observed=True).agg(
+        design=cells.groupby(['source_context','source_cell_type','source_pathway','source_Batch_info','source_bc1_well','source_sample_ID','source_task','source_target_gene'],observed=True,dropna=False).agg(
             cells=('record_id','size'),guides=('source_guide_id',lambda x:'|'.join(sorted(set(x)))),label_inconsistent=('source_label_inconsistent','sum')).reset_index()
         design.to_parquet(directory/'task-stratum-coverage.parquet',index=False);design_rows.append(design)
         for context,group in cells.groupby('source_context',observed=True,sort=True):
@@ -143,7 +177,9 @@ def run(cache,references,evidence,inventory,output,workers=2,resume=False):
         'completed_at':datetime.now(timezone.utc).isoformat(),'duration_seconds':time.monotonic()-started,
         'n_cells':sum(r['n_cells'] for r in contexts),'contexts':len(contexts),'actual_tasks':sum(r['actual_tasks'] for r in contexts),
         'methods':{'protocol':PROTOCOL,'condition_keys':['source_cell_type','source_pathway'],
-            'control_strata':['source_Batch_info','source_bc1_well','source_sample_ID'],'NTC':'Exact source gene == NT; NTC still cytokine-stimulated',
+            'control_strata':['source_Batch_info','source_bc1_well','source_sample_ID'],
+            'missing_well':'Missing source well stays null; match within observed Batch_info+sample_ID only, separately from known wells; no inferred well identity or well adjustment claim',
+            'NTC':'Exact source gene == NT; NTC still cytokine-stimulated',
             'replication':'GEO says split after fixation; no independent-culture replication claim',
             'RNA_layer':'RNA/counts only, exact all-value CSC-to-CSR transpose cache verified; data/scale.data audited independently',
             'source_label_inconsistency':'Keep source cell_type/pathway/sample, report mismatch and subset sensitivity; no metadata repair'},
@@ -152,6 +188,7 @@ def run(cache,references,evidence,inventory,output,workers=2,resume=False):
             '源 sample 与 cell_type/pathway 不一致时保留两者，作者标签不是物理身份 ground truth。',
             'Rep1/Rep2 是固定后测量拆分，不能替代独立培养重复；NTC 有对应刺激，不能估计刺激相对未刺激效应。',
             '刺激剂量在已取得的 GEO 元数据中缺失；产品编号不是剂量；不能声称跨刺激等剂量或比较剂量效应。',
+            'IFNG、TGFB、TNFA 的 Rep1 缺少三轮 well 标签；缺失组仅按已观测 Batch_info+sample_ID 匹配，无法调整未观测孔差异。',
             '源 Mixscale 和作者通路基因集来自本数据终点；不是实测敲低剂量、独立验证或类型参考。',
             '所有推断未校准，probability_correct 为空；缺失的基因/重复/统计量不填零。'],
         'exposure':'All local endpoint counts, source-derived Mixscale and signature lists examined; no untouched validation claim',
@@ -166,8 +203,8 @@ def run(cache,references,evidence,inventory,output,workers=2,resume=False):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['cache','references','evidence','inventory','output']:p.add_argument('--'+name,type=Path,required=True)
-    p.add_argument('--workers',type=int,default=2);p.add_argument('--resume',action='store_true');a=p.parse_args()
-    try:r=run(a.cache,a.references,a.evidence,a.inventory,a.output,a.workers,a.resume)
+    p.add_argument('--workers',type=int,default=2);p.add_argument('--resume',action='store_true');p.add_argument('--reuse-completed',type=Path);a=p.parse_args()
+    try:r=run(a.cache,a.references,a.evidence,a.inventory,a.output,a.workers,a.resume,a.reuse_completed)
     except Exception as error:
         if a.output.exists() and not (a.output/'report.json').exists():write_json(a.output/'failure.json',{'status':'failed','error':str(error),'type':type(error).__name__})
         raise

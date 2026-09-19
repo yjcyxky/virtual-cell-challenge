@@ -22,6 +22,12 @@ class ConditionedTests(unittest.TestCase):
         self.assertEqual(result.source_label_inconsistent.tolist(),[True,False,False])
         self.assertEqual(result.source_sample.tolist(),frame.source_sample.tolist())
         self.assertNotEqual(result.source_batch.iloc[0],result.source_batch.iloc[1])
+        frame.loc[0,'source_bc1_well']=None
+        missing=source_design(frame,'IFNB')
+        self.assertTrue(pd.isna(missing.source_bc1_well.iloc[0]))
+        self.assertEqual(json.loads(missing.source_batch.iloc[0]),['Rep1',None,'sample_1'])
+        self.assertNotEqual(missing.source_batch.iloc[0],missing.source_batch.iloc[2])
+        self.assertTrue(missing.source_bc1_well_missing.iloc[0])
         with self.assertRaisesRegex(ValueError,'stimulus_file_vs_source_label_conflict'):source_design(frame,'IFNG')
 
     def test_full_context_retains_uncertainty_and_rejects_mixed_conditions(self):
