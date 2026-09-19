@@ -67,6 +67,10 @@ def fetch_batch(kind, ids, cache):
     response, metadata = cache / (key + ".xml"), cache / (key + ".json")
     if metadata.exists():
         entry = json.loads(metadata.read_text())
+        if entry["status"] == "failed":
+            if entry["url"] != url:
+                raise ValueError("Frozen failed request identity changed")
+            return entry
         if entry["url"] != url or digest(response.read_bytes()) != entry["sha256"]:
             raise ValueError(f"Frozen evidence changed: {key}")
         return entry
@@ -91,7 +95,9 @@ def fetch_batch(kind, ids, cache):
         except (OSError, ET.ParseError) as exc:
             error = f"{type(exc).__name__}: {exc}"
             time.sleep(2 ** attempt)
-    return {"kind": kind, "url": url, "requested": ids, "retrieved_at": now(), "status": "failed", "error": error}
+    entry = {"kind": kind, "url": url, "requested": ids, "retrieved_at": now(), "status": "failed", "error": error}
+    metadata.write_text(json.dumps(entry, indent=2))
+    return entry
 
 
 def retrieve(kind, ids, cache, workers):

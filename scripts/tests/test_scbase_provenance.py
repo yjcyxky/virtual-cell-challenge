@@ -1,6 +1,8 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import json
+import tempfile
 import xml.etree.ElementTree as ET
 
 spec = importlib.util.spec_from_file_location("scbase_audit", Path(__file__).resolve().parents[1] / "scbasecount_tools/audit.py")
@@ -51,6 +53,17 @@ class ProvenanceTests(unittest.TestCase):
         exp, sample, study, error = audit.ncbi_package(data, 'SRX1')
         self.assertIsNone(exp)
         self.assertEqual(error, 'requested_accession_not_returned')
+
+    def test_frozen_failure_is_replayed_without_changing_evidence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            cache = Path(temporary)
+            url = audit.ENDPOINT + 'SRX1'
+            entry = {'url': url, 'status': 'failed', 'error': 'HTTP 400', 'requested': ['SRX1'], 'retrieved_at': 'fixed-time'}
+            path = cache / ('experiment-' + audit.digest(url.encode())[:20] + '.json')
+            path.write_text(json.dumps(entry))
+            original = path.read_bytes()
+            self.assertEqual(audit.fetch_batch('EXPERIMENT', ['SRX1'], cache), entry)
+            self.assertEqual(path.read_bytes(), original)
 
 
 if __name__ == '__main__':
