@@ -47,23 +47,30 @@ def safe_mapping(symbols,ids,kind,hgnc,official):
     result['identifier_candidates']=['|'.join(sorted(x)) for x in candidates]
     result['identifier_conflict']=[bool(c) and pd.notna(s) and s not in c for s,c in zip(result.mapped_symbol,candidates)]
     result['safe_symbol']=[None if conflict or len(c)>1 else s if pd.notna(s) else next(iter(c)) if len(c)==1 else None for s,c,conflict in zip(result.mapped_symbol,candidates,result.identifier_conflict)]
-    result['safe_mapping_ambiguous']=[len(c)>1 or conflict or state=='ambiguous' for c,conflict,state in zip(candidates,result.identifier_conflict,result.mapping_status)]
+    result['safe_mapping_ambiguous']=[len(c)>1 or conflict or (not c and state=='ambiguous') for c,conflict,state in zip(candidates,result.identifier_conflict,result.mapping_status)]
     counts=Counter(result.safe_symbol.dropna());result['safe_many_to_one']=[counts[x]>1 if pd.notna(x) else False for x in result.safe_symbol]
     return result
 
 
-def coverage(name,mapping,official,targets,out,semantics,qualifier=None):
+def coverage(name,mapping,official,targets,out,semantics,qualifier=None,*,hgnc):
     mapping.to_parquet(out/(name+'-gene-mapping.parquet'),index=False)
     rows=[];groups={gene:group for gene,group in mapping.dropna(subset=['safe_symbol']).groupby('safe_symbol')}
-    for gene in official:
-        selected=groups.get(gene,mapping.iloc[:0])
+    official_map=mapping_audit(official,hgnc,official)
+    target_map=mapping_audit(sorted(targets),hgnc,official)
+    literal=set(mapping.source_gene)
+    for gene,canonical,state in zip(official,official_map.mapped_symbol,official_map.mapping_status):
+        selected=groups.get(canonical,mapping.iloc[:0]) if pd.notna(canonical) else mapping.iloc[:0]
         rows.append({'resource':name,'official_gene':gene,'official_target':gene in targets,'mapped_source_features':len(selected),
+            'official_canonical_symbol':canonical,'official_mapping_status':state,'literal_source_symbol_present':gene in literal,
             'covered':bool(len(selected)),'measurement_semantics':semantics,'missing_meaning':'outside_unambiguous_resource_coverage_not_zero',
             **({'qualifiers':sorted(set(selected[qualifier].astype(str)))} if qualifier else {})})
     pd.DataFrame(rows).to_parquet(out/(name+'-official-coverage.parquet'),index=False)
     covered={x for x in mapping.safe_symbol if pd.notna(x)}
-    return {'resource':name,'source_features':len(mapping),'unambiguous_symbols':len(covered),'official_axis_covered':len(covered&set(official)),
-        'official_targets_covered':len(covered&targets),'unmapped':int(mapping.safe_symbol.isna().sum()),'ambiguous_or_conflicting':int(mapping.safe_mapping_ambiguous.sum()),
+    return {'resource':name,'source_features':len(mapping),'unambiguous_symbols':len(covered),'official_axis_covered':sum(r['covered'] for r in rows),
+        'official_targets_covered':int(target_map.mapped_symbol.isin(covered).sum()),
+        'official_literal_source_symbols':sum(r['literal_source_symbol_present'] for r in rows),
+        'official_axis_identifier_unresolved':int(official_map.mapped_symbol.isna().sum()),
+        'unmapped':int(mapping.safe_symbol.isna().sum()),'ambiguous_or_conflicting':int(mapping.safe_mapping_ambiguous.sum()),
         'many_to_one_features':int(mapping.safe_many_to_one.sum()),'semantics':semantics,'status':'completed'}
 
 
@@ -116,7 +123,7 @@ def lincs(cache,out,hgnc,official,targets):
         sig_frame['source_distilled_instance_count']=sig_frame.distil_id.str.split('|').str.len()
         sig_frame['independent_biological_replicates']=None
         sig_frame.to_parquet(out/'lincs-signatures.parquet',index=False)
-    row=coverage('lincs',mapping,official,targets,out,'Level5 MODZ response; landmark measurements and inferred genes distinct','measurement_class')
+    row=coverage('lincs',mapping,official,targets,out,'Level5 MODZ response; landmark measurements and inferred genes distinct','measurement_class',hgnc=hgnc)
     row.update(numeric.summary());row.update(signatures=len(signatures),cell_contexts=sm.cell_id.nunique(),perturbagen_types=sm.pert_type.value_counts().to_dict(),
         landmark_features=int((mapping.measurement_class=='measured_landmark').sum()),inferred_features=int((mapping.measurement_class=='inferred_gene').sum()),
         missing_cell_metadata=int((~sm.cell_id.isin(meta['cell'].cell_id)).sum()),missing_perturbagen_metadata=int((~sm.pert_id.isin(meta['pert'].pert_id)).sum()),
@@ -149,7 +156,7 @@ def depmap(out,hgnc,official,targets):
         else:records['ModelID']=records.source_record_id
         records=records.merge(models[['ModelID','CellLineName','OncotreeLineage']],on='ModelID',how='left',validate='many_to_one')
         records.to_parquet(out/(name+'-records.parquet'),index=False)
-        row=coverage(name,mapping,official,targets,out,semantics);row.update(numeric.summary());row['records_missing_model_metadata']=int(records.CellLineName.isna().sum())
+        row=coverage(name,mapping,official,targets,out,semantics,hgnc=hgnc);row.update(numeric.summary());row['records_missing_model_metadata']=int(records.CellLineName.isna().sum())
         if filename=='CRISPRGeneDependency.csv':row['probability_range_violations']=numeric.outside_probability
         rows.append(row)
     return rows
@@ -167,7 +174,7 @@ def networks(out,hgnc,official,targets):
             endpoints.update(a);endpoints.update(b);degree.update(a);degree.update(b);score_bins.update((scores//100).astype(int))
         name='string-physical' if 'physical' in filename else 'string-functional'
         selected=mapping[mapping.source_identifier.isin(endpoints)].copy();selected['directed_endpoint_occurrences']=[degree[x] for x in selected.source_identifier]
-        row=coverage(name,selected,official,targets,out,'Static protein association edges; confidence score 0–1000, not regulatory sign, causality, or perturbation response')
+        row=coverage(name,selected,official,targets,out,'Static protein association edges; confidence score 0–1000, not regulatory sign, causality, or perturbation response',hgnc=hgnc)
         row.update(edge_rows=count,score_range_violations=bad,unknown_endpoint_rows=unknown,self_link_rows=selflinks,score_bins_100={str(k):v for k,v in score_bins.items()},edge_orientation='Source directed rows retained in counts; do not double as independent interaction evidence')
         rows.append(row)
     proteins.to_parquet(out/'string-protein-metadata.parquet',index=False)
@@ -179,7 +186,7 @@ def networks(out,hgnc,official,targets):
         if len(fields)<3:raise ValueError('invalid_Reactome_GMT_row')
         records.append({'pathway_name':fields[0],'pathway_id':fields[1],'source_genes':fields[2:],'species_by_stable_id':'human' if fields[1].startswith('R-HSA-') else 'other_or_unknown'})
     genes=sorted({g for r in records if r['species_by_stable_id']=='human' for g in r['source_genes']})
-    mapping=safe_mapping(genes,genes,None,hgnc,official);row=coverage('reactome-human',mapping,official,targets,out,'Curated pathway membership; includes viral protein labels, not measured response')
+    mapping=safe_mapping(genes,genes,None,hgnc,official);row=coverage('reactome-human',mapping,official,targets,out,'Curated pathway membership; includes viral protein labels, not measured response',hgnc=hgnc)
     row.update(pathways=len(records),release_number=None,version_status='mutable_current_URL; local content SHA256 and retrieval date frozen, named upstream release unproven')
     rows.append(row);pd.DataFrame(records).to_parquet(out/'reactome-pathways.parquet',index=False)
     header=[];annotations=[]
@@ -194,11 +201,11 @@ def networks(out,hgnc,official,targets):
     gaf=pd.DataFrame(annotations);gaf.to_parquet(out/'GOA-annotations.parquet',index=False);write_json(out/'GOA-headers.json',header)
     usable=gaf[(gaf.taxon.str.split('|').str[0]=='taxon:9606')&~gaf.qualifier.str.split('|').apply(lambda x:'NOT' in x)]
     genes=sorted(set(usable.symbol));mapping=safe_mapping(genes,genes,None,hgnc,official)
-    row=coverage('GOA-human-positive',mapping,official,targets,out,'Ontology annotation, evidence codes and NOT qualifiers retained; no absence-as-negative assumption')
+    row=coverage('GOA-human-positive',mapping,official,targets,out,'Ontology annotation, evidence codes and NOT qualifiers retained; no absence-as-negative assumption',hgnc=hgnc)
     row.update(annotation_rows=len(gaf),positive_human_rows=len(usable),evidence_codes=gaf.evidence.value_counts().to_dict(),source_header_dates=[x for x in header if 'date' in x.lower()])
     rows.append(row)
     approved=hgnc[hgnc.status=='Approved'];mapping=safe_mapping(approved.symbol,approved.hgnc_id,None,hgnc,official)
-    row=coverage('HGNC-approved',mapping,official,targets,out,'Gene identity and nomenclature mapping; not measured expression or pathway activity')
+    row=coverage('HGNC-approved',mapping,official,targets,out,'Gene identity and nomenclature mapping; not measured expression or pathway activity',hgnc=hgnc)
     row.update(release_number=None,version_status='mutable URL; frozen input SHA256, per-entry dates are not a release identifier')
     rows.append(row)
     return rows
@@ -249,7 +256,7 @@ def assess(inventory,cache,evidence,output):
     for step,call in [('lincs',lambda:lincs(cache,output,hgnc,official,targets)),('depmap',lambda:depmap(output,hgnc,official,targets)),('networks',lambda:networks(output,hgnc,official,targets))]:
         rows.extend(call());print(step+' completed',flush=True);write_json(output/'partial-coverage.json',rows)
     old=pd.read_csv(ROOT/'data/raw/vcc_gene_axis/gene_names.csv',header=None).iloc[:,0].astype(str).tolist()
-    mapping=safe_mapping(old,old,None,hgnc,official);row=coverage('old-VCC-axis',mapping,official,targets,output,'Legacy gene-name axis only; no new expression observations')
+    mapping=safe_mapping(old,old,None,hgnc,official);row=coverage('old-VCC-axis',mapping,official,targets,output,'Legacy gene-name axis only; no new expression observations',hgnc=hgnc)
     row.update(literal_shared=len(set(old)&set(official)),old_only=len(set(old)-set(official)),current_only=len(set(official)-set(old)),
         ordered_identical=old==official,duplicate_names=len(old)-len(set(old)))
     rows.append(row);pd.DataFrame({'gene':sorted(set(old)|set(official))}).assign(in_old=lambda x:x.gene.isin(old),in_current=lambda x:x.gene.isin(official)).to_parquet(output/'old-vs-current-axis.parquet',index=False)

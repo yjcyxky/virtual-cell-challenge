@@ -8,9 +8,22 @@ import unittest
 import numpy as np
 import pandas as pd
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'dossier'))
-from profile_priors import safe_mapping,Numeric,weights,depmap_features
+from profile_priors import safe_mapping,Numeric,weights,depmap_features,coverage
 
 class PriorTests(unittest.TestCase):
+    def test_renamed_official_axis_matches_without_zero_filling_unresolved_names(self):
+        hgnc=pd.DataFrame({'status':['Approved'],'symbol':['NEW'],'hgnc_id':['H1'],'entrez_id':['1'],
+            'alias_symbol':[''],'prev_symbol':['OLD'],'ensembl_gene_id':['ENSG1']})
+        mapping=safe_mapping(['NEW'],['1'],'entrez_id',hgnc,['OLD','UNRESOLVED'])
+        with tempfile.TemporaryDirectory() as root:
+            result=coverage('fixture',mapping,['OLD','UNRESOLVED'],{'OLD'},Path(root),'continuous signature',hgnc=hgnc)
+            self.assertEqual(result['official_axis_covered'],1)
+            self.assertEqual(result['official_targets_covered'],1)
+            self.assertEqual(result['official_literal_source_symbols'],0)
+            self.assertEqual(result['official_axis_identifier_unresolved'],1)
+            frame=pd.read_parquet(Path(root)/'fixture-official-coverage.parquet')
+            self.assertFalse(frame.loc[1,'covered'])
+
     def test_expression_retains_Ensembl_only_features_without_invented_symbol(self):
         symbols,ids=depmap_features(['A (ENSG000001)','ENSG000002'],'ensembl_gene_id')
         self.assertEqual(symbols,['A','ENSG000002']);self.assertEqual(ids,['ENSG000001','ENSG000002'])
