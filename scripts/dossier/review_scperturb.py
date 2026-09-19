@@ -44,6 +44,7 @@ def review(card):
         if stem.endswith("atlas"):
             reviewed["findings"].append("Perturbation is a numeric TF/ORF code; upstream script explicitly leaves decoding as TODO. Do not treat code as target gene or infer control from code frequency.")
             card["RNA_deep_assessment"]["target_name_mapping"] = {"status": "blocked", "reason": "source numeric TF/ORF code dictionary required; expression diagnostics still apply",
+                "tracking_issue": "https://github.com/yjcyxky/virtual-cell-challenge/issues/23",
                 "recovery": "Recover original GSE217460 cell-to-ORF CSV / TFAtlas reference mapping and prove barcode/code joins"}
     if stem == "GehringPachter2019":
         semantics.update(value="source_log1p_normalized_RNA_expression", count_methods="not_applicable",
@@ -51,6 +52,7 @@ def review(card):
                          primary_evidence="Gehring_original_processing.ipynb")
         reviewed["findings"].append("scPerturb Gehring processing source uses comparison == instead of assignment in BMP high-dose branch; dose=0 cannot be assumed unexposed without original experimental mapping")
         card["RNA_deep_assessment"]["dose_mapping"] = {"status": "blocked", "reason": "possible source high-BMP-dose coding error and dropped original BMP code",
+            "tracking_issue": "https://github.com/yjcyxky/virtual-cell-challenge/issues/23",
             "recovery": "Join original ClickTag experimental design to source barcodes; keep current labels and recovered annotations separate"}
     card["RNA_deep_assessment"]["count_method_prerequisite"] = semantics
     card["primary_source_review"] = reviewed
