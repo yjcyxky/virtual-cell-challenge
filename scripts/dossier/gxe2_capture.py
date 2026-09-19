@@ -69,11 +69,13 @@ def run(cache, output):
     whitelist['analysis_guide_alias'] = whitelist.source_guide.replace({'originalIDTorder_1': 'random_region_35'})
     whitelist['gene'] = whitelist.analysis_guide_alias.str.split('_').str[0]
     whitelist['source_processing_sequence'] = [s[:19] if g == 'random' else s for s,g in zip(whitelist.source_sequence, whitelist.gene)]
-    if whitelist.analysis_guide_alias.duplicated().any(): raise ValueError('ambiguous_guide_name')
+    ambiguous_names=set(whitelist.loc[whitelist.analysis_guide_alias.duplicated(keep=False),'analysis_guide_alias'])
+    if whitelist.groupby('analysis_guide_alias').gene.nunique().max()>1:raise ValueError('same_guide_name_multiple_genes')
+    whitelist['guide_name_identifies_one_sequence']=~whitelist.analysis_guide_alias.isin(ambiguous_names)
     whitelist.to_parquet(output/'guide-whitelist.parquet', index=False)
-    guide_names = whitelist.analysis_guide_alias.to_numpy(); guide_index = pd.Index(guide_names)
+    guide_names = whitelist.analysis_guide_alias.drop_duplicates().to_numpy(); guide_index = pd.Index(guide_names)
     matrix = sparse.csr_matrix((n, len(guide_names)), dtype=np.int64)
-    counts = Counter(); guide_rows = Counter(); prefixes = Counter(); unique_barcodes = set()
+    counts = Counter(); guide_rows = Counter(); prefixes = Counter()
     # Only source-CDS matched capture counts are materialized as an analysis view.
     # Every source capture row still contributes to the scope and numeric audit.
     with CaptureText(paths['gRNATable_reads.out.txt.gz']) as stream:
@@ -106,6 +108,7 @@ def run(cache, output):
             'recomputed_topRatio':ratio,'source_topRatio':row.gRNA_topRatio,
             'source_topRatio_matches': (ratio is None and pd.isna(row.gRNA_topRatio)) or (ratio is not None and np.isclose(ratio,row.gRNA_topRatio,rtol=1e-9,atol=1e-12)),
             'top_five_read_count_tie':tie, 'total_whitelisted_reads':int(matrix.data[lo:hi].sum()),
+            'source_call_has_ambiguous_sequence_name':bool(set(original)&ambiguous_names),
             'cross_library_key_evidence':'candidate_prefix_crosswalk_checked_against_source_labels_not_physical_truth'})
     checked=pd.DataFrame(comparisons);checked.to_parquet(output/'guide-source-reproduction.parquet',index=False)
     del matrix,comparisons
@@ -145,6 +148,7 @@ def run(cache, output):
         'guide_capture':dict(counts),'guide_prefix_records':dict(prefixes),'candidate_crosswalk':CROSSWALK,'crosswalk_is_inferred':True,
         'guide_check_disagreements':{c:int((~checked[c]).sum()) for c in ['source_guide_call_matches','source_gene_labels_match_whitelist','source_maxCount_matches','source_topRatio_matches']},
         'guide_top_five_tied_cells':int(checked.top_five_read_count_tie.sum()),'hash_capture':dict(hash_counts),
+        'guide_names_with_multiple_source_sequences':sorted(ambiguous_names),'source_calls_with_ambiguous_sequence_name':int(checked.source_call_has_ambiguous_sequence_name.sum()),
         'hash_check_disagreements':{c:int((~hash_checks[c]).sum()) for c in ['source_UMI_matches_total','assigned_hash_is_raw_UMI_maximum','RT_replicate_matches','source_condition_matches_whitelist']},
         'duration_seconds':time.monotonic()-started,'completed_at':datetime.now(timezone.utc).isoformat()}
     report['artifacts']={str(p.relative_to(output)):hash_file(p) for p in output.rglob('*') if p.is_file()};write_json(output/'report.json',report);return report
