@@ -6,6 +6,7 @@ from datetime import datetime,timezone
 import json
 from pathlib import Path
 import subprocess
+import shutil
 import pandas as pd
 from rna import RNAFile,hash_file,value_hash
 from profile_responses import write_json
@@ -23,15 +24,27 @@ def gene_names(path):
     result={n:n for n in approved};result.update({n:next(iter(v)) for n,v in aliases.items() if len(v)==1 and n not in approved});return result
 
 
-def run(manifest,adamson,output):
+def run(manifest,adamson,output,refine_from=None,refine_files=None):
     output.mkdir(parents=True,exist_ok=False);names=gene_names(ROOT/'data/raw/networks/hgnc_complete_set.txt');results=[]
     identity={'manifest_sha256':hash_file(manifest),'Adamson_identity_report_sha256':hash_file(adamson/'report.json'),
         'HGNC_sha256':hash_file(ROOT/'data/raw/networks/hgnc_complete_set.txt'),
         'code':{n:hash_file(Path(__file__).with_name(n)) for n in ['prepare_scperturb_design.py','scperturb_design.py','scperturb_cells.py']}}
+    base={}
+    if refine_from is not None:
+        if not refine_files:raise ValueError('explicit_refined_file_scope_required')
+        previous=json.loads((refine_from/'report.json').read_text())
+        if previous['status']!='completed':raise ValueError('completed_base_design_required')
+        base={r['file']:r for r in previous['files']};identity['base_design_report_sha256']=hash_file(refine_from/'report.json');identity['refined_files']=refine_files
     write_json(output/'identity.json',identity)
     for entry in json.loads(manifest.read_text()):
         file=entry['file']
         if entry['analysis']['status']=='not_applicable':results.append({'file':file,'status':'not_applicable','reason':entry['analysis']['reason']});continue
+        if base and file not in refine_files:
+            record=base[file]
+            if record['status']!='completed' or record['input_sha256']!=entry['input_sha256']:raise ValueError('base_file_scope_changed')
+            for name,digest in record['artifacts'].items():
+                if hash_file(refine_from/record['directory']/name)!=digest:raise ValueError('base_design_artifact_changed')
+            shutil.copytree(refine_from/record['directory'],output/record['directory']);results.append(record);continue
         path=ROOT/'data/raw/scperturb'/file
         if hash_file(path)!=entry['input_sha256']:raise ValueError('collection_input_changed')
         recover=pd.read_parquet(adamson/(file.replace('AdamsonWeissman2016_','').replace('.h5ad','.parquet'))) if file.startswith('Adamson') else None
@@ -61,4 +74,5 @@ def run(manifest,adamson,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for n in ['manifest','adamson','output']:p.add_argument('--'+n,type=Path,required=True)
-    a=p.parse_args();run(a.manifest,a.adamson,a.output)
+    p.add_argument('--refine-from',type=Path);p.add_argument('--refine-files',nargs='+')
+    a=p.parse_args();run(a.manifest,a.adamson,a.output,a.refine_from,a.refine_files)

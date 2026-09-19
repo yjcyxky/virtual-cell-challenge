@@ -45,6 +45,9 @@ class ScperturbDesignTests(unittest.TestCase):
         design,methods=build_design('AdamsonWeissman2016_GSM2406677_10X005.h5ad',obs,{'EIF2AK3'},recovered)
         self.assertEqual(design.biological_background_index.nunique(),3)
         self.assertEqual(design.single_target.tolist(),['EIF2AK3']*3)
+        recovered.loc[1,'source_guide_label_concordant']=False
+        design,_=build_design('AdamsonWeissman2016_GSM2406677_10X005.h5ad',obs,{'EIF2AK3'},recovered)
+        self.assertFalse(design.condition_identity_supported[1]);self.assertFalse(design.deep_response_candidate[1])
 
 
 if __name__=='__main__':unittest.main()

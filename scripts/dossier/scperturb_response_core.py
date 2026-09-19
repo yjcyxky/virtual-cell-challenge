@@ -32,15 +32,17 @@ def describe_conditions(cells,design,directory):
     rows=[];states=[];composition=[];within=[];draws=[]
     for condition,group in grouped:
         bg=group.response_background.iloc[0];ids=controls.get(bg,np.array([],int));ref=frame.loc[ids]
+        qualified=group.loc[group.condition_identity_supported&~group.control_eligible]
         row={'condition_id':condition,'response_background':bg,'analysis_condition':group.analysis_condition.iloc[0],
              'n_cells':len(group),'eligible_reference_cells':len(ref),'observation_status':'completed',
+             'eligible_nonreference_condition_cells':len(qualified),'identity_ineligible_condition_cells':int((~group.condition_identity_supported).sum()),
              'proxy_scale':'Fixed species-specific endpoint RNA scores from per-cell phase; not cross-background calibrated'}
-        if group.control_eligible.all():row.update(status='not_applicable',reason='reference_condition_no_self_comparison',stability_status='not_applicable')
-        elif not group.condition_identity_supported.all():row.update(status='not_estimable',reason='source_condition_identity_not_supported',stability_status='not_estimable')
-        elif len(group)<20 or len(ref)<2:row.update(status='not_estimable',reason='requires_20_targets_2_eligible_same_background_controls_for_detailed_contrast',stability_status='not_estimable')
+        if group.control_eligible.any():row.update(status='not_applicable',reason='reference_condition_no_self_comparison',stability_status='not_applicable')
+        elif not len(qualified):row.update(status='not_estimable',reason='source_condition_identity_not_supported',stability_status='not_estimable')
+        elif len(qualified)<20 or len(ref)<2:row.update(status='not_estimable',reason='requires_20_targets_2_eligible_same_background_controls_for_detailed_contrast',stability_status='not_estimable')
         else:
-            if np.intersect1d(group.index,ref.index).size:raise ValueError('target_reference_cells_overlap')
-            result,st,co,wi,dr=distribution_contrast(group[names].to_numpy(float),ref[names].to_numpy(float),group.inferred_type.to_numpy(),ref.inferred_type.to_numpy(),names,
+            if np.intersect1d(qualified.index,ref.index).size:raise ValueError('target_reference_cells_overlap')
+            result,st,co,wi,dr=distribution_contrast(qualified[names].to_numpy(float),ref[names].to_numpy(float),qualified.inferred_type.to_numpy(),ref.inferred_type.to_numpy(),names,
                                                   DESCRIPTION_PARAMETERS['seed']^int(condition[:8],16))
             row.update(result)
             for out,values in [(states,st),(composition,co),(within,wi),(draws,dr)]:out.extend([{'condition_id':condition,**v} for v in values])

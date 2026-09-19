@@ -132,6 +132,7 @@ def build_design(file,obs,safe_symbols,recovered=None):
         if recovered is not None and not bool(recovered.source_guide_label_concordant.iloc[i]):
             control=False;target=None;reason='source_guide_label_differs_from_original_GEO_or_missing'
         p=text(row.get('perturbation'));known=p.lower() not in MISSING
+        if reason=='source_guide_label_differs_from_original_GEO_or_missing':known=False
         if p=='control' and not control:known=False;reason=reason or 'literal_control_not_verified_negative_reference'
         background=[bgs[int(bio[i])]['background_key'],[[c,text(row.get(c))] for c in technical]]
         if file.startswith('Srivatsan') and 'sciplex2' in file:background.append(['same_source_drug',p])

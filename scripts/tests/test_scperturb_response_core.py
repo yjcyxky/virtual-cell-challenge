@@ -42,6 +42,16 @@ class ScperturbResponseTests(unittest.TestCase):
             self.assertEqual(description['all_conditions'],5);self.assertEqual(description['null_reference_intersections'],0)
             rows=pd.read_parquet(root/'description/condition-contrasts.parquet')
             self.assertTrue((rows.loc[rows.analysis_condition=='control','status']=='not_applicable').all())
+            # A source-negative label can contain both verified and identity-
+            # ineligible records. Never compare this group to its own members.
+            mixed=d.copy();mixed.loc[0,'control_eligible']=False;mixed.loc[0,'condition_identity_supported']=False
+            again=describe_conditions(c,mixed,root/'mixed-reference')
+            self.assertEqual(again['null_reference_intersections'],0)
+            bad=d.copy();bad.loc[30,'condition_identity_supported']=False
+            describe_conditions(c,bad,root/'qualified-targets')
+            result=pd.read_parquet(root/'qualified-targets/condition-contrasts.parquet')
+            row=result.loc[(result.response_background=='a')&(result.analysis_condition=='G')].iloc[0]
+            self.assertEqual(row.n_cells,30);self.assertEqual(row.n_target,29);self.assertEqual(row.identity_ineligible_condition_cells,1)
 
 
 if __name__=='__main__':unittest.main()
