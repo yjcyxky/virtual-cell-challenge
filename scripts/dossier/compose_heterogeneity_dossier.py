@@ -74,7 +74,10 @@ def compose(source,comparisons,endpoint,supplements,baselines,extra,output):
             consumed[name]=digest
     original=json.loads((paths['comparisons']/'consumed-inputs.json').read_text());merge(original['frozen_artifacts']);merge(original['response_gene_files'])
     cell_inputs=json.loads((paths['endpoint']/'consumed-inputs.json').read_text());merge(cell_inputs['frozen_artifacts']);raw.update(cell_inputs['raw_or_normalized_view_sha256'])
-    extra_inputs=json.loads((paths['extra']/'consumed-inputs.json').read_text());merge(extra_inputs['frozen_artifacts']);raw.update(extra_inputs['raw_count_files'])
+    extra_inputs=json.loads((paths['extra']/'consumed-inputs.json').read_text());merge(extra_inputs['frozen_artifacts'])
+    for name,digest in extra_inputs['raw_count_files'].items():
+        if name in raw and raw[name]!=digest:raise ValueError('one_count_input_two_recorded_identities:'+name)
+        raw[name]=digest
     merge(json.loads((paths['supplements']/'consumed-inputs.json').read_text()));merge(json.loads((paths['baselines']/'consumed-inputs.json').read_text()))
     for i,(name,digest) in enumerate(consumed.items()):
         if hash_file(ROOT/name)!=digest:raise ValueError('source_input_changed_after_calculation:'+name)
@@ -189,7 +192,7 @@ def compose(source,comparisons,endpoint,supplements,baselines,extra,output):
             {'title':'同一组有效记录上的尺度比较','rows':joint},{'title':'来源实验设计分组','rows':design_summaries},
             {'title':'各 endpoint 背景的组成／状态内支持与差异','rows':json.loads((output/'baselines/endpoint-context-summaries.json').read_text())},
             {'title':'全部来源内任务敏感性汇总','rows':json.loads((output/'supplements/source-context-summaries.json').read_text())},
-            {'title':'全部来源附录与证据','rows':evidence}],
+            {'title':'全部来源附录与证据','rows':[{**r,'file':'supplements/'+r['file']} for r in evidence]}],
         'reproduce':sys.argv,'external_behavior_verification':'see linked Issue #20 closure evidence; final offline viewers verified on this bundle after composition'}
     views=['responses.html','endpoint.html','baselines.html','tasks.html','tahoe-repeats.html','associations.html']
     artifacts=[{'file':str(p.relative_to(output)),'sha256':hash_file(p)} for p in sorted(output.rglob('*')) if p.is_file()]
