@@ -50,7 +50,7 @@ def run(base,provenance,replogle,nadig,output):
         row={'file_index':index,'experiment_accession':accession,'stored_records':len(cells),'source_input_sha256':record['source_file_sha256_from_inventory'],
             'source_sample':sample if isinstance(sample,str) and sample else 'unresolved:'+accession,
             'source_study':study if isinstance(study,str) and study else 'unresolved:'+accession,
-            'source_sample_aliases':record['sample_accessions'],'source_study_aliases':record['study_accessions'],
+            'source_sample_aliases':list(record['sample_accessions']),'source_study_aliases':list(record['study_accessions']),
             'source_library_name':record.get('library_name'),'source_title':record.get('experiment_title'),'source_cell_line':record.get('source_cell_line'),
             'source_species':record.get('upstream_species'),'inference_eligibility':eligibility['status'],'inference_reason':eligibility['reason'],
             'RNA_eligible':eligibility['status']!='not_applicable','author_library_relation':library,'capture_key':library['capture_key'] if library else None,
