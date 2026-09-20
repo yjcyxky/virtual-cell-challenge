@@ -8,7 +8,7 @@ import pandas as pd
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'dossier'))
 from compose_heterogeneity_dossier import joint_summary,comparison_design
 from profile_heterogeneity_supplements import association
-from profile_heterogeneity_baselines import verify_archived_components
+from profile_heterogeneity_baselines import verify_archived_components,shared_baseline_consensus
 
 
 class DecisionDenominatorTests(unittest.TestCase):
@@ -48,3 +48,12 @@ class DecisionDenominatorTests(unittest.TestCase):
             with h5py.File(path,'r+') as h:h['type/within'][1,0]=0
             with self.assertRaisesRegex(ValueError,'missingness'):
                 verify_archived_components(path,d)
+
+    def test_exact_copies_cannot_rescue_conflicting_gene_annotations(self):
+        a=pd.DataFrame({'source_gene':['gene1','gene2'],'safe_canonical_symbol':['GENE1',None],'mean_logCP10K':[1.,2.]})
+        b=pd.DataFrame({'source_gene':['gene1','gene2'],'safe_canonical_symbol':['GENE1','GENE2'],'mean_logCP10K':[1.,2.]})
+        merged,changes=shared_baseline_consensus(a,b)
+        self.assertEqual(merged.safe_canonical_symbol.iloc[0],'GENE1');self.assertTrue(pd.isna(merged.safe_canonical_symbol.iloc[1]))
+        self.assertEqual(changes.source_gene.tolist(),['gene2'])
+        b.loc[0,'mean_logCP10K']=1.1
+        with self.assertRaisesRegex(ValueError,'means_changed'):shared_baseline_consensus(a,b)

@@ -18,6 +18,16 @@ from profile_responses import write_json
 from rna import hash_file,value_hash,quantiles
 
 
+def shared_baseline_consensus(original,other):
+    if not original.source_gene.equals(other.source_gene) or not np.allclose(original.mean_logCP10K,other.mean_logCP10K,rtol=0,atol=1e-12):
+        raise ValueError('shared_baseline_native_axis_or_means_changed')
+    a=original.safe_canonical_symbol;b=other.safe_canonical_symbol
+    same=a.eq(b)|(a.isna()&b.isna());common=a.notna()&b.notna()&a.eq(b)
+    changes=pd.DataFrame({'source_gene':original.source_gene,'prior_safe_symbol':a,'additional_copy_safe_symbol':b}).loc[~same].copy()
+    merged=original.copy();merged['safe_canonical_symbol']=a.where(common)
+    return merged,changes
+
+
 def verify_archived_components(path,diagnostics):
     rows=[]
     with h5py.File(path,'r') as h:
@@ -44,7 +54,7 @@ def run(source,endpoint,comparisons,extra,output):
     f=Frozen();er=f.json(endpoint,'report.json');pr=f.json(comparisons,'report.json');sr=f.json(source,'report.json')
     if er['status']!='completed' or er['registered_tasks']!=37845 or pr['source_bundle_id']!=sr['bundle_id']:raise ValueError('incomplete_registered_input')
     official=f.parquet(source,'coverage/official-identifiers.parquet');official_symbols=set(official.mapped_symbol.dropna())
-    panels={p['panel_id']:p for p in f.json(source,'coverage/panels.json')};baselines={};baseline_rows=[];endpoint_rows=[];reproductions=[];task_context=[];archive_checks=[]
+    panels={p['panel_id']:p for p in f.json(source,'coverage/panels.json')};baselines={};baseline_rows=[];endpoint_rows=[];reproductions=[];task_context=[];archive_checks=[];copy_mapping_disagreements=[]
     (output/'baselines').mkdir();(output/'common-genes').mkdir()
     def add_baseline(id,pid,context,genes,means,n,mapping,evidence):
         symbols=safe_symbols(mapping)
@@ -56,10 +66,12 @@ def run(source,endpoint,comparisons,extra,output):
         frame=pd.DataFrame({'source_gene':genes,'safe_canonical_symbol':symbols,'mean_logCP10K':means})
         if id in baselines:
             old=baselines[id]
-            same_axis=frame[['source_gene','safe_canonical_symbol']].equals(old['frame'][['source_gene','safe_canonical_symbol']])
-            same_mean=np.allclose(frame.mean_logCP10K,old['frame'].mean_logCP10K,rtol=0,atol=1e-12)
-            if id!='H1_shared_exact_NTC' or old['n']!=n or not same_axis or not same_mean:raise ValueError('unproven_or_changed_shared_baseline')
+            if id!='H1_shared_exact_NTC' or old['n']!=n:raise ValueError('unproven_or_changed_shared_baseline')
+            merged,changes=shared_baseline_consensus(old['frame'],frame)
+            copy_mapping_disagreements.extend({'baseline_id':id,'additional_copy_panel':pid,**r} for r in changes.to_dict('records'))
+            old['frame']=merged;merged.to_parquet(output/row['baseline_file'],index=False)
             row['comparison_representative']=False;row['copy_proof']='source #19 exact-copy-proofs/H1-NTC-copy-groups.parquet'
+            row['mapping_policy']='intersection of safe canonical assignments across proven copies; absence of Ensembl metadata cannot rescue a conflicted mapping'
         else:
             baselines[id]={'frame':frame,'n':n,'row':row};frame.to_parquet(output/row['baseline_file'],index=False);row['comparison_representative']=True
         baseline_rows.append(row)
@@ -90,6 +102,8 @@ def run(source,endpoint,comparisons,extra,output):
     # alone is never used to declare any other baselines the same observation.
     proof=f.parquet(source,'exact-copy-proofs/H1-NTC-copy-groups.parquet')
     if len(proof)!=38176 or not proof.records.eq(3).all() or not proof.classification.eq('content_and_label_identical').all():raise ValueError('H1_copy_proof_changed')
+    for r in baseline_rows:r['safe_canonical_genes_in_merged_comparison']=int(baselines[r['baseline_id']]['frame'].safe_canonical_symbol.notna().sum())
+    pd.DataFrame(copy_mapping_disagreements).to_parquet(output/'shared-NTC-source-mapping-disagreements.parquet',index=False)
     diagnostics=pd.concat(endpoint_rows,ignore_index=True);verify=pd.concat(reproductions,ignore_index=True)
     tasks=f.parquet(comparisons,'selected-task-index.parquet')
     if len(verify)!=37845 or verify.task_uid.duplicated().any() or set(verify.task_uid)!=set(tasks.task_uid):raise ValueError('endpoint_tasks_not_exact_primary_universe')
@@ -138,6 +152,7 @@ def run(source,endpoint,comparisons,extra,output):
         'baseline_context_rows':len(baseline_rows),'distinct_registered_reference_contexts':len(baselines),'distinct_source_NTC_baselines':sum(b['n']>0 for b in baselines.values()),
         'registered_contexts_without_NTC':sum(b['n']==0 for b in baselines.values()),'baseline_pairs':len(rows),'baseline_status_counts':dict(Counter(r['status'] for r in rows)),
         'exact_H1_baseline_copies_not_recounted':2,'endpoint_task_partitions':len(diagnostics),'endpoint_status_counts':diagnostics.status.value_counts().to_dict(),
+        'shared_NTC_mapping_disagreements':len(copy_mapping_disagreements),'shared_NTC_mapping_policy':'safe canonical intersection across proven exact native-count copies; preserve conflicting or missing identity evidence',
         'source_effects_reproduced':int(reproduced.sum()),'source_unestimable_tasks_retained':int((~reproduced).sum()),
         'maximum_source_mean_reproduction_error':float(verify.maximum_absolute_mean_or_effect_error.max()),'maximum_mixture_identity_residual':float(diagnostics.maximum_identity_residual.max()),
         'maximum_archived_float32_identity_residual':max(r['maximum_archived_identity_residual'] for r in archive_checks),
@@ -153,4 +168,8 @@ def run(source,endpoint,comparisons,extra,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for k in ['source','endpoint','comparisons','extra','output']:p.add_argument('--'+k,type=Path,required=True)
-    a=p.parse_args();run(a.source,a.endpoint,a.comparisons,a.extra,a.output)
+    a=p.parse_args()
+    try:run(a.source,a.endpoint,a.comparisons,a.extra,a.output)
+    except Exception as error:
+        if a.output.exists():write_json(a.output/'failure.json',{'status':'failed','error':repr(error),'code_sha256':hash_file(Path(__file__))})
+        raise
