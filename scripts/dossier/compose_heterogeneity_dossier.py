@@ -4,6 +4,7 @@ import argparse
 from collections import Counter
 from datetime import datetime,timezone
 import json
+import importlib.metadata
 from pathlib import Path
 import shutil
 import subprocess
@@ -175,8 +176,10 @@ def compose(source,comparisons,endpoint,supplements,baselines,extra,output):
         'analysis_exposure':'all registered source RNA counts, source intervention labels, source H1 Training/Validation/Test response labels, official A/B/C control RNA, frozen type/state references and previous source results; not a blinded evaluation',
         'future_availability':'endpoint inferred type and cycle are post-measurement; matched NTC requires available same-context control. No claim these covariates are available before a future perturbation',
         'reference_weights':'original source-specific type/state weights and input identities remain in pinned source releases; new per-cell partition labels, NTC cycle boundaries and exact source cells in endpoint subdirectories',
+        'shared_H1_NTC_mapping':{'policy':base['shared_NTC_mapping_policy'],'source_mapping_disagreements':base['shared_NTC_mapping_disagreements'],
+            'evidence':'baselines/shared-NTC-source-mapping-disagreements.parquet','native_gene_axes_and_NTC_means':'verified identical; source annotations are not identical'},
         'inference':'source labels, observations and inferred annotations are separate; probability_correct stays null, uncalibrated; no mechanism ground truth',
-        'reproduce':['micromamba','run','-n','virtual-cell','uv','run','--project','scripts/dossier','--locked','python','scripts/dossier/reproduce_heterogeneity.py','--source',str(paths['source'].relative_to(ROOT)),'--work','data/assessments/heterogeneity-reproduction-FRESH','--output','data/assessments/heterogeneity-reproduced-FRESH'],
+        'reproduce':['micromamba','run','-n','virtual-cell','uv','run','--project','scripts/dossier','--locked','--python','python','--no-python-downloads','python','scripts/dossier/reproduce_heterogeneity.py','--source',str(paths['source'].relative_to(ROOT)),'--work','data/assessments/heterogeneity-reproduction-FRESH','--output','data/assessments/heterogeneity-reproduced-FRESH'],
         'prerequisites':'original repository at recorded commits and exact pinned source dossiers/count caches; the source paths and full hashes are in final-input-verification.json; locked uv environment, source files read-only'}
     report={'schema_version':2,'bundle_id':'response-heterogeneity-'+uuid.uuid4().hex,'title':'跨背景响应异质性与测量敏感性：只读完整评估','status':'completed',
         'summary':{'all_source_tasks':62675,'identity_qualified_tasks':len(tasks),'same_target_pairs':len(pairs),'pair_status_counts':pairs.status.value_counts().to_dict(),
@@ -184,10 +187,12 @@ def compose(source,comparisons,endpoint,supplements,baselines,extra,output):
             'endpoint_status_counts':endpoint_rows.status.value_counts().to_dict(),'baseline_pairs':len(baseline_pairs),'source_effects_reproduced':37633,'unestimable_source_tasks_retained':212,
             'frozen_inputs_reverified':len(consumed),'raw_or_count_views_reverified':len(raw),'source_input_mutations':0,'new_unified_training_corpus':False,'prediction_model_trained':False},
         'methods':methods,'source_report_identities':source_identity,'code_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+        'runtime':{'python':sys.version,'executable':sys.executable,'packages':{name:importlib.metadata.version(name) for name in ['numpy','scipy','pandas','h5py','pyarrow']}},
         'uv_lock_sha256':hash_file(Path(__file__).with_name('uv.lock')),'completed_at':datetime.now(timezone.utc).isoformat(),
         'limitations':['终点类型／RNA 状态未校准；unknown 和不可估计保留，不作为 ground truth。','全部比较为描述性；组成与状态内分量不是因果中介或可加的方差占比。',
             '来源时间、平台、效应器、培养和细胞背景缺少完全交叉重复设计，无法独立分解因果贡献。','NTC 差异并非纯测量噪声；观测终点不能识别死亡、增殖、状态转换或捕获的独立贡献。',
             '相同 canonical target 保留不同构件；共同基因交集不改变源 CP10K 分母；对照及 target 复用使比较对相互依赖。',
+            'H1 的共享 NTC 计数完全相同但 4 个基因的来源注释资格不同；共享基线使用三份来源注释的保守共同集合，差异逐项保留。',
             '未运行或失败的中间目录不属于本结果包。全部公开标签已用于评估，不声称训练／测试未暴露。'],
         'tables':[{'title':'完整范围与状态','rows':[{'measure':k,'value':v} for k,v in {'primary':{k:primary[k] for k in ['identity_qualified_tasks','all_same_target_pairs','pair_status_counts']},'endpoint':{k:base[k] for k in ['endpoint_task_partitions','endpoint_status_counts','maximum_source_mean_reproduction_error','maximum_mixture_identity_residual']},'baseline':{k:base[k] for k in ['baseline_scope','baseline_context_rows','distinct_source_NTC_baselines','baseline_pairs','baseline_status_counts']}}.items()]},
             {'title':'数据使用决策与依据','rows':decisions},{'title':'八类异质性来源的观测边界','rows':factors},
