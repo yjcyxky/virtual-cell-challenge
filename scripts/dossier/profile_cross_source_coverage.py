@@ -12,7 +12,7 @@ import sys
 import time
 import numpy as np
 import pandas as pd
-from cross_source_coverage import gene_coverage, target_coverage, STATUS
+from cross_source_coverage import gene_coverage, target_coverage, resolve_target, STATUS
 from profile_responses import write_json
 from rna import hash_file, mapping_audit
 
@@ -73,13 +73,10 @@ def build(output):
             for value in str(getattr(row,field,'')).split('|'):
                 if value and value!='nan': aliases[value].add(row.symbol)
 
-    def canonical(value):
-        if value is None: return None
-        value = str(value)
-        if value not in target_cache:
-            candidates = {value} if value in approved_symbols else aliases.get(value.split('.')[0],set())
-            target_cache[value] = next(iter(candidates)) if len(candidates)==1 else None
-        return target_cache[value]
+    def canonical(value,source_id):
+        key=(value,source_id)
+        if key not in target_cache:target_cache[key]=resolve_target(value,source_id,approved_symbols,aliases)
+        return target_cache[key]
 
     def add_panel(panel_id, family, context, folder, mapping_name, genes_name=None,
                   split=None, species='human', modality='RNA', applicable=True,
@@ -101,7 +98,8 @@ def build(output):
             if not aligned: raise ValueError('native_QC_axis_order:' + panel_id)
             detected_column = next((x for x in ['computed_detected_cells', 'computed_detected_records'] if x in genes), None)
             if detected_column: detected = genes[detected_column].to_numpy()
-        coverage = gene_coverage(mapping, official, detected, applicable and species == 'human')
+        human_applicable = None if applicable and species=='unknown' else applicable and species=='human'
+        coverage = gene_coverage(mapping, official, detected, human_applicable)
         key = hashlib.sha256(panel_id.encode()).hexdigest()[:20]
         coverage.to_parquet(output/'gene-coverage'/(key+'.parquet'), index=False, compression='zstd')
         encoded = np.array([STATUS.index(x) for x in coverage.status], dtype=np.uint8)
@@ -112,7 +110,7 @@ def build(output):
         if mapping_key not in mapping_cache:
             mapping.to_parquet(output/'native-mappings'/(mapping_key+'.parquet'), index=False, compression='zstd'); mapping_cache[mapping_key] = True
         row = {'panel_id': panel_id, 'family': family, 'source_context': context,
-               'species': species, 'modality': modality, 'human_RNA_applicable': applicable and species == 'human',
+               'species': species, 'modality': modality, 'human_RNA_applicable': human_applicable,
                'source_records': records, 'native_features': len(mapping),
                'official_literal_present': int(coverage.literal_native_presence.sum()),
                'official_safely_measured': int(coverage.status.isin(STATUS[:3]).sum()),
@@ -138,6 +136,7 @@ def build(output):
                 if extra is None: continue
             else: extra = {}
             target = extra.get('target', task.get('target', task.get('target_gene')))
+            target_id=task.get('target_ensembl');resolved,resolution=canonical(target,target_id)
             result = task.get('gene_results')
             if isinstance(result, dict): result = result['file']
             result = str((Path(name).parent/result).as_posix()) if result else None
@@ -146,7 +145,7 @@ def build(output):
             target_rna = task.get('target_RNA') or {}
             tasks.append({'panel_id': extra.get('panel_id', panel_id),
                 'source_task': task.get('task', task.get('task_id', str(index))),
-                'source_target': target, 'canonical_target': canonical(target),
+                'source_target': target, 'source_intervention_Ensembl':target_id, 'canonical_target': resolved, 'target_identity_status':resolution,
                 'source_construct': task.get('source_transcript', task.get('task')),
                 'source_guide': task.get('source_guide_id'), 'source_background_index': task.get('biological_background_index'),
                 'source_condition': extra.get('condition', task.get('condition', task.get('context', task.get('split')))),
@@ -182,8 +181,9 @@ def build(output):
     for family, contexts in [('replogle',['K562_essential','K562_gwps','rpe1']), ('nadig',['hepg2','jurkat'])]:
         structure = BASE/(family+'-structure-20260919')
         for context in contexts:
+            facts=frozen.json(structure,context+'/summary.json')
             add_panel(family+':'+context, family, context, structure, context+'/gene_mapping.parquet', context+'/genes.parquet',
-                      metadata={'source_issue':7 if family=='replogle' else 8,'protocol_contract':'scripts/dossier/crispri.py; exact effector/time/culture retained in source dossier','subline_or_passage':None})
+                      records=facts['n_cells'],metadata={**{k:facts.get(k) for k in ['cell_line','days_post_transduction','effector','library','culture','harvest','GEM_groups','n_NTC_cells']},'source_issue':7 if family=='replogle' else 8,'protocol_contract':'scripts/dossier/crispri.py; exact effector/time/culture retained in source dossier','subline_or_passage':None})
             add_tasks(family+':'+context, BASE/(family+'-response-'+context+'-20260919'), 'tasks.json')
     jiang = BASE/'jiang-dossier-20260919-v2'
     contexts = frozen.parquet(jiang, 'context-coverage.parquet')
@@ -204,7 +204,7 @@ def build(output):
     gr = frozen.json(gxe2, 'genetic/report.json')
     for row in gr['contexts']:
         pid='GxE2:'+row['context']; line,drug,dose=json.loads(row['context'])
-        add_panel(pid, 'McFaline_GxE2', row['context'], gxe2, 'genetic/gene-mapping.parquet', 'genetic/genes.parquet', records=row['n_cells'], qc_scope='entire_GxE2_source_CDS',
+        add_panel(pid, 'McFaline_GxE2', row['context'], gxe2, 'genetic/gene-mapping.parquet', 'genetic/genes.parquet', records=row['n_cells'], qc_scope='all_43209765_GxE2_raw_barcode_records_not_only_CDS',
                   metadata={'cell_line':line,'drug':drug,'dose_uM':dose,'hours':72,'NTC_cells':row['n_NTC'],'effector':'dCas9-BFP-KRAB','source_issue':11,'evidence_issue':26,'subline_or_passage':None})
         add_tasks(pid, gxe2, 'genetic/'+row['directory']+'/tasks.json')
     add_conditions('GxE2', gxe2, 'all-chemical-tasks.parquet', 'All fixed-source-genotype drug contrasts; distinct from matched-NTC genetic response')
@@ -232,11 +232,14 @@ def build(output):
     catalog = frozen.json(BASE/'cross-source-identities-20260919-v2','scbase-source-catalog.json')
     for i,row in enumerate(catalog):
         accession=row['experiment_accession']; pid='scBase:'+accession
+        actual_species='human' if row['source_species']=='Homo sapiens' else str(row['source_species']) if row['source_species'] else 'unknown'
+        relation=row['author_library_relation'] or {}
+        modality=relation.get('modality') or ('RNA' if row['RNA_eligible'] else 'source_assay_not_eligible_for_human_RNA_inference')
         add_panel(pid, 'scBaseCount', row['source_sample'], expression, accession+'/gene_mapping.parquet', accession+'/genes.parquet',
-                  species='human' if row['RNA_eligible'] else str(row['source_species']), applicable=row['RNA_eligible'], records=row['stored_records'],
+                  species=actual_species,modality=modality, applicable=row['RNA_eligible'], records=row['stored_records'],
                   metadata={'source_study':row['source_study'],'source_sample':row['source_sample'],'source_species':row['source_species'],
                             'source_cell_line':row['source_cell_line'],'source_library_name':row['source_library_name'],
-                            'author_library_relation':row['author_library_relation'],'per_cell_perturbation_labels':'unavailable','source_issue':16,'evidence_issue':22})
+                            'author_library_relation':row['author_library_relation'],'RNA_inference_eligibility_reason':row['inference_reason'],'per_cell_perturbation_labels':'unavailable','source_issue':16,'evidence_issue':22})
         if (i+1)%100==0: print('scBase coverage '+str(i+1)+'/1808',flush=True)
     tahoe = BASE/'tahoe-dossier-20260919-v2'
     add_panel('Tahoe', 'Tahoe', '14 source plates × 50 cell lines × sample/compound/dose', tahoe, 'counts/gene-mapping.parquet', 'counts/gene-coverage.parquet', records=8467330,
@@ -277,7 +280,8 @@ def build(output):
              'source_construct_tasks':len(frame),'construct_task_status_counts':frame.effect_status.value_counts().to_dict(),
              'construct_task_modality_counts':frame.modality.value_counts(dropna=False).to_dict(),
              'confirmed_collection_copy_tasks':int(frame.confirmed_collection_copy.sum()),'condition_files':len(conditions),
-             'condition_rows_by_family':{r['family']:r['rows'] for r in conditions},'human_RNA_applicable_panels':sum(r['human_RNA_applicable'] for r in panels),
+             'condition_rows_by_family':{r['family']:r['rows'] for r in conditions},'human_RNA_applicable_panels':sum(r['human_RNA_applicable'] is True for r in panels),
+             'human_RNA_applicability_indeterminate_panels':sum(r['human_RNA_applicable'] is None for r in panels),
              'independent_biological_replicates':None,'all_inputs_unchanged':True,
              'coverage_rules':'Unique conflict-free human canonical mapping only; absent/unresolved/ambiguous/N/A separate; zero QC limited to declared file or stimulus scope; no missing-feature zero fill.',
              'exposure':'All frozen source result panels and tasks; individual outcome diagnostics already examined. No untouched evaluation split claimed.',

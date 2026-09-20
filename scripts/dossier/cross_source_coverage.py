@@ -7,6 +7,7 @@ STATUS = [
     'measured_nonzero', 'measured_all_zero', 'measured_activity_unavailable',
     'outside_native_panel', 'official_identifier_unresolved',
     'ambiguous_or_conflicting_native_mapping', 'not_applicable_species_or_modality',
+    'indeterminate_species_or_modality',
 ]
 
 
@@ -33,43 +34,54 @@ def gene_coverage(mapping, official, detected=None, applicable=True):
     literal = set(mapping.source_gene)
     if 'source_symbol' in mapping:
         literal.update(mapping.source_symbol.dropna())
-    rows = []
-    for row in official.itertuples(index=False):
-        gene = row.mapped_symbol
-        index = safe_map.get(gene)
-        if not applicable:
-            status = STATUS[6]
-        elif pd.isna(gene):
-            status = STATUS[4]
-        elif gene in uncertain:
-            status = STATUS[5]
-        elif index is None:
-            status = STATUS[3]
-        elif detected is None or pd.isna(detected[index]):
-            status = STATUS[2]
-        else:
-            status = STATUS[1] if detected[index] == 0 else STATUS[0]
-        rows.append({'official_gene': row.source_gene, 'canonical_symbol': gene,
-                     'official_mapping_status': row.mapping_status,
-                     'literal_native_presence': row.source_gene in literal,
-                     'native_feature_index': index if applicable else None,
-                     'status': status,
-                     'detected_records_in_declared_QC_scope': float(detected[index]) if applicable and index is not None and detected is not None else None})
-    return pd.DataFrame(rows)
+    indices = official.mapped_symbol.map(safe_map).to_numpy(dtype=float,copy=True)
+    observed = np.full(len(official), np.nan)
+    present = np.isfinite(indices)
+    if detected is not None:observed[present] = np.asarray(detected,dtype=float)[indices[present].astype(int)]
+    states = np.full(len(official), STATUS[3], dtype=object)
+    states[present] = STATUS[2]
+    states[present & (observed>0)] = STATUS[0]
+    states[present & (observed==0)] = STATUS[1]
+    states[official.mapped_symbol.isna().to_numpy()] = STATUS[4]
+    states[official.mapped_symbol.isin(uncertain).to_numpy()] = STATUS[5]
+    if not applicable:states[:]=STATUS[7] if applicable is None else STATUS[6];indices[:]=np.nan;observed[:]=np.nan
+    return pd.DataFrame({'official_gene':official.source_gene.to_numpy(),'canonical_symbol':official.mapped_symbol.to_numpy(),
+                         'official_mapping_status':official.mapping_status.to_numpy(),'literal_native_presence':official.source_gene.isin(literal).to_numpy(),
+                         'native_feature_index':indices,'status':states,'detected_records_in_declared_QC_scope':observed})
 
 
 def target_coverage(panel, targets, tasks, applicable=True):
     """Keep source construct task multiplicity; no counting copies as new evidence."""
     rows = []
+    all_counts = tasks.canonical_target.value_counts()
+    qualified = tasks.loc[tasks.modality.eq('CRISPRi') & tasks.effect_status.eq('completed')]
+    qualified_counts = qualified.canonical_target.value_counts()
+    no_copy = qualified.loc[~qualified.confirmed_collection_copy].canonical_target.value_counts()
+    de = qualified.loc[qualified.DE_status.eq('completed')].canonical_target.value_counts()
     for target in targets.itertuples(index=False):
-        selected = tasks.loc[tasks.canonical_target.eq(target.mapped_symbol)]
-        qualified = selected.loc[selected.modality.eq('CRISPRi') & selected.effect_status.eq('completed')]
-        independent_source = qualified.loc[~qualified.confirmed_collection_copy]
+        count = int(all_counts.get(target.mapped_symbol,0));n_qualified=int(qualified_counts.get(target.mapped_symbol,0))
         rows.append({'panel_id': panel, 'official_target': target.source_gene,
-                     'canonical_target': target.mapped_symbol, 'candidate_construct_tasks': len(selected),
-                     'completed_CRISPRi_construct_tasks': len(qualified),
-                     'completed_CRISPRi_tasks_after_confirmed_copy_exclusion': len(independent_source),
-                     'completed_DE_tasks': int(qualified.DE_status.eq('completed').sum()),
-                     'status': 'not_applicable_species_or_modality' if not applicable else 'observed_response' if len(qualified) else 'not_estimable' if len(selected) else 'no_observed_single_target_CRISPRi_response',
+                     'canonical_target': target.mapped_symbol, 'candidate_construct_tasks': count,
+                     'completed_CRISPRi_construct_tasks': n_qualified,
+                     'completed_CRISPRi_tasks_after_confirmed_copy_exclusion': int(no_copy.get(target.mapped_symbol,0)),
+                     'completed_DE_tasks': int(de.get(target.mapped_symbol,0)),
+                     'status': 'indeterminate_species_or_modality' if applicable is None else 'not_applicable_species_or_modality' if not applicable else 'observed_response' if n_qualified else 'not_estimable' if count else 'no_observed_single_target_CRISPRi_response',
                      'independent_biological_replicates': None})
     return pd.DataFrame(rows)
+
+
+def resolve_target(source_name, source_ensembl, approved, aliases):
+    """Use intervention Ensembl identity only when actually provided by source.
+
+    An RNA feature with a matching ambiguous label is not intervention identity.
+    """
+    name=str(source_name) if source_name is not None else ''
+    candidates={name} if name in approved else aliases.get(name.split('.')[0],set())
+    ids=aliases.get(str(source_ensembl).split('.')[0],set()) if source_ensembl else set()
+    if ids and candidates and not ids.intersection(candidates):
+        return None,'source_symbol_Ensembl_conflict'
+    if len(ids)==1 and (not candidates or ids<=candidates):
+        return next(iter(ids)),'unique_source_intervention_Ensembl_corroboration'
+    if len(ids)>1:return None,'ambiguous_source_intervention_Ensembl'
+    if len(candidates)==1:return next(iter(candidates)),'unique_source_symbol_or_alias'
+    return None,'ambiguous_source_target_name' if candidates else 'source_target_unresolved'

@@ -132,7 +132,16 @@ def compose(identities,coverage,output):
     # paired modalities must not increase the RNA-cell denominator.
     index=frozen.json(sc,'file-index.json');protein=[r for r in index if r['status']=='not_applicable']
     for r in protein:
-        node('scPerturb:'+r['file'],'protein_matrix_not_RNA',source_facts=r)
+        pid='scPerturb:'+r['file'].removesuffix('.h5ad')
+        node(pid,'protein_matrix_not_RNA',source_facts=r)
+        audit=frozen.json(sc,'source-audit/'+r['file']+'.json')
+        proof='source-protocols/'+r['file']+'-paired-modality.json'
+        write_json(output/proof,{'study_id':audit['study_id'],'relationships':audit['relationships'],'input_sha256':audit['input_sha256'],'interpretation':'Protein measurements are not extra RNA observations; barcode pairing alone does not prove physical singlets.'})
+        sid='study:'+audit['study_id'];node(sid,'source_publication_identity')
+        edge(pid,sid,'source_publication_association_not_replication',evidence=[proof])
+        for relation in audit['relationships']:
+            partner='scPerturb:'+relation['file'].removesuffix('.h5ad')
+            if partner in nodes:edge(pid,partner,'candidate_paired_RNA_protein_modalities',relation,[proof])
     graph={'nodes':list(nodes.values()),'edges':edges,'interpretation':'Source association is distinct from record identity and independently randomized/cultured replication.'}
     # All graph drill-down evidence is included, and all edge endpoints exist.
     for e in edges:
