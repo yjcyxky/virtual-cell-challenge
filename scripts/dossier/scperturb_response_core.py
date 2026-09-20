@@ -29,27 +29,41 @@ def describe_conditions(cells,design,directory):
     types=frame.groupby(['condition_id','inferred_type'],sort=True).size().rename('n_cells').reset_index();types['truth_label']=False
     types.to_parquet(directory/'all-condition-type-composition.parquet',index=False)
     controls={key:g.index.to_numpy() for key,g in frame.loc[frame.control_eligible].groupby('response_background',sort=False)}
-    rows=[];states=[];composition=[];within=[];draws=[]
-    for condition,group in grouped:
-        bg=group.response_background.iloc[0];ids=controls.get(bg,np.array([],int));ref=frame.loc[ids]
-        qualified=group.loc[group.condition_identity_supported&~group.control_eligible]
-        row={'condition_id':condition,'response_background':bg,'analysis_condition':group.analysis_condition.iloc[0],
-             'n_cells':len(group),'eligible_reference_cells':len(ref),'observation_status':'completed',
-             'eligible_nonreference_condition_cells':len(qualified),'identity_ineligible_condition_cells':int((~group.condition_identity_supported).sum()),
-             'proxy_scale':'Fixed species-specific endpoint RNA scores from per-cell phase; not cross-background calibrated'}
-        if group.control_eligible.any():row.update(status='not_applicable',reason='reference_condition_no_self_comparison',stability_status='not_applicable')
-        elif not len(qualified):row.update(status='not_estimable',reason='source_condition_identity_not_supported',stability_status='not_estimable')
-        elif len(qualified)<20 or len(ref)<2:row.update(status='not_estimable',reason='requires_20_targets_2_eligible_same_background_controls_for_detailed_contrast',stability_status='not_estimable')
-        else:
-            if np.intersect1d(qualified.index,ref.index).size:raise ValueError('target_reference_cells_overlap')
-            result,st,co,wi,dr=distribution_contrast(qualified[names].to_numpy(float),ref[names].to_numpy(float),qualified.inferred_type.to_numpy(),ref.inferred_type.to_numpy(),names,
-                                                  DESCRIPTION_PARAMETERS['seed']^int(condition[:8],16))
-            row.update(result)
-            for out,values in [(states,st),(composition,co),(within,wi),(draws,dr)]:out.extend([{'condition_id':condition,**v} for v in values])
-        rows.append(row)
-    for name,records in [('condition-contrasts',rows),('state-contrasts',states),('type-contrasts',composition),('within-type-contrasts',within),('resampling',draws)]:
+    # Keep every observed condition, but avoid constructing millions of target
+    # and reference DataFrames for groups that cannot pass the fixed gate.
+    frame['_qualified']=frame.condition_identity_supported&~frame.control_eligible
+    frame['_identity_ineligible']=~frame.condition_identity_supported
+    rows=frame.groupby('condition_id',sort=True).agg(response_background=('response_background','first'),
+        analysis_condition=('analysis_condition','first'),n_cells=('condition_id','size'),
+        eligible_nonreference_condition_cells=('_qualified','sum'),identity_ineligible_condition_cells=('_identity_ineligible','sum'),
+        _has_reference=('control_eligible','any'))
+    rows['eligible_reference_cells']=rows.response_background.map({k:len(v) for k,v in controls.items()}).fillna(0).astype('int64')
+    rows['observation_status']='completed'
+    rows['proxy_scale']='Fixed species-specific endpoint RNA scores from per-cell phase; not cross-background calibrated'
+    reference=rows._has_reference.to_numpy();unsupported=rows.eligible_nonreference_condition_cells.to_numpy()==0
+    detailed=~reference&~unsupported&(rows.eligible_nonreference_condition_cells.to_numpy()>=20)&(rows.eligible_reference_cells.to_numpy()>=2)
+    rows['status']=np.where(reference,'not_applicable','not_estimable')
+    rows['reason']=np.select([reference,unsupported],['reference_condition_no_self_comparison','source_condition_identity_not_supported'],
+        default='requires_20_targets_2_eligible_same_background_controls_for_detailed_contrast')
+    rows['stability_status']=rows.status
+    states=[];composition=[];within=[];draws=[];results=[]
+    selected=frame.loc[frame._qualified&frame.condition_id.isin(rows.index[detailed])]
+    for condition,qualified in selected.groupby('condition_id',sort=True):
+        bg=qualified.response_background.iloc[0];ref=frame.loc[controls[bg]]
+        if np.intersect1d(qualified.index,ref.index).size:raise ValueError('target_reference_cells_overlap')
+        result,st,co,wi,dr=distribution_contrast(qualified[names].to_numpy(float),ref[names].to_numpy(float),qualified.inferred_type.to_numpy(),ref.inferred_type.to_numpy(),names,
+                                              DESCRIPTION_PARAMETERS['seed']^int(condition[:8],16))
+        results.append({'condition_id':condition,'reason':None,**result})
+        for out,values in [(states,st),(composition,co),(within,wi),(draws,dr)]:out.extend([{'condition_id':condition,**v} for v in values])
+    if results:
+        details=pd.DataFrame(results).set_index('condition_id')
+        for column in details:
+            if column not in rows:rows[column]=details[column].reindex(rows.index)
+            else:rows.loc[details.index,column]=details[column]
+    rows.drop(columns='_has_reference').reset_index().to_parquet(directory/'condition-contrasts.parquet',index=False)
+    for name,records in [('state-contrasts',states),('type-contrasts',composition),('within-type-contrasts',within),('resampling',draws)]:
         pd.DataFrame(records).to_parquet(directory/(name+'.parquet'),index=False)
-    return {'all_conditions':len(rows),'observed_distribution_conditions':len(observed),'contrast_status_counts':dict(Counter(r['status'] for r in rows)),
+    return {'all_conditions':len(rows),'observed_distribution_conditions':len(observed),'contrast_status_counts':dict(Counter(rows.status)),
             'resampling_rows':len(draws),'null_reference_intersections':sum(r['null_reference_intersection'] for r in draws),
             'null_size_shortfall_rows':sum(r['null_target_cells_not_matched']>0 for r in draws)}
 
