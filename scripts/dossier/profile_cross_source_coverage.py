@@ -142,6 +142,8 @@ def build(output):
             if isinstance(result, dict): result = result['file']
             result = str((Path(name).parent/result).as_posix()) if result else None
             effect_status = task['status']; matched = task.get('matching', {})
+            if not isinstance(matched,dict):matched={}
+            target_rna = task.get('target_RNA') or {}
             tasks.append({'panel_id': extra.get('panel_id', panel_id),
                 'source_task': task.get('task', task.get('task_id', str(index))),
                 'source_target': target, 'canonical_target': canonical(target),
@@ -159,7 +161,7 @@ def build(output):
                 'source_task_file_sha256': frozen.indices[folder][name], 'source_gene_result_file': result,
                 'source_gene_result_sha256': frozen.indices[folder].get(result),
                 'downstream_RMS': task.get('downstream_RMS'),
-                'target_RNA_ratio': task.get('target_RNA', {}).get('RNA_ratio')})
+                'target_RNA_ratio': target_rna.get('RNA_ratio')})
 
     def add_conditions(family, folder, name, interpretation):
         path = frozen.path(folder, name); key = str(len(conditions)).zfill(3)+'-'+path.name
