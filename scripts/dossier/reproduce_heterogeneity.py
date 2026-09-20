@@ -14,12 +14,13 @@ def run(source,work,output,workers):
     work.mkdir(parents=True);code=Path(__file__).resolve().parent;env=os.environ.copy();env['OPENBLAS_NUM_THREADS']='1'
     def phase(name,*args):
         subprocess.run([sys.executable,str(code/name),*map(str,args)],check=True,env=env)
-    comparisons=work/'comparisons';endpoint=work/'endpoint';supplements=work/'supplements';baselines=work/'baselines'
+    comparisons=work/'comparisons';endpoint=work/'endpoint';supplements=work/'supplements';baselines=work/'baselines';extra=work/'extra'
     phase('profile_response_heterogeneity.py','--source',source,'--output',comparisons,'--workers',workers)
     phase('profile_endpoint_decomposition.py','--source',source,'--output',endpoint)
     phase('profile_heterogeneity_supplements.py','--source',source,'--comparisons',comparisons,'--output',supplements)
-    phase('profile_heterogeneity_baselines.py','--source',source,'--endpoint',endpoint,'--comparisons',comparisons,'--output',baselines)
-    phase('compose_heterogeneity_dossier.py','--source',source,'--comparisons',comparisons,'--endpoint',endpoint,'--supplements',supplements,'--baselines',baselines,'--output',output)
+    phase('profile_extra_ntc_baselines.py','--source',source,'--output',extra)
+    phase('profile_heterogeneity_baselines.py','--source',source,'--endpoint',endpoint,'--comparisons',comparisons,'--extra',extra,'--output',baselines)
+    phase('compose_heterogeneity_dossier.py','--source',source,'--comparisons',comparisons,'--endpoint',endpoint,'--supplements',supplements,'--baselines',baselines,'--extra',extra,'--output',output)
 
 
 if __name__=='__main__':

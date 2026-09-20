@@ -45,11 +45,11 @@ def comparison_design(a,b):
     return 'other_source_or_background_difference_not_factor_isolated'
 
 
-def compose(source,comparisons,endpoint,supplements,baselines,output):
-    paths={k:v.resolve() for k,v in {'source':source,'comparisons':comparisons,'endpoint':endpoint,'supplements':supplements,'baselines':baselines}.items()}
+def compose(source,comparisons,endpoint,supplements,baselines,extra,output):
+    paths={k:v.resolve() for k,v in {'source':source,'comparisons':comparisons,'endpoint':endpoint,'supplements':supplements,'baselines':baselines,'extra':extra}.items()}
     output=output.resolve();output.mkdir(parents=True,exist_ok=False)
     reports={}
-    for k in ['comparisons','endpoint','supplements','baselines']:
+    for k in ['comparisons','endpoint','supplements','baselines','extra']:
         print('verify and copy '+k,flush=True);reports[k]=copy_component(paths[k],output/k)
     primary=reports['comparisons'];ep=reports['endpoint'];supp=reports['supplements'];base=reports['baselines']
     if primary['all_same_target_pairs']!=249071 or base['endpoint_task_partitions']!=75690 or base['source_effects_reproduced']!=37633:raise ValueError('incomplete_registered_analysis_denominators')
@@ -74,6 +74,7 @@ def compose(source,comparisons,endpoint,supplements,baselines,output):
             consumed[name]=digest
     original=json.loads((paths['comparisons']/'consumed-inputs.json').read_text());merge(original['frozen_artifacts']);merge(original['response_gene_files'])
     cell_inputs=json.loads((paths['endpoint']/'consumed-inputs.json').read_text());merge(cell_inputs['frozen_artifacts']);raw.update(cell_inputs['raw_or_normalized_view_sha256'])
+    extra_inputs=json.loads((paths['extra']/'consumed-inputs.json').read_text());merge(extra_inputs['frozen_artifacts']);raw.update(extra_inputs['raw_count_files'])
     merge(json.loads((paths['supplements']/'consumed-inputs.json').read_text()));merge(json.loads((paths['baselines']/'consumed-inputs.json').read_text()))
     for i,(name,digest) in enumerate(consumed.items()):
         if hash_file(ROOT/name)!=digest:raise ValueError('source_input_changed_after_calculation:'+name)
@@ -124,7 +125,7 @@ def compose(source,comparisons,endpoint,supplements,baselines,output):
     (output/'baselines.html').write_text(explorer_page('登记来源与官方 A/B/C 的 NTC 基线',baseline_pairs,
         ['panel_A','panel_B','NTC_A','NTC_B','status','native_genes','native_correlation','native_difference_RMS','official_correlation','official_difference_RMS'],
         ['native_correlation','native_difference_RMS','official_correlation','official_difference_RMS','NTC_A','NTC_B','native_genes'],
-        '登记 CRISPRi 来源背景加官方 A/B/C；H1 完全相同的 NTC 只作一个来源证据。来源 NTC 差异混合生物背景、采样、培养及测量，不能视为纯技术噪声。scBase 混合终点不是 NTC。','baselines/all-baseline-pairs.parquet',{'common_gene_file':'baselines/'}))
+        '登记 CRISPRi 背景、官方 A/B/C 及其他已验证人 RNA negative-guide 背景；后者不增加主 CRISPRi 响应任务。H1 完全相同的 NTC 只计一次。intergenic cutting、vehicle、untreated 和 scBase 混合终点不冒充 NTC；NTC 差异不是纯技术噪声。','baselines/all-baseline-pairs.parquet',{'common_gene_file':'baselines/'}))
     (output/'tasks.html').write_text(explorer_page('全部 37,845 个任务的干预与测量敏感性',task_view,
         ['canonical_target','panel_id','source_condition','effect_status','matched_target_cells','target_RNA_ratio','downstream_RMS','library_size_median','guide_median_correlation','depth_effect_correlation','resampling_median_correlation'],
         ['target_RNA_ratio','downstream_RMS','matched_target_cells','library_size_median','detected_genes_median','guide_median_correlation','technical_stratum_median_correlation','depth_effect_correlation','resampling_median_correlation'],
@@ -156,7 +157,7 @@ def compose(source,comparisons,endpoint,supplements,baselines,output):
       {'decision':'无法辨识的因素保留未知并补来源证据','basis':'八类候选因素的观测边界；完全混杂无随机化／重复设计支持','next_use':'未解决的具体来源证据继续跟踪 #22–#27；#21 和父 #1 的最终综合验收独立管理'}]
     write_json(output/'factor-observability.json',factors);write_json(output/'decisions.json',decisions)
     code_dir=output/'reproduction';code_dir.mkdir()
-    code_names=['profile_response_heterogeneity.py','heterogeneity.py','heterogeneity_cells.py','profile_endpoint_decomposition.py','profile_heterogeneity_supplements.py','profile_heterogeneity_baselines.py','compose_heterogeneity_dossier.py','render_heterogeneity.py','reproduce_heterogeneity.py','pyproject.toml','uv.lock']
+    code_names=['profile_response_heterogeneity.py','heterogeneity.py','heterogeneity_cells.py','profile_endpoint_decomposition.py','profile_heterogeneity_supplements.py','profile_extra_ntc_baselines.py','profile_heterogeneity_baselines.py','compose_heterogeneity_dossier.py','render_heterogeneity.py','reproduce_heterogeneity.py','pyproject.toml','uv.lock']
     for name in code_names:shutil.copy2(Path(__file__).with_name(name),code_dir/name)
     source_identity={name:hash_file(path/'report.json') for name,path in paths.items()}
     methods={'registration':'https://github.com/yjcyxky/virtual-cell-challenge/issues/20#issuecomment-5746896397',
@@ -200,5 +201,5 @@ def compose(source,comparisons,endpoint,supplements,baselines,output):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    for k in ['source','comparisons','endpoint','supplements','baselines','output']:p.add_argument('--'+k,type=Path,required=True)
-    a=p.parse_args();compose(a.source,a.comparisons,a.endpoint,a.supplements,a.baselines,a.output)
+    for k in ['source','comparisons','endpoint','supplements','baselines','extra','output']:p.add_argument('--'+k,type=Path,required=True)
+    a=p.parse_args();compose(a.source,a.comparisons,a.endpoint,a.supplements,a.baselines,a.extra,a.output)

@@ -17,8 +17,8 @@ from profile_responses import write_json
 from rna import hash_file,value_hash,quantiles
 
 
-def run(source,endpoint,comparisons,output):
-    source=source.resolve();endpoint=endpoint.resolve();comparisons=comparisons.resolve();output=output.resolve();output.mkdir(parents=True,exist_ok=False)
+def run(source,endpoint,comparisons,extra,output):
+    source=source.resolve();endpoint=endpoint.resolve();comparisons=comparisons.resolve();extra=extra.resolve();output=output.resolve();output.mkdir(parents=True,exist_ok=False)
     f=Frozen();er=f.json(endpoint,'report.json');pr=f.json(comparisons,'report.json');sr=f.json(source,'report.json')
     if er['status']!='completed' or er['registered_tasks']!=37845 or pr['source_bundle_id']!=sr['bundle_id']:raise ValueError('incomplete_registered_input')
     official=f.parquet(source,'coverage/official-identifiers.parquet');official_symbols=set(official.mapped_symbol.dropna())
@@ -55,6 +55,14 @@ def run(source,endpoint,comparisons,output):
         d=f.parquet(folder,name);mapping=f.parquet(source,'coverage/'+p['native_mapping_file'])
         if d.source_gene.astype(str).tolist()!=mapping.source_gene.astype(str).tolist():raise ValueError('official_baseline_axis_mismatch')
         add_baseline(pid,pid,context,d.source_gene.astype(str).tolist(),d.mean_logCP10K.to_numpy(),18400,mapping,{'source_file':str((folder/name).relative_to(ROOT)),'sha256':hash_file(folder/name)})
+    additional=f.json(extra,'report.json')
+    if additional['status']!='completed' or additional['source_bundle_id']!=sr['bundle_id']:raise ValueError('additional_baseline_input_incomplete_or_changed')
+    for c in additional['contexts']:
+        prefix=c['context_id']+'/'
+        with np.load(f.path(extra,prefix+'baseline.npz')) as b:
+            mapping=f.parquet(extra,prefix+'native-gene-mapping.parquet')
+            add_baseline(c['baseline_id'],c['panel_id'],c['source_context'],b['source_gene'].astype(str).tolist(),b['mean_logCP10K'],int(b['n_NTC']),mapping,
+                {'extra_context':c['context_id'],'baseline_sha256':hash_file(extra/prefix/'baseline.npz'),'source_control_rule':c['source_control_rule'],'reference_role':c['reference_role']})
     # H1 shared controls are a documented content+label copy; equal expression
     # alone is never used to declare any other baselines the same observation.
     proof=f.parquet(source,'exact-copy-proofs/H1-NTC-copy-groups.parquet')
@@ -97,13 +105,14 @@ def run(source,endpoint,comparisons,output):
     covered={r['panel_id'] for r in baseline_rows};scope=[]
     for p in panels.values():
         scope.append({'panel_id':p['panel_id'],'source_family':p['family'],'status':'completed' if p['panel_id'] in covered else 'not_applicable',
-            'reason':None if p['panel_id'] in covered else 'outside_registered_primary_single_gene_CRISPRi_and_official_NTC_baseline_panel; consult source-specific control designs',
+            'reason':None if p['panel_id'] in covered else 'no_additional_verified_count_compatible_human_negative_guide_NTC_background; other references or modalities remain in source-specific designs',
             'human_RNA_applicable':p['human_RNA_applicable'],'confirmed_collection_copy':p['confirmed_collection_copy']})
     pd.DataFrame(scope).to_parquet(output/'all-source-baseline-scope.parquet',index=False)
     write_json(output/'consumed-inputs.json',f.used)
     report={'status':'completed','phase':'registered_NTC_baselines_and_complete_endpoint_denominators','source_bundle_id':sr['bundle_id'],
-        'baseline_scope':'all primary identity-qualified CRISPRi source contexts plus official A/B/C; other modalities/designs in source-scoped appendices',
-        'baseline_context_rows':len(baseline_rows),'distinct_source_NTC_baselines':len(baselines),'baseline_pairs':len(rows),'baseline_status_counts':dict(Counter(r['status'] for r in rows)),
+        'baseline_scope':'all primary CRISPRi contexts plus official A/B/C and additional verified human count-compatible negative-guide RNA references; intergenic cutting, vehicle, untreated and source copies are separate',
+        'baseline_context_rows':len(baseline_rows),'distinct_registered_reference_contexts':len(baselines),'distinct_source_NTC_baselines':sum(b['n']>0 for b in baselines.values()),
+        'registered_contexts_without_NTC':sum(b['n']==0 for b in baselines.values()),'baseline_pairs':len(rows),'baseline_status_counts':dict(Counter(r['status'] for r in rows)),
         'exact_H1_baseline_copies_not_recounted':2,'endpoint_task_partitions':len(diagnostics),'endpoint_status_counts':diagnostics.status.value_counts().to_dict(),
         'source_effects_reproduced':int(reproduced.sum()),'source_unestimable_tasks_retained':int((~reproduced).sum()),
         'maximum_source_mean_reproduction_error':float(verify.maximum_absolute_mean_or_effect_error.max()),'maximum_mixture_identity_residual':float(diagnostics.maximum_identity_residual.max()),
@@ -117,5 +126,5 @@ def run(source,endpoint,comparisons,output):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    for k in ['source','endpoint','comparisons','output']:p.add_argument('--'+k,type=Path,required=True)
-    a=p.parse_args();run(a.source,a.endpoint,a.comparisons,a.output)
+    for k in ['source','endpoint','comparisons','extra','output']:p.add_argument('--'+k,type=Path,required=True)
+    a=p.parse_args();run(a.source,a.endpoint,a.comparisons,a.extra,a.output)
