@@ -36,7 +36,7 @@ def numeric_nested(value,*keys):
 
 
 def run(source,comparisons,output):
-    output=output.resolve();output.mkdir(parents=True,exist_ok=False);f=Frozen();catalog=[]
+    source=source.resolve();comparisons=comparisons.resolve();output=output.resolve();output.mkdir(parents=True,exist_ok=False);f=Frozen();catalog=[]
     parent=f.json(source,'report.json');primary=f.json(comparisons,'report.json')
     if parent['bundle_id']!=primary['source_bundle_id'] or primary['status']!='completed':raise ValueError('comparison_parent_not_complete_or_shared')
     tasks=f.parquet(comparisons,'all-task-diagnostics.parquet');pairs=f.parquet(comparisons,'all-task-pairs.parquet')
