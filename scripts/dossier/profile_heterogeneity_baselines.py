@@ -113,24 +113,37 @@ def run(source,endpoint,comparisons,extra,output):
     reproduced=verify.source_mean_comparison_status.eq('completed')
     if int(reproduced.sum())!=37633:raise ValueError('not_all_completed_effects_reproduced')
     if (diagnostics.loc[diagnostics.status.eq('completed'),'maximum_identity_residual']>1e-9).any():raise ValueError('mixture_identity_residual_too_large')
+    # The gene identity relation depends on native axes, not on a particular
+    # baseline's expression values. Reuse that verified alignment for every
+    # pair sharing the same axes, retaining all baseline-specific means.
+    axes={};aligned={}
+    for b in baselines.values():
+        frame=b['frame'];axis=value_hash([frame.source_gene.tolist(),frame.safe_canonical_symbol.fillna('').tolist()]);b['axis']=axis
+        b['mean']=frame.mean_logCP10K.to_numpy(dtype=float)
+        if axis not in axes:
+            a=frame[['source_gene','safe_canonical_symbol']].copy();a['native_index']=np.arange(len(a));axes[axis]=a.dropna(subset=['safe_canonical_symbol'])
     rows=[]
     for a,b in combinations(sorted(baselines),2):
-        da,db=baselines[a],baselines[b];af=da['frame'].dropna(subset=['safe_canonical_symbol']);bf=db['frame'].dropna(subset=['safe_canonical_symbol'])
-        joined=af.merge(bf,on='safe_canonical_symbol',suffixes=('_A','_B'),validate='one_to_one').sort_values('safe_canonical_symbol').reset_index(drop=True)
-        joined['in_official_canonical_axis']=joined.safe_canonical_symbol.isin(official_symbols);name='common-genes/'+value_hash([a,b])+'.parquet';joined.to_parquet(output/name,index=False)
+        da,db=baselines[a],baselines[b];key=(da['axis'],db['axis'])
+        if key not in aligned:
+            joined=axes[key[0]].merge(axes[key[1]],on='safe_canonical_symbol',suffixes=('_A','_B'),validate='one_to_one').sort_values('safe_canonical_symbol').reset_index(drop=True)
+            joined['in_official_canonical_axis']=joined.safe_canonical_symbol.isin(official_symbols);aligned[key]=joined
+        joined=aligned[key].copy();joined['mean_logCP10K_A']=da['mean'][joined.native_index_A.to_numpy()];joined['mean_logCP10K_B']=db['mean'][joined.native_index_B.to_numpy()]
+        name='common-genes/'+value_hash([a,b])+'.parquet';joined.to_parquet(output/name,index=False)
         row={'baseline_A':a,'baseline_B':b,'panel_A':da['row']['panel_id'],'panel_B':db['row']['panel_id'],
             'NTC_A':da['n'],'NTC_B':db['n'],'common_gene_file':name,'independent_biological_replicates':None,'pure_measurement_noise':False}
         for scope,mask in [('native',np.ones(len(joined),dtype=bool)),('official',joined.in_official_canonical_axis.to_numpy())]:
             comparison=compare_vectors(joined.loc[mask,'mean_logCP10K_A'],joined.loc[mask,'mean_logCP10K_B'])
             row.update({scope+'_'+k:v for k,v in comparison.items()})
         row['status']=row['native_status'];rows.append(row)
+        if len(rows)%1000==0:print('baseline comparisons '+str(len(rows))+'/'+str(len(baselines)*(len(baselines)-1)//2),flush=True)
     diagnostics=diagnostics.merge(tasks[['task_uid','downstream_RMS','target_RNA_ratio','matched_target_cells']],on='task_uid',validate='many_to_one')
     associations=[];summaries=[]
     metrics=['inferred_partition_total_variation','target_unknown_partition_fraction','supported_target_fraction','NTC_common_state_support_fraction_target_batch_weighted',
              'total_common_support_RMS_safe_downstream','composition_RMS_safe_downstream','within_RMS_safe_downstream','difference_from_full_matched_effect_RMS_safe_downstream','common_support_vs_full_effect_correlation']
     for (context,partition),d in diagnostics.groupby(['context_id','partition'],sort=True):
         summaries.append({'context_id':context,'panel_id':d.panel_id.iloc[0],'source_context':d.source_context.iloc[0],'partition':partition,'tasks':len(d),
-            'status_counts':d.status.value_counts().to_dict(),**{v:quantiles(d[v].dropna().to_numpy()) for v in metrics},**{v+'_missing':int(d[v].isna().sum()) for v in metrics}})
+            'status_counts':d.status.value_counts().to_dict(),**{v:quantiles(pd.to_numeric(d[v],errors='raise').dropna().to_numpy(dtype=float)) for v in metrics},**{v+'_missing':int(d[v].isna().sum()) for v in metrics}})
         for x in ['target_RNA_ratio','matched_target_cells','target_unknown_partition_fraction','supported_target_fraction']:
             for y in ['composition_RMS_safe_downstream','within_RMS_safe_downstream','difference_from_full_matched_effect_RMS_safe_downstream']:
                 associations.append(association(d,x,y,context+':'+partition))
