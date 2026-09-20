@@ -1,11 +1,14 @@
 import sys
 from pathlib import Path
 import unittest
+import tempfile
+import h5py
 import numpy as np
 import pandas as pd
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'dossier'))
 from compose_heterogeneity_dossier import joint_summary,comparison_design
 from profile_heterogeneity_supplements import association
+from profile_heterogeneity_baselines import verify_archived_components
 
 
 class DecisionDenominatorTests(unittest.TestCase):
@@ -29,3 +32,19 @@ class DecisionDenominatorTests(unittest.TestCase):
         self.assertEqual(comparison_design('GxE2:["A172","DMSO",0.0]','GxE2:["A172","drug",1.0]'),'GxE2_same_source_line_different_drug_or_dose')
         self.assertEqual(comparison_design('GxE2:["A172","drug",1.0]','GxE2:["U87MG","drug",1.0]'),'GxE2_different_source_line_same_drug_and_dose')
         self.assertIn('time_library_capture_confounded',comparison_design('replogle:K562_essential','replogle:K562_gwps'))
+
+    def test_unestimable_archived_vectors_must_remain_missing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'components.h5'
+            with h5py.File(path,'w') as h:
+                h.create_dataset('task_uid',data=np.asarray(['observed','unsupported'],dtype=h5py.string_dtype()))
+                g=h.create_group('type')
+                for name,value in [('total_common_support',1),('composition',.25),('within',.75),('difference_from_full_matched_effect',0)]:
+                    g.create_dataset(name,data=np.array([[value],[np.nan]],dtype=np.float32))
+            d=pd.DataFrame({'task_uid':['observed','unsupported'],'native_gene_row':[0,1],'partition':['type','type'],'status':['completed','not_estimable']})
+            checked=verify_archived_components(path,d)
+            self.assertEqual(checked[0]['unestimable_vectors_all_NaN'],1)
+            self.assertEqual(checked[0]['maximum_archived_identity_residual'],0)
+            with h5py.File(path,'r+') as h:h['type/within'][1,0]=0
+            with self.assertRaisesRegex(ValueError,'missingness'):
+                verify_archived_components(path,d)
