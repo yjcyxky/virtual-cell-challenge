@@ -42,6 +42,8 @@ def compose(identities,coverage,output):
     used=json.loads((coverage/'used-inputs.json').read_text())
     identity_catalog=str((identities/'scbase-source-catalog.json').relative_to(ROOT))
     if used['frozen_artifacts'][identity_catalog]!=hash_file(identities/'scbase-source-catalog.json'):raise ValueError('identity_coverage_not_shared')
+    for path,digest in {**used['frozen_artifacts'],**used['raw_reference_hashes']}.items():
+        if hash_file(ROOT/path)!=digest:raise ValueError('consumed_source_changed_after_coverage:'+path)
     nodes={};edges=[]
     def node(id,kind,**facts):
         if id not in nodes:nodes[id]={'id':id,'label':id,'kind':kind,**facts}
@@ -176,6 +178,7 @@ def compose(identities,coverage,output):
             'identity_summary':ir['summary'],'coverage_summary':{k:v for k,v in cr.items() if k not in ['artifacts','reproduce']},
             'relationship_nodes':len(nodes),'relationship_edges':len(edges),'verified_original_copy_records':2956306,'H1_excess_copy_records':76352,
             'independent_biological_replicates_global':None,'inputs_unchanged':True,
+            'consumed_coverage_inputs_reverified':len(used['frozen_artifacts'])+len(used['raw_reference_hashes']),
             'component_report_sha256':{'identities':hash_file(identities/'report.json'),'coverage':hash_file(coverage/'report.json')},
             'methods':{'identity':'All 13,255,146 scBase records; all 641 shared-sample file pairs; all 48 explicitly author-mapped Replogle/Nadig libraries; complete source barcodes/native gene axes/count fingerprints; 5 prior exact-copy proofs and all H1 NTC copy groups retained.',
                        'coverage':'All source panels × 18,533 official labels and all source panels × 300 targets; literal coverage and unique conflict-free canonical mapping separated. Gene zero status has explicit file-wide QC scope, not arbitrary task absence.',
