@@ -77,6 +77,7 @@ def compose(cells,design,response,audit,adamson,human_reference,mouse_reference,
         if omitted:write_json(target/'omitted-original-matrices.json',{'reason':'Original downloaded matrix inputs omitted from result archive; retrieval URLs and hashes retained; all original count comparisons included.','artifacts':omitted})
     cell_index={v['file']:v for v in c['files']};design_index={v['file']:v for v in d['files']}
     overview=[];all_tasks=[];contracts=[];applicability=[];description_counts=Counter();task_counts=Counter();de_counts=Counter();total_conditions=0;copied_records=0
+    resampling={name:Counter() for name in ['condition_descriptions','new_deep_responses','reused_original_deep_responses']}
     for record in r['files']:
         file=record['file'];name=file.removesuffix('.h5ad');dr=design_index[file]
         if record['status']=='not_applicable':overview.append({**record,'inference':'not_applicable_protein_not_RNA'});continue
@@ -107,6 +108,10 @@ def compose(cells,design,response,audit,adamson,human_reference,mouse_reference,
         rows=[task_row(file,t) for t in tasks];all_tasks.extend(rows)
         copied=record['deep_response'].get('execution_mode') is not None
         if copied:copied_records+=summary['cells']
+        deep_sampling=json.loads((response/name/'deep-response/original-response-report.json').read_text()) if copied else record['deep_response']
+        for kind,values in [('condition_descriptions',record['description']),('reused_original_deep_responses' if copied else 'new_deep_responses',deep_sampling)]:
+            for key in ['resampling_rows','null_reference_intersections','null_size_shortfall_rows']:resampling[kind][key]+=values.get(key,0)
+            if values.get('null_reference_intersections',0):raise ValueError('reused_or_new_null_reference_overlap')
         methods=json.loads((design/name/'methods.json').read_text())
         row={'file':file,'status':'completed','species':summary['species'],'source_records':summary['cells'],'native_features':summary['genes'],
             'expression_scale':summary['expression_scale'],'all_condition_strata':len(descriptions),'eligible_reference_records':dr['eligible_controls'],
@@ -143,6 +148,7 @@ def compose(cells,design,response,audit,adamson,human_reference,mouse_reference,
         'completed_at':datetime.now(timezone.utc).isoformat(),'RNA_files':51,'protein_files_not_applicable':3,'RNA_records':8802191,
         'all_source_condition_strata':total_conditions,'condition_status_counts':dict(description_counts),'deep_tasks':len(all_tasks),
         'deep_task_status_counts':dict(task_counts),'DE_status_counts':dict(de_counts),'verified_original_copy_records':copied_records,
+        'resampling_by_evidence_role':{k:dict(v) for k,v in resampling.items()},
         'pooled_inferred_types':c['pooled_types'],'all_inputs_unchanged':True,'all_probability_correct_null':True,
         'component_report_sha256':{name:hash_file(folder/'report.json') for name,folder in [('cells',cells),('design',design),('response',response),('source-audit',audit),('Adamson-original-identities',adamson)]},
         'methods':{'inference':c['identity'],'response':r['identity'],'analysis_unit':'Source file, biological context and separately registered technical matching stratum; no cross-study control pooling',
