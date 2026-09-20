@@ -35,6 +35,7 @@ def copy_component(folder,destination):
 
 
 def compose(identities,coverage,output):
+    identities=identities.resolve();coverage=coverage.resolve();output=output.resolve()
     output.mkdir(parents=True,exist_ok=False);frozen=Frozen()
     ir=copy_component(identities,output/'identities');cr=copy_component(coverage,output/'coverage')
     panels=json.loads((coverage/'panels.json').read_text());by_panel={p['panel_id']:p for p in panels}
@@ -208,4 +209,8 @@ def compose(identities,coverage,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['identities','coverage','output']:p.add_argument('--'+name,type=Path,required=True)
-    a=p.parse_args();compose(a.identities,a.coverage,a.output)
+    a=p.parse_args()
+    try:compose(a.identities,a.coverage,a.output)
+    except Exception as error:
+        if a.output.exists():write_json(a.output/'failure.json',{'status':'failed','error':repr(error),'code_sha256':hash_file(Path(__file__))})
+        raise
