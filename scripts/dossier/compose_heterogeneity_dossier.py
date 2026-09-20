@@ -169,6 +169,8 @@ def compose(source,comparisons,endpoint,supplements,baselines,extra,output):
         'gene_identity':'unique conflict-free canonical intersections; exclude canonical intervention and source is_target; at least 100 common finite genes; zero variance correlation null',
         'source_effect_reproduction':'every one of 37633 completed native source target means, matched NTC means and effect vectors was reproduced from verified counts or its full-hash normalized cache',
         'composition_identity':'within each source technical stratum, retained-target-weighted symmetric composition + within = common-support total; source full effect difference retained',
+        'archived_numeric_precision':{'dtype':'float32','maximum_archived_identity_residual':base['maximum_archived_float32_identity_residual'],
+            'maximum_internal_float64_identity_residual':base['maximum_mixture_identity_residual'],'all_native_genes_and_missing_vectors_verified':True,'absolute_rounding_bound':2e-6},
         'scope':'all 62675 source tasks have applicability states; 37845 qualified primary tasks; 10198 canonical targets and 4163 with pairs; two endpoint partitions per task',
         'analysis_exposure':'all registered source RNA counts, source intervention labels, source H1 Training/Validation/Test response labels, official A/B/C control RNA, frozen type/state references and previous source results; not a blinded evaluation',
         'future_availability':'endpoint inferred type and cycle are post-measurement; matched NTC requires available same-context control. No claim these covariates are available before a future perturbation',

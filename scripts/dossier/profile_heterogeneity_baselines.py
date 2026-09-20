@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import h5py
 import numpy as np
 import pandas as pd
 from heterogeneity import safe_symbols,compare_vectors
@@ -17,12 +18,33 @@ from profile_responses import write_json
 from rna import hash_file,value_hash,quantiles
 
 
+def verify_archived_components(path,diagnostics):
+    rows=[]
+    with h5py.File(path,'r') as h:
+        uids=h['task_uid'].asstr()[:]
+        for partition,d in diagnostics.groupby('partition',sort=True):
+            d=d.sort_values('native_gene_row')
+            if not np.array_equal(d.native_gene_row,np.arange(len(uids))) or not np.array_equal(d.task_uid,uids):raise ValueError('archived_component_task_axis_mismatch')
+            expected=d.status.eq('completed').to_numpy();maximum=0.
+            for start in range(0,len(uids),64):
+                stop=min(start+64,len(uids));valid=expected[start:stop];vectors={}
+                for name in ['total_common_support','composition','within','difference_from_full_matched_effect']:
+                    a=h[partition][name][start:stop].astype(np.float64)
+                    if not np.isfinite(a[valid]).all() or not np.isnan(a[~valid]).all():raise ValueError('archived_component_missingness_or_numeric_status_changed')
+                    vectors[name]=a
+                if valid.any():maximum=max(maximum,float(np.max(np.abs(vectors['total_common_support'][valid]-vectors['composition'][valid]-vectors['within'][valid]))))
+            if maximum>2e-6:raise ValueError('archived_float32_identity_error_exceeds_rounding_bound')
+            rows.append({'partition':partition,'archived_tasks':len(uids),'completed_vectors':int(expected.sum()),'unestimable_vectors_all_NaN':int((~expected).sum()),
+                         'stored_dtype':'float32','maximum_archived_identity_residual':maximum,'absolute_float32_rounding_bound':2e-6,'all_native_genes_checked':True})
+    return rows
+
+
 def run(source,endpoint,comparisons,extra,output):
     source=source.resolve();endpoint=endpoint.resolve();comparisons=comparisons.resolve();extra=extra.resolve();output=output.resolve();output.mkdir(parents=True,exist_ok=False)
     f=Frozen();er=f.json(endpoint,'report.json');pr=f.json(comparisons,'report.json');sr=f.json(source,'report.json')
     if er['status']!='completed' or er['registered_tasks']!=37845 or pr['source_bundle_id']!=sr['bundle_id']:raise ValueError('incomplete_registered_input')
     official=f.parquet(source,'coverage/official-identifiers.parquet');official_symbols=set(official.mapped_symbol.dropna())
-    panels={p['panel_id']:p for p in f.json(source,'coverage/panels.json')};baselines={};baseline_rows=[];endpoint_rows=[];reproductions=[];task_context=[]
+    panels={p['panel_id']:p for p in f.json(source,'coverage/panels.json')};baselines={};baseline_rows=[];endpoint_rows=[];reproductions=[];task_context=[];archive_checks=[]
     (output/'baselines').mkdir();(output/'common-genes').mkdir()
     def add_baseline(id,pid,context,genes,means,n,mapping,evidence):
         symbols=safe_symbols(mapping)
@@ -48,6 +70,7 @@ def run(source,endpoint,comparisons,extra,output):
             add_baseline(r['baseline_id'],r['panel_id'],r['source_context'],b['source_gene'].astype(str).tolist(),b['mean_logCP10K'],int(b['n_NTC']),mapping,
                 {'endpoint_context':c['context_id'],'baseline_sha256':hash_file(folder/'baseline.npz')})
         d=f.parquet(endpoint,c['context_id']+'/task-partition-diagnostics.parquet');d['component_file']='endpoint/'+c['context_id']+'/native-gene-components.h5';endpoint_rows.append(d)
+        for check in verify_archived_components(f.path(endpoint,c['context_id']+'/native-gene-components.h5'),d):archive_checks.append({'context_id':c['context_id'],'panel_id':c['panel_id'],**check})
         v=f.parquet(endpoint,c['context_id']+'/all-source-effect-reproduction.parquet');v['context_id']=c['context_id'];reproductions.append(v)
         task_context.extend({'task_uid':uid,'context_id':c['context_id']} for uid in v.task_uid)
     for context in ['A','B','C']:
@@ -99,6 +122,7 @@ def run(source,endpoint,comparisons,extra,output):
                 associations.append(association(d,x,y,context+':'+partition))
     pd.DataFrame(rows).to_parquet(output/'all-baseline-pairs.parquet',index=False,compression='zstd');write_json(output/'baseline-index.json',baseline_rows)
     diagnostics.to_parquet(output/'all-endpoint-task-partitions.parquet',index=False,compression='zstd');verify.to_parquet(output/'all-source-effect-reproduction.parquet',index=False)
+    pd.DataFrame(archive_checks).to_parquet(output/'all-native-archive-verification.parquet',index=False)
     pd.DataFrame(associations).to_parquet(output/'endpoint-factor-associations.parquet',index=False);write_json(output/'endpoint-context-summaries.json',summaries)
     # All other source panels have an explicit scope, rather than masquerading
     # as zero baselines or shared NTCs (scBase is not a reference population).
@@ -116,6 +140,8 @@ def run(source,endpoint,comparisons,extra,output):
         'exact_H1_baseline_copies_not_recounted':2,'endpoint_task_partitions':len(diagnostics),'endpoint_status_counts':diagnostics.status.value_counts().to_dict(),
         'source_effects_reproduced':int(reproduced.sum()),'source_unestimable_tasks_retained':int((~reproduced).sum()),
         'maximum_source_mean_reproduction_error':float(verify.maximum_absolute_mean_or_effect_error.max()),'maximum_mixture_identity_residual':float(diagnostics.maximum_identity_residual.max()),
+        'maximum_archived_float32_identity_residual':max(r['maximum_archived_identity_residual'] for r in archive_checks),
+        'all_archived_native_genes_and_missing_vectors_checked':True,'archived_float32_identity_absolute_rounding_bound':2e-6,
         'component_RMS_values_are_additive':False,'causal_mediation_or_variance_fraction':False,'endpoint_strata_available_before_measurement':False,
         'source_input_mutations':0,'completed_at':datetime.now(timezone.utc).isoformat(),'code_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
         'code_sha256':hash_file(Path(__file__)),'uv_lock_sha256':hash_file(Path(__file__).with_name('uv.lock')),'reproduce':sys.argv}
