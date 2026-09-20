@@ -27,7 +27,15 @@ class Frozen:
     def path(self, folder, name):
         folder = Path(folder)
         if folder not in self.indices:
-            self.indices[folder] = {n: d for d, n in [line.split('  ', 1) for line in (folder/'SHA256SUMS').read_text().splitlines()]}
+            if (folder/'SHA256SUMS').exists():
+                self.indices[folder] = {n: d for d, n in [line.split('  ', 1) for line in (folder/'SHA256SUMS').read_text().splitlines()]}
+            else:
+                report = json.loads((folder/'report.json').read_text())
+                if report['status']!='completed':raise ValueError('unfinished_component')
+                artifacts = report['artifacts']
+                self.indices[folder] = dict(artifacts) if isinstance(artifacts,dict) else {r['file']:r['sha256'] for r in artifacts}
+                self.indices[folder]['report.json'] = hash_file(folder/'report.json')
+                self.used[str((folder/'report.json').relative_to(ROOT))] = self.indices[folder]['report.json']
         path = folder/name; expected = self.indices[folder].get(name)
         if expected is None or hash_file(path) != expected:
             raise ValueError('frozen_artifact_changed:' + str(path))
@@ -179,7 +187,8 @@ def build(output):
     contexts = frozen.parquet(jiang, 'context-coverage.parquet')
     for row in contexts.itertuples(index=False):
         _, line, stimulus = row.context.split('__'); pid = row.context
-        add_panel(pid, 'Jiang', pid, jiang, pid+'/gene-mapping.parquet', 'source-'+stimulus+'/genes.parquet', records=row.n_cells,
+        source_stimulus = {'TGFB1':'TGFB'}.get(stimulus,stimulus)
+        add_panel(pid, 'Jiang', pid, jiang, pid+'/gene-mapping.parquet', 'source-'+source_stimulus+'/genes.parquet', records=row.n_cells,
                   qc_scope='entire_source_stimulus:'+stimulus,
                   metadata={'cell_line':line,'stimulation':stimulus,'stimulation_hours':24,'dose':None,'source_issue':9,'evidence_issue':25,'subline_or_passage':None})
         add_tasks(pid, jiang, pid+'/tasks.json')
