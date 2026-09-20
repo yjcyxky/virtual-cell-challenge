@@ -1,0 +1,121 @@
+#!/usr/bin/env python
+"""Compare every registered source NTC baseline and validate endpoint denominators."""
+import argparse
+from collections import Counter
+from datetime import datetime,timezone
+from itertools import combinations
+import json
+from pathlib import Path
+import subprocess
+import sys
+import numpy as np
+import pandas as pd
+from heterogeneity import safe_symbols,compare_vectors
+from profile_cross_source_coverage import Frozen,ROOT,BASE
+from profile_heterogeneity_supplements import association
+from profile_responses import write_json
+from rna import hash_file,value_hash,quantiles
+
+
+def run(source,endpoint,comparisons,output):
+    source=source.resolve();endpoint=endpoint.resolve();comparisons=comparisons.resolve();output=output.resolve();output.mkdir(parents=True,exist_ok=False)
+    f=Frozen();er=f.json(endpoint,'report.json');pr=f.json(comparisons,'report.json');sr=f.json(source,'report.json')
+    if er['status']!='completed' or er['registered_tasks']!=37845 or pr['source_bundle_id']!=sr['bundle_id']:raise ValueError('incomplete_registered_input')
+    official=f.parquet(source,'coverage/official-identifiers.parquet');official_symbols=set(official.mapped_symbol.dropna())
+    panels={p['panel_id']:p for p in f.json(source,'coverage/panels.json')};baselines={};baseline_rows=[];endpoint_rows=[];reproductions=[];task_context=[]
+    (output/'baselines').mkdir();(output/'common-genes').mkdir()
+    def add_baseline(id,pid,context,genes,means,n,mapping,evidence):
+        symbols=safe_symbols(mapping)
+        if len(symbols)!=len(means) or len(genes)!=len(means):raise ValueError('baseline_gene_axis_mismatch')
+        status='completed' if n and np.isfinite(means).all() else 'not_estimable'
+        row={'baseline_id':id,'panel_id':pid,'source_context':context,'source_NTC_cells':n,'status':status,
+            'reason':None if status=='completed' else 'no_verified_source_NTC_mean','source_evidence':evidence,'baseline_file':'baselines/'+value_hash(id)+'.parquet',
+            'native_features':len(genes),'safe_canonical_genes':sum(pd.notna(x) for x in symbols),'independent_biological_replicates':None}
+        frame=pd.DataFrame({'source_gene':genes,'safe_canonical_symbol':symbols,'mean_logCP10K':means})
+        if id in baselines:
+            old=baselines[id]
+            same_axis=frame[['source_gene','safe_canonical_symbol']].equals(old['frame'][['source_gene','safe_canonical_symbol']])
+            same_mean=np.allclose(frame.mean_logCP10K,old['frame'].mean_logCP10K,rtol=0,atol=1e-12)
+            if id!='H1_shared_exact_NTC' or old['n']!=n or not same_axis or not same_mean:raise ValueError('unproven_or_changed_shared_baseline')
+            row['comparison_representative']=False;row['copy_proof']='source #19 exact-copy-proofs/H1-NTC-copy-groups.parquet'
+        else:
+            baselines[id]={'frame':frame,'n':n,'row':row};frame.to_parquet(output/row['baseline_file'],index=False);row['comparison_representative']=True
+        baseline_rows.append(row)
+    for c in er['contexts']:
+        folder=endpoint/c['context_id'];r=f.json(endpoint,c['context_id']+'/report.json')
+        with np.load(f.path(endpoint,c['context_id']+'/baseline.npz')) as b:
+            mapping=f.parquet(endpoint,c['context_id']+'/native-gene-mapping.parquet')
+            add_baseline(r['baseline_id'],r['panel_id'],r['source_context'],b['source_gene'].astype(str).tolist(),b['mean_logCP10K'],int(b['n_NTC']),mapping,
+                {'endpoint_context':c['context_id'],'baseline_sha256':hash_file(folder/'baseline.npz')})
+        d=f.parquet(endpoint,c['context_id']+'/task-partition-diagnostics.parquet');d['component_file']='endpoint/'+c['context_id']+'/native-gene-components.h5';endpoint_rows.append(d)
+        v=f.parquet(endpoint,c['context_id']+'/all-source-effect-reproduction.parquet');v['context_id']=c['context_id'];reproductions.append(v)
+        task_context.extend({'task_uid':uid,'context_id':c['context_id']} for uid in v.task_uid)
+    for context in ['A','B','C']:
+        pid='official:'+context;p=panels[pid];folder=BASE/'official-controls-20260919';name='baseline_'+context+'.parquet'
+        d=f.parquet(folder,name);mapping=f.parquet(source,'coverage/'+p['native_mapping_file'])
+        if d.source_gene.astype(str).tolist()!=mapping.source_gene.astype(str).tolist():raise ValueError('official_baseline_axis_mismatch')
+        add_baseline(pid,pid,context,d.source_gene.astype(str).tolist(),d.mean_logCP10K.to_numpy(),18400,mapping,{'source_file':str((folder/name).relative_to(ROOT)),'sha256':hash_file(folder/name)})
+    # H1 shared controls are a documented content+label copy; equal expression
+    # alone is never used to declare any other baselines the same observation.
+    proof=f.parquet(source,'exact-copy-proofs/H1-NTC-copy-groups.parquet')
+    if len(proof)!=38176 or not proof.records.eq(3).all() or not proof.classification.eq('content_and_label_identical').all():raise ValueError('H1_copy_proof_changed')
+    diagnostics=pd.concat(endpoint_rows,ignore_index=True);verify=pd.concat(reproductions,ignore_index=True)
+    tasks=f.parquet(comparisons,'selected-task-index.parquet')
+    if len(verify)!=37845 or verify.task_uid.duplicated().any() or set(verify.task_uid)!=set(tasks.task_uid):raise ValueError('endpoint_tasks_not_exact_primary_universe')
+    if len(diagnostics)!=2*len(tasks) or diagnostics[['task_uid','partition']].duplicated().any():raise ValueError('endpoint_partition_denominator_mismatch')
+    expected=tasks.set_index('task_uid').effect_status
+    if not verify.source_status.eq(verify.task_uid.map(expected)).all():raise ValueError('source_effect_status_changed')
+    reproduced=verify.source_mean_comparison_status.eq('completed')
+    if int(reproduced.sum())!=37633:raise ValueError('not_all_completed_effects_reproduced')
+    if (diagnostics.loc[diagnostics.status.eq('completed'),'maximum_identity_residual']>1e-9).any():raise ValueError('mixture_identity_residual_too_large')
+    rows=[]
+    for a,b in combinations(sorted(baselines),2):
+        da,db=baselines[a],baselines[b];af=da['frame'].dropna(subset=['safe_canonical_symbol']);bf=db['frame'].dropna(subset=['safe_canonical_symbol'])
+        joined=af.merge(bf,on='safe_canonical_symbol',suffixes=('_A','_B'),validate='one_to_one').sort_values('safe_canonical_symbol').reset_index(drop=True)
+        joined['in_official_canonical_axis']=joined.safe_canonical_symbol.isin(official_symbols);name='common-genes/'+value_hash([a,b])+'.parquet';joined.to_parquet(output/name,index=False)
+        row={'baseline_A':a,'baseline_B':b,'panel_A':da['row']['panel_id'],'panel_B':db['row']['panel_id'],
+            'NTC_A':da['n'],'NTC_B':db['n'],'common_gene_file':name,'independent_biological_replicates':None,'pure_measurement_noise':False}
+        for scope,mask in [('native',np.ones(len(joined),dtype=bool)),('official',joined.in_official_canonical_axis.to_numpy())]:
+            comparison=compare_vectors(joined.loc[mask,'mean_logCP10K_A'],joined.loc[mask,'mean_logCP10K_B'])
+            row.update({scope+'_'+k:v for k,v in comparison.items()})
+        row['status']=row['native_status'];rows.append(row)
+    diagnostics=diagnostics.merge(tasks[['task_uid','downstream_RMS','target_RNA_ratio','matched_target_cells']],on='task_uid',validate='many_to_one')
+    associations=[];summaries=[]
+    metrics=['inferred_partition_total_variation','target_unknown_partition_fraction','supported_target_fraction','NTC_common_state_support_fraction_target_batch_weighted',
+             'total_common_support_RMS_safe_downstream','composition_RMS_safe_downstream','within_RMS_safe_downstream','difference_from_full_matched_effect_RMS_safe_downstream','common_support_vs_full_effect_correlation']
+    for (context,partition),d in diagnostics.groupby(['context_id','partition'],sort=True):
+        summaries.append({'context_id':context,'panel_id':d.panel_id.iloc[0],'source_context':d.source_context.iloc[0],'partition':partition,'tasks':len(d),
+            'status_counts':d.status.value_counts().to_dict(),**{v:quantiles(d[v].dropna().to_numpy()) for v in metrics},**{v+'_missing':int(d[v].isna().sum()) for v in metrics}})
+        for x in ['target_RNA_ratio','matched_target_cells','target_unknown_partition_fraction','supported_target_fraction']:
+            for y in ['composition_RMS_safe_downstream','within_RMS_safe_downstream','difference_from_full_matched_effect_RMS_safe_downstream']:
+                associations.append(association(d,x,y,context+':'+partition))
+    pd.DataFrame(rows).to_parquet(output/'all-baseline-pairs.parquet',index=False,compression='zstd');write_json(output/'baseline-index.json',baseline_rows)
+    diagnostics.to_parquet(output/'all-endpoint-task-partitions.parquet',index=False,compression='zstd');verify.to_parquet(output/'all-source-effect-reproduction.parquet',index=False)
+    pd.DataFrame(associations).to_parquet(output/'endpoint-factor-associations.parquet',index=False);write_json(output/'endpoint-context-summaries.json',summaries)
+    # All other source panels have an explicit scope, rather than masquerading
+    # as zero baselines or shared NTCs (scBase is not a reference population).
+    covered={r['panel_id'] for r in baseline_rows};scope=[]
+    for p in panels.values():
+        scope.append({'panel_id':p['panel_id'],'source_family':p['family'],'status':'completed' if p['panel_id'] in covered else 'not_applicable',
+            'reason':None if p['panel_id'] in covered else 'outside_registered_primary_single_gene_CRISPRi_and_official_NTC_baseline_panel; consult source-specific control designs',
+            'human_RNA_applicable':p['human_RNA_applicable'],'confirmed_collection_copy':p['confirmed_collection_copy']})
+    pd.DataFrame(scope).to_parquet(output/'all-source-baseline-scope.parquet',index=False)
+    write_json(output/'consumed-inputs.json',f.used)
+    report={'status':'completed','phase':'registered_NTC_baselines_and_complete_endpoint_denominators','source_bundle_id':sr['bundle_id'],
+        'baseline_scope':'all primary identity-qualified CRISPRi source contexts plus official A/B/C; other modalities/designs in source-scoped appendices',
+        'baseline_context_rows':len(baseline_rows),'distinct_source_NTC_baselines':len(baselines),'baseline_pairs':len(rows),'baseline_status_counts':dict(Counter(r['status'] for r in rows)),
+        'exact_H1_baseline_copies_not_recounted':2,'endpoint_task_partitions':len(diagnostics),'endpoint_status_counts':diagnostics.status.value_counts().to_dict(),
+        'source_effects_reproduced':int(reproduced.sum()),'source_unestimable_tasks_retained':int((~reproduced).sum()),
+        'maximum_source_mean_reproduction_error':float(verify.maximum_absolute_mean_or_effect_error.max()),'maximum_mixture_identity_residual':float(diagnostics.maximum_identity_residual.max()),
+        'component_RMS_values_are_additive':False,'causal_mediation_or_variance_fraction':False,'endpoint_strata_available_before_measurement':False,
+        'source_input_mutations':0,'completed_at':datetime.now(timezone.utc).isoformat(),'code_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+        'code_sha256':hash_file(Path(__file__)),'uv_lock_sha256':hash_file(Path(__file__).with_name('uv.lock')),'reproduce':sys.argv}
+    report['artifacts']={str(p.relative_to(output)):hash_file(p) for p in sorted(output.rglob('*')) if p.is_file()};write_json(output/'report.json',report)
+    (output/'SHA256SUMS').write_text(''.join(hash_file(p)+'  '+str(p.relative_to(output))+'\n' for p in sorted(output.rglob('*')) if p.is_file() and p.name!='SHA256SUMS'))
+    print(json.dumps({k:v for k,v in report.items() if k!='artifacts'}),flush=True)
+
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__)
+    for k in ['source','endpoint','comparisons','output']:p.add_argument('--'+k,type=Path,required=True)
+    a=p.parse_args();run(a.source,a.endpoint,a.comparisons,a.output)
