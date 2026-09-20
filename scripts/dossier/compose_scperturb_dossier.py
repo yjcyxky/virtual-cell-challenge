@@ -51,6 +51,19 @@ def task_row(file,task):
         'gene_results':task.get('gene_results'),'external_response_evidence':task.get('external_response_evidence')}
 
 
+def original_resampling(file,report,output):
+    prefix='replogle' if file.startswith('Replogle') else 'nadig'
+    study='ReplogleWeissman2022_' if prefix=='replogle' else 'NadigOConner2024_'
+    context=file.removeprefix(study).removesuffix('.h5ad')
+    source=Path(__file__).resolve().parents[2]/'data/assessments'/(prefix+'-response-'+context+'-20260919')
+    original=json.loads((source/'report.json').read_text())
+    if original!=report:raise ValueError('original_resampling_report_changed')
+    item=next(a for a in report['artifacts'] if a['file']=='resampling.parquet')
+    checked_copy(source,output,[item]);draws=pd.read_parquet(source/'resampling.parquet')
+    return {'resampling_rows':len(draws),'null_reference_intersections':int(draws.null_reference_intersection.sum()),
+        'null_size_shortfall_rows':int((draws.null_target_cells_not_matched>0).sum())}
+
+
 def compose(cells,design,response,audit,adamson,human_reference,mouse_reference,evidence,output):
     c=json.loads((cells/'report.json').read_text());d=json.loads((design/'report.json').read_text());r=json.loads((response/'report.json').read_text())
     if any(x['status']!='completed' for x in [c,d,r]) or r['actual_RNA_files']!=51 or r['actual_RNA_records']!=8802191:raise ValueError('all_51_RNA_files_required')
@@ -108,7 +121,7 @@ def compose(cells,design,response,audit,adamson,human_reference,mouse_reference,
         rows=[task_row(file,t) for t in tasks];all_tasks.extend(rows)
         copied=record['deep_response'].get('execution_mode') is not None
         if copied:copied_records+=summary['cells']
-        deep_sampling=json.loads((response/name/'deep-response/original-response-report.json').read_text()) if copied else record['deep_response']
+        deep_sampling=original_resampling(file,json.loads((response/name/'deep-response/original-response-report.json').read_text()),output/'reused-original-resampling'/name) if copied else record['deep_response']
         for kind,values in [('condition_descriptions',record['description']),('reused_original_deep_responses' if copied else 'new_deep_responses',deep_sampling)]:
             for key in ['resampling_rows','null_reference_intersections','null_size_shortfall_rows']:resampling[kind][key]+=values.get(key,0)
             if values.get('null_reference_intersections',0):raise ValueError('reused_or_new_null_reference_overlap')
