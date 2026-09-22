@@ -13,6 +13,8 @@ sys.path.insert(0, str(ROOT / 'scripts/dossier'))
 import h5py
 import numpy as np
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 from profile_responses import write_json
 from rna import hash_file
 from estimators import classify, response_mean, choose_hyperparameters, ntc_distances, score, TEMPERATURES
@@ -43,7 +45,7 @@ def context_groups(reports):
     return dict(groups), other
 
 
-def load_group(collection, reports, supplemental=False):
+def load_group(collection, reports, supplemental=False, genetic=False):
     mappings, task_tables = [], []
     for r in reports:
         folder = collection / r['context_id']
@@ -53,6 +55,16 @@ def load_group(collection, reports, supplemental=False):
         task_tables.append(pd.read_parquet(folder / 'tasks.parquet'))
     genes = sorted(set.intersection(*(set(m) for m in mappings)))
     targets = sorted(set.union(*(set(t.canonical_target) for t in task_tables)))
+    target_scope = []
+    if genetic:
+        presence = defaultdict(set)
+        for r, tasks in zip(reports, task_tables):
+            for target in tasks.canonical_target:
+                presence[target].add(r['source_metadata']['cell_line'])
+        target_scope = [{'canonical_target': p, 'declared_backgrounds': len(presence[p]),
+                         'included': len(presence[p]) >= 2,
+                         'reason': None if len(presence[p]) >= 2 else 'declared_in_fewer_than_two_units'} for p in targets]
+        targets = [p for p in targets if len(presence[p]) >= 2]
     target_index = {p: i for i, p in enumerate(targets)}
     # Main groups have one source panel per biological background. Supplementary
     # cell-line fold identity groups K562 libraries and all H1 source splits.
@@ -80,6 +92,8 @@ def load_group(collection, reports, supplemental=False):
         local_available = np.zeros((len(targets), variants), bool)
         with h5py.File(folder / 'moments.h5') as hf:
             for p, group in tasks.groupby('canonical_target', sort=True):
+                if p not in target_index:
+                    continue
                 pi = target_index[p]
                 row_ids = group.index.to_numpy()
                 for row in row_ids:
@@ -88,11 +102,15 @@ def load_group(collection, reports, supplemental=False):
                     keep = [row for row in row_ids if records.loc[tasks.iloc[row].task_uid, order[v]] == 'completed']
                     if not keep:
                         continue
+                    if genetic and v > 0:
+                        full_keep = [row for row in row_ids if records.loc[tasks.iloc[row].task_uid, 'full'] == 'completed']
+                        if keep != full_keep:
+                            continue  # identical construct estimand in full and split variants
                     local_available[pi, v] = True
                     for key in arrays:
                         values = np.array([hf[key][row, v][indices] for row in keep])
                         local[key][pi, v] = values.mean(0)
-                        if supplemental and 'variance' in key and len(keep) > 1:
+                        if (supplemental or genetic) and 'variance' in key and len(keep) > 1:
                             local[key][pi, v] = np.nan  # no invented construct independence
                 for row in row_ids:
                     task_ledger.append({'task_uid': tasks.iloc[row].task_uid, 'canonical_target': p,
@@ -121,7 +139,7 @@ def load_group(collection, reports, supplemental=False):
         excluded[pi] |= np.array(genes) == p
     return {**arrays, 'control': control, 'control_var': control_var, 'available': available,
             'excluded': excluded, 'genes': genes, 'targets': targets, 'lines': lines,
-            'task_ledger': task_ledger}
+            'task_ledger': task_ledger, 'target_scope': target_scope, 'genetic': genetic}
 
 
 def responses(data, scale):
@@ -178,7 +196,9 @@ def quadrant_experiment(data, output):
                                      'near_zero': int((classification['activity'][valid] == 1).sum()),
                                      'near_zero_with_all_observed_means_zero': int(((classification['activity'] == 1) & all_observed_zero & valid).sum()),
                                      'active_anywhere': int((classification['activity'][valid] == 2).sum()),
-                                     'conserved_nonzero': int(classification['conserved_nonzero'][valid].sum())})
+                                     'conserved_nonzero': int(classification['conserved_nonzero'][valid].sum()),
+                                     'conserved_nonzero_with_any_zero_target_variance': int((classification['conserved_nonzero'].astype(bool) &
+                                         (data['target_variance_mean'][context_set, pi, v] == 0).any(0) & valid).sum())})
                 for seed_index, seed in enumerate(SEEDS):
                     for di, tolerance in enumerate(TOLERANCES):
                         concordance.append({'canonical_target': p, 'scale': scale, 'seed': seed, 'tolerance': tolerance,
@@ -208,8 +228,9 @@ def module_sets(genes):
     return modules
 
 
-def prediction_experiment(data, output, supplemental=False):
+def prediction_experiment(data, output, supplemental=False, minimum_training=2, genetic=False):
     metrics, exclusions, hyperparameters, region_metrics, module_metrics = [], [], [], [], []
+    module_writer = None
     modules = module_sets(data['genes'])
     write_json(output / 'module-membership.json', modules)
     distance = ntc_distances(data['control'][:, 0].astype(float))
@@ -223,15 +244,18 @@ def prediction_experiment(data, output, supplemental=False):
                 train = np.arange(len(data['lines'])) != held
                 train_lines = [c for c in data['lines'] if c != line]
                 assert line not in train_lines
-                eligible = available[held] & (available[train].sum(0) >= 2)
+                eligible = available[held] & (available[train].sum(0) >= minimum_training)
                 for pi, p in enumerate(data['targets']):
                     exclusions.append({'scale': scale, 'held_cell_line': line, 'canonical_target': p,
                                        'test_available': bool(available[held, pi]), 'training_contexts': int(available[train, pi].sum()),
                                        'eligible': bool(eligible[pi]), 'reason': None if eligible[pi] else
-                                       ('test_not_estimable' if not available[held, pi] else 'fewer_than_2_training_backgrounds')})
+                                       ('test_not_estimable' if not available[held, pi] else f'fewer_than_{minimum_training}_training_backgrounds')})
                 if not eligible.any() or len(data['genes']) < 100:
                     continue
-                lam, temp, tuning = choose_hyperparameters(response[train], available[train], data['control'][train, 0])
+                if train.sum() == 1:
+                    lam, temp, tuning = 1., .1, {'status': 'not_identifiable_one_training_background', 'selection': 'fixed_lambda_1'}
+                else:
+                    lam, temp, tuning = choose_hyperparameters(response[train], available[train], data['control'][train, 0])
                 hyperparameters.append({'scale': scale, 'held_cell_line': line, 'training_cell_lines': train_lines,
                                         'lambda': lam, 'temperature': str(temp), 'details': tuning,
                                         'test_response_used': False, 'test_target_count_used': False})
@@ -248,7 +272,7 @@ def prediction_experiment(data, output, supplemental=False):
                 wrong = np.full_like(shared, np.nan)
                 training_sum = np.nansum(response[train], axis=1)
                 training_count = np.isfinite(response[train]).sum(axis=1)
-                donors = np.flatnonzero(available[train].sum(0) >= 2)
+                donors = np.flatnonzero(available[train].sum(0) >= minimum_training)
                 donor_order = np.random.default_rng(20260921).permutation(donors)
                 donor_mapping = dict(zip(donor_order, np.roll(donor_order, -1)))
                 wrong_donor = {}
@@ -265,19 +289,25 @@ def prediction_experiment(data, output, supplemental=False):
                     wrong[pi] = shared[donor]
                     wrong_donor[pi] = data['targets'][donor]
                 models['perturbation_agnostic'], models['wrong_target'] = agnostic, wrong
+                if genetic:
+                    models['perturbation_agnostic_matched_shrink'] = lam * agnostic
+                    models['wrong_target_matched_shrink'] = lam * wrong
                 gate = lam * shared
                 classification_by_target = {}
                 for pi in np.flatnonzero(eligible):
                     training_contexts = np.flatnonzero(train & available[:, pi])
                     labels = classify(baseline[training_contexts, pi, 0], bv[training_contexts, pi, 0],
                                       delta[training_contexts, pi, 0], dv[training_contexts, pi, 0], .1)
-                    if supplemental:
+                    if supplemental or len(training_contexts) < 2:
                         # Aggregate constructs/sources do not supply independent
                         # variance; this sensitivity does not claim quadrant labels.
                         for key in ['quadrant', 'conserved_nonzero', 'activity']:
                             labels[key][:] = 0
+                    rejected = data['excluded'][pi].copy()
+                    if genetic:
+                        rejected |= (data['target_variance_mean'][training_contexts, pi, 0] == 0).any(0)
                     for key in ['baseline_state', 'response_state', 'quadrant', 'conserved_nonzero', 'activity']:
-                        labels[key][data['excluded'][pi]] = 0
+                        labels[key][rejected] = 0
                     shared_region = np.isin(labels['quadrant'], [1, 3]) & labels['conserved_nonzero']
                     context_region = np.isin(labels['quadrant'], [2, 4]) & (labels['activity'] == 2)
                     gate[pi, shared_region] = shared[pi, shared_region]
@@ -341,8 +371,18 @@ def prediction_experiment(data, output, supplemental=False):
                                                    'reference_parent': module['parent'], 'kind': module['kind'],
                                                    'genes': len(ids), 'truth': observed, 'prediction': predicted,
                                                    'squared_error': (observed - predicted) ** 2, 'zero_squared_error': observed ** 2})
+                if module_metrics:
+                    table = pa.Table.from_pandas(pd.DataFrame(module_metrics), preserve_index=False)
+                    if module_writer is None:
+                        module_writer = pq.ParquetWriter(output / 'module-metrics.parquet', table.schema, compression='zstd')
+                    module_writer.write_table(table)
+                    module_metrics.clear()
                 print(json.dumps({'fold': line, 'scale': scale, 'targets': int(eligible.sum()), 'lambda': lam}), flush=True)
-    for name, rows in [('metrics', metrics), ('fold-eligibility', exclusions), ('region-metrics', region_metrics), ('module-metrics', module_metrics)]:
+    if module_writer is not None:
+        module_writer.close()
+    else:
+        pd.DataFrame().to_parquet(output / 'module-metrics.parquet', index=False)
+    for name, rows in [('metrics', metrics), ('fold-eligibility', exclusions), ('region-metrics', region_metrics)]:
         pd.DataFrame(rows).to_parquet(output / (name + '.parquet'), index=False, compression='zstd')
     write_json(output / 'hyperparameters.json', hyperparameters)
 

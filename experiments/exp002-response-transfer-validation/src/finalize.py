@@ -22,7 +22,7 @@ def run(run_id):
     assert report['status'] == 'completed'
     assert json.loads((output / 'audit/report.json').read_text())['all_collection_artifact_hashes_verified']
     groups = list((output / 'evaluation').glob('*/report.json'))
-    assert len(groups) == 15
+    assert len(groups) == (9 if report.get('scope') == 'genetic_only' else 15)
     for path in groups:
         group = json.loads(path.read_text())
         assert group['status'] == 'completed'
@@ -31,7 +31,7 @@ def run(run_id):
     runtime = {'python': sys.version, 'platform': platform.platform(),
                'packages': {p: importlib.metadata.version(p) for p in ['numpy', 'scipy', 'pandas', 'h5py', 'pyarrow', 'wandb']},
                'finalizer_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-               'issue': 'https://github.com/yjcyxky/virtual-cell-challenge/issues/28'}
+               'issue': report['issue']}
     write_json(output / 'runtime.json', runtime)
     write_json(output / 'artifact-schema.json', {
         'measurement_scale': 'mean of per-cell log1p(count / total_native_counts * 10000)',
@@ -65,11 +65,14 @@ def run(run_id):
             'random_membership': 'use stored random candidate order, remove common evaluation exclusions, take prefix equal to actual reference set size',
             'relative_improvement': '1 - balanced mean squared error / balanced zero-response squared error',
             'random_quantile_intervals': 'variation over 20 random gene sets, not biological confidence intervals'},
+        'scope': report.get('scope', 'original'),
+        'control_role': 'For genetic_only, is_NTC is a storage field: selected Cas9 uses intergenic cutting controls; consult source_metadata.control_role.',
+        'genetic_gate': 'training target variance zero is rejected; one donor disables tuning and routing; construct aggregate variance unresolved stays unknown',
         'all_inferred_classes_are_ground_truth': False})
     # Run tracking is linked in tracking.json. Do not ship W&B's mutable symlinks,
     # transport cache, credentials, or duplicate latest-run traversal.
     sources = [p for p in output.iterdir() if p.is_file() and p.suffix in ['.json', '.html', '.parquet', '.yaml', '.log']]
-    for directory in ['collection', 'evaluation', 'audit', 'posthoc-zero-variance']:
+    for directory in ['collection', 'evaluation', 'audit', 'posthoc-zero-variance', 'scope']:
         sources.extend(p for p in (output / directory).rglob('*') if p.is_file())
     bundle = output / 'publication'
     bundle.mkdir(exist_ok=False)
@@ -89,7 +92,7 @@ def run(run_id):
     write_json(reproduction / 'entry.json', {
         'repository': 'https://github.com/yjcyxky/virtual-cell-challenge',
         'commit': runtime['finalizer_commit'],
-        'command': 'experiments/exp002-response-transfer-validation/reproduce.sh --run-id independent-reproduction',
+        'command': 'experiments/exp002-response-transfer-validation/reproduce.sh --run-id independent-reproduction' + (' --scope genetic_only' if report.get('scope') == 'genetic_only' else ''),
         'requires_frozen_source_data': True,
         'frozen_collection_identity': json.loads((output / 'collection/identity.json').read_text()),
         'source_count_matrices_are_not_in_release': True})

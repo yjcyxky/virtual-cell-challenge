@@ -130,5 +130,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--attach-collector', type=int)
+    parser.add_argument('--scope', choices=['original', 'genetic_only'], default='original')
     args = parser.parse_args()
-    run(args.run_id, args.attach_collector)
+    if args.scope == 'genetic_only':
+        from genetic import run as genetic_run
+        genetic_run(args.run_id)
+    else:
+        run(args.run_id, args.attach_collector)

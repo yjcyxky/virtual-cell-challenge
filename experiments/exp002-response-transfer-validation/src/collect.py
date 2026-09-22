@@ -163,6 +163,8 @@ def collect_context(context, output):
                              (tm[0] - matched_mean[0], old.effect_all_matched_cells.to_numpy())])
                 if not np.isfinite(error) or error > 2e-6:
                     raise ValueError(f'source mean reconstruction failed {uid} {error}')
+            elif task['effect_status'] == 'new_estimand':
+                assert n[0] > 0
             elif n[0]:
                 raise ValueError('unexpected newly estimable source task')
             excluded = source_target | (safe == task['canonical_target'])

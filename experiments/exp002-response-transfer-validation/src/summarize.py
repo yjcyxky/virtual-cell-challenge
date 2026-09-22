@@ -29,7 +29,8 @@ def quantiles(values):
 
 def balanced_metrics(frame, bootstraps=1000):
     """Equal target/background observations within condition, then equal conditions."""
-    groups = frame.groupby('group')[['MSE', 'zero_MSE']].mean()
+    group_key = 'balance_group' if 'balance_group' in frame else 'group'
+    groups = frame.groupby(group_key)[['MSE', 'zero_MSE']].mean()
     mse, zero = groups.mean()
     result = {'target_backgrounds': len(frame), 'targets': frame.canonical_target.nunique(), 'conditions': len(groups),
               'balanced_MSE': float(mse), 'balanced_zero_MSE': float(zero),
@@ -37,13 +38,13 @@ def balanced_metrics(frame, bootstraps=1000):
               'fraction_target_backgrounds_beating_zero': float((frame.MSE < frame.zero_MSE).mean()),
               'median_correlation': float(frame.correlation.median()) if frame.correlation.notna().any() else None}
     if 'MAE' in frame:
-        result['balanced_MAE'] = float(frame.groupby('group').MAE.mean().mean())
+        result['balanced_MAE'] = float(frame.groupby(group_key).MAE.mean().mean())
     if 'zero_MAE' in frame:
-        result['balanced_zero_MAE'] = float(frame.groupby('group').zero_MAE.mean().mean())
+        result['balanced_zero_MAE'] = float(frame.groupby(group_key).zero_MAE.mean().mean())
         result['relative_MAE_improvement'] = 1 - result['balanced_MAE'] / result['balanced_zero_MAE'] if result['balanced_zero_MAE'] else None
     if bootstraps:
         ids = sorted(frame.canonical_target.unique())
-        grouped = frame.groupby(['canonical_target', 'group']).agg(MSE=('MSE', 'sum'), zero_MSE=('zero_MSE', 'sum'), n=('MSE', 'size'))
+        grouped = frame.groupby(['canonical_target', group_key]).agg(MSE=('MSE', 'sum'), zero_MSE=('zero_MSE', 'sum'), n=('MSE', 'size'))
         arrays = [grouped[key].unstack(fill_value=0).reindex(ids).to_numpy() for key in ['MSE', 'zero_MSE', 'n']]
         rng = np.random.default_rng(20260921)
         weights = rng.multinomial(len(ids), np.full(len(ids), 1 / len(ids)), size=bootstraps)
@@ -99,20 +100,25 @@ def render(report, output):
                '<a href="prediction-summary.parquet">预测汇总</a>；<a href="classification-summary.parquet">分类汇总</a>。' \
                '逐任务预测、基因轴、模块成员、分类及细胞划分位于 evaluation/ 与 collection/。' \
                '复现入口见代码提交 <code>' + report['code_commit'] + '</code> 的 experiments/exp002-response-transfer-validation/reproduce.sh。</p></html>'
+    content = content.replace('https://github.com/yjcyxky/virtual-cell-challenge/issues/28', report['issue']).replace('GitHub Issue #28', 'GitHub Issue #' + report['issue'].rsplit('/', 1)[1])
+    if 'cross_background_geometry' in report:
+        content = content.replace('<h2>绝对表达与扰动效应</h2>', '<h2>同靶点跨背景几何（每组独立）</h2>' + table(report['cross_background_geometry'], ['family', 'scale', 'metric', 'n', 'median', 'q25', 'q75']) + '<h2>绝对表达与扰动效应</h2>')
     (output / 'report.html').write_text(content)
 
 
-def run(output):
+def run(output, genetic=False):
     collection = json.loads((output / 'collection/report.json').read_text())
     audit = json.loads((output / 'audit/report.json').read_text())
     assert audit['status'] == collection['status'] == 'completed'
     groups = sorted((output / 'evaluation').glob('*/report.json'))
-    assert len(groups) == 15, 'all 14 main groups and cross-study sensitivity required'
+    assert len(groups) == (9 if genetic else 15), 'registered groups incomplete'
     metrics, classifications, agreements, modules, region_frames = [], [], [], [], []
     for path in groups:
         r = json.loads(path.read_text())
         assert r['status'] == 'completed'
         group = r['group']
+        if r.get('applicability', 'estimated') != 'estimated':
+            continue
         for name, destination in [('metrics', metrics), ('classification-counts', classifications), ('split-classification-agreement', agreements), ('region-metrics', region_frames)]:
             p = path.parent / (name + '.parquet')
             if p.exists():
@@ -120,12 +126,14 @@ def run(output):
                 if len(frame):
                     frame['group'], frame['family'] = group, family(group)
                     destination.append(frame)
-        module = pd.read_parquet(path.parent / 'module-metrics.parquet', columns=['scale', 'model', 'module', 'reference_parent', 'kind', 'squared_error', 'zero_squared_error'])
-        module = module.groupby(['scale', 'model', 'module', 'reference_parent', 'kind']).agg(
+        module = pd.read_parquet(path.parent / 'module-metrics.parquet', columns=['scale', 'model', 'module', 'reference_parent', 'kind', 'squared_error', 'zero_squared_error'] + (['held_cell_line'] if genetic else []))
+        module = module.groupby(['scale', 'model', 'module', 'reference_parent', 'kind'] + (['held_cell_line'] if genetic else [])).agg(
             MSE=('squared_error', 'mean'), zero_MSE=('zero_squared_error', 'mean'), n=('squared_error', 'size')).reset_index()
         module['group'], module['family'] = group, family(group)
         modules.append(module)
     metrics = pd.concat(metrics, ignore_index=True)
+    if genetic:
+        metrics['balance_group'] = metrics.group + '::' + metrics.held_cell_line
     metric_keys = ['family', 'group', 'held_cell_line', 'scale', 'canonical_target']
     zero_mae = metrics.loc[metrics.model.eq('zero'), metric_keys + ['MAE']].rename(columns={'MAE': 'zero_MAE'})
     metrics = metrics.merge(zero_mae, on=metric_keys, validate='many_to_one')
@@ -142,6 +150,8 @@ def run(output):
     comparisons = [('shared', 'wrong_target'), ('shared', 'perturbation_agnostic'),
                    ('shared_shrunk', 'zero'), ('quadrant_gated', 'shared_shrunk'),
                    ('NTC_weighted_fixed_0.1', 'shared')]
+    if genetic:
+        comparisons += [('shared_shrunk', 'perturbation_agnostic_matched_shrink'), ('shared_shrunk', 'wrong_target_matched_shrink')]
     pair_keys = ['group', 'canonical_target', 'held_cell_line']
     for (fam, scale), frame in metrics.groupby(['family', 'scale']):
         for model, comparator in comparisons:
@@ -174,6 +184,7 @@ def run(output):
                        'quadrant_fractions': {str(k): float(frame[f'quadrant_{k}'].sum() / total) for k in range(5)},
                        'near_zero_fraction': float(frame.near_zero.sum() / total),
                        'conserved_nonzero_fraction': float(frame.conserved_nonzero.sum() / total),
+                       'conserved_nonzero_with_any_zero_target_variance': int(frame.conserved_nonzero_with_any_zero_target_variance.sum()) if 'conserved_nonzero_with_any_zero_target_variance' in frame else None,
                        'zero_observed_share_of_near_zero': float(frame.near_zero_with_all_observed_means_zero.sum() / frame.near_zero.sum()) if frame.near_zero.sum() else None})
     pd.DataFrame(counts).to_parquet(output / 'classification-summary.parquet', index=False)
     agreement_rows = []
@@ -206,6 +217,8 @@ def run(output):
                                'random_sets': len(random)})
     pd.DataFrame(module_summary).to_parquet(output / 'module-summary.parquet', index=False)
     regions = pd.concat(region_frames, ignore_index=True)
+    if genetic:
+        regions['balance_group'] = regions.group + '::' + regions.held_cell_line
     regions.to_parquet(output / 'all-training-region-metrics.parquet', index=False)
     region_summary = []
     for keys, frame in regions.groupby(['family', 'scale', 'model', 'training_region']):
@@ -214,7 +227,7 @@ def run(output):
     panel_family = {}
     for c in collection['contexts']:
         pid = c['panel_id']
-        panel_family[pid] = 'Jiang' if pid.startswith('Jiang') else 'GxE2' if pid.startswith('GxE2') else pid.split(':')[0]
+        panel_family[pid] = pid if genetic else ('Jiang' if pid.startswith('Jiang') else 'GxE2' if pid.startswith('GxE2') else pid.split(':')[0])
     diagnostics = pd.read_parquet(output / 'audit/all-task-diagnostics.parquet')
     diagnostics['family'] = diagnostics.panel_id.map(panel_family)
     geometry_rows, split_rows = [], []
@@ -243,6 +256,18 @@ def run(output):
         '跨研究合并构件/来源没有可识别的独立重复方差，所以不在该敏感性中宣称可靠象限标签。',
         '固定 RNA 模块不是机制真值；随机集合仅大小匹配，没有同时匹配表达量或基因间协方差。',
         '共享均值或当前路由失败只能否定被检验的实现，不能证明所有模型无法迁移；官方 A/B/C 没有公开扰动真值，未编造其响应验证。']
+    if genetic:
+        limitations = limitations[:9] + [
+            '本轮只包含显式核查的 CRISPRi 与 Cas9 无研究性药物/额外刺激处理臂；每个研究、时间和干预机制分别报告，不能泛化至全部公开敲除来源。',
+            'CRISPRi 不等于 Cas9 完全敲除；逐细胞有效干预没有作为真值验证。Cas9 只用指定基因间区切割对照，旧字段 is_NTC 是存储兼容命名，不改变对照角色。',
+            '8 个 CRISPRi 面板充分统计量和细胞拆分来自固定 run 20260922-b，新队列、拟合和预测重新执行；3 个 Cas9 来源从固定计数重新计算。',
+            'H1 来源划分共用一个背景和同一组 NTC；K562 两采样方案分别进入跨背景实验，时间组只衡量实验/文库/时间差异。',
+            'CRISPRi 同靶点构件等权；合并构件没有可识别的区间方差则分类 unknown。Cas9 同靶点细胞合并，不把 guide 当独立生物重复。',
+            '训练目标方差为零的读出不进入象限路由；原始操作化标签数量另存，不是生物学机制真值。二背景配对仅一个训练背景，收缩固定 1，路由退回共享响应。',
+            '每组内先对靶点等权、再对留出背景等权；靶点 bootstrap 1,000 次仅为描述性区间，不能覆盖来源与培养混杂。',
+            '固定模块不是机制真值；随机集合只匹配大小，未匹配表达量或协方差；不按测试误差选择模块。',
+            '源原生轴先以至少两背景声明靶点限定评估范围；单来源靶点仍保留来源内部几何和拆分诊断。',
+            '实际留出数据此前公开且已被探索，本次检验特定共享/路由实现，不能证明所有模型无法迁移；官方未公开目标背景响应不作为已验证结论。']
     summary = {'status': 'completed', 'bundle_id': 'response-transfer-validation-' + uuid.uuid4().hex,
                'experiment_id': 'exp002-response-transfer-validation', 'run_id': output.name,
                'code_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -252,6 +277,19 @@ def run(output):
                'classification_summary': counts, 'classification_agreement': agreement_rows,
                'module_summary': module_summary, 'training_region_summary': region_summary, 'limitations': limitations,
                'issue': 'https://github.com/yjcyxky/virtual-cell-challenge/issues/28'}
+    if genetic:
+        summary['issue'] = 'https://github.com/yjcyxky/virtual-cell-challenge/issues/29'
+        summary['scope'] = 'genetic_only'
+        summary['group_applicability'] = [json.loads(p.read_text()) for p in groups]
+        cross = []
+        for path in groups:
+            frame = pd.read_parquet(path.parent / 'cross-background-geometry.parquet')
+            if not len(frame):
+                continue
+            for (scale, metric), part in frame.groupby(['scale', 'metric']):
+                cross.append({'family': path.parent.name, 'scale': scale, 'metric': metric, **quantiles(part.correlation)})
+        summary['cross_background_geometry'] = cross
+        pd.DataFrame(cross).to_parquet(output / 'cross-background-geometry-summary.parquet', index=False)
     write_json(output / 'report.json', summary)
     render(summary, output)
     print(json.dumps({'status': 'completed', 'bundle_id': summary['bundle_id'], 'predictions': len(metrics)}), flush=True)
@@ -280,5 +318,9 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--attach-posthoc', action='store_true')
+    p.add_argument('--genetic', action='store_true')
     args = p.parse_args()
-    (attach_posthoc if args.attach_posthoc else run)(args.output.resolve())
+    if args.attach_posthoc:
+        attach_posthoc(args.output.resolve())
+    else:
+        run(args.output.resolve(), args.genetic)
