@@ -81,19 +81,20 @@ def collect_context(context, output):
     if cells.source_batch.isna().any():
         raise ValueError('missing technical stratum')
     batches, names = pd.factorize(cells.source_batch, sort=True)
+    batch_labels = cells.source_batch.to_numpy()
+    record_ids = cells.record_id.to_numpy()
+    barcodes = cells.source_barcode.to_numpy()
     ctrl_ids = np.flatnonzero(control)
     ctrl_n = np.bincount(batches[ctrl_ids], minlength=len(names))
     # Shared H1 controls have identical barcode identities across source copies.
     half = np.full((3, len(cells)), -1, dtype=np.int8)
     for si, seed in enumerate(SEEDS):
-        half[si, ctrl_ids] = split_cells(cells.source_barcode.to_numpy()[ctrl_ids],
-                                        cells.source_batch.to_numpy()[ctrl_ids], context['baseline_id'], seed)
+        half[si, ctrl_ids] = split_cells(barcodes[ctrl_ids], batch_labels[ctrl_ids], context['baseline_id'], seed)
     task_groups = {key: np.asarray(ids, dtype=int) for key, ids in
                    pd.Series(labels).groupby(pd.Series(labels), dropna=True, sort=False).groups.items()}
     for uid, ids in task_groups.items():
         for si, seed in enumerate(SEEDS):
-            half[si, ids] = split_cells(cells.record_id.to_numpy()[ids],
-                                       cells.source_batch.to_numpy()[ids], uid, seed)
+            half[si, ids] = split_cells(record_ids[ids], batch_labels[ids], uid, seed)
     sidecar = cells[['record_id', 'input_sha256', 'row_index', 'source_barcode', 'source_batch']].copy()
     sidecar['task_uid'], sidecar['is_NTC'] = labels, control
     sidecar['baseline_id'] = context['baseline_id']
