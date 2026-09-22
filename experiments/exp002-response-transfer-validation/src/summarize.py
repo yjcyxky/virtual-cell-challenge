@@ -120,6 +120,23 @@ def run(output):
         for (fam, scale, model), frame in selected.groupby(['family', 'scale', 'model']):
             predictions.append({'family': fam, 'scale': scale, 'model': model, 'support_subset': subset, **balanced_metrics(frame)})
     pd.DataFrame(predictions).to_parquet(output / 'prediction-summary.parquet', index=False)
+    paired = []
+    comparisons = [('shared', 'wrong_target'), ('shared', 'perturbation_agnostic'),
+                   ('shared_shrunk', 'zero'), ('quadrant_gated', 'shared_shrunk'),
+                   ('NTC_weighted_fixed_0.1', 'shared')]
+    pair_keys = ['group', 'canonical_target', 'held_cell_line']
+    for (fam, scale), frame in metrics.groupby(['family', 'scale']):
+        for model, comparator in comparisons:
+            selected = frame.loc[frame.model.eq(model)].copy()
+            reference = frame.loc[frame.model.eq(comparator), pair_keys + ['MSE']].rename(columns={'MSE': 'reference_MSE'})
+            selected = selected.merge(reference, on=pair_keys, validate='one_to_one')
+            selected['zero_MSE'] = selected.reference_MSE
+            result = balanced_metrics(selected)
+            result['relative_MSE_improvement_vs_comparator'] = result.pop('relative_MSE_improvement')
+            result['balanced_comparator_MSE'] = result.pop('balanced_zero_MSE')
+            result['fraction_beating_comparator'] = result.pop('fraction_target_backgrounds_beating_zero')
+            paired.append({'family': fam, 'scale': scale, 'model': model, 'comparator': comparator, **result})
+    pd.DataFrame(paired).to_parquet(output / 'paired-model-comparisons.parquet', index=False)
     by_background = []
     for keys, frame in metrics.groupby(['family', 'group', 'held_cell_line', 'scale', 'model']):
         by_background.append(dict(zip(['family', 'group', 'held_cell_line', 'scale', 'model'], keys)) | balanced_metrics(frame, 0))
@@ -207,7 +224,8 @@ def run(output):
                'experiment_id': 'exp002-response-transfer-validation', 'run_id': output.name,
                'code_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                'completed_at': datetime.now(timezone.utc).isoformat(), 'audit': audit,
-               'prediction_summary': predictions, 'geometry_summary': geometry_rows, 'split_response_summary': split_rows,
+               'prediction_summary': predictions, 'paired_model_comparisons': paired,
+               'geometry_summary': geometry_rows, 'split_response_summary': split_rows,
                'classification_summary': counts, 'classification_agreement': agreement_rows,
                'module_summary': module_summary, 'training_region_summary': region_summary, 'limitations': limitations,
                'issue': 'https://github.com/yjcyxky/virtual-cell-challenge/issues/28'}
