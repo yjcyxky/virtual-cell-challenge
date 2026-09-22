@@ -36,6 +36,11 @@ def balanced_metrics(frame, bootstraps=1000):
               'relative_MSE_improvement': float(1 - mse / zero) if zero else None,
               'fraction_target_backgrounds_beating_zero': float((frame.MSE < frame.zero_MSE).mean()),
               'median_correlation': float(frame.correlation.median()) if frame.correlation.notna().any() else None}
+    if 'MAE' in frame:
+        result['balanced_MAE'] = float(frame.groupby('group').MAE.mean().mean())
+    if 'zero_MAE' in frame:
+        result['balanced_zero_MAE'] = float(frame.groupby('group').zero_MAE.mean().mean())
+        result['relative_MAE_improvement'] = 1 - result['balanced_MAE'] / result['balanced_zero_MAE'] if result['balanced_zero_MAE'] else None
     if bootstraps:
         ids = sorted(frame.canonical_target.unique())
         grouped = frame.groupby(['canonical_target', 'group']).agg(MSE=('MSE', 'sum'), zero_MSE=('zero_MSE', 'sum'), n=('MSE', 'size'))
@@ -113,6 +118,9 @@ def run(output):
         module['group'], module['family'] = group, family(group)
         modules.append(module)
     metrics = pd.concat(metrics, ignore_index=True)
+    metric_keys = ['family', 'group', 'held_cell_line', 'scale', 'canonical_target']
+    zero_mae = metrics.loc[metrics.model.eq('zero'), metric_keys + ['MAE']].rename(columns={'MAE': 'zero_MAE'})
+    metrics = metrics.merge(zero_mae, on=metric_keys, validate='many_to_one')
     metrics.to_parquet(output / 'all-prediction-metrics.parquet', index=False)
     predictions = []
     for subset, selected in [('all', metrics), ('all_test_and_training_halves_supported', metrics.loc[
@@ -128,13 +136,16 @@ def run(output):
     for (fam, scale), frame in metrics.groupby(['family', 'scale']):
         for model, comparator in comparisons:
             selected = frame.loc[frame.model.eq(model)].copy()
-            reference = frame.loc[frame.model.eq(comparator), pair_keys + ['MSE']].rename(columns={'MSE': 'reference_MSE'})
+            reference = frame.loc[frame.model.eq(comparator), pair_keys + ['MSE', 'MAE']].rename(columns={'MSE': 'reference_MSE', 'MAE': 'reference_MAE'})
             selected = selected.merge(reference, on=pair_keys, validate='one_to_one')
             selected['zero_MSE'] = selected.reference_MSE
+            selected['zero_MAE'] = selected.reference_MAE
             result = balanced_metrics(selected)
             result['relative_MSE_improvement_vs_comparator'] = result.pop('relative_MSE_improvement')
             result['balanced_comparator_MSE'] = result.pop('balanced_zero_MSE')
             result['fraction_beating_comparator'] = result.pop('fraction_target_backgrounds_beating_zero')
+            result['relative_MAE_improvement_vs_comparator'] = result.pop('relative_MAE_improvement')
+            result['balanced_comparator_MAE'] = result.pop('balanced_zero_MAE')
             paired.append({'family': fam, 'scale': scale, 'model': model, 'comparator': comparator, **result})
     pd.DataFrame(paired).to_parquet(output / 'paired-model-comparisons.parquet', index=False)
     by_background = []
