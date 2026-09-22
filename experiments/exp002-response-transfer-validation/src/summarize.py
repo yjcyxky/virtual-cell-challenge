@@ -68,6 +68,7 @@ def render(report, output):
         return '<div class="scroll"><table><thead><tr>' + ''.join('<th>' + cell(c) + '</th>' for c in columns) + \
             '</tr></thead><tbody>' + ''.join('<tr>' + ''.join('<td>' + cell(row.get(c)) + '</td>' for c in columns) + '</tr>' for row in rows) + '</tbody></table></div>'
     primary = [r for r in report['prediction_summary'] if r['scale'] == 'control_only' and r['support_subset'] == 'all' and
+               not (r['family'] == 'cross_study_sensitivity' and r['model'] == 'quadrant_gated') and
                r['model'] in ['zero', 'shared', 'shared_shrunk', 'NTC_weighted_fixed_0.1', 'quadrant_gated', 'wrong_target', 'perturbation_agnostic']]
     content = '<!doctype html><html lang="zh"><meta charset="utf-8"><title>共享扰动响应：实验检验</title><style>' \
         'body{font:16px system-ui;line-height:1.6;max-width:1250px;margin:32px auto;padding:0 24px;color:#182330}' \
@@ -124,9 +125,11 @@ def run(output):
     metrics.to_parquet(output / 'all-prediction-metrics.parquet', index=False)
     predictions = []
     for subset, selected in [('all', metrics), ('all_test_and_training_halves_supported', metrics.loc[
-            metrics.all_6_test_halves_supported & metrics.all_training_6_halves_supported & ~metrics.family.eq('cross_study_sensitivity')])]:
+            metrics.all_6_test_halves_supported & metrics.all_training_6_halves_supported])]:
         for (fam, scale, model), frame in selected.groupby(['family', 'scale', 'model']):
-            predictions.append({'family': fam, 'scale': scale, 'model': model, 'support_subset': subset, **balanced_metrics(frame)})
+            predictions.append({'family': fam, 'scale': scale, 'model': model, 'support_subset': subset,
+                                'gate_status': 'disabled_fallback_to_shrunk_mean' if fam == 'cross_study_sensitivity' and model == 'quadrant_gated' else 'as_registered',
+                                **balanced_metrics(frame)})
     pd.DataFrame(predictions).to_parquet(output / 'prediction-summary.parquet', index=False)
     paired = []
     comparisons = [('shared', 'wrong_target'), ('shared', 'perturbation_agnostic'),
@@ -135,6 +138,8 @@ def run(output):
     pair_keys = ['group', 'canonical_target', 'held_cell_line']
     for (fam, scale), frame in metrics.groupby(['family', 'scale']):
         for model, comparator in comparisons:
+            if fam == 'cross_study_sensitivity' and model == 'quadrant_gated':
+                continue
             selected = frame.loc[frame.model.eq(model)].copy()
             reference = frame.loc[frame.model.eq(comparator), pair_keys + ['MSE', 'MAE']].rename(columns={'MSE': 'reference_MSE', 'MAE': 'reference_MAE'})
             selected = selected.merge(reference, on=pair_keys, validate='one_to_one')
