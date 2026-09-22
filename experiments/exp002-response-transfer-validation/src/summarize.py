@@ -77,7 +77,7 @@ def render(report, output):
         '<p>计划、判定和结论：<a href="https://github.com/yjcyxky/virtual-cell-challenge/issues/28">GitHub Issue #28</a>。' \
         '本页由固定机器结果生成；回顾性留出实验，不是新培养复现。正值表示优于零响应，负值表示更差。</p>'
     content += '<h2>留出细胞背景：主要结果</h2>' + table(primary, ['family', 'model', 'target_backgrounds', 'targets',
-                   'relative_MSE_improvement', 'descriptive_target_bootstrap_95_interval', 'fraction_target_backgrounds_beating_zero', 'median_correlation'])
+                   'relative_MSE_improvement', 'relative_MAE_improvement', 'descriptive_target_bootstrap_95_interval', 'fraction_target_backgrounds_beating_zero', 'median_correlation'])
     content += '<h2>绝对表达与扰动效应</h2>' + table(report['geometry_summary'], ['family', 'scale', 'metric', 'n', 'median', 'q25', 'q75'])
     content += '<h2>独立细胞与 NTC 半样本</h2>' + table(report['split_response_summary'], ['family', 'scale', 'seed', 'registered_tasks', 'completed', 'correlation'])
     content += '<h2>四象限与非零信号</h2>' + table([r for r in report['classification_summary'] if r['variant'] == 0 and r['tolerance'] == .1],
