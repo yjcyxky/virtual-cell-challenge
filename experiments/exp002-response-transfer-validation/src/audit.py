@@ -9,12 +9,71 @@ sys.path.insert(0, str(ROOT / 'scripts/dossier'))
 import h5py
 import numpy as np
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 from heterogeneity import compare_vectors
 from profile_responses import write_json
 from rna import hash_file
 
 FROZEN = ROOT / 'data/assessments/response-heterogeneity-dossier-20260919'
 SEEDS = [20260921, 20260922, 20260923]
+
+
+def audit_supplemental_support(collection, output, support):
+    """Replace the full-only loader's provisional flags with actual six-half support.
+
+    Predictions and numerical errors are untouched. This derives metadata from
+    registered cell split records, including every contributing construct/source.
+    """
+    folder = output.parent / 'evaluation/cross_study_sensitivity'
+    report_path = folder / 'report.json'
+    report = json.loads(report_path.read_text())
+    ledger = pd.read_parquet(folder / 'task-ledger.parquet')
+    eligible = ledger.loc[ledger.full_estimable, ['task_uid', 'canonical_target', 'cell_line']]
+    half = support.loc[~support.variant.eq('full')].assign(supported=lambda d: d.status.eq('completed'))
+    flags = half.groupby('task_uid').supported.all().rename('all_halves')
+    assert half.groupby('task_uid').size().eq(6).all()
+    contributors = eligible.join(flags, on='task_uid', validate='one_to_one')
+    assert contributors.all_halves.notna().all()
+    by_line = contributors.groupby(['cell_line', 'canonical_target']).all_halves.all()
+    test_lookup = by_line.to_dict()
+    train_lookup = {}
+    for (line, target), _ in by_line.items():
+        others = by_line.xs(target, level='canonical_target').drop(line)
+        train_lookup[line, target] = bool(len(others) >= 2 and others.all())
+    changes = {}
+    for name in ['metrics.parquet', 'module-metrics.parquet']:
+        path = folder / name
+        original = hash_file(path)
+        assert original == report['artifacts'][name]
+        parquet = pq.ParquetFile(path)
+        temporary = path.with_suffix('.support-audit.partial')
+        changed = 0
+        rows = 0
+        with pq.ParquetWriter(temporary, parquet.schema_arrow, compression='zstd') as writer:
+            for batch in parquet.iter_batches(batch_size=262144):
+                table = pa.Table.from_batches([batch])
+                keys = list(zip(table['held_cell_line'].to_pylist(), table['canonical_target'].to_pylist()))
+                for column, lookup in [('all_6_test_halves_supported', test_lookup),
+                                       ('all_training_6_halves_supported', train_lookup)]:
+                    values = np.array([lookup[key] for key in keys], dtype=bool)
+                    changed += int(np.count_nonzero(table[column].to_numpy() != values))
+                    table = table.set_column(table.schema.get_field_index(column), column, pa.array(values))
+                writer.write_table(table)
+                rows += len(table)
+        temporary.replace(path)
+        changes[name] = {'input_sha256': original, 'output_sha256': hash_file(path),
+                         'rows': rows, 'changed_boolean_entries': changed}
+        report['artifacts'][name] = changes[name]['output_sha256']
+    metadata = {'status': 'completed', 'reason': 'full-only supplemental loading cannot establish six-half support',
+                'definition': 'all full-estimable contributing constructs/source panels have all six half tasks supported',
+                'code_sha256': hash_file(Path(__file__)), 'changes': changes,
+                'prediction_and_error_values_changed': False, 'support_flags_used_for_model_selection': False}
+    write_json(folder / 'support-metadata-audit.json', metadata)
+    report['artifacts']['support-metadata-audit.json'] = hash_file(folder / 'support-metadata-audit.json')
+    report['metadata_audits'] = ['support-metadata-audit.json']
+    write_json(report_path, report)
+    return metadata
 
 
 def run(collection, output):
@@ -100,6 +159,7 @@ def run(collection, output):
     assert counts.task_uid.nunique() == len(reproduction) == 37845
     assert int(reproduction.maximum_absolute_error.notna().sum()) == 37633
     assert not reproduction.task_uid.duplicated().any()
+    supplemental = audit_supplemental_support(collection, output, counts)
     for name, frame in [('all-task-support', counts), ('all-task-diagnostics', diagnostics),
                         ('all-source-reproduction', reproduction), ('exact-support-effects', pd.DataFrame(support_effects)),
                         ('independence', pd.DataFrame(independence))]:
@@ -111,6 +171,7 @@ def run(collection, output):
                                       'H1_shared_NTC_same_assignments': True,
                                       'additional_frozen_inputs': consumed,
                                       'all_collection_artifact_hashes_verified': True})
+    write_json(output / 'supplemental-support-audit.json', supplemental)
 
 
 if __name__ == '__main__':
