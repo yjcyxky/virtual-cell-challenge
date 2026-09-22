@@ -69,7 +69,7 @@ def run(run_id):
     # Run tracking is linked in tracking.json. Do not ship W&B's mutable symlinks,
     # transport cache, credentials, or duplicate latest-run traversal.
     sources = [p for p in output.iterdir() if p.is_file() and p.suffix in ['.json', '.html', '.parquet', '.yaml', '.log']]
-    for directory in ['collection', 'evaluation', 'audit']:
+    for directory in ['collection', 'evaluation', 'audit', 'posthoc-zero-variance']:
         sources.extend(p for p in (output / directory).rglob('*') if p.is_file())
     bundle = output / 'publication'
     bundle.mkdir(exist_ok=False)

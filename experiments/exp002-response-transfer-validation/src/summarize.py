@@ -87,6 +87,13 @@ def render(report, output):
                     ['family', 'scale', 'seed', 'support_subset', 'gene_target_sets', 'known_in_both_fraction', 'known_only_agreement', 'agreement_including_unknown', 'kappa'])
     content += '<h2>固定模块与随机平均对照</h2>' + table(report['module_summary'], ['family', 'scale', 'model', 'reference_module',
                     'reference_relative_MSE_improvement', 'random_relative_improvement_median', 'random_relative_improvement_q05', 'random_relative_improvement_q95'])
+    if 'posthoc_zero_variance' in report:
+        content += '<h2>标签可靠性：事后零方差检查</h2><p>此检查在预登记实验完成后追加，不改变原分类或预测。' \
+                   '参与估计的目标细胞全部未检出某读出时，样本方差为零；这不等于总体不确定性为零。' \
+                   '下表所列标签需要进一步校准，不能直接视为可靠的生物学共享信号。</p>'
+        content += table(report['posthoc_zero_variance']['family_summary'], ['family', 'scale',
+                         'operational_conserved_nonzero_labels', 'all_target_zero_every_context',
+                         'target_zero_any_context', 'all_contexts_six_halves_supported'])
     content += '<h2>解释范围</h2><ul>' + ''.join('<li>' + html.escape(x) + '</li>' for x in report['limitations']) + '</ul>'
     content += '<h2>下载与复现</h2><p>完整结果：<a href="report.json">report.json</a>；' \
                '<a href="prediction-summary.parquet">预测汇总</a>；<a href="classification-summary.parquet">分类汇总</a>。' \
@@ -250,7 +257,28 @@ def run(output):
     print(json.dumps({'status': 'completed', 'bundle_id': summary['bundle_id'], 'predictions': len(metrics)}), flush=True)
 
 
+def attach_posthoc(output):
+    report_path = output / 'report.json'
+    report = json.loads(report_path.read_text())
+    diagnostic = json.loads((output / 'posthoc-zero-variance/report.json').read_text())
+    if 'posthoc_zero_variance' in report:
+        assert report['posthoc_zero_variance'] == diagnostic
+        return
+    assert hash_file(report_path) == diagnostic['initial_report_sha256']
+    report['predefined_experiment_report_sha256'] = hash_file(report_path)
+    report['predefined_experiment_bundle_id'] = report['bundle_id']
+    report['bundle_id'] = 'response-transfer-validation-' + uuid.uuid4().hex
+    report['posthoc_zero_variance'] = diagnostic
+    report['code_commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    report['completed_at'] = datetime.now(timezone.utc).isoformat()
+    report['limitations'].append('事后审计单列目标细胞全部未检出读出、导致 plug-in 目标方差为零的非零等价标签；它们不能直接解释为可靠的生物学共享响应，审计没有将其宣布为生物学假阳性。')
+    write_json(report_path, report)
+    render(report, output)
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output', type=Path, required=True)
-    run(p.parse_args().output.resolve())
+    p.add_argument('--attach-posthoc', action='store_true')
+    args = p.parse_args()
+    (attach_posthoc if args.attach_posthoc else run)(args.output.resolve())

@@ -52,6 +52,9 @@ def tracking(output, config):
 def run(run_id, attach_collector=None):
     output = EXPERIMENT / 'outputs' / run_id
     output.mkdir(parents=True, exist_ok=True)
+    if (output / 'report.json').exists() and 'posthoc_zero_variance' in json.loads((output / 'report.json').read_text()):
+        print(json.dumps({'status': 'already_completed', 'output': str(output)}), flush=True)
+        return
     config = {'experiment_id': EXPERIMENT.name, 'run_id': run_id,
               'issue': 'https://github.com/yjcyxky/virtual-cell-challenge/issues/28',
               'pipeline_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -95,7 +98,11 @@ def run(run_id, attach_collector=None):
             assert child.wait() == 0
         if not (output / 'audit/report.json').exists():
             execute('audit.py', ['--collection', output / 'collection', '--output', output / 'audit'], output / 'audit.log')
-        execute('summarize.py', ['--output', output], output / 'summarize.log')
+        if not (output / 'report.json').exists():
+            execute('summarize.py', ['--output', output], output / 'summarize.log')
+        if not (output / 'posthoc-zero-variance/report.json').exists():
+            execute('audit_zero_variance.py', ['--run-folder', output], output / 'posthoc-zero-variance.log')
+        execute('summarize.py', ['--output', output, '--attach-posthoc'], output / 'summarize.log')
         summary = json.loads((output / 'report.json').read_text())
         for row in summary['prediction_summary']:
             if row['support_subset'] == 'all' and row['scale'] == 'control_only':
