@@ -33,6 +33,39 @@ def run(run_id):
                'finalizer_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                'issue': 'https://github.com/yjcyxky/virtual-cell-challenge/issues/28'}
     write_json(output / 'runtime.json', runtime)
+    write_json(output / 'artifact-schema.json', {
+        'measurement_scale': 'mean of per-cell log1p(count / total_native_counts * 10000)',
+        'collection_moments_h5': {
+            'axis_order': ['task_uid', 'variant', 'source_gene'],
+            'variants': ['full', 's20260921h0', 's20260921h1', 's20260922h0', 's20260922h1', 's20260923h0', 's20260923h1'],
+            'target': 'observed target mean on matched source technical support',
+            'matched_control': 'NTC technical-stratum means weighted by that variant target-cell fractions',
+            'variance_mean': 'variance of the estimated mean; standard error is its square root',
+            'target_excluded': 'native readout excluded as intervention gene; also require nonempty safe_symbol',
+            'eligibility': 'task-support.parquet determines estimability; a stored mean alone is not an eligible prediction label'},
+        'classifications_h5': {
+            'axis_order': ['axes.json targets', 'scale', 'variant', 'tolerance', 'axes.json genes'],
+            'scales': ['control_only', 'source_matched'], 'tolerances': [.05, .1, .2],
+            'baseline_state_and_response_state': {'0': 'unknown', '1': 'equivalent', '2': 'different'},
+            'quadrant': {'0': 'unknown_or_excluded_readout', '1': 'baseline_equivalent_response_equivalent',
+                         '2': 'baseline_equivalent_response_different', '3': 'baseline_different_response_equivalent',
+                         '4': 'baseline_different_response_different'},
+            'activity': {'0': 'unknown_or_excluded_readout', '1': 'near_zero_in_all_contexts', '2': 'active_in_at_least_one_context'},
+            'conserved_nonzero': 'response equivalent with simultaneous same-sign nonzero support, excluding operational near-zero',
+            'context_set': 'classification-counts.parquet: original full-estimable backgrounds fixed across split variants',
+            'intervals': 'reconstruct from source means and variance_mean using estimators.py; Bonferroni only over context pairs within (p,g)'},
+        'predictions_h5': {
+            'groups': 'scale / held_cell_line', 'row_axis': 'target_index selects axes.json targets',
+            'column_axis': 'axes.json genes', 'values': 'predicted delta; add control-only C to obtain predicted expression',
+            'evaluation_mask': 'intersection of finite truth and all model predictions; at least 100 genes',
+            'train_quadrant_and_train_conserved_nonzero': 'computed using training backgrounds only',
+            'models': 'hyperparameters.json records training cell lines and inner-CV selections'},
+        'module_metrics': {
+            'observed_and_predicted_values': 'fixed arithmetic mean across eligible member genes',
+            'random_membership': 'use stored random candidate order, remove common evaluation exclusions, take prefix equal to actual reference set size',
+            'relative_improvement': '1 - balanced mean squared error / balanced zero-response squared error',
+            'random_quantile_intervals': 'variation over 20 random gene sets, not biological confidence intervals'},
+        'all_inferred_classes_are_ground_truth': False})
     # Run tracking is linked in tracking.json. Do not ship W&B's mutable symlinks,
     # transport cache, credentials, or duplicate latest-run traversal.
     sources = [p for p in output.iterdir() if p.is_file() and p.suffix in ['.json', '.html', '.parquet', '.yaml', '.log']]
