@@ -1,0 +1,7 @@
+[project]
+name = "vcc-response-transfer-validation"
+version = "0.1.0"
+requires-python = "==3.14.*"
+dependencies = ["numpy", "scipy", "pandas", "h5py", "pyarrow", "wandb"]
+[tool.uv]
+package = false
