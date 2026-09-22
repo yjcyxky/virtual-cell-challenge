@@ -182,6 +182,8 @@ def quadrant_experiment(data, output):
                 for seed_index, seed in enumerate(SEEDS):
                     for di, tolerance in enumerate(TOLERANCES):
                         concordance.append({'canonical_target': p, 'scale': scale, 'seed': seed, 'tolerance': tolerance,
+                                            'both_halves_contexts_supported': bool(len(context_set) >= 2 and
+                                                data['available'][context_set, pi, 1 + 2 * seed_index:3 + 2 * seed_index].all()),
                                             **confusion(labels[1 + 2 * seed_index, di], labels[2 + 2 * seed_index, di], valid)})
     pd.DataFrame(rows).to_parquet(output / 'classification-counts.parquet', index=False)
     pd.DataFrame(concordance).to_parquet(output / 'split-classification-agreement.parquet', index=False)
@@ -244,15 +246,19 @@ def prediction_experiment(data, output, supplemental=False):
                 # background, then equal backgrounds. Query target omitted.
                 agnostic = np.full_like(shared, np.nan)
                 wrong = np.full_like(shared, np.nan)
+                training_sum = np.nansum(response[train], axis=1)
+                training_count = np.isfinite(response[train]).sum(axis=1)
                 donors = np.flatnonzero(available[train].sum(0) >= 2)
                 donor_order = np.random.default_rng(20260921).permutation(donors)
                 donor_mapping = dict(zip(donor_order, np.roll(donor_order, -1)))
                 wrong_donor = {}
                 for pi in np.flatnonzero(eligible):
-                    other = np.arange(len(data['targets'])) != pi
                     with warnings.catch_warnings():
                         warnings.simplefilter('ignore', RuntimeWarning)
-                        agnostic[pi] = np.nanmean(np.nanmean(response[train][:, other], axis=1), axis=0)
+                        denominator = training_count - np.isfinite(response[train, pi])
+                        numerator = training_sum - np.nan_to_num(response[train, pi])
+                        background_mean = np.divide(numerator, denominator, out=np.full_like(numerator, np.nan), where=denominator > 0)
+                        agnostic[pi] = np.nanmean(background_mean, axis=0)
                     donor = int(donor_mapping[pi])
                     if donor == pi:
                         raise ValueError('no independent wrong-target donor')
@@ -351,7 +357,7 @@ def run(collection, output, only=None):
     groups, other = context_groups(reports)
     write_json(output / 'excluded-contexts.json', other)
     identity = {'code_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-                'code_sha256': {p.name: hash_file(p) for p in Path(__file__).parent.glob('*.py')},
+                'code_sha256': {name: hash_file(Path(__file__).with_name(name)) for name in ['evaluate.py', 'estimators.py']},
                 'reference_sha256': hash_file(REFERENCE), 'collection_identity_sha256': hash_file(collection / 'identity.json'),
                 'tolerances': TOLERANCES, 'seeds': SEEDS, 'scales': SCALES}
     for group, members in sorted(groups.items()):
