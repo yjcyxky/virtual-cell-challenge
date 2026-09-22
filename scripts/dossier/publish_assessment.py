@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 """Verify, split-package and publish an immutable assessment as a GitHub release."""
 import argparse
+from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 import gzip
 import hashlib
 import json
 from pathlib import Path
 import shutil
+import struct
 import subprocess
 import tarfile
+import zlib
 from rna import hash_file
 from profile_responses import write_json
 
@@ -36,6 +40,49 @@ class SplitWriter:
         if self.file:self.file.close();self.file=None
 
 
+class ParallelGzipWriter:
+    """One gzip stream with ordered deflate blocks and a bounded worker queue."""
+    def __init__(self, output, workers, chunk_size=16*1024*1024):
+        if workers < 1 or chunk_size < 1:raise ValueError('positive compression resources required')
+        self.output=output;self.pool=ThreadPoolExecutor(max_workers=workers)
+        self.pending=deque();self.buffer=bytearray();self.chunk_size=chunk_size;self.limit=2*workers
+        self.dictionary=b'';self.crc=0;self.size=0
+        self.output.write(b'\x1f\x8b\x08\x00\x00\x00\x00\x00\x04\xff')
+
+    @staticmethod
+    def compress_block(data,dictionary):
+        compressor=zlib.compressobj(level=1,wbits=-15,zdict=dictionary)
+        # A sync flush ends on a byte boundary without terminating the deflate
+        # stream. The next worker receives the exact preceding 32 KiB window.
+        return compressor.compress(data)+compressor.flush(zlib.Z_SYNC_FLUSH)
+
+    def submit(self, data):
+        self.pending.append(self.pool.submit(self.compress_block,data,self.dictionary))
+        self.dictionary=(self.dictionary+data)[-32768:]
+        if len(self.pending)>=self.limit:self.output.write(self.pending.popleft().result())
+
+    def write(self, data):
+        size=len(data);self.crc=zlib.crc32(data,self.crc);self.size=(self.size+size)&0xffffffff;self.buffer.extend(data)
+        while len(self.buffer)>=self.chunk_size:
+            self.submit(bytes(self.buffer[:self.chunk_size]));del self.buffer[:self.chunk_size]
+        return size
+
+    def flush(self):
+        self.output.flush()
+
+    def __enter__(self):return self
+
+    def __exit__(self, error_type, error, traceback):
+        try:
+            if error_type is None:
+                if self.buffer:self.submit(bytes(self.buffer));self.buffer.clear()
+                while self.pending:self.output.write(self.pending.popleft().result())
+                self.output.write(zlib.compress(b'',level=1,wbits=-15))
+                self.output.write(struct.pack('<II',self.crc,self.size))
+                self.output.flush()
+        finally:self.pool.shutdown(wait=True,cancel_futures=True)
+
+
 def verified_files(bundle):
     files=[]
     for line in (bundle/'SHA256SUMS').read_text().splitlines():
@@ -49,17 +96,19 @@ def verified_files(bundle):
     return files+[str(p.relative_to(bundle)) for p in bundle.rglob('SHA256SUMS')]
 
 
-def package(bundle,output):
+def package(bundle,output,compression_workers=1):
     report=json.loads((bundle/'report.json').read_text())
     if report['status']!='completed':raise ValueError('completed_assessment_required')
     files=verified_files(bundle)
     output.mkdir(parents=True,exist_ok=False);split=SplitWriter(output)
-    with gzip.GzipFile(filename='',mode='wb',fileobj=split,compresslevel=1,mtime=0) as compressed:
+    compressor=ParallelGzipWriter(split,compression_workers) if compression_workers>1 else gzip.GzipFile(filename='',mode='wb',fileobj=split,compresslevel=1,mtime=0)
+    with compressor as compressed:
         with tarfile.open(fileobj=compressed,mode='w|') as archive:
             for name in sorted(files):archive.add(bundle/name,arcname=name,recursive=False)
     split.close()
     for name in ['report.html','report.json','SHA256SUMS']:shutil.copy2(bundle/name,output/name)
     identity={'bundle_id':report['bundle_id'],'bundle_report_sha256':hash_file(bundle/'report.json'),
+        'compression':{'format':'gzip','level':1,'workers':compression_workers,'parallel_block_bytes':16*1024*1024 if compression_workers>1 else None},
         'publisher_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
         'publisher_sha256':hash_file(Path(__file__)),
         'assets':[{'name':p.name,'size':p.stat().st_size,'sha256':hash_file(p)} for p in sorted(output.iterdir()) if p.is_file()]}
@@ -114,9 +163,11 @@ def publish(output,tag,title,notes):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--bundle',type=Path);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--compression-workers',type=int,default=1)
     p.add_argument('--publish',action='store_true');p.add_argument('--finalize',action='store_true');p.add_argument('--tag');p.add_argument('--title');p.add_argument('--notes',type=Path)
     a=p.parse_args()
-    if a.bundle:print(json.dumps(package(a.bundle,a.output)),flush=True)
+    if a.compression_workers<1:p.error('compression workers must be positive')
+    if a.bundle:print(json.dumps(package(a.bundle,a.output,a.compression_workers)),flush=True)
     if a.publish:
         if not all([a.tag,a.title,a.notes]):p.error('publishing requires tag, title and notes')
         print(publish(a.output,a.tag,a.title,a.notes),flush=True)
