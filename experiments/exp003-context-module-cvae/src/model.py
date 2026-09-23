@@ -32,7 +32,7 @@ class ModuleCVAE(nn.Module):
         self.config, self.variant, self.genes = config, config['variant'], genes
         g, m = membership.shape; d = config['state_dimensions']; h = config['hidden_dimensions']; r = config['residual_dimensions']
         self.d, self.m = d, m
-        c = 2 * d + 4
+        c = 2 * d + 5
         mask = np.asarray(membership, np.float32)
         if self.variant == 'no_prior':
             anchor = np.ones_like(mask)
@@ -57,7 +57,9 @@ class ModuleCVAE(nn.Module):
         self.prior = mlp(c + 32 + d, h, 2 * d + 1, zero=True)
         self.posterior = mlp(2 * d + c + 32 + 2, h, 2 * d, zero=True)
         self.encoder = nn.Linear(g, d, bias=False)
+        self.mask_encoder = nn.Linear(g, d, bias=False)
         nn.init.normal_(self.encoder.weight, std=0.01 / math.sqrt(g))
+        nn.init.normal_(self.mask_encoder.weight, std=0.01 / math.sqrt(g))
         self.baseline_modules = mlp(d + c, h, m)
         self.response_modules = mlp(d + c + 32, h, m, zero=True)
         self.module_interaction = nn.Parameter(torch.zeros(m, m))
@@ -75,7 +77,8 @@ class ModuleCVAE(nn.Module):
         index = batch['target'].clamp_max(self.genes - 1)
         target_mean = batch['base'].gather(1, index[:, None])
         target_mean = torch.log1p(target_mean) * (batch['target'] < self.genes)[:, None]
-        context = torch.cat([batch['condition'], target_mean], -1)
+        target_measured = batch['mask'].gather(1, index[:, None]) * (batch['target'] < self.genes)[:, None]
+        context = torch.cat([batch['condition'], target_mean, target_measured], -1)
         embedding = self.target_embedding(batch['target']) * self.seen[batch['target'], None]
         target = self.target_encoder(torch.cat([self.target_prior[batch['target']], embedding], -1))
         active = (batch['target'] < self.genes).float()[:, None]
@@ -119,7 +122,7 @@ class ModuleCVAE(nn.Module):
         context, target, active = self.condition(batch)
         response_context = self.response_condition(context)
         response_z = torch.zeros_like(z) if self.variant in ['no_state', 'no_context'] else z
-        baseline_context = torch.cat([context[:, :-1], torch.zeros_like(context[:, -1:])], -1)
+        baseline_context = torch.cat([context[:, :-2], torch.zeros_like(context[:, -2:])], -1)
         base_features = torch.cat([z, baseline_context], -1)
         response_features = torch.cat([response_z, response_context, target], -1)
         baseline = self.baseline_modules(base_features)
@@ -159,7 +162,7 @@ class ModuleCVAE(nn.Module):
         context, target, active = self.condition(batch)
         normalized = masked_logcp(x, batch['mask'])
         projected = masked_logcp(x, self.common) @ self.projection - self.origin
-        features = self.encoder(normalized * batch['mask'])
+        features = self.encoder(normalized * batch['mask']) + self.mask_encoder(batch['mask'] - 1)
         depth = torch.log1p((x * batch['mask']).sum(1, keepdim=True)) / 10
         coverage = batch['mask'].mean(1, keepdim=True)
         correction, logstd = self.posterior(torch.cat([projected, features, context, target, depth, coverage], -1)).chunk(2, -1)

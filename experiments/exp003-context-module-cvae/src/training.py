@@ -1,13 +1,16 @@
 """Complete resumable training trials, with training-only priors and outer holdouts."""
 import json
 import random
+import shutil
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import torch
+import yaml
 
-from data import BalancedSampler, reserved, write_json
+from data import EXPERIMENT, BalancedSampler, reserved, write_json, hash_file, data_spec_hash
 from evaluation import evaluate_context, shared_responses, summarize, task_seed
 from model import ModuleCVAE, masked_logcp
 from priors import degree_matched_random, fold_evidence
@@ -70,6 +73,41 @@ def construct_model(data, view, contexts, config, prior_directory, folder):
     return model
 
 
+def reuse_preprocessing(config, cache, key, contexts):
+    if not config.get('reuse_run'):
+        return
+    source_run = EXPERIMENT / 'outputs' / config['reuse_run']
+    source_config = yaml.safe_load((source_run / 'config.yaml').read_text())
+    assert source_config['pipeline_commit'] == config['pipeline_commit'], 'preprocessing_reuse_requires_same_code'
+    assert source_config['uv_lock_sha256'] == config['uv_lock_sha256']
+    assert data_spec_hash(source_config) == data_spec_hash(config)
+    for field in ['state_dimensions', 'state_components', 'modules_per_family', 'minimum_module_genes', 'maximum_module_genes', 'network_minimum_score', 'validation_tasks']:
+        assert source_config[field] == config[field]
+    source = source_run / 'cache' / key
+    split = json.loads((source / 'split.json').read_text())
+    assert list(split['training_targets_by_context']) == list(contexts), 'preprocessing_fold_mismatch'
+    files = ['state.npz', 'shared-response.npz']
+    source_kind = 'random' if source_config['variant'] == 'random_prior' else 'true'
+    kind = 'random' if config['variant'] == 'random_prior' else 'true'
+    if kind == source_kind:
+        files += ['prior-strength.npy', 'prior-evidence.parquet', 'evidence-scope.json']
+    identities = []
+    for name in files:
+        original, destination = source / name, cache / name
+        digest = hash_file(original)
+        if destination.exists():
+            assert hash_file(destination) == digest
+        elif name == 'shared-response.npz':
+            destination.symlink_to(original.resolve())
+        else:
+            shutil.copyfile(original, destination)
+        identities.append({'file': name, 'source': str(original), 'sha256': digest})
+    write_json(cache / 'reused-preprocessing.json', {'source_run': config['reuse_run'],
+               'source_commit': source_config['pipeline_commit'], 'same_training_contexts': list(contexts),
+               'source_artifact': json.loads((source_run / 'artifact.json').read_text()), 'files': identities,
+               'model_optimizer_or_training_rng_reused': False})
+
+
 def train_step(model, data, view, sampler, optimizer, scheduler, config, step, device):
     groups = sampler.sample(config['tasks_per_step'], config['cells_per_task'])
     specifications = [(c, t, b, len(ids)) for c, t, b, ids in groups]
@@ -104,6 +142,7 @@ def train_step(model, data, view, sampler, optimizer, scheduler, config, step, d
 
 def fit(data, contexts, validation_context, config, output, key, prior_directory, tracked, epochs=None):
     cache = output / 'cache' / key; cache.mkdir(parents=True, exist_ok=True)
+    reuse_preprocessing(config, cache, key, contexts)
     checkpoints = output / 'checkpoints'; checkpoints.mkdir(exist_ok=True)
     last, best = checkpoints / f'{key}-last.pt', checkpoints / f'{key}-best.pt'
     device = torch.device('cuda')
@@ -121,7 +160,8 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
     write_json(cache / 'split.json', {'training_targets_by_context': sampler.targets,
                'inner_validation_context': validation_context, 'inner_validation_targets': validation_targets,
                'globally_reserved_targets': sorted({t for c, t in data.tasks if reserved(t, config['unseen_target_percent'])}),
-               'new_context_input': 'feature-half NTC only'})
+               'new_context_input': 'feature-half NTC only', 'model_variant': config['variant'],
+               'external_prior_enters_generator': config['variant'] != 'no_prior'})
     progress = {'next_step': 0, 'history': [], 'best_score': None, 'best_epoch': None, 'stale': 0,
                 'complete': False, 'resume_count': 0, 'training_contexts': list(contexts), 'validation_context': validation_context,
                 'maximum_epochs': maximum_epochs, 'epoch_log_sums': {}, 'epoch_log_count': 0}
@@ -133,6 +173,9 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
     if not progress['complete']:
         model.train(); epoch_logs = []
         start_time = time.monotonic()
+        marker = output / 'cache' / 'optimization-started.json'
+        if not marker.exists():
+            write_json(marker, {'fit': key, 'pipeline_commit': config['pipeline_commit'], 'seed': config['seed']})
         for step in range(progress['next_step'], maximum_epochs * config['steps_per_epoch']):
             logs = train_step(model, data, view, sampler, optimizer, scheduler, config, step, device)
             epoch_logs.append(logs); progress['next_step'] = step + 1

@@ -151,8 +151,10 @@ def fold_evidence(data, contexts, true, random, config, directory):
         rc = coherence(pooled, random, data.masks[context], pool_weights, pool_strata)
         support.append(np.nan_to_num(tc - rc))
         for j in range(true.shape[1]):
-            rows.append({'context': context, 'module': j, 'kind': 'NTC', 'true_coherence': float(tc[j]),
-                         'random_coherence': float(rc[j]), 'pooled_coherence_before_batch_centering': float(pooled_tc[j]), 'target': None})
+            rows.append({'context': context, 'module': j, 'kind': 'NTC', 'candidate_coherence': float(tc[j]),
+                         'matched_null_coherence': float(rc[j]), 'pooled_coherence_before_batch_centering': float(pooled_tc[j]),
+                         'residual_rows_after_batch_centering': len(pooled) - len(batches),
+                         'sample_support_sufficient': len(pooled) - len(batches) >= 30, 'target': None})
         tasks = sorted((t for c, t in data.tasks if c == context and not reserved(t, config['unseen_target_percent'])),
                        key=lambda t: value_key(t))[:config['validation_tasks']]
         for target in tasks:
@@ -166,16 +168,20 @@ def fold_evidence(data, contexts, true, random, config, directory):
             pc = coherence(np.concatenate(observed), true, data.masks[context], observed_w, observed_strata)
             pr = coherence(np.concatenate(observed), random, data.masks[context], observed_w, observed_strata)
             matched_tc = coherence(np.concatenate(matched), true, data.masks[context], matched_w, matched_strata)
+            residual_rows = len(observed_w) - len(set(observed_strata))
             for j in range(true.shape[1]):
                 rows.append({'context': context, 'module': j, 'kind': 'perturbation', 'target': target,
-                             'true_coherence': float(pc[j]), 'random_coherence': float(pr[j]),
-                             'coherence_change_vs_NTC': float(pc[j] - matched_tc[j])})
+                             'candidate_coherence': float(pc[j]), 'matched_null_coherence': float(pr[j]),
+                             'coherence_change_vs_NTC': float(pc[j] - matched_tc[j]),
+                             'residual_rows_after_batch_centering': residual_rows,
+                             'sample_support_sufficient': residual_rows >= 30})
     pd.DataFrame(rows).to_parquet(directory / 'prior-evidence.parquet', index=False)
     # A conservative floor explicitly retains priors unobservable in RNA.
     strength = 0.25 + 0.75 * np.clip(np.mean(support, axis=0) / 0.15, 0, 1)
     np.save(directory / 'prior-strength.npy', strength.astype(np.float32))
     write_json(directory / 'evidence-scope.json', {'training_contexts': list(contexts),
-               'uses_held_perturbations': False, 'strength_method': '0.25 + 0.75 clip(mean train NTC within-batch true-minus-null coherence / 0.15)',
+               'uses_held_perturbations': False, 'candidate_prior': 'degree_matched_random' if config['variant'] == 'random_prior' else 'real_membership_diagnostic',
+               'strength_method': '0.25 + 0.75 clip(mean train NTC within-batch candidate-minus-null coherence / 0.15)',
                'perturbation_diagnostic': 'changes in off-diagonal standardized covariance; endpoint association, not causal validity',
                'unseen_targets_excluded': True, 'minimum_strength': float(strength.min())})
     return strength.astype(np.float32)

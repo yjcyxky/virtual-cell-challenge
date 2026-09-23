@@ -19,24 +19,44 @@ def observed_task(data, view, context, target):
     weights = data.task_weights(context, target)
     original = data.task_weights(context, target, original=True)
     mask = data.masks[context]
-    sums = {k: np.zeros(len(data.genes), np.float64) for k in ['log', 'log_common', 'count', 'reference', 'reference_log', 'reference_log_common', 'original_log_common', 'original_reference_log_common']}
-    observed, cell_weights, group_metrics = [], [], []
+    ids = data.tasks[(context, target)]
+    observed = data.read(ids)
+    local_index = {int(v): i for i, v in enumerate(ids)}
+    lc = logcp(observed, data.common)
+    cell_weights, original_weights = np.zeros(len(ids)), np.zeros(len(ids))
+    sums = {k: np.zeros(len(data.genes), np.float64) for k in ['reference', 'reference_log', 'reference_log_common', 'original_reference_log_common']}
+    group_metrics = []
     for pair, indices in groups.items():
         construct, batch = pair
-        x = data.read(indices)
-        lc = logcp(x, data.common)
+        positions = np.asarray([local_index[int(v)] for v in indices])
+        cell_weights[positions] = weights[pair] / len(positions)
+        original_weights[positions] = original[pair] / len(positions)
         state = view.controls[(context, batch)]
-        sums['log'] += weights[pair] * logcp(x, mask).mean(0)
-        sums['log_common'] += weights[pair] * lc.mean(0)
-        sums['count'] += weights[pair] * x.mean(0)
         sums['reference'] += weights[pair] * state['reference']
         sums['reference_log'] += weights[pair] * state['reference_log']
         sums['reference_log_common'] += weights[pair] * state['reference_log_common']
-        sums['original_log_common'] += original[pair] * lc.mean(0)
         sums['original_reference_log_common'] += original[pair] * state['reference_log_common']
-        observed.append(x); cell_weights.extend([weights[pair] / len(x)] * len(x))
-        group_metrics.append((pair, lc.mean(0) - state['reference_log_common']))
-    return sums, np.concatenate(observed), np.asarray(cell_weights), group_metrics
+        group_metrics.append((pair, lc[positions].mean(0) - state['reference_log_common']))
+    sums['log'] = np.average(logcp(observed, mask), axis=0, weights=cell_weights)
+    sums['log_common'] = np.average(lc, axis=0, weights=cell_weights)
+    sums['count'] = np.average(observed, axis=0, weights=cell_weights)
+    sums['original_log_common'] = np.average(lc, axis=0, weights=original_weights)
+    return sums, observed, cell_weights, group_metrics
+
+
+def response_summary(data, view, context, target):
+    """Common-gene baseline statistic; avoid constructing unused distribution diagnostics."""
+    ids = data.tasks[(context, target)]
+    common = data.common
+    x = logcp(data.read(ids)[:, common])
+    local_index = {int(v): i for i, v in enumerate(ids)}
+    weights = data.task_weights(context, target)
+    cell_weights = np.zeros(len(ids)); reference = np.zeros(int(common.sum()))
+    for pair, members in data.groups[(context, target)].items():
+        positions = np.asarray([local_index[int(v)] for v in members])
+        cell_weights[positions] = weights[pair] / len(members)
+        reference += weights[pair] * view.controls[(context, pair[1])]['reference_log_common'][common]
+    return (np.average(x, axis=0, weights=cell_weights) - reference).astype(np.float32)
 
 
 def shared_responses(data, view, contexts, config, directory):
@@ -51,8 +71,7 @@ def shared_responses(data, view, contexts, config, directory):
         for c, target in data.tasks:
             if c != context or reserved(target, config['unseen_target_percent']):
                 continue
-            sums, _, _, _ = observed_task(data, view, context, target)
-            response = (sums['log_common'] - sums['reference_log_common'])[data.common].astype(np.float32)
+            response = response_summary(data, view, context, target)
             if target not in totals:
                 totals[target] = np.zeros_like(response); n[target] = 0
             totals[target] += response; n[target] += 1; rows.append(response)
@@ -168,8 +187,9 @@ def evaluate_task(model, data, view, context, target, config, shared=None, save_
         'depth_cv_observed': float(observed[oi].sum(1).std() / max(observed[oi].sum(1).mean(), 1)),
         'detection_mae': float(np.mean(abs((generated[pi] > 0).mean(0)[native] - (observed[oi] > 0).mean(0)[native]))),
         'variance_log_mse': float(np.mean((logcp(generated[pi]).var(0)[native] - logcp(observed[oi]).var(0)[native]) ** 2)),
-        'on_target_mean_count_predicted': float(pred_count[data.gene_index[target]]),
-        'on_target_mean_count_observed': float(sums['count'][data.gene_index[target]]),
+        'on_target_readout_observed': bool(data.masks[context][data.gene_index[target]]),
+        'on_target_mean_count_predicted': float(pred_count[data.gene_index[target]]) if data.masks[context][data.gene_index[target]] else None,
+        'on_target_mean_count_observed': float(sums['count'][data.gene_index[target]]) if data.masks[context][data.gene_index[target]] else None,
         'technical_construct_layers': len(pairs), 'generated_cells': len(generated), 'cached_observed_cells': len(observed),
         'fraction_NTC_batches_with_target_support': len({p[1] for p in pairs}) / sum(c == context for c, b in view.controls),
     }
@@ -214,7 +234,7 @@ def summarize(frames, config, output):
     numeric = metrics.select_dtypes(include=np.number).columns
     by_context = metrics.groupby('context')[numeric].mean()
     by_context.to_csv(output / 'evaluation-by-context.csv')
-    metrics.groupby(['context', 'reserved_target'])[numeric].mean().to_csv(output / 'evaluation-by-stratum.csv')
+    metrics.groupby(['context', 'target_seen_in_training', 'reserved_target'])[numeric].mean().to_csv(output / 'evaluation-by-stratum.csv')
     macro = by_context.mean().to_dict()
     rng = np.random.default_rng(config['data_seed'])
     targets = sorted(metrics.target.unique())

@@ -1,6 +1,7 @@
 """Behavioral checks for joint counts, leakage boundaries, balancing and resume."""
 from pathlib import Path
 import copy
+import json
 import sys
 from types import SimpleNamespace
 
@@ -8,15 +9,17 @@ import numpy as np
 import pandas as pd
 import pytest
 import torch
+import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
-from data import BalancedSampler, balanced_selection, reserved
+from data import BalancedSampler, CountData, balanced_selection, reserved
 from model import ModuleCVAE, log_nb
 from priors import degree_matched_random
 from state import FoldView
 from training import save_checkpoint, load_checkpoint, train_step
 from evaluation import observed_task, evaluate_task
 from priors import fold_evidence
+import training
 
 
 def configuration():
@@ -62,6 +65,42 @@ def test_unmeasured_counts_do_not_change_encoder_or_likelihood():
     torch.testing.assert_close(original, altered, rtol=0, atol=0)
     draws = model.generate(batch)
     assert torch.all(draws[:, -1] == 0)
+
+
+def test_encoder_distinguishes_missing_gene_identity_from_observed_zero():
+    model, batch = setup_model()
+    with torch.no_grad():
+        model.posterior[-1].weight.normal_(std=0.3)
+    batch['target'][:] = model.genes
+    x = torch.poisson(batch['base']); x[:, 0] = 0; x[:, -1] = 0
+    alternative = {k: v.clone() for k, v in batch.items()}
+    alternative['mask'][:, 0] = 0; alternative['mask'][:, -1] = 1
+    outputs = []
+    hook = model.posterior.register_forward_hook(lambda module, inputs, output: outputs.append(output.detach().clone()))
+    model(x, batch); model(x, alternative); hook.remove()
+    assert not torch.allclose(outputs[0], outputs[1])
+
+
+def test_context_readouts_require_safe_identity_in_reference_NTC(tmp_path):
+    genes = ['G0', 'G1', 'G2', 'G3']
+    (tmp_path / 'genes.json').write_text(json.dumps(genes))
+    panels = []
+    for i, n in enumerate([3, 4]):
+        folder = tmp_path / f'panel-{i}'; folder.mkdir()
+        panels.append({'index': i, 'context': 'H1', 'panel': f'H1:{i}'})
+        np.save(folder / 'genes.npy', np.arange(n))
+        np.save(folder / 'counts.npy', np.stack([np.arange(n) + 1, np.arange(n) + 11]).astype(np.uint16))
+        pd.DataFrame({'panel_index': [i]*2, 'context': ['H1']*2, 'cache_row': [0, 1],
+                      'is_NTC': [i == 0]*2, 'target': ['__NTC__' if i == 0 else 'G0']*2,
+                      'batch': ['b0']*2, 'half': [0, 1], 'construct': ['one-dual-guide']*2}).to_parquet(folder / 'cells.parquet')
+    (tmp_path / 'complete.json').write_text(json.dumps({'panels': panels}))
+    pd.DataFrame({'target': [], 'context': []}).to_parquet(tmp_path / 'factor-weights.parquet')
+    data = CountData(tmp_path)
+    assert data.masks['H1'].tolist() == [True, True, True, False]
+    assert data.readout_support[1]['unmatched_safe_readouts_excluded'] == ['G3']
+    assert np.all(data.read([2, 3])[:, -1] == 0)
+    np.testing.assert_array_equal(np.load(tmp_path / 'panel-1' / 'counts.npy')[:, -1], [4, 14])
+    np.testing.assert_array_equal(data.read([3, 0, 2, 3]), [[11, 12, 13, 0], [1, 2, 3, 0], [1, 2, 3, 0], [11, 12, 13, 0]])
 
 
 def test_degree_matched_random_preserves_gene_and_module_degrees():
@@ -299,3 +338,28 @@ def test_evaluation_outputs_finite_metrics_and_integer_samples(tmp_path):
     assert metrics['technical_construct_layers'] == 2
     assert prediction['cells'].dtype == np.uint32
     assert prediction['native_mean_count'].shape == (24,)
+
+
+def test_preprocessing_reuse_checks_fold_and_never_reuses_model_weights(tmp_path, monkeypatch):
+    monkeypatch.setattr(training, 'EXPERIMENT', tmp_path)
+    source = tmp_path / 'outputs' / 'source'; source.mkdir(parents=True)
+    config = yaml.safe_load((Path(__file__).resolve().parents[1] / 'configs/default.yaml').read_text())
+    config.update(pipeline_commit='fixed-code', uv_lock_sha256='fixed-lock')
+    (source / 'config.yaml').write_text(yaml.safe_dump(config))
+    (source / 'artifact.json').write_text(json.dumps({'name': 'fixed-model:v0', 'digest': 'fixed-digest'}))
+    folder = source / 'cache' / 'heldout'; folder.mkdir(parents=True)
+    (folder / 'split.json').write_text(json.dumps({'training_targets_by_context': {'A': ['G1'], 'B': ['G2']}}))
+    for name in ['state.npz', 'shared-response.npz', 'prior-strength.npy', 'prior-evidence.parquet', 'evidence-scope.json']:
+        (folder / name).write_bytes(name.encode())
+    (folder / 'model.pt').write_bytes(b'must-not-reuse')
+    destination = tmp_path / 'new'; destination.mkdir()
+    config.update(reuse_run='source', seed=29)
+    with pytest.raises(AssertionError, match='fold_mismatch'):
+        training.reuse_preprocessing(config, destination, 'heldout', ['D', 'E'])
+    training.reuse_preprocessing(config, destination, 'heldout', ['A', 'B'])
+    assert (destination / 'shared-response.npz').is_symlink()
+    assert not (destination / 'model.pt').exists()
+    assert (destination / 'state.npz').read_bytes() == b'state.npz'
+    (folder / 'state.npz').write_bytes(b'unexpected-change')
+    with pytest.raises(AssertionError):
+        training.reuse_preprocessing(config, destination, 'heldout', ['A', 'B'])

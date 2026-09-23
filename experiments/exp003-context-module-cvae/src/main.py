@@ -10,6 +10,7 @@ import re
 import subprocess
 import sys
 import traceback
+from datetime import datetime, timezone
 
 import torch
 import yaml
@@ -45,10 +46,12 @@ def artifact(tracked, output, online):
     paths += sorted((output / 'cache').glob('*/evidence-scope.json'))
     paths += sorted((output / 'cache').glob('*/state-scope.json'))
     paths += sorted((output / 'cache').glob('*/split.json'))
+    paths += sorted((output / 'cache').glob('*/reused-preprocessing.json'))
     paths += sorted((output / 'cache').glob('*/prior-strength.npy'))
     paths += sorted((output / 'predictions').glob('*/example-*.npz'))
     paths += [output / 'cache' / 'priors' / n for n in ['modules.npz', 'modules.json', 'complete.json']]
-    paths += [output / 'cache' / n for n in ['data-reference.json', 'tests.log']]
+    paths += [output / 'cache' / n for n in ['data-reference.json', 'readout-support.json', 'tests.log']]
+    paths += sorted((output / 'cache').glob('config-before-validation-repair-*.yaml'))
     item = wandb.Artifact(EXPERIMENT.name + '-' + output.name, type='model', metadata={
         'pipeline_commit': tracked.config['pipeline_commit'], 'local_only': True, 'raw_cells_uploaded': False,
         'prediction_storage': 'two generated count examples per background; all-task prediction summaries retained locally'})
@@ -84,6 +87,7 @@ def main(args):
         raise ValueError('invalid_run_id')
     output = EXPERIMENT / 'outputs' / args.run_id
     output.mkdir(parents=True, exist_ok=True)
+    (output / 'cache').mkdir(exist_ok=True)
     log = (output / 'train.log').open('a', buffering=1)
     sys.stdout, sys.stderr = Tee(sys.stdout, log), Tee(sys.stderr, log)
     config_path = Path(args.config).resolve()
@@ -92,6 +96,15 @@ def main(args):
         value = getattr(args, name)
         if value is not None:
             config[name] = value
+    if args.reuse_run is not None:
+        assert re.fullmatch(r'[A-Za-z0-9_-]+', args.reuse_run)
+        source_run = EXPERIMENT / 'outputs' / args.reuse_run
+        assert (source_run / 'complete.json').exists(), 'reuse_requires_completed_source_run'
+        source_config = yaml.safe_load((source_run / 'config.yaml').read_text())
+        source_data = source_config.get('cache_source', str(source_run / 'cache' / 'data'))
+        if config.get('cache_source'):
+            assert str(Path(config['cache_source']).resolve()) == str(Path(source_data).resolve())
+        config['cache_source'], config['reuse_run'] = source_data, args.reuse_run
     if config.get('cache_source'):
         config['cache_source'] = str(Path(config['cache_source']).resolve())
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -115,7 +128,23 @@ def main(args):
                   official_submission=False,
                   source_data_run='20260922-c', source_cache_run=None if not config.get('cache_source') else str(Path(config['cache_source']).parents[1]))
     if (output / 'config.yaml').exists():
-        assert yaml.safe_load((output / 'config.yaml').read_text()) == config, 'changed_conditions_require_new_run'
+        previous = yaml.safe_load((output / 'config.yaml').read_text())
+        if '_pretraining_revisions' in previous:
+            config['_pretraining_revisions'] = previous['_pretraining_revisions']
+        if previous != config:
+            assert args.repair_validation_reason, 'changed_conditions_require_new_run'
+            assert not (output / 'cache' / 'optimization-started.json').exists(), 'training_started_code_changes_require_new_run'
+            assert not list((output / 'checkpoints').glob('*.pt')), 'existing_training_state_requires_new_run'
+            assert {k: v for k, v in previous.items() if k != 'pipeline_commit'} == {k: v for k, v in config.items() if k != 'pipeline_commit'}, 'validation_repair_cannot_change_configuration'
+            number = len(config.get('_pretraining_revisions', [])) + 1
+            old_bytes = (output / 'config.yaml').read_bytes()
+            (output / 'cache' / f'config-before-validation-repair-{number}.yaml').write_bytes(old_bytes)
+            config['_pretraining_revisions'] = [*config.get('_pretraining_revisions', []), {
+                'previous_commit': previous['pipeline_commit'], 'new_commit': commit,
+                'reason': args.repair_validation_reason, 'optimizer_started': False,
+                'timestamp_utc': datetime.now(timezone.utc).isoformat(),
+                'previous_config_sha256': hashlib.sha256(old_bytes).hexdigest()}]
+            (output / 'config.yaml').write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
     else:
         (output / 'config.yaml').write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
     (output / 'wandb').mkdir(exist_ok=True)
@@ -124,7 +153,7 @@ def main(args):
     try:
         tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
                              id=args.run_id, name=f'{config["variant"]}-{args.run_id}', dir=str(output),
-                             resume='allow', mode='online', config=config, settings=wandb.Settings(init_timeout=30))
+                             resume='allow', mode='online', config=config, allow_val_change=True, settings=wandb.Settings(init_timeout=30))
         online = True
     except Exception as error:
         print(json.dumps({'stage': 'wandb_offline_fallback', 'reason': str(error)}), flush=True)
@@ -139,6 +168,7 @@ def main(args):
                            stdout=testlog, stderr=subprocess.STDOUT, check=True)
         cache = prepare(config, output)
         data = CountData(cache)
+        write_json(output / 'cache' / 'readout-support.json', data.readout_support)
         write_json(output / 'cache' / 'data-reference.json', {'path': str(cache), 'sha256': hash_file(cache / 'complete.json'),
                    'data_spec_hash': data.report['data_spec_hash'], 'source_inputs': data.report['inputs']})
         priors = prepare_priors(config, data.genes, output)
@@ -171,4 +201,6 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int)
     parser.add_argument('--variant', choices=['true_prior', 'random_prior', 'no_prior', 'no_state', 'no_context', 'no_residual', 'no_module'])
     parser.add_argument('--cache-source')
+    parser.add_argument('--reuse-run', help='Reuse explicitly versioned data/PCA/prior diagnostics from a completed same-protocol run.')
+    parser.add_argument('--repair-validation-reason', help='Document a same-config code repair before any optimization; old config is preserved.')
     main(parser.parse_args())

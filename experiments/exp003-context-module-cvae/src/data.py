@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import defaultdict
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -13,9 +14,23 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[3]
 EXPERIMENT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts/dossier'))
-from rna import RNAFile, hash_file, value_hash
+from rna import RNAFile, hash_file as _hash_file, value_hash
 sys.path.append(str(ROOT / 'experiments/exp001-context-pair-xgb/src'))
 from features import canonical_map
+
+
+def release_read_cache(path):
+    """GB10 shares RAM with file cache; advise only this completed file's clean pages."""
+    path = Path(path)
+    if hasattr(os, 'posix_fadvise') and path.stat().st_size >= 256 << 20:
+        with path.open('rb') as stream:
+            os.posix_fadvise(stream.fileno(), 0, 0, os.POSIX_FADV_DONTNEED)
+
+
+def hash_file(path):
+    result = _hash_file(Path(path))
+    release_read_cache(path)
+    return result
 
 
 def write_json(path, value):
@@ -195,6 +210,7 @@ def prepare(config, output):
                            'raw_sha256': expected, 'eligible_batches': len(good_batches),
                            'excluded_batches': len(ntc_support) - len(good_batches)})
             print(json.dumps({'stage': 'counts_cached', **panels[-1]}), flush=True)
+        release_read_cache(source)
     pd.DataFrame(factors).to_parquet(cache / 'factor-weights.parquet', index=False)
     pd.DataFrame(excluded).to_parquet(cache / 'excluded.parquet', index=False)
     write_json(cache / 'genes.json', genes)
@@ -224,44 +240,68 @@ class CountData:
         self.report = json.loads((self.directory / 'complete.json').read_text())
         self.genes = json.loads((self.directory / 'genes.json').read_text())
         self.gene_index = {g: i for i, g in enumerate(self.genes)}
-        self.counts, self.axes, frames, self.masks = {}, {}, [], {}
+        self.counts, self.axes, frames, self.masks, self.panel_context = {}, {}, [], {}, {}
         for panel in self.report['panels']:
             i = panel['index']; folder = self.directory / f'panel-{i}'
             self.counts[i] = np.load(folder / 'counts.npy', mmap_mode='r')
             self.axes[i] = np.load(folder / 'genes.npy')
+            self.panel_context[i] = panel['context']
             cells = pd.read_parquet(folder / 'cells.parquet')
             frames.append(cells)
             mask = np.zeros(len(self.genes), bool); mask[self.axes[i]] = True
             if panel['context'] in self.masks:
-                assert np.array_equal(self.masks[panel['context']], mask), 'H1_panel_measurement_axes_differ'
-            self.masks[panel['context']] = mask
+                self.masks[panel['context']] &= mask
+            else:
+                self.masks[panel['context']] = mask
         self.cells = pd.concat(frames, ignore_index=True)
         self.common = np.logical_and.reduce(list(self.masks.values()))
+        self.readout_support = []
+        for panel in self.report['panels']:
+            usable = self.masks[panel['context']]
+            unsupported = [self.genes[g] for g in self.axes[panel['index']] if not usable[g]]
+            self.readout_support.append({'panel': panel['panel'], 'context': panel['context'],
+                                         'safe_cached_genes': len(self.axes[panel['index']]),
+                                         'common_safe_context_genes': int(usable.sum()),
+                                         'unmatched_safe_readouts_excluded': unsupported,
+                                         'reason': 'intersection across source panels and feature NTC; excluded is not measured zero'})
         self.factors = pd.read_parquet(self.directory / 'factor-weights.parquet')
-        self.tasks = {key: group.index.to_numpy() for key, group in self.cells.loc[~self.cells.is_NTC].groupby(['context', 'target'], sort=True)}
-        self.controls = {(c, b, int(h)): group.index.to_numpy() for (c, b, h), group in
-                         self.cells.loc[self.cells.is_NTC].groupby(['context', 'batch', 'half'], sort=True)}
-        self.groups = {}
-        for key, indices in self.tasks.items():
-            self.groups[key] = {pair: group.index.to_numpy() for pair, group in
-                                self.cells.loc[indices].groupby(['construct', 'batch'], sort=True)}
+        self.weights = {}
+        if len(self.factors):
+            columns = ['context', 'target', 'construct', 'batch', 'balanced_mass', 'original_mass']
+            for context, target, construct, batch, balanced, original in self.factors[columns].itertuples(index=False, name=None):
+                pair = (construct, batch)
+                maps = self.weights.setdefault((context, target), ({}, {}))
+                assert pair not in maps[0], 'duplicated_factor_layer'
+                maps[0][pair], maps[1][pair] = float(balanced), float(original)
+        self.panel_indices = self.cells.panel_index.to_numpy(np.int16)
+        self.cache_rows = self.cells.cache_row.to_numpy(np.int64)
+        observed = self.cells.loc[~self.cells.is_NTC, ['context', 'target', 'construct', 'batch']]
+        row_ids = observed.index.to_numpy()
+        self.tasks = {key: row_ids[pos] for key, pos in observed.groupby(['context', 'target'], sort=True).indices.items()}
+        controls = self.cells.loc[self.cells.is_NTC, ['context', 'batch', 'half']]
+        control_ids = controls.index.to_numpy()
+        self.controls = {(c, b, int(h)): control_ids[pos] for (c, b, h), pos in
+                         controls.groupby(['context', 'batch', 'half'], sort=True).indices.items()}
+        self.groups = {key: {} for key in self.tasks}
+        for (context, target, construct, batch), pos in observed.groupby(['context', 'target', 'construct', 'batch'], sort=True).indices.items():
+            self.groups[(context, target)][(construct, batch)] = row_ids[pos]
 
     def read(self, indices):
-        frame = self.cells.loc[np.asarray(indices)]
-        result = np.zeros((len(frame), len(self.genes)), np.float32)
-        for panel in frame.panel_index.unique():
-            positions = np.flatnonzero(frame.panel_index.to_numpy() == panel)
-            local = frame.iloc[positions].cache_row.to_numpy()
-            result[np.ix_(positions, self.axes[panel])] = self.counts[panel][local]
+        indices = np.asarray(indices, dtype=np.int64)
+        panels = self.panel_indices[indices]
+        result = np.zeros((len(indices), len(self.genes)), np.float32)
+        for panel in np.unique(panels):
+            positions = np.flatnonzero(panels == panel)
+            local = self.cache_rows[indices[positions]]
+            measured = self.masks[self.panel_context[panel]][self.axes[panel]]
+            result[np.ix_(positions, self.axes[panel])] = self.counts[panel][local] * measured
         return result
 
     def control(self, context, batch, half):
         return self.read(self.controls[(context, batch, half)])
 
     def task_weights(self, context, target, original=False):
-        f = self.factors.loc[self.factors.context.eq(context) & self.factors.target.eq(target)]
-        column = 'original_mass' if original else 'balanced_mass'
-        values = {(r.construct, r.batch): float(getattr(r, column)) for r in f.itertuples()}
+        values = self.weights[(context, target)][int(original)]
         assert abs(sum(values.values()) - 1) < 1e-6
         return values
 
