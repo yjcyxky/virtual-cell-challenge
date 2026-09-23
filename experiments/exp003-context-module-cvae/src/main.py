@@ -18,6 +18,7 @@ import yaml
 from data import ROOT, EXPERIMENT, CountData, prepare, hash_file, write_json
 from priors import prepare_priors
 from training import experiment
+from comparison import compare_trials, comparison_sources
 
 
 class Tee:
@@ -52,6 +53,7 @@ def artifact(tracked, output, online):
     paths += [output / 'cache' / 'priors' / n for n in ['modules.npz', 'modules.json', 'complete.json']]
     paths += [output / 'cache' / n for n in ['data-reference.json', 'readout-support.json', 'tests.log']]
     paths += sorted((output / 'cache').glob('config-before-validation-repair-*.yaml'))
+    paths += sorted(output.glob('comparison*.csv')) + sorted(output.glob('comparison*.parquet')) + sorted(output.glob('comparison.json'))
     item = wandb.Artifact(EXPERIMENT.name + '-' + output.name, type='model', metadata={
         'pipeline_commit': tracked.config['pipeline_commit'], 'local_only': True, 'raw_cells_uploaded': False,
         'prediction_storage': 'two generated count examples per background; all-task prediction summaries retained locally'})
@@ -107,6 +109,9 @@ def main(args):
         config['cache_source'], config['reuse_run'] = source_data, args.reuse_run
     if config.get('cache_source'):
         config['cache_source'] = str(Path(config['cache_source']).resolve())
+    if args.compare_runs is not None:
+        assert args.run_id not in args.compare_runs, 'comparison_source_cannot_be_current_run'
+        config['comparison_sources'] = comparison_sources(args.compare_runs)
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     guarded = [str(EXPERIMENT), 'scripts/dossier/rna.py', 'experiments/exp001-context-pair-xgb/src/features.py']
     subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *guarded], cwd=ROOT, check=True)
@@ -180,6 +185,10 @@ def main(args):
                      'preparation/common_genes': int(data.common.sum()), 'preparation/cached_cells': len(data.cells)})
         tracked.summary['pipeline_status'] = 'training_and_evaluating'
         result = experiment(data, config, output, priors, tracked)
+        comparison = compare_trials(data, config, output)
+        if comparison is not None:
+            result['comparison'] = comparison
+            tracked.log({'comparison/completed_runs': comparison['run_count'], 'comparison/task_instances': comparison['task_instances']})
         result['wandb_url'] = f'https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{args.run_id}'
         result['wandb_sync'] = 'online' if online else 'pending_offline_sync'
         result['official_submission'] = False
@@ -206,5 +215,6 @@ if __name__ == '__main__':
     parser.add_argument('--variant', choices=['true_prior', 'random_prior', 'no_prior', 'no_state', 'no_context', 'no_residual', 'no_module'])
     parser.add_argument('--cache-source')
     parser.add_argument('--reuse-run', help='Reuse explicitly versioned data/PCA/prior diagnostics from a completed same-protocol run.')
+    parser.add_argument('--compare-runs', nargs='+', help='Completed trial IDs to compare with this trial before final artifact delivery.')
     parser.add_argument('--repair-validation-reason', help='Document a same-config code repair before any optimization; old config is preserved.')
     main(parser.parse_args())

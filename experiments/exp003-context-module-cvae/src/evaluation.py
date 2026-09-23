@@ -152,11 +152,14 @@ def evaluate_task(model, data, view, context, target, config, shared=None, save_
     a, b = view.project(observed[oi]), view.project(generated[pi])
     energy = float(2 * cdist(a, b).mean() - cdist(a, a).mean() - cdist(b, b).mean())
     covariance = float(np.mean((np.cov(a.T) - np.cov(b.T)) ** 2))
-    # Select identities before reading counts. Preserve the per-layer RNG draws
-    # and final population resampling without rereading entire NTC pools.
+    # One finite NTC population with the same layer allocation as the model.
+    # Preserve RNG draws and final population resampling for historical metrics.
     ntc_ids = np.concatenate([data.controls[(context, pair[1], 0)][rng.integers(len(data.controls[(context, pair[1], 0)]), size=n)]
                              for pair, n in zip(pairs, number)])
-    ntc = data.read(ntc_ids[pi])
+    ntc_generated = data.read(ntc_ids)
+    ntc = ntc_generated[pi]
+    ntc_sample_mean = np.average(logcp(ntc_generated, data.common), axis=0, weights=predicted_weight)
+    ntc_sample_residual = (ntc_sample_mean - sums['log_common'])[common]
     ntc_z = view.project(ntc)
     ntc_energy = float(2 * cdist(a, ntc_z).mean() - cdist(a, a).mean() - cdist(ntc_z, ntc_z).mean())
     centers = view.controls[(context, pairs[0][1])]['centers']
@@ -168,6 +171,8 @@ def evaluate_task(model, data, view, context, target, config, shared=None, save_
         'response_mse': float(np.mean(residual ** 2)), 'response_mae': float(np.mean(abs(residual))),
         'response_correlation': correlation(predicted[common], actual[common]),
         'zero_mse': float(np.mean(actual[common] ** 2)), 'zero_mae': float(np.mean(abs(actual[common]))),
+        'ntc_sample_response_mse': float(np.mean(ntc_sample_residual ** 2)),
+        'ntc_sample_response_mae': float(np.mean(abs(ntc_sample_residual))),
         'shared_mse': float(np.mean((share[common_target_mask] - actual[common]) ** 2)),
         'shared_mae': float(np.mean(abs(share[common_target_mask] - actual[common]))),
         'native_response_mse': float(np.mean((pred_native[native] - actual_native[native]) ** 2)),

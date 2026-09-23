@@ -153,7 +153,7 @@ class ModuleCVAE(nn.Module):
         # it shares learned module/residual effects and adds no control-only capacity.
         birth = (F.softplus(response_raw - 4) - F.softplus(torch.full_like(response_raw, -4))).clamp_min(0) * active
         mu = ((batch['base'] + 0.02) * torch.exp(log_ratio) + birth).clamp(1e-5, 1e6)
-        dispersion = self.dispersion(torch.cat([context, target], -1)) @ self.dispersion_loadings.T
+        dispersion = self.dispersion(torch.cat([response_context, target], -1)) @ self.dispersion_loadings.T
         theta = batch['theta'] * torch.exp(2 * torch.tanh(dispersion / 2))
         return mu, theta.clamp(0.05, 1000), {'module_rms': module_response.square().mean().sqrt(),
                                          'residual_rms': residual_response.square().mean().sqrt(), 'induction_mean': birth.mean()}

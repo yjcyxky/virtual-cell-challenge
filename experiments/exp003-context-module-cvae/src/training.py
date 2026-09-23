@@ -1,7 +1,11 @@
 """Complete resumable training trials, with training-only priors and outer holdouts."""
+import ast
+import hashlib
 import json
 import random
+import re
 import shutil
+import subprocess
 import time
 from pathlib import Path
 
@@ -10,7 +14,7 @@ import pandas as pd
 import torch
 import yaml
 
-from data import EXPERIMENT, BalancedSampler, reserved, write_json, hash_file, data_spec_hash
+from data import ROOT, EXPERIMENT, BalancedSampler, reserved, write_json, hash_file, data_spec_hash
 from evaluation import evaluate_context, shared_responses, summarize, task_seed
 from model import ModuleCVAE, masked_logcp
 from priors import degree_matched_random, fold_evidence
@@ -73,12 +77,35 @@ def construct_model(data, view, contexts, config, prior_directory, folder):
     return model
 
 
+def preprocessing_identity(commit):
+    """Require identical preparation implementations even across unrelated code fixes."""
+    assert re.fullmatch(r'[0-9a-f]{40}', commit), 'preprocessing_requires_fixed_commit'
+    prefix = str(EXPERIMENT.relative_to(ROOT))
+    paths = [f'{prefix}/src/{name}.py' for name in ['data', 'state', 'priors']]
+    paths += ['scripts/dossier/rna.py', 'experiments/exp001-context-pair-xgb/src/features.py']
+    identity = {}
+    for path in paths:
+        identity[path] = subprocess.check_output(['git', 'rev-parse', f'{commit}:{path}'], cwd=ROOT, text=True).strip()
+    for name, functions in [('evaluation', {'response_summary', 'shared_responses'}),
+                            ('training', {'construct_model'})]:
+        path = f'{prefix}/src/{name}.py'
+        source = subprocess.check_output(['git', 'show', f'{commit}:{path}'], cwd=ROOT, text=True)
+        tree = ast.parse(source)
+        nodes = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in functions]
+        assert {node.name for node in nodes} == functions, 'preprocessing_function_missing'
+        if name == 'evaluation':
+            nodes += [node for node in tree.body if isinstance(node, (ast.Import, ast.ImportFrom))]
+        identity[path] = hashlib.sha256('\n'.join(ast.dump(node, include_attributes=False) for node in nodes).encode()).hexdigest()
+    return identity
+
+
 def reuse_preprocessing(config, cache, key, contexts):
     if not config.get('reuse_run'):
         return
     source_run = EXPERIMENT / 'outputs' / config['reuse_run']
     source_config = yaml.safe_load((source_run / 'config.yaml').read_text())
-    assert source_config['pipeline_commit'] == config['pipeline_commit'], 'preprocessing_reuse_requires_same_code'
+    implementation = preprocessing_identity(config['pipeline_commit'])
+    assert preprocessing_identity(source_config['pipeline_commit']) == implementation, 'preprocessing_implementation_changed'
     assert source_config['uv_lock_sha256'] == config['uv_lock_sha256']
     assert data_spec_hash(source_config) == data_spec_hash(config)
     for field in ['state_dimensions', 'state_components', 'modules_per_family', 'minimum_module_genes', 'maximum_module_genes', 'network_minimum_score', 'validation_tasks']:
@@ -104,6 +131,7 @@ def reuse_preprocessing(config, cache, key, contexts):
         identities.append({'file': name, 'source': str(original), 'sha256': digest})
     write_json(cache / 'reused-preprocessing.json', {'source_run': config['reuse_run'],
                'source_commit': source_config['pipeline_commit'], 'same_training_contexts': list(contexts),
+               'consumer_commit': config['pipeline_commit'], 'identical_preprocessing_implementation': implementation,
                'source_artifact': json.loads((source_run / 'artifact.json').read_text()), 'files': identities,
                'model_optimizer_or_training_rng_reused': False})
 
@@ -172,6 +200,8 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
     shared, global_shared = shared_responses(data, view, contexts, config, cache)
     if not progress['complete']:
         model.train(); epoch_logs = []
+        if not last.exists():
+            save_checkpoint(last, model, optimizer, scheduler, sampler, progress)
         start_time = time.monotonic()
         marker = output / 'cache' / 'optimization-started.json'
         if not marker.exists():
@@ -187,7 +217,9 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
                 tracked.log({f'train/{key}/{k}': v for k, v in mean_logs.items()} |
                             {f'train/{key}/step': step + 1, f'train/{key}/resume_count': progress['resume_count'],
                              'resource/cuda_peak_allocated_bytes': torch.cuda.max_memory_allocated()})
-            if (step + 1) % config['checkpoint_every_steps'] == 0:
+            # A complete epoch includes validation, selection and early stopping.
+            # Never publish the pre-validation boundary as resumable progress.
+            if (step + 1) % config['checkpoint_every_steps'] == 0 and (step + 1) % config['steps_per_epoch']:
                 save_checkpoint(last, model, optimizer, scheduler, sampler, progress)
             if (step + 1) % config['steps_per_epoch']:
                 continue
@@ -204,12 +236,14 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
                              validation_energy=float(val.energy_distance.mean()), validation_ntc_energy=float(val.ntc_energy_distance.mean()))
                 if progress['best_score'] is None or score < progress['best_score'] - 1e-6:
                     progress['best_score'], progress['best_epoch'], progress['stale'] = score, epoch, 0
-                    torch.save({'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch}, best)
+                    torch.save({'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch,
+                                'sampled_training_targets': {c: sorted(v) for c, v in sampler.seen.items()}}, best)
                 else:
                     progress['stale'] += 1
             else:
                 progress['best_epoch'] = epoch
-                torch.save({'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch}, best)
+                torch.save({'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch,
+                            'sampled_training_targets': {c: sorted(v) for c, v in sampler.seen.items()}}, best)
             progress['history'].append(entry)
             progress['epoch_log_sums'], progress['epoch_log_count'] = {}, 0
             progress['coverage'] = {c: {'seen': len(sampler.seen[c]), 'eligible': len(sampler.targets[c])} for c in contexts}

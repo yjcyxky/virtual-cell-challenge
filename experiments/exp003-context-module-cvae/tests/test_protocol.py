@@ -3,6 +3,7 @@ from pathlib import Path
 import copy
 import json
 import sys
+import subprocess
 from types import SimpleNamespace
 
 import numpy as np
@@ -21,6 +22,8 @@ from evaluation import observed_task, evaluate_task
 from runtime import verify_environment
 from priors import fold_evidence
 import training
+from comparison import paired_difference
+import comparison
 
 
 def configuration():
@@ -189,6 +192,23 @@ def test_state_ablation_has_state_invariant_conditional_mean_response():
     torch.testing.assert_close(predicted_third, predictions[2][keep], atol=1e-4, rtol=1e-4)
 
 
+def test_context_ablation_has_context_invariant_dispersion_response():
+    model, batch = setup_model('no_context')
+    with torch.no_grad():
+        model.dispersion[-1].weight.normal_(std=0.3)
+        model.dispersion_loadings.normal_(std=0.3)
+    altered = {k: v.clone() for k, v in batch.items()}
+    altered['condition'] += 2
+    altered['base'] *= 4
+    z = torch.randn(len(batch['target']), 3)
+    ratios = []
+    for inputs in [batch, altered]:
+        control = {k: v.clone() for k, v in inputs.items()}
+        control['target'][:] = model.genes
+        ratios.append(model.decode(z, inputs)[1] / model.decode(z, control)[1])
+    torch.testing.assert_close(ratios[0], ratios[1], rtol=0, atol=0)
+
+
 def test_stratified_cache_keeps_rare_construct_and_batch():
     frame = pd.DataFrame({'construct': ['a'] * 100 + ['b'] * 3, 'batch': ['x'] * 99 + ['y'] + ['x', 'y', 'z']})
     selected = balanced_selection(frame, 12, np.random.default_rng(3))
@@ -316,6 +336,11 @@ def test_batch_matching_does_not_invent_response_from_composition(tmp_path):
     values, _, _, _ = observed_task(data, view, 'A', 'G0')
     np.testing.assert_allclose(values['log_common'], values['reference_log_common'], atol=1e-6)
     np.testing.assert_allclose(values['original_log_common'], values['original_reference_log_common'], atol=1e-6)
+    model, _ = setup_model()
+    config = configuration(); config['evaluation_cells'] = 24
+    metrics, _ = evaluate_task(model, data, view, 'A', 'G0', config)
+    assert metrics['ntc_sample_response_mse'] < 1e-10
+    assert metrics['ntc_sample_response_mae'] < 1e-5
 
 
 def test_prior_diagnostics_never_read_held_or_reserved_perturbations(tmp_path):
@@ -358,9 +383,9 @@ def test_evaluation_reads_only_selected_NTC_and_preserves_sample_order(tmp_path)
     from evaluation import task_seed
     rng = np.random.default_rng(task_seed('E', 'G1'))
     rng.choice(33, 24, p=np.r_[np.full(30, 0.5 / 30), np.full(3, 0.5 / 3)])
-    selected = rng.choice(24, 24, p=np.full(24, 1 / 24))
+    rng.choice(24, 24, p=np.full(24, 1 / 24))
     first, second = rng.integers(12, size=12), rng.integers(12, size=12)
-    expected = np.r_[data.controls[('E', 'b0', 0)][first], data.controls[('E', 'b1', 0)][second]][selected]
+    expected = np.r_[data.controls[('E', 'b0', 0)][first], data.controls[('E', 'b1', 0)][second]]
     np.testing.assert_array_equal(reads[-1], expected)
     assert np.isfinite(metrics['ntc_energy_distance'])
 
@@ -380,6 +405,7 @@ def test_environment_verification_rejects_changed_lock_or_package_metadata(tmp_p
 
 def test_preprocessing_reuse_checks_fold_and_never_reuses_model_weights(tmp_path, monkeypatch):
     monkeypatch.setattr(training, 'EXPERIMENT', tmp_path)
+    monkeypatch.setattr(training, 'preprocessing_identity', lambda commit: {'preparation': 'same'})
     source = tmp_path / 'outputs' / 'source'; source.mkdir(parents=True)
     config = yaml.safe_load((Path(__file__).resolve().parents[1] / 'configs/default.yaml').read_text())
     config.update(pipeline_commit='fixed-code', uv_lock_sha256='fixed-lock')
@@ -401,3 +427,152 @@ def test_preprocessing_reuse_checks_fold_and_never_reuses_model_weights(tmp_path
     (folder / 'state.npz').write_bytes(b'unexpected-change')
     with pytest.raises(AssertionError):
         training.reuse_preprocessing(config, destination, 'heldout', ['A', 'B'])
+
+
+def assert_nested_equal(actual, expected):
+    if isinstance(expected, torch.Tensor):
+        torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+    elif isinstance(expected, np.ndarray):
+        np.testing.assert_array_equal(actual, expected)
+    elif isinstance(expected, dict):
+        assert actual.keys() == expected.keys()
+        for key in expected:
+            assert_nested_equal(actual[key], expected[key])
+    elif isinstance(expected, (list, tuple)):
+        assert len(actual) == len(expected)
+        for a, b in zip(actual, expected):
+            assert_nested_equal(a, b)
+    else:
+        assert actual == expected
+
+
+@pytest.mark.parametrize('failure_stage', ['first_step', 'epoch_validation'])
+def test_fit_resume_replays_incomplete_epoch_exactly(tmp_path, monkeypatch, failure_stage):
+    if not torch.cuda.is_available():
+        pytest.skip('native CUDA required for full fit recovery')
+    torch.set_num_threads(2)
+    torch.use_deterministic_algorithms(True)
+    data = SmallData(); config = configuration()
+    config.update(epochs=2, minimum_epochs=2, patience=10, learning_rate=0.001, weight_decay=0.0001,
+                  validation_tasks=3, evaluation_cells=24, checkpoint_every_steps=2, pipeline_commit='test')
+    def construct(data, view, contexts, config, prior_directory, folder):
+        model, _ = setup_model()
+        model.projection.copy_(torch.tensor(view.projection)); model.origin.copy_(torch.tensor(view.origin))
+        model.common.fill_(1)
+        return model
+    monkeypatch.setattr(training, 'construct_model', construct)
+    tracked = SimpleNamespace(log=lambda values: None)
+    def execute(folder):
+        return training.fit(data, ['A', 'B', 'C'], 'D', config, folder, 'heldout', tmp_path, tracked)
+    uninterrupted, interrupted = tmp_path / 'uninterrupted', tmp_path / 'interrupted'
+    execute(uninterrupted)
+    original = training.train_step if failure_stage == 'first_step' else training.evaluate_context
+    name = 'train_step' if failure_stage == 'first_step' else 'evaluate_context'
+    def fail(*args, **kwargs):
+        raise RuntimeError('injected interruption')
+    monkeypatch.setattr(training, name, fail)
+    with pytest.raises(RuntimeError, match='injected interruption'):
+        execute(interrupted)
+    interrupted_state = torch.load(interrupted / 'checkpoints/heldout-last.pt', map_location='cpu', weights_only=False)
+    assert interrupted_state['progress']['next_step'] == (0 if failure_stage == 'first_step' else 2)
+    monkeypatch.setattr(training, name, original)
+    execute(interrupted)
+    expected = torch.load(uninterrupted / 'checkpoints/heldout-last.pt', map_location='cpu', weights_only=False)
+    actual = torch.load(interrupted / 'checkpoints/heldout-last.pt', map_location='cpu', weights_only=False)
+    assert actual['progress']['resume_count'] == 1
+    actual['progress']['resume_count'] = 0
+    assert_nested_equal(actual, expected)
+    selected = torch.load(interrupted / 'checkpoints/heldout-best.pt', map_location='cpu', weights_only=False)
+    expected_selected = torch.load(uninterrupted / 'checkpoints/heldout-best.pt', map_location='cpu', weights_only=False)
+    assert_nested_equal(selected, expected_selected)
+    seen, coverage = comparison.selected_exposure(data, interrupted, config, 'heldout')
+    assert seen == set.union(*(set(v) for v in selected['sampled_training_targets'].values()))
+    assert all(row['replay_matches_checkpoint'] for row in coverage)
+
+
+def test_paired_comparison_balances_contexts_and_rejects_missing_tasks():
+    identity = pd.DataFrame({'seed': [17]*4, 'context': ['A', 'A', 'A', 'B'], 'target': ['x', 'y', 'z', 'x']})
+    reference = identity.assign(response_mse=[2., 2., 2., 8.], response_mae=1., energy_distance=2., original_weight_mse=2.)
+    model = identity.assign(response_mse=[1., 1., 1., 2.], response_mae=.5, energy_distance=1., original_weight_mse=1.)
+    result = paired_difference(model, reference.iloc[::-1], 100, 42)
+    assert result['mean_reference_minus_model']['response_mse'] == 3.5
+    assert result['seed_sample_sd'] is None
+    json.dumps(result, allow_nan=False)
+    with pytest.raises(AssertionError, match='unpaired_tasks'):
+        paired_difference(model, reference.iloc[:-1], 100, 42)
+
+
+def test_trial_comparison_preserves_sources_and_labels_realized_exposure(tmp_path, monkeypatch):
+    monkeypatch.setattr(comparison, 'EXPERIMENT', tmp_path)
+    monkeypatch.setattr(comparison, 'selected_exposure', lambda *args: ({'x'}, [{'replay_matches_checkpoint': True}]))
+    config = yaml.safe_load((Path(__file__).resolve().parents[1] / 'configs/default.yaml').read_text())
+    config.update(pipeline_commit='same', uv_lock_sha256='lock', gene_axis_sha256='axis',
+                  source_collection_sha256='collection', prior_source_sha256='prior', bootstrap_repeats=10)
+    variants = [(v, s) for v in ['true_prior', 'random_prior', 'no_prior'] for s in [17, 29, 43]]
+    variants += [(v, 17) for v in ['no_state', 'no_residual', 'no_module', 'no_context']]
+    columns = ['response_mse', 'response_mae', 'zero_mse', 'zero_mae', 'shared_mse', 'shared_mae',
+               'energy_distance', 'ntc_energy_distance', 'original_weight_mse', 'original_weight_zero_mse',
+               'depth_mean_ratio', 'detection_mae', 'covariance_mse', 'state_composition_l1',
+               'projected_quantile_mae', 'native_response_mse', 'native_zero_mse',
+               'log_mean_raw_count_mse', 'log_mean_raw_count_zero_mse']
+    sources = []
+    for variant, seed in variants:
+        run_id = f'{variant}-{seed}'
+        folder = tmp_path / 'outputs' / run_id; folder.mkdir(parents=True)
+        actual = dict(config, variant=variant, seed=seed, run_id=run_id)
+        rows = []
+        for context in config['contexts']:
+            for target in ['x', 'y']:
+                row = dict.fromkeys(columns, 1.)
+                row.update(context=context, target=target, variant=variant, seed=seed,
+                           response_mse=1. if variant == 'true_prior' else 2.,
+                           reserved_target=target == 'y', target_seen_in_training=target == 'x')
+                rows.append(row)
+        frame = pd.DataFrame(rows)
+        if variant == 'no_context':
+            frame['ntc_sample_response_mse'] = .7; frame['ntc_sample_response_mae'] = .5
+            actual['comparison_sources'] = comparison.comparison_sources(sources)
+        else:
+            (folder / 'complete.json').write_text(json.dumps({'status': 'completed', 'artifact': {'name': run_id + ':v0'}}))
+            sources.append(run_id)
+        frame.to_parquet(folder / 'evaluation-metrics.parquet')
+        (folder / 'config.yaml').write_text(yaml.safe_dump(actual))
+    priors = folder / 'cache/priors'; priors.mkdir(parents=True)
+    np.savez(priors / 'modules.npz', true=np.array([[1.], [0.]]))
+    result = comparison.compare_trials(SimpleNamespace(genes=['x', 'y']), actual, folder)
+    assert result['run_count'] == 13
+    assert result['comparisons']['true_prior_vs_random_prior']['mean_reference_minus_model']['response_mse'] == 1.
+    combined = pd.read_parquet(folder / 'comparison-tasks.parquet')
+    assert combined.actually_sampled_at_selected_checkpoint.equals(combined.target.eq('x'))
+    assert combined.ntc_sample_response_mse.eq(.7).all()
+    first = tmp_path / 'outputs' / sources[0] / 'evaluation-metrics.parquet'
+    original = pd.read_parquet(first)
+    assert 'ntc_sample_response_mse' not in original
+    original['zero_mse'] = 99
+    original.to_parquet(first)
+    with pytest.raises(AssertionError, match='comparison_source_changed'):
+        comparison.compare_trials(SimpleNamespace(genes=['x', 'y']), actual, folder)
+
+
+def test_preprocessing_identity_allows_unrelated_fixes_but_rejects_changed_preparation(tmp_path, monkeypatch):
+    monkeypatch.setattr(training, 'ROOT', tmp_path)
+    experiment = tmp_path / 'experiments/exp003-context-module-cvae'
+    monkeypatch.setattr(training, 'EXPERIMENT', experiment)
+    paths = [experiment / 'src' / f'{name}.py' for name in ['data', 'state', 'priors']]
+    paths += [tmp_path / 'scripts/dossier/rna.py', tmp_path / 'experiments/exp001-context-pair-xgb/src/features.py']
+    for path in paths:
+        path.parent.mkdir(parents=True, exist_ok=True); path.write_text('value = 1\n')
+    evaluation = experiment / 'src/evaluation.py'
+    evaluation.write_text('import numpy as np\ndef response_summary(): return 1\ndef shared_responses(): return 2\ndef evaluate_task(): return 3\n')
+    (experiment / 'src/training.py').write_text('def construct_model(): return 1\n')
+    def git(*args):
+        return subprocess.check_output(['git', '-c', 'user.name=Protocol Test', '-c', 'user.email=protocol@example.invalid', *args], cwd=tmp_path, text=True).strip()
+    git('init', '-q'); git('add', '.')
+    git('commit', '-qm', 'original preparation'); first = git('rev-parse', 'HEAD')
+    evaluation.write_text(evaluation.read_text().replace('evaluate_task(): return 3', 'evaluate_task(): return 4'))
+    (experiment / 'src/model.py').write_text('fixed_ablation = True\n')
+    git('add', '.'); git('commit', '-qm', 'unrelated model and evaluation fixes'); second = git('rev-parse', 'HEAD')
+    assert training.preprocessing_identity(first) == training.preprocessing_identity(second)
+    evaluation.write_text(evaluation.read_text().replace('shared_responses(): return 2', 'shared_responses(): return 5'))
+    git('add', '.'); git('commit', '-qm', 'changed baseline'); third = git('rev-parse', 'HEAD')
+    assert training.preprocessing_identity(first) != training.preprocessing_identity(third)
