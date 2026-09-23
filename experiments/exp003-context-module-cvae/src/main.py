@@ -1,0 +1,174 @@
+"""Issue #32 entry: one identity from validation through training and local evaluation."""
+import argparse
+import base64
+import hashlib
+import importlib.metadata
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import traceback
+
+import torch
+import yaml
+
+from data import ROOT, EXPERIMENT, CountData, prepare, hash_file, write_json
+from priors import prepare_priors
+from training import experiment
+
+
+class Tee:
+    def __init__(self, stream, log):
+        self.stream, self.log = stream, log
+    def write(self, value):
+        self.stream.write(value); self.log.write(value); self.log.flush()
+        return len(value)
+    def flush(self):
+        self.stream.flush(); self.log.flush()
+
+
+def artifact(tracked, output, online):
+    import wandb
+    marker = output / 'artifact.json'
+    if marker.exists():
+        saved = json.loads(marker.read_text())
+        if saved['status'] == 'verified_online':
+            return saved
+    paths = [output / n for n in ['config.yaml', 'metrics.json', 'evaluation-metrics.parquet', 'evaluation-by-context.csv', 'evaluation-by-stratum.csv']]
+    paths += sorted((output / 'checkpoints').glob('*-best.pt'))
+    paths += sorted((output / 'cache').glob('*/state.npz'))
+    paths += sorted((output / 'cache').glob('*/training.json'))
+    paths += sorted((output / 'cache').glob('*/prior-evidence.parquet'))
+    paths += sorted((output / 'cache').glob('*/batch-diagnostics.parquet'))
+    paths += sorted((output / 'cache').glob('*/evidence-scope.json'))
+    paths += sorted((output / 'cache').glob('*/state-scope.json'))
+    paths += sorted((output / 'cache').glob('*/split.json'))
+    paths += sorted((output / 'cache').glob('*/prior-strength.npy'))
+    paths += sorted((output / 'predictions').glob('*/example-*.npz'))
+    paths += [output / 'cache' / 'priors' / n for n in ['modules.npz', 'modules.json', 'complete.json']]
+    paths += [output / 'cache' / n for n in ['data-reference.json', 'tests.log']]
+    item = wandb.Artifact(EXPERIMENT.name + '-' + output.name, type='model', metadata={
+        'pipeline_commit': tracked.config['pipeline_commit'], 'local_only': True, 'raw_cells_uploaded': False,
+        'prediction_storage': 'two generated count examples per background; all-task prediction summaries retained locally'})
+    md5 = {}
+    for path in paths:
+        assert path.is_file(), str(path)
+        name = str(path.relative_to(output))
+        item.add_file(str(path), name=name)
+        digest = hashlib.md5()
+        with path.open('rb') as fh:
+            while block := fh.read(8 << 20):
+                digest.update(block)
+        md5[name] = base64.b64encode(digest.digest()).decode()
+    logged = tracked.log_artifact(item)
+    if not online:
+        result = {'status': 'pending_offline_sync', 'name': item.name, 'files': len(paths)}
+    else:
+        logged.wait()
+        remote = wandb.Api().artifact(f'yjcyxky/virtual-cell-challenge/{logged.name}', type='model')
+        assert remote.digest == logged.digest
+        entries = remote.manifest.entries
+        assert set(entries) == set(md5)
+        for name, digest in md5.items():
+            assert entries[name].digest == digest, name
+        result = {'status': 'verified_online', 'name': logged.name, 'version': logged.version,
+                  'digest': logged.digest, 'files': len(paths), 'file_digests_verified': True}
+    write_json(marker, result)
+    return result
+
+
+def main(args):
+    if not re.fullmatch(r'[A-Za-z0-9_-]+', args.run_id):
+        raise ValueError('invalid_run_id')
+    output = EXPERIMENT / 'outputs' / args.run_id
+    output.mkdir(parents=True, exist_ok=True)
+    log = (output / 'train.log').open('a', buffering=1)
+    sys.stdout, sys.stderr = Tee(sys.stdout, log), Tee(sys.stderr, log)
+    config_path = Path(args.config).resolve()
+    config = yaml.safe_load(config_path.read_text())
+    for name in ['seed', 'variant', 'cache_source']:
+        value = getattr(args, name)
+        if value is not None:
+            config[name] = value
+    if config.get('cache_source'):
+        config['cache_source'] = str(Path(config['cache_source']).resolve())
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    guarded = [str(EXPERIMENT), 'scripts/dossier/rna.py', 'experiments/exp001-context-pair-xgb/src/features.py']
+    subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *guarded], cwd=ROOT, check=True)
+    untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '--', *guarded], cwd=ROOT, text=True)
+    assert not untracked.strip(), 'formal_training_requires_committed_source'
+    assert torch.cuda.is_available(), 'GPU_required_no_silent_CPU_fallback'
+    torch.set_num_threads(8)
+    torch.set_float32_matmul_precision('high')
+    torch.use_deterministic_algorithms(True)
+    config.update(experiment_id=EXPERIMENT.name, run_id=args.run_id, pipeline_commit=commit,
+                  uv_lock_sha256=hash_file(EXPERIMENT / 'uv.lock'), configuration_sha256=hash_file(config_path),
+                  source_collection_sha256=hash_file(ROOT / config['collection'] / 'report.json'),
+                  gene_axis_sha256=hash_file(ROOT / config['gene_axis']),
+                  prior_source_sha256=hash_file(ROOT / 'data/raw/networks/SOURCE.json'),
+                  versions={p: importlib.metadata.version(p) for p in ['torch', 'numpy', 'scipy', 'pandas', 'h5py', 'wandb', 'scikit-learn']},
+                  runtime={'python': sys.version, 'executable': sys.executable, 'cuda': torch.version.cuda,
+                           'gpu': torch.cuda.get_device_name(), 'architecture': os.uname().machine,
+                           'deterministic_algorithms': True, 'float32_matmul_precision': 'high'},
+                  official_submission=False,
+                  source_data_run='20260922-c', source_cache_run=None if not config.get('cache_source') else str(Path(config['cache_source']).parents[1]))
+    if (output / 'config.yaml').exists():
+        assert yaml.safe_load((output / 'config.yaml').read_text()) == config, 'changed_conditions_require_new_run'
+    else:
+        (output / 'config.yaml').write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
+    (output / 'wandb').mkdir(exist_ok=True)
+    (output / 'cache').mkdir(exist_ok=True)
+    import wandb
+    try:
+        tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
+                             id=args.run_id, name=f'{config["variant"]}-{args.run_id}', dir=str(output),
+                             resume='allow', mode='online', config=config, settings=wandb.Settings(init_timeout=30))
+        online = True
+    except Exception as error:
+        print(json.dumps({'stage': 'wandb_offline_fallback', 'reason': str(error)}), flush=True)
+        tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
+                             id=args.run_id, name=f'{config["variant"]}-{args.run_id}', dir=str(output),
+                             mode='offline', config=config)
+        online = False
+    try:
+        tracked.summary['pipeline_status'] = 'validating'
+        with (output / 'cache' / 'tests.log').open('a') as testlog:
+            subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', str(EXPERIMENT / 'tests')], cwd=EXPERIMENT,
+                           stdout=testlog, stderr=subprocess.STDOUT, check=True)
+        cache = prepare(config, output)
+        data = CountData(cache)
+        write_json(output / 'cache' / 'data-reference.json', {'path': str(cache), 'sha256': hash_file(cache / 'complete.json'),
+                   'data_spec_hash': data.report['data_spec_hash'], 'source_inputs': data.report['inputs']})
+        priors = prepare_priors(config, data.genes, output)
+        tracked.log({'preparation/contexts': len(data.masks), 'preparation/tasks': len(data.tasks),
+                     'preparation/common_genes': int(data.common.sum()), 'preparation/cached_cells': len(data.cells)})
+        tracked.summary['pipeline_status'] = 'training_and_evaluating'
+        result = experiment(data, config, output, priors, tracked)
+        result['wandb_url'] = f'https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{args.run_id}'
+        result['wandb_sync'] = 'online' if online else 'pending_offline_sync'
+        result['official_submission'] = False
+        write_json(output / 'metrics.json', result)
+        delivery = artifact(tracked, output, online)
+        tracked.summary.update(pipeline_status='completed', artifact_status=delivery['status'], local_only=True,
+                               macro_response_mse=result['macro']['response_mse'],
+                               mse_improvement_vs_zero=result['mse_improvement_vs_zero_fraction'])
+        tracked.finish()
+        write_json(output / 'complete.json', {'status': 'completed', 'wandb_sync': result['wandb_sync'], 'artifact': delivery})
+        print(json.dumps(result), flush=True)
+    except BaseException as error:
+        write_json(output / 'failure.json', {'error': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc(),
+                                           'status': 'incomplete', 'resume_run_id': args.run_id})
+        tracked.summary['pipeline_status'] = 'interrupted_or_failed'; tracked.finish(exit_code=1)
+        raise
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run-id', required=True)
+    parser.add_argument('--config', default=str(EXPERIMENT / 'configs/default.yaml'))
+    parser.add_argument('--seed', type=int)
+    parser.add_argument('--variant', choices=['true_prior', 'random_prior', 'no_prior', 'no_state', 'no_context', 'no_residual', 'no_module'])
+    parser.add_argument('--cache-source')
+    main(parser.parse_args())
