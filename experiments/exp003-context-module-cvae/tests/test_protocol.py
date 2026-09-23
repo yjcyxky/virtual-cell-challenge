@@ -18,6 +18,7 @@ from priors import degree_matched_random
 from state import FoldView
 from training import save_checkpoint, load_checkpoint, train_step
 from evaluation import observed_task, evaluate_task
+from runtime import verify_environment
 from priors import fold_evidence
 import training
 
@@ -338,6 +339,43 @@ def test_evaluation_outputs_finite_metrics_and_integer_samples(tmp_path):
     assert metrics['technical_construct_layers'] == 2
     assert prediction['cells'].dtype == np.uint32
     assert prediction['native_mean_count'].shape == (24,)
+
+
+def test_evaluation_reads_only_selected_NTC_and_preserves_sample_order(tmp_path):
+    data = SmallData(); config = configuration(); config['evaluation_cells'] = 24
+    view = FoldView(data, ['A', 'B', 'C'], config, tmp_path)
+    model, _ = setup_model()
+    reads = []
+    original_read = data.read
+    def record_read(ids):
+        reads.append(np.asarray(ids).copy())
+        return original_read(ids)
+    data.read = record_read
+    metrics, _ = evaluate_task(model, data, view, 'E', 'G1', config)
+    assert [len(ids) for ids in reads] == [33, 24]
+    # The fixture has two equally weighted construct/batch layers, with 30 and
+    # three observed cells. Reconstruct the declared population sampling law.
+    from evaluation import task_seed
+    rng = np.random.default_rng(task_seed('E', 'G1'))
+    rng.choice(33, 24, p=np.r_[np.full(30, 0.5 / 30), np.full(3, 0.5 / 3)])
+    selected = rng.choice(24, 24, p=np.full(24, 1 / 24))
+    first, second = rng.integers(12, size=12), rng.integers(12, size=12)
+    expected = np.r_[data.controls[('E', 'b0', 0)][first], data.controls[('E', 'b1', 0)][second]][selected]
+    np.testing.assert_array_equal(reads[-1], expected)
+    assert np.isfinite(metrics['ntc_energy_distance'])
+
+
+def test_environment_verification_rejects_changed_lock_or_package_metadata(tmp_path):
+    record = tmp_path / 'environment.json'
+    expected = {'uv_lock_sha256': 'locked', 'packages': {'torch': {'version': 'fixed', 'metadata': 'known'}}}
+    with pytest.raises(ValueError, match='not_yet_synchronized'):
+        verify_environment(record, expected)
+    record.write_text(json.dumps(expected))
+    verify_environment(record, expected)
+    for changed in [dict(expected, uv_lock_sha256='different'),
+                    dict(expected, packages={'torch': {'version': 'fixed', 'metadata': 'altered'}})]:
+        with pytest.raises(ValueError, match='environment_changed'):
+            verify_environment(record, changed)
 
 
 def test_preprocessing_reuse_checks_fold_and_never_reuses_model_weights(tmp_path, monkeypatch):

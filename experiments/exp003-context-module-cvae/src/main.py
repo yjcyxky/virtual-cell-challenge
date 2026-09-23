@@ -116,7 +116,11 @@ def main(args):
     torch.set_num_threads(8)
     torch.set_float32_matmul_precision('high')
     torch.use_deterministic_algorithms(True)
+    from runtime import environment_identity, verify_environment
+    environment = environment_identity()
+    verify_environment(EXPERIMENT / '.venv' / 'experiment-environment.json', environment)
     config.update(experiment_id=EXPERIMENT.name, run_id=args.run_id, pipeline_commit=commit,
+                  environment_identity=environment,
                   uv_lock_sha256=hash_file(EXPERIMENT / 'uv.lock'), configuration_sha256=hash_file(config_path),
                   source_collection_sha256=hash_file(ROOT / config['collection'] / 'report.json'),
                   gene_axis_sha256=hash_file(ROOT / config['gene_axis']),

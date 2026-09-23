@@ -118,13 +118,16 @@ def evaluate_task(model, data, view, context, target, config, shared=None, save_
         generated = model.generate(batch).cpu().numpy()
     assert np.isfinite(generated).all() and generated.min() >= 0 and np.array_equal(generated, np.floor(generated))
     assert generated.max(initial=0) <= np.iinfo(np.uint32).max, 'generated_counts_exceed_storage_type'
+    generated_common = logcp(generated, data.common)
+    generated_native = logcp(generated, data.masks[context])
     pred_log = np.zeros(len(data.genes)); pred_common = np.zeros(len(data.genes)); pred_count = np.zeros(len(data.genes)); pred_original = np.zeros(len(data.genes))
     predicted_weight = []
     ptr = 0
     for pair, count in zip(pairs, number):
-        x = generated[ptr:ptr + count]; ptr += count
-        lc = logcp(x, data.common).mean(0)
-        pred_log += weights[pair] * logcp(x, data.masks[context]).mean(0)
+        x = generated[ptr:ptr + count]
+        lc = generated_common[ptr:ptr + count].mean(0)
+        pred_log += weights[pair] * generated_native[ptr:ptr + count].mean(0)
+        ptr += count
         pred_common += weights[pair] * lc
         pred_count += weights[pair] * x.mean(0)
         pred_original += original[pair] * lc
@@ -149,9 +152,11 @@ def evaluate_task(model, data, view, context, target, config, shared=None, save_
     a, b = view.project(observed[oi]), view.project(generated[pi])
     energy = float(2 * cdist(a, b).mean() - cdist(a, a).mean() - cdist(b, b).mean())
     covariance = float(np.mean((np.cov(a.T) - np.cov(b.T)) ** 2))
-    ntc = np.concatenate([data.control(context, pair[1], 0)[rng.integers(len(data.controls[(context, pair[1], 0)]), size=n)]
-                          for pair, n in zip(pairs, number)])
-    ntc = ntc[pi]
+    # Select identities before reading counts. Preserve the per-layer RNG draws
+    # and final population resampling without rereading entire NTC pools.
+    ntc_ids = np.concatenate([data.controls[(context, pair[1], 0)][rng.integers(len(data.controls[(context, pair[1], 0)]), size=n)]
+                             for pair, n in zip(pairs, number)])
+    ntc = data.read(ntc_ids[pi])
     ntc_z = view.project(ntc)
     ntc_energy = float(2 * cdist(a, ntc_z).mean() - cdist(a, a).mean() - cdist(ntc_z, ntc_z).mean())
     centers = view.controls[(context, pairs[0][1])]['centers']
