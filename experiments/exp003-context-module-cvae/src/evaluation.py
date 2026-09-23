@@ -226,7 +226,9 @@ def evaluate_context(model, data, view, context, config, directory, shared, glob
             predictions.append(prediction)
             if 'cells' in prediction:
                 np.savez_compressed(directory / f'example-{i}.npz', target=target, context=context,
-                                    genes=data.genes, counts=prediction.pop('cells'))
+                                    genes=data.genes, counts=prediction.pop('cells'),
+                                    available_readout_mask=data.masks[context],
+                                    trained_readout_mask=model.trained_readouts.cpu().numpy())
         if not validation and (i + 1) % 100 == 0:
             print(json.dumps({'stage': 'outer_evaluation', 'context': context, 'targets_done': i + 1, 'total': len(targets)}), flush=True)
     frame = pd.DataFrame(rows)

@@ -18,7 +18,7 @@ from model import ModuleCVAE, log_nb
 from priors import degree_matched_random
 from state import FoldView
 from training import save_checkpoint, load_checkpoint, train_step
-from evaluation import observed_task, evaluate_task
+from evaluation import observed_task, evaluate_task, evaluate_context
 from runtime import verify_environment
 from priors import fold_evidence
 import training
@@ -364,6 +364,19 @@ def test_evaluation_outputs_finite_metrics_and_integer_samples(tmp_path):
     assert metrics['technical_construct_layers'] == 2
     assert prediction['cells'].dtype == np.uint32
     assert prediction['native_mean_count'].shape == (24,)
+
+
+def test_saved_generated_cells_carry_available_and_trained_readout_masks(tmp_path):
+    data = SmallData(); config = configuration(); config['evaluation_cells'] = 24
+    data.masks['E'][-1] = False
+    view = FoldView(data, ['A', 'B', 'C'], config, tmp_path)
+    model, _ = setup_model(); model.trained_readouts[-2] = False
+    evaluate_context(model, data, view, 'E', config, tmp_path, {}, np.zeros(data.common.sum()))
+    saved = np.load(tmp_path / 'example-0.npz')
+    np.testing.assert_array_equal(saved['available_readout_mask'], data.masks['E'])
+    np.testing.assert_array_equal(saved['trained_readout_mask'], model.trained_readouts.numpy())
+    assert not saved['available_readout_mask'][-1]
+    assert not saved['trained_readout_mask'][-2]
 
 
 def test_evaluation_reads_only_selected_NTC_and_preserves_sample_order(tmp_path):
