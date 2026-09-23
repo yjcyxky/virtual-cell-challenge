@@ -31,6 +31,87 @@ class Tee:
         self.stream.flush(); self.log.flush()
 
 
+def committed_pipeline():
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    guarded = [str(EXPERIMENT), 'scripts/dossier/rna.py', 'experiments/exp001-context-pair-xgb/src/features.py']
+    subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *guarded], cwd=ROOT, check=True)
+    untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '--', *guarded], cwd=ROOT, text=True)
+    assert not untracked.strip(), 'formal_training_requires_committed_source'
+    return commit
+
+
+def completion_summary(tracked, result, delivery):
+    # W&B SummaryDict.update accepts one mapping, unlike dict.update(**kwargs).
+    tracked.summary.update({'pipeline_status': 'completed', 'artifact_status': delivery['status'], 'local_only': True,
+                            'macro_response_mse': result['macro']['response_mse'],
+                            'mse_improvement_vs_zero': result['mse_improvement_vs_zero_fraction']})
+
+
+def verify_remote_artifact(output, delivery):
+    import wandb
+    assert delivery['status'] == 'verified_online', 'completion_retry_requires_uploaded_artifact'
+    remote = wandb.Api().artifact(f'yjcyxky/virtual-cell-challenge/{delivery["name"]}', type='model')
+    assert remote.digest == delivery['digest'] and remote.version == delivery['version'], 'artifact_version_changed'
+    assert len(remote.manifest.entries) == delivery['files']
+    for name, entry in remote.manifest.entries.items():
+        path = (output / name).resolve()
+        assert path.is_relative_to(output.resolve()) and path.is_file(), 'artifact_file_missing'
+        digest = hashlib.md5()
+        with path.open('rb') as stream:
+            while block := stream.read(8 << 20):
+                digest.update(block)
+        assert base64.b64encode(digest.digest()).decode() == entry.digest, 'archived_result_changed:' + name
+
+
+def finalize_run(run_id):
+    """Retry bookkeeping only after all fits, evaluation and artifact upload succeeded."""
+    import wandb
+    from runtime import environment_identity
+    output = EXPERIMENT / 'outputs' / run_id
+    config = yaml.safe_load((output / 'config.yaml').read_text())
+    assert config['run_id'] == run_id and config['experiment_id'] == EXPERIMENT.name
+    assert environment_identity() == config['environment_identity'], 'completion_retry_environment_changed'
+    commit = committed_pipeline()
+    if (output / 'complete.json').exists():
+        print((output / 'complete.json').read_text())
+        return
+    result = json.loads((output / 'metrics.json').read_text())
+    assert result['status'] == 'trained_and_locally_evaluated' and result['contexts'] == len(config['contexts'])
+    assert not result['official_submission']
+    checkpoints = {}
+    for key in ['holdout-' + c for c in config['contexts']] + ['final']:
+        path = output / 'checkpoints' / f'{key}-last.pt'
+        state = torch.load(path, map_location='cpu', weights_only=False)
+        assert {'model', 'optimizer', 'scheduler', 'sampler', 'random', 'progress'} <= state.keys()
+        assert state['progress']['complete'], 'cannot_finalize_incomplete_fit:' + key
+        checkpoints[key] = hash_file(path)
+        if key != 'final':
+            assert (output / 'predictions' / key / 'complete.json').is_file()
+    delivery = json.loads((output / 'artifact.json').read_text())
+    verify_remote_artifact(output, delivery)
+    tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
+                         id=run_id, name=f'{config["variant"]}-{run_id}', dir=str(output),
+                         resume='must', mode='online', config=config, settings=wandb.Settings(init_timeout=30))
+    try:
+        completion_summary(tracked, result, delivery)
+        tracked.summary['finalization_commit'] = commit
+        tracked.summary['training_commit'] = config['pipeline_commit']
+        tracked.log({'recovery/finalization_only': 1, 'recovery/optimizer_steps_repeated': 0})
+        tracked.finish()
+    except BaseException:
+        tracked.finish(exit_code=1)
+        raise
+    completion = {'status': 'completed', 'wandb_sync': 'online', 'artifact': delivery,
+                  'training_commit': config['pipeline_commit'], 'finalization_commit': commit,
+                  'finalization_only_retry': True, 'optimizer_steps_repeated': 0,
+                  'complete_training_checkpoint_sha256': checkpoints,
+                  'original_failure_record_preserved': (output / 'failure.json').exists()}
+    write_json(output / 'complete.json', completion)
+    with (output / 'train.log').open('a') as stream:
+        stream.write(json.dumps({'stage': 'finalization_recovered', **completion}) + '\n')
+    print(json.dumps(completion), flush=True)
+
+
 def artifact(tracked, output, online):
     import wandb
     marker = output / 'artifact.json'
@@ -87,6 +168,11 @@ def artifact(tracked, output, online):
 def main(args):
     if not re.fullmatch(r'[A-Za-z0-9_-]+', args.run_id):
         raise ValueError('invalid_run_id')
+    if args.finalize_only:
+        assert not any(getattr(args, name) is not None for name in ['seed', 'variant', 'cache_source', 'reuse_run', 'compare_runs', 'repair_validation_reason']), 'completion_retry_cannot_change_conditions'
+        assert Path(args.config).resolve() == EXPERIMENT / 'configs/default.yaml'
+        finalize_run(args.run_id)
+        return
     output = EXPERIMENT / 'outputs' / args.run_id
     output.mkdir(parents=True, exist_ok=True)
     (output / 'cache').mkdir(exist_ok=True)
@@ -112,11 +198,7 @@ def main(args):
     if args.compare_runs is not None:
         assert args.run_id not in args.compare_runs, 'comparison_source_cannot_be_current_run'
         config['comparison_sources'] = comparison_sources(args.compare_runs)
-    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-    guarded = [str(EXPERIMENT), 'scripts/dossier/rna.py', 'experiments/exp001-context-pair-xgb/src/features.py']
-    subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *guarded], cwd=ROOT, check=True)
-    untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '--', *guarded], cwd=ROOT, text=True)
-    assert not untracked.strip(), 'formal_training_requires_committed_source'
+    commit = committed_pipeline()
     assert torch.cuda.is_available(), 'GPU_required_no_silent_CPU_fallback'
     torch.set_num_threads(8)
     torch.set_float32_matmul_precision('high')
@@ -194,9 +276,7 @@ def main(args):
         result['official_submission'] = False
         write_json(output / 'metrics.json', result)
         delivery = artifact(tracked, output, online)
-        tracked.summary.update(pipeline_status='completed', artifact_status=delivery['status'], local_only=True,
-                               macro_response_mse=result['macro']['response_mse'],
-                               mse_improvement_vs_zero=result['mse_improvement_vs_zero_fraction'])
+        completion_summary(tracked, result, delivery)
         tracked.finish()
         write_json(output / 'complete.json', {'status': 'completed', 'wandb_sync': result['wandb_sync'], 'artifact': delivery})
         print(json.dumps(result), flush=True)
@@ -210,6 +290,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--run-id', required=True)
+    parser.add_argument('--finalize-only', action='store_true', help='Retry completion metadata only; requires all fits and an unchanged verified online artifact.')
     parser.add_argument('--config', default=str(EXPERIMENT / 'configs/default.yaml'))
     parser.add_argument('--seed', type=int)
     parser.add_argument('--variant', choices=['true_prior', 'random_prior', 'no_prior', 'no_state', 'no_context', 'no_residual', 'no_module'])

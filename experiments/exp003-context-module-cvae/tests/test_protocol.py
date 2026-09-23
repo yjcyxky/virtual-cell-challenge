@@ -24,6 +24,7 @@ from priors import fold_evidence
 import training
 from comparison import paired_difference
 import comparison
+import main as entrypoint
 
 
 def configuration():
@@ -589,3 +590,75 @@ def test_preprocessing_identity_allows_unrelated_fixes_but_rejects_changed_prepa
     evaluation.write_text(evaluation.read_text().replace('shared_responses(): return 2', 'shared_responses(): return 5'))
     git('add', '.'); git('commit', '-qm', 'changed baseline'); third = git('rev-parse', 'HEAD')
     assert training.preprocessing_identity(first) != training.preprocessing_identity(third)
+
+
+def test_completion_summary_uses_the_installed_wandb_API():
+    from wandb.sdk.wandb_summary import Summary
+    updates = []
+    summary = Summary(lambda: {})
+    summary._set_update_callback(updates.append)
+    entrypoint.completion_summary(SimpleNamespace(summary=summary),
+                                 {'macro': {'response_mse': .2}, 'mse_improvement_vs_zero_fraction': -.5},
+                                 {'status': 'verified_online'})
+    values = {item.key[0]: item.value for record in updates for item in record.update}
+    assert values['pipeline_status'] == 'completed'
+    assert values['artifact_status'] == 'verified_online'
+    assert values['macro_response_mse'] == .2
+
+
+def test_completion_recovery_rejects_changed_archived_files(tmp_path, monkeypatch):
+    import wandb
+    import base64
+    import hashlib
+    path = tmp_path / 'model.pt'; path.write_bytes(b'unchanged-model')
+    entry = SimpleNamespace(digest=base64.b64encode(hashlib.md5(path.read_bytes()).digest()).decode())
+    remote = SimpleNamespace(digest='fixed', version='v0', manifest=SimpleNamespace(entries={'model.pt': entry}))
+    monkeypatch.setattr(wandb, 'Api', lambda: SimpleNamespace(artifact=lambda *args, **kwargs: remote))
+    delivery = {'status': 'verified_online', 'name': 'model:v0', 'digest': 'fixed', 'version': 'v0', 'files': 1}
+    entrypoint.verify_remote_artifact(tmp_path, delivery)
+    path.write_bytes(b'changed')
+    with pytest.raises(AssertionError, match='archived_result_changed'):
+        entrypoint.verify_remote_artifact(tmp_path, delivery)
+
+
+@pytest.mark.parametrize('fit_complete', [True, False])
+def test_finalization_retry_preserves_training_identity_and_rejects_unfinished_fit(tmp_path, monkeypatch, fit_complete):
+    import wandb
+    import runtime
+    from wandb.sdk.wandb_summary import Summary
+    monkeypatch.setattr(entrypoint, 'EXPERIMENT', tmp_path)
+    monkeypatch.setattr(entrypoint, 'committed_pipeline', lambda: 'bookkeeping-fix')
+    monkeypatch.setattr(runtime, 'environment_identity', lambda: {'locked': True})
+    monkeypatch.setattr(entrypoint, 'verify_remote_artifact', lambda *args: None)
+    output = tmp_path / 'outputs' / 'original'; (output / 'checkpoints').mkdir(parents=True)
+    config = {'run_id': 'original', 'experiment_id': tmp_path.name, 'variant': 'true_prior', 'contexts': ['A'],
+              'pipeline_commit': 'original-training', 'environment_identity': {'locked': True}}
+    config_path = output / 'config.yaml'; config_path.write_text(yaml.safe_dump(config))
+    original_config = config_path.read_bytes()
+    (output / 'metrics.json').write_text(json.dumps({'status': 'trained_and_locally_evaluated', 'contexts': 1,
+          'official_submission': False, 'macro': {'response_mse': .2}, 'mse_improvement_vs_zero_fraction': -.5}))
+    (output / 'artifact.json').write_text(json.dumps({'status': 'verified_online'}))
+    (output / 'failure.json').write_text('{"error":"summary update failed"}')
+    prediction = output / 'predictions/holdout-A'; prediction.mkdir(parents=True)
+    (prediction / 'complete.json').write_text('{}')
+    for key in ['holdout-A', 'final']:
+        torch.save({'model': {}, 'optimizer': {}, 'scheduler': {}, 'sampler': {}, 'random': {},
+                    'progress': {'complete': fit_complete}}, output / 'checkpoints' / f'{key}-last.pt')
+    tracked = SimpleNamespace(summary=Summary(lambda: {}), log=lambda values: None, finish=lambda **kwargs: None)
+    init_arguments = []
+    def initialize(**kwargs):
+        init_arguments.append(kwargs); return tracked
+    monkeypatch.setattr(wandb, 'init', initialize)
+    if not fit_complete:
+        with pytest.raises(AssertionError, match='cannot_finalize_incomplete_fit'):
+            entrypoint.finalize_run('original')
+        assert not init_arguments and not (output / 'complete.json').exists()
+        return
+    entrypoint.finalize_run('original')
+    complete = json.loads((output / 'complete.json').read_text())
+    assert complete['training_commit'] == 'original-training'
+    assert complete['finalization_commit'] == 'bookkeeping-fix'
+    assert complete['optimizer_steps_repeated'] == 0
+    assert complete['original_failure_record_preserved']
+    assert init_arguments[0]['id'] == 'original' and init_arguments[0]['resume'] == 'must'
+    assert config_path.read_bytes() == original_config
