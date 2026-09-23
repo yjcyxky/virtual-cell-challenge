@@ -18,7 +18,7 @@ from model import ModuleCVAE, log_nb
 from priors import degree_matched_random
 from state import FoldView
 from training import save_checkpoint, load_checkpoint, train_step
-from evaluation import observed_task, evaluate_task, evaluate_context
+from evaluation import observed_task, evaluate_task, evaluate_context, shared_responses
 from runtime import verify_environment
 from priors import fold_evidence
 import training
@@ -568,6 +568,25 @@ def test_trial_comparison_preserves_sources_and_labels_realized_exposure(tmp_pat
         comparison.compare_trials(SimpleNamespace(genes=['x', 'y']), actual, folder)
 
 
+def test_cached_shared_responses_load_one_matrix_and_preserve_values(tmp_path):
+    matrix = np.arange(12 * 128, dtype=np.float32).reshape(12, 128)
+    targets = [f'G{i}' for i in range(len(matrix))]
+    reference = matrix.mean(0)
+    np.savez_compressed(tmp_path / 'shared-response.npz', targets=targets,
+                        responses=matrix, global_response=reference)
+    rows, global_response = shared_responses(None, None, None, None, tmp_path)
+    assert list(rows) == targets
+    np.testing.assert_array_equal(global_response, reference)
+    buffers = {}
+    for i, row in enumerate(rows.values()):
+        np.testing.assert_array_equal(row, matrix[i])
+        base = row
+        while isinstance(base.base, np.ndarray):
+            base = base.base
+        buffers[id(base)] = base.nbytes
+    assert sum(buffers.values()) <= 2 * matrix.nbytes, 'full_matrix_retained_per_target'
+
+
 def test_preprocessing_identity_allows_unrelated_fixes_but_rejects_changed_preparation(tmp_path, monkeypatch):
     monkeypatch.setattr(training, 'ROOT', tmp_path)
     experiment = tmp_path / 'experiments/exp003-context-module-cvae'
@@ -577,7 +596,7 @@ def test_preprocessing_identity_allows_unrelated_fixes_but_rejects_changed_prepa
     for path in paths:
         path.parent.mkdir(parents=True, exist_ok=True); path.write_text('value = 1\n')
     evaluation = experiment / 'src/evaluation.py'
-    evaluation.write_text('import numpy as np\ndef response_summary(): return 1\ndef shared_responses(): return 2\ndef evaluate_task(): return 3\n')
+    evaluation.write_text('import numpy as np\ndef response_summary(): return 1\ndef shared_responses():\n    path = cache_path\n    if path.exists():\n        return 10\n    return 2\ndef evaluate_task(): return 3\n')
     (experiment / 'src/training.py').write_text('def construct_model(): return 1\n')
     def git(*args):
         return subprocess.check_output(['git', '-c', 'user.name=Protocol Test', '-c', 'user.email=protocol@example.invalid', *args], cwd=tmp_path, text=True).strip()
@@ -587,9 +606,15 @@ def test_preprocessing_identity_allows_unrelated_fixes_but_rejects_changed_prepa
     (experiment / 'src/model.py').write_text('fixed_ablation = True\n')
     git('add', '.'); git('commit', '-qm', 'unrelated model and evaluation fixes'); second = git('rev-parse', 'HEAD')
     assert training.preprocessing_identity(first) == training.preprocessing_identity(second)
-    evaluation.write_text(evaluation.read_text().replace('shared_responses(): return 2', 'shared_responses(): return 5'))
+    evaluation.write_text(evaluation.read_text().replace('return 10', 'saved = np.load(path)\n        return saved'))
+    git('add', '.'); git('commit', '-qm', 'cache reader memory repair'); reader = git('rev-parse', 'HEAD')
+    assert training.preprocessing_identity(first) == training.preprocessing_identity(reader)
+    evaluation.write_text(evaluation.read_text().replace('    return 2', '    return 5'))
     git('add', '.'); git('commit', '-qm', 'changed baseline'); third = git('rev-parse', 'HEAD')
     assert training.preprocessing_identity(first) != training.preprocessing_identity(third)
+    (experiment / 'src/state.py').write_text('value = 2\n')
+    git('add', '.'); git('commit', '-qm', 'changed state producer'); fourth = git('rev-parse', 'HEAD')
+    assert training.preprocessing_identity(third) != training.preprocessing_identity(fourth)
 
 
 def test_completion_summary_uses_the_installed_wandb_API():

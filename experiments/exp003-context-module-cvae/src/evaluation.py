@@ -62,8 +62,11 @@ def response_summary(data, view, context, target):
 def shared_responses(data, view, contexts, config, directory):
     path = directory / 'shared-response.npz'
     if path.exists():
-        saved = np.load(path)
-        return {t: saved['responses'][i] for i, t in enumerate(saved['targets'])}, saved['global_response']
+        # NpzFile is lazy: repeated indexing would decompress and retain one
+        # complete matrix per target through the returned row views.
+        with np.load(path) as saved:
+            targets, responses, global_response = saved['targets'], saved['responses'], saved['global_response']
+        return dict(zip(targets, responses)), global_response
     totals, n = {}, {}
     global_by_context = []
     for context in contexts:

@@ -77,7 +77,7 @@ def construct_model(data, view, contexts, config, prior_directory, folder):
 
 
 def preprocessing_identity(commit):
-    """Require identical preparation implementations even across unrelated code fixes."""
+    """Fingerprint cache producers and dependencies, separately from cache readers."""
     assert re.fullmatch(r'[0-9a-f]{40}', commit), 'preprocessing_requires_fixed_commit'
     prefix = str(EXPERIMENT.relative_to(ROOT))
     paths = [f'{prefix}/src/{name}.py' for name in ['data', 'state', 'priors']]
@@ -92,6 +92,16 @@ def preprocessing_identity(commit):
         tree = ast.parse(source)
         nodes = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in functions]
         assert {node.name for node in nodes} == functions, 'preprocessing_function_missing'
+        for node in nodes:
+            if node.name == 'shared_responses':
+                # The existing-cache branch cannot run during production. Its
+                # loader may change without changing the versioned cache bytes.
+                branches = [statement for statement in node.body if isinstance(statement, ast.If)
+                            and ast.dump(statement.test) == ast.dump(ast.parse('path.exists()', mode='eval').body)]
+                assert len(branches) <= 1, 'ambiguous_baseline_cache_reader'
+                for branch in branches:
+                    assert not branch.orelse and isinstance(branch.body[-1], ast.Return), 'cache_reader_must_return'
+                    node.body.remove(branch)
         if name == 'evaluation':
             nodes += [node for node in tree.body if isinstance(node, (ast.Import, ast.ImportFrom))]
         identity[path] = hashlib.sha256('\n'.join(ast.dump(node, include_attributes=False) for node in nodes).encode()).hexdigest()

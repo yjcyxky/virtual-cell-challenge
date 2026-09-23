@@ -169,7 +169,7 @@ def main(args):
     if not re.fullmatch(r'[A-Za-z0-9_-]+', args.run_id):
         raise ValueError('invalid_run_id')
     if args.finalize_only:
-        assert not any(getattr(args, name) is not None for name in ['seed', 'variant', 'cache_source', 'reuse_run', 'compare_runs', 'repair_validation_reason']), 'completion_retry_cannot_change_conditions'
+        assert not any(getattr(args, name, None) is not None for name in ['seed', 'variant', 'cache_source', 'reuse_run', 'compare_runs', 'repair_validation_reason', 'restart_from_run']), 'completion_retry_cannot_change_conditions'
         assert Path(args.config).resolve() == EXPERIMENT / 'configs/default.yaml'
         finalize_run(args.run_id)
         return
@@ -195,6 +195,13 @@ def main(args):
         config['cache_source'], config['reuse_run'] = source_data, args.reuse_run
     if config.get('cache_source'):
         config['cache_source'] = str(Path(config['cache_source']).resolve())
+    if args.restart_from_run is not None:
+        assert re.fullmatch(r'[A-Za-z0-9_-]+', args.restart_from_run) and args.restart_from_run != args.run_id
+        source_path = EXPERIMENT / 'outputs' / args.restart_from_run / 'config.yaml'
+        source_config = yaml.safe_load(source_path.read_text())
+        assert source_config['seed'] == config['seed'] and source_config['variant'] == config['variant']
+        config['restart_source'] = {'run_id': args.restart_from_run, 'config_sha256': hash_file(source_path),
+                                    'pipeline_commit': source_config['pipeline_commit'], 'training_state_reused': False}
     if args.compare_runs is not None:
         assert args.run_id not in args.compare_runs, 'comparison_source_cannot_be_current_run'
         config['comparison_sources'] = comparison_sources(args.compare_runs)
@@ -296,6 +303,7 @@ if __name__ == '__main__':
     parser.add_argument('--variant', choices=['true_prior', 'random_prior', 'no_prior', 'no_state', 'no_context', 'no_residual', 'no_module'])
     parser.add_argument('--cache-source')
     parser.add_argument('--reuse-run', help='Reuse explicitly versioned data/PCA/prior diagnostics from a completed same-protocol run.')
+    parser.add_argument('--restart-from-run', help='Record the fixed source of an independent from-scratch restart; does not load training state.')
     parser.add_argument('--compare-runs', nargs='+', help='Completed trial IDs to compare with this trial before final artifact delivery.')
     parser.add_argument('--repair-validation-reason', help='Document a same-config code repair before any optimization; old config is preserved.')
     main(parser.parse_args())
