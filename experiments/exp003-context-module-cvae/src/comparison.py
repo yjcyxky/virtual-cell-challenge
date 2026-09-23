@@ -33,6 +33,10 @@ def selected_exposure(data, folder, config, key):
     checkpoint_sha256 = hash_file(checkpoint_path)
     progress = checkpoint['progress']
     assert progress['complete'], 'exposure_requires_completed_fit'
+    best_path = folder / 'checkpoints' / f'{key}-best.pt'
+    best = torch.load(best_path, map_location='cpu', weights_only=False)
+    assert best['epoch'] == progress['best_epoch'] and best['training_contexts'] == progress['training_contexts'], 'selected_checkpoint_mismatch'
+    best_sha256 = hash_file(best_path)
     sampler = BalancedSampler(data, progress['training_contexts'], config['seed'] + sum(map(ord, key)),
                               config['unseen_target_percent'])
     selected = None
@@ -44,11 +48,14 @@ def selected_exposure(data, folder, config, key):
             selected = {context: set(targets) for context, targets in sampler.seen.items()}
     assert selected is not None
     assert sampler.state_dict() == checkpoint['sampler'], 'sampler_replay_mismatch'
+    if 'sampled_training_targets' in best:
+        assert {c: sorted(v) for c, v in selected.items()} == best['sampled_training_targets'], 'selected_exposure_mismatch'
     rows = [{'fit': key, 'training_context': c, 'eligible_targets': len(sampler.targets[c]),
              'sampled_targets_at_selected_epoch': len(selected[c]), 'sampled_targets_at_last_epoch': len(sampler.seen[c]),
              'selected_epoch': progress['best_epoch'], 'last_epoch': len(progress['history']),
              'resume_count': progress['resume_count'], 'stop_reason': progress['stop_reason'],
-             'replay_matches_checkpoint': True, 'checkpoint_sha256': checkpoint_sha256} for c in progress['training_contexts']]
+             'replay_matches_checkpoint': True, 'checkpoint_sha256': checkpoint_sha256,
+             'selected_checkpoint_sha256': best_sha256} for c in progress['training_contexts']]
     return set.union(*selected.values()), rows
 
 
