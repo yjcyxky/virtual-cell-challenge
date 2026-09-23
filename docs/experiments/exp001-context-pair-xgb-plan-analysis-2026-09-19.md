@@ -1,11 +1,13 @@
 # EXP001 实验计划分析：预期目标、合理性与收益
 
+> 本文是 2026-09-19 的历史设计评审，所引计划固定到历史 Git 版本。当前背景与关系条件化模型以 [Issue #31](https://github.com/yjcyxky/virtual-cell-challenge/issues/31) 为准。
+
 | 字段 | 内容 |
 |---|---|
 | experiment_id | `exp001-context-pair-xgb` |
 | 归档日期 | 2026-09-19 |
 | 分析阶段 | 设计评审，尚无训练与评估结果 |
-| 对应计划 | [PLAN.md](../../experiments/exp001-context-pair-xgb/PLAN.md) |
+| 对应计划 | [PLAN.md](https://github.com/yjcyxky/virtual-cell-challenge/blob/e28c792e6a1b5d3f63105bc3c9cc4d69b4151d08/experiments/exp001-context-pair-xgb/PLAN.md) |
 | 计划编写日期 | 2026-09-18 |
 | 归档时 PLAN.md SHA-256 | `2c1264e69cca351413d8f3ad4d037e528af8bef0e9abe6b4ae74cad5593958ea` |
 | 研究依据 | [initialized-thought.md](../ideas/initialized-thought.md) |
@@ -24,7 +26,7 @@
 | 验证背景条件化 | 相同基因关系下，加入目标背景信息是否改善预测？ | M1 相对静态模型 M0 的 MAE 降低 ≥2%；差异 CI 上界小于零；至少两个背景改善，任何背景退化不超过 5% |
 | 探索更严格的泛化 | 背景和扰动靶基因都未见过时，是否仍有收益？ | 在任务数达标的独立子集上，单独报告相对 B0、M0 的改善和 CI |
 
-这些百分比是**预先设定的验收门槛，并非预估收益**。即使全部达到，本轮直接支持的也是“未扰动状态有助于基因级效应预测”；功能模块的有效性仍需要后续实验验证。具体定义见 [PLAN.md 第 7.3 节](../../experiments/exp001-context-pair-xgb/PLAN.md#73-置信区间和成功判据)。
+这些百分比是**预先设定的验收门槛，并非预估收益**。即使全部达到，本轮直接支持的也是“未扰动状态有助于基因级效应预测”；功能模块的有效性仍需要后续实验验证。具体定义见 [PLAN.md 第 7.3 节](https://github.com/yjcyxky/virtual-cell-challenge/blob/e28c792e6a1b5d3f63105bc3c9cc4d69b4151d08/experiments/exp001-context-pair-xgb/PLAN.md#73-置信区间和成功判据)。
 
 **设计的合理性，主要体现在比较对象和验证方式。**
 
@@ -32,7 +34,7 @@
 - **关键对照公平。** B0 检验是否真正预测到了扰动效应，B1 检验是否只是学到通用响应，B2 检验复杂模型是否优于简单迁移。尤其是 **M0 也用目标对照表达重建结果**，因此 M1 的收益应来自背景对“预测变化”的调节，而不是单纯获得更准确的基础表达。
 - **防泄漏措施充分。** 包括物理细胞去重、对照分池、测试靶基因全局隔离、PCA 仅在训练背景拟合，以及查看任何测试结果前封存全部折的预测。这些措施直接影响结论可信度。
 - **统计单位选择合理。** 按扰动任务计算误差、按背景等权汇总，并使用任务级 bootstrap，避免细胞多或任务多的背景主导结果，也避免把生成的 400 个细胞误当成 400 次独立验证。
-- **首轮范围克制。** 暂不引入基础模型、Hi-C 和复杂模块，能减少收益来源混杂。18 次正式拟合、CPU 训练和固定搜索范围，也便于控制计算投入。具体定义见 [PLAN.md 第 5.3 节](../../experiments/exp001-context-pair-xgb/PLAN.md#53-模型组与控制变量)及第 5.4 节。
+- **首轮范围克制。** 暂不引入基础模型、Hi-C 和复杂模块，能减少收益来源混杂。18 次正式拟合、CPU 训练和固定搜索范围，也便于控制计算投入。具体定义见 [PLAN.md 第 5.3 节](https://github.com/yjcyxky/virtual-cell-challenge/blob/e28c792e6a1b5d3f63105bc3c9cc4d69b4151d08/experiments/exp001-context-pair-xgb/PLAN.md#53-模型组与控制变量)及第 5.4 节。
 
 **有四个限制会影响结果解释。**
 

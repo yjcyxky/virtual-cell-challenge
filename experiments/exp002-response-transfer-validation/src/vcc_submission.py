@@ -71,6 +71,21 @@ def append_sparse(group, block, start_row):
     return block.nnz
 
 
+def context_prediction(model, context):
+    """Select explicitly named context predictions or the shared baseline."""
+    response = model['response']
+    support = model['response_support'] if 'response_support' in model else model['donor_counts']
+    if response.ndim == 3:
+        contexts = model['contexts'].tolist()
+        if len(contexts) != len(set(contexts)) or context not in contexts:
+            raise ValueError('invalid_prediction_context_identity')
+        ci = contexts.index(context)
+        response, support = response[ci], support[ci]
+    if response.ndim != 2 or support.shape != response.shape:
+        raise ValueError('invalid_prediction_response_support_shape')
+    return response, support
+
+
 def generate(config, output, official, manifest, genes, targets):
     completed = output / 'generation.json'
     final = output / 'predictions.h5ad'
@@ -103,6 +118,7 @@ def generate(config, output, official, manifest, genes, targets):
             x.create_dataset(name, (0,), maxshape=(None,), chunks=(1048576,), dtype='int32', compression='gzip', compression_opts=1)
         x.create_dataset('indptr', (rows + 1,), dtype='int64')
         for ci, context in enumerate(contexts):
+            response, response_support = context_prediction(model, context)
             controls = ad.read_h5ad(official / f'context_{context}.h5ad')
             assert controls.var_names.tolist() == genes
             assert set(controls.obs.context.astype(str)) == {context}
@@ -119,7 +135,7 @@ def generate(config, output, official, manifest, genes, targets):
             template_cp = templates / template_depth[:, None] * 10000
             for pi, target in enumerate(targets):
                 target_index = genes.index(target)
-                factors, diagnostic = gene_factors(mean_log, model['response'][pi], model['donor_counts'][pi], target_index, config)
+                factors, diagnostic = gene_factors(mean_log, response[pi], response_support[pi], target_index, config)
                 emitted = emit_counts(templates, factors, config['seed'] + 1000 + ci * len(targets) + pi)
                 depth = emitted.sum(axis=1, dtype=np.int64)
                 if (emitted < 0).any() or (depth <= 0).any() or depth.max() > config['max_counts_per_cell']:
@@ -130,7 +146,7 @@ def generate(config, output, official, manifest, genes, targets):
                     raise ValueError('prediction_density_exceeds_official_cap')
                 cp = emitted / depth[:, None] * 10000
                 actual_mean_log = np.log1p(cp).mean(0)
-                intended = np.maximum(mean_log + model['response'][pi], 0)
+                intended = np.maximum(mean_log + response[pi], 0)
                 off_target = np.arange(len(genes)) != target_index
                 diagnostic.update(context=context, target_gene=target, cells=per_target, nnz=nnz,
                     maximum_cell_counts=int(depth.max()), minimum_cell_counts=int(depth.min()),
@@ -234,7 +250,8 @@ def submit_and_score(config, output, tracked):
     status = cli_json(['status', entry['entry_id']]) if entry else None
     if status is None or status.get('status') == 'uploading':
         command = [VCC, 'submit', str(output / 'predictions.vcc'), '-m', config['model_name'],
-                   '-d', 'Pure CRISPRi shared-response baseline, donor-support calibrated shrinkage; Issue #30.']
+                   '-d', config.get('submission_description',
+                                    'Pure CRISPRi shared-response baseline, donor-support calibrated shrinkage; Issue #30.')]
         if entry:
             command.extend(['--resume', entry['entry_id']])
         process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
