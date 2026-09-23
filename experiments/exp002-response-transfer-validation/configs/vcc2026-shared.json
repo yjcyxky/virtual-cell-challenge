@@ -1,0 +1,14 @@
+{
+  "issue": "https://github.com/yjcyxky/virtual-cell-challenge/issues/30",
+  "collection": "experiments/exp002-response-transfer-validation/outputs/20260922-c/collection",
+  "official": "data/raw/arc_vcc2026_controls",
+  "panels": ["H1:Training", "H1:Validation", "H1:Test", "replogle:K562_gwps", "replogle:rpe1", "nadig:hepg2", "nadig:jurkat"],
+  "seed": 20260922,
+  "lambda_grid": [0, 0.25, 0.5, 0.75, 1],
+  "on_target_remaining_fraction": 0.1,
+  "maximum_gene_factor": 10,
+  "cells_per_perturbation": 400,
+  "max_nnz": 4750000000,
+  "max_counts_per_cell": 1000000,
+  "model_name_prefix": "SharedResponseShrink-v1"
+}
