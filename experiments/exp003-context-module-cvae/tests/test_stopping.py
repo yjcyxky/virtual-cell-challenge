@@ -108,6 +108,43 @@ def test_full_training_monitor_is_fixed_weighted_and_never_reads_held_labels(tmp
         assert row['loss'] == pytest.approx(row['nll'] + row['kl_per_gene'] + row['response_loss'])
 
 
+@pytest.mark.parametrize('device', ['cpu', 'cuda'])
+def test_batched_monitor_keeps_layer_means_and_weights_separate(tmp_path, monkeypatch, device):
+    if device == 'cuda' and not torch.cuda.is_available():
+        pytest.skip('native CUDA required')
+    data = SmallData(); config = configuration(); config['unseen_target_percent'] = 0
+    contexts = list('ABCD'); view = FoldView(data, contexts, config, tmp_path)
+    model, _ = setup_model(); model = model.to(device).eval()
+    plan = training.monitor_plan(data, contexts, config, tmp_path)
+    # Remove only latent noise to compare the vectorized calculation to independent
+    # layer evaluations. Existing fixed-noise tests cover reproducibility and RNG isolation.
+    monkeypatch.setattr(torch, 'randn_like', lambda value: torch.zeros_like(value))
+    monkeypatch.setattr(torch, 'randn', lambda *shape, **kwargs: torch.zeros(*shape, **kwargs))
+    actual = training.monitor_training(model, data, view, plan, contexts, config, 100)
+    expected = {c: dict.fromkeys(['loss', 'response_loss', 'nll', 'kl_per_gene'], 0.) for c in contexts}
+    fraction = config['tasks_per_step'] / (config['tasks_per_step'] + 1)
+    with torch.no_grad():
+        for row in plan:
+            c, t, b = row['context'], row['target'], row['batch']
+            x = torch.tensor(data.read(row['cells']), device=device)
+            ntc = torch.tensor(data.read(row['controls']), device=device)
+            inputs = view.inputs([(c, t, b, len(x))], device)
+            pert, pert_logs = model(x, inputs)
+            ctrl, ctrl_logs = model(ntc, view.inputs([(c, '__NTC__', b, len(ntc))], device))
+            mean = model.conditional_mean({k: v[:1] for k, v in inputs.items()})
+            from model import masked_logcp
+            delta = masked_logcp(mean, model.common) - masked_logcp(x.mean(0, keepdim=True), model.common)
+            response = (delta.square() * model.common).sum() / model.common.sum()
+            values = {'loss': fraction * pert + (1-fraction) * ctrl + response,
+                      'response_loss': response,
+                      **{k: fraction * pert_logs[k] + (1-fraction) * ctrl_logs[k] for k in ['nll', 'kl_per_gene']}}
+            for k, value in values.items():
+                expected[c][k] += row['weight'] * float(value)
+    for c in contexts:
+        for k in expected[c]:
+            assert actual[c][k] == pytest.approx(expected[c][k], rel=2e-6, abs=1e-7)
+
+
 @pytest.mark.parametrize('failure_stage', ['first_step', 'validation'])
 def test_recovery_matches_uninterrupted_cycles_and_selection(tmp_path, monkeypatch, failure_stage):
     if not torch.cuda.is_available():

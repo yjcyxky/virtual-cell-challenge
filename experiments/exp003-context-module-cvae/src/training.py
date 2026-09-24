@@ -159,29 +159,37 @@ def monitor_training(model, data, view, plan, contexts, config, step):
     device = next(model.parameters()).device
     beta = min(1., step / config['kl_warmup_steps'])
     pert_weight = config['tasks_per_step'] / (config['tasks_per_step'] + 1)
+    def layer_losses(cells, controls, inputs, ctrl_inputs, reference):
+        pert_loss, pert_logs = model(cells, inputs, beta=beta)
+        ctrl_loss, ctrl_logs = model(controls, ctrl_inputs, beta=beta)
+        response = response_objective(model, {k: v[:1] for k, v in inputs.items()}, cells.mean(0, keepdim=True), reference)
+        return {'loss': pert_weight * pert_loss + (1 - pert_weight) * ctrl_loss + config['response_weight'] * response,
+                'response_loss': response,
+                **{k: pert_weight * pert_logs[k] + (1 - pert_weight) * ctrl_logs[k] for k in ['nll', 'kl_per_gene']}}
+    # Vectorize independent layer evaluations without pooling their observed means
+    # or changing their sample sizes. Ordered 64-layer blocks fix latent RNG streams.
+    batched_losses = torch.vmap(layer_losses, randomness='different')
     was_training = model.training
     try:
         model.eval()
         with torch.random.fork_rng(devices=list(range(torch.cuda.device_count()))):
-            for i, row in enumerate(plan):
-                torch.manual_seed(row['seed'])
-                c, t, b = row['context'], row['target'], row['batch']
-                cells = torch.as_tensor(data.read(row['cells']), device=device)
-                controls = torch.as_tensor(data.read(row['controls']), device=device)
-                inputs = view.inputs([(c, t, b, len(cells))], device)
-                ctrl_inputs = view.inputs([(c, '__NTC__', b, len(controls))], device)
-                pert_loss, pert_logs = model(cells, inputs, beta=beta)
-                ctrl_loss, ctrl_logs = model(controls, ctrl_inputs, beta=beta)
-                reference = torch.as_tensor(view.controls[(c, b)]['reference'][None], device=device)
-                response = response_objective(model, {k: v[:1] for k, v in inputs.items()}, cells.mean(0, keepdim=True), reference)
-                total = pert_weight * pert_loss + (1 - pert_weight) * ctrl_loss + config['response_weight'] * response
-                values = {'loss': float(total), 'response_loss': float(response),
-                          **{k: float(pert_weight * pert_logs[k] + (1 - pert_weight) * ctrl_logs[k]) for k in ['nll', 'kl_per_gene']}}
-                assert all(np.isfinite(v) for v in values.values()), 'nonfinite_monitor_loss'
-                for k, value in values.items():
-                    result[c][k] += row['weight'] * value
-                if (i + 1) % 1000 == 0:
-                    print(json.dumps({'stage': 'training_monitor', 'layers_done': i + 1, 'layers': len(plan)}), flush=True)
+            for start in range(0, len(plan), 64):
+                rows = plan[start:start + 64]; size = len(rows); n = config['cells_per_task']
+                torch.manual_seed(rows[0]['seed'])
+                cells = torch.as_tensor(data.read(np.concatenate([r['cells'] for r in rows])), device=device).reshape(size, n, -1)
+                controls = torch.as_tensor(data.read(np.concatenate([r['controls'] for r in rows])), device=device).reshape(size, n, -1)
+                specs = [(r['context'], r['target'], r['batch'], n) for r in rows]
+                ctrl_specs = [(c, '__NTC__', b, count) for c, t, b, count in specs]
+                inputs = {k: v.reshape(size, n, *v.shape[1:]) for k, v in view.inputs(specs, device).items()}
+                ctrl_inputs = {k: v.reshape(size, n, *v.shape[1:]) for k, v in view.inputs(ctrl_specs, device).items()}
+                reference = torch.as_tensor(np.stack([view.controls[(r['context'], r['batch'])]['reference'] for r in rows]), device=device)[:, None]
+                values = {k: v.cpu().numpy() for k, v in batched_losses(cells, controls, inputs, ctrl_inputs, reference).items()}
+                assert all(np.isfinite(v).all() for v in values.values()), 'nonfinite_monitor_loss'
+                for j, row in enumerate(rows):
+                    for k, value in values.items():
+                        result[row['context']][k] += row['weight'] * float(value[j])
+                if start // 10000 != (start + size) // 10000 or start + size == len(plan):
+                    print(json.dumps({'stage': 'training_monitor', 'layers_done': start + size, 'layers': len(plan)}), flush=True)
     finally:
         model.train(was_training)
     return result
