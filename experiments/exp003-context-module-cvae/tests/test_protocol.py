@@ -20,11 +20,60 @@ from state import FoldView
 from training import save_checkpoint, load_checkpoint, train_step
 from evaluation import observed_task, evaluate_task, evaluate_context, shared_responses
 from runtime import verify_environment
+import runtime
 from priors import fold_evidence
 import training
 from comparison import paired_difference
 import comparison
 import main as entrypoint
+
+
+def test_checkpoint_flush_failure_preserves_last_valid_training_state(tmp_path, monkeypatch):
+    import os
+    model = torch.nn.Linear(2, 2)
+    optimizer = torch.optim.AdamW(model.parameters())
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)
+    sampler = SimpleNamespace(state_dict=lambda: {'cursor': 1})
+    path = tmp_path / 'last.pt'
+    save_checkpoint(path, model, optimizer, scheduler, sampler, {'next_step': 1})
+    previous = path.read_bytes()
+    def fail_flush(fd):
+        raise OSError('injected_checkpoint_flush_failure')
+    monkeypatch.setattr(os, 'fsync', fail_flush)
+    with pytest.raises(OSError, match='injected_checkpoint_flush_failure'):
+        save_checkpoint(path, model, optimizer, scheduler, sampler, {'next_step': 2})
+    assert path.read_bytes() == previous
+    assert torch.load(path, weights_only=False)['progress']['next_step'] == 1
+
+
+def test_base_launcher_ignores_corrupt_global_registry_and_restores_child_environment(tmp_path, monkeypatch):
+    import os
+    import fcntl
+    broken = tmp_path / 'original-cache'
+    registry = broken / 'mamba/proc'; registry.mkdir(parents=True)
+    empty = registry / '999999999.json'; empty.touch()
+    monkeypatch.setenv('XDG_CACHE_HOME', str(broken))
+    failure = subprocess.run(['micromamba', 'ps'], capture_output=True, text=True)
+    assert failure.returncode != 0 and 'parse_error' in failure.stderr
+    lock_path = tmp_path / 'environment.lock'
+    with lock_path.open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_SH)
+        os.set_inheritable(lock.fileno(), True)
+        check = ('import os,sys,fcntl\n'
+                 'assert os.environ["XDG_CACHE_HOME"] == sys.argv[1]\n'
+                 'with open(sys.argv[2]) as lock:\n'
+                 '    try: fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)\n'
+                 '    except BlockingIOError: pass\n'
+                 '    else: sys.exit(24)\n'
+                 'sys.exit(23)\n')
+        # Close this process's copy after launch. Only the launcher/micromamba
+        # can then keep the shared environment lock alive for the running child.
+        command = [sys._base_executable, str(Path(runtime.__file__)), '--base-run',
+                   sys.executable, '-c', check, str(broken), str(lock_path)]
+        child = subprocess.Popen(command, pass_fds=(lock.fileno(),))
+    assert child.wait(timeout=30) == 23
+    assert empty.exists() and empty.read_bytes() == b''
+    assert os.environ['XDG_CACHE_HOME'] == str(broken)
 
 
 def configuration():

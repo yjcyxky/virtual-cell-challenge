@@ -2,6 +2,7 @@
 import ast
 import hashlib
 import json
+import os
 import random
 import re
 import shutil
@@ -31,11 +32,24 @@ def restore_random(state):
         torch.cuda.set_rng_state_all(state['cuda'])
 
 
+def save_model_state(path, state):
+    """Commit checkpoint bytes before replacing the last valid model/state."""
+    temporary = path.with_suffix('.tmp')
+    with temporary.open('wb') as stream:
+        torch.save(state, stream)
+        stream.flush(); os.fsync(stream.fileno())
+    temporary.replace(path)
+    directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+
+
 def save_checkpoint(path, model, optimizer, scheduler, sampler, progress):
     state = {'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict(),
              'sampler': sampler.state_dict(), 'random': random_state(), 'progress': progress}
-    temporary = path.with_suffix('.tmp')
-    torch.save(state, temporary); temporary.replace(path)
+    save_model_state(path, state)
 
 
 def load_checkpoint(path, model, optimizer, scheduler, sampler, device):
@@ -245,14 +259,14 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
                              validation_energy=float(val.energy_distance.mean()), validation_ntc_energy=float(val.ntc_energy_distance.mean()))
                 if progress['best_score'] is None or score < progress['best_score'] - 1e-6:
                     progress['best_score'], progress['best_epoch'], progress['stale'] = score, epoch, 0
-                    torch.save({'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch,
-                                'sampled_training_targets': {c: sorted(v) for c, v in sampler.seen.items()}}, best)
+                    save_model_state(best, {'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch,
+                                           'sampled_training_targets': {c: sorted(v) for c, v in sampler.seen.items()}})
                 else:
                     progress['stale'] += 1
             else:
                 progress['best_epoch'] = epoch
-                torch.save({'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch,
-                            'sampled_training_targets': {c: sorted(v) for c, v in sampler.seen.items()}}, best)
+                save_model_state(best, {'model': model.state_dict(), 'config': config, 'training_contexts': contexts, 'epoch': epoch,
+                                       'sampled_training_targets': {c: sorted(v) for c, v in sampler.seen.items()}})
             progress['history'].append(entry)
             progress['epoch_log_sums'], progress['epoch_log_count'] = {}, 0
             progress['coverage'] = {c: {'seen': len(sampler.seen[c]), 'eligible': len(sampler.targets[c])} for c in contexts}

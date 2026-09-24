@@ -3,11 +3,28 @@ import argparse
 import hashlib
 import importlib.metadata
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
+import tempfile
 
 
 EXPERIMENT = Path(__file__).resolve().parents[1]
+
+
+def run_in_base(command):
+    """Isolate micromamba's transient registry while preserving the child's caches."""
+    if not command:
+        raise ValueError('base_command_required')
+    restore_cache = (['env', 'XDG_CACHE_HOME=' + os.environ['XDG_CACHE_HOME']]
+                     if 'XDG_CACHE_HOME' in os.environ else ['env', '-u', 'XDG_CACHE_HOME'])
+    with tempfile.TemporaryDirectory(prefix='vcc-mamba-runtime-') as process_cache:
+        environment = dict(os.environ, XDG_CACHE_HOME=process_cache)
+        # Preserve the shell's intentionally inherited environment-lock FD. All
+        # descriptors created by Python remain non-inheritable by default.
+        return subprocess.call(['micromamba', 'run', '-n', 'virtual-cell', *restore_cache, *command],
+                               env=environment, close_fds=False)
 
 
 def digest(path):
@@ -40,7 +57,13 @@ def verify_environment(path, current):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--record', action='store_true', help='Only after successful uv sync under the exclusive environment lock.')
+    parser.add_argument('--base-run', nargs=argparse.REMAINDER,
+                        help='Launch through the fixed base environment with an isolated process registry.')
     args = parser.parse_args()
+    if args.base_run is not None:
+        if args.record or not args.base_run:
+            parser.error('--base-run requires a command and cannot be combined with --record')
+        raise SystemExit(run_in_base(args.base_run))
     identity = environment_identity()
     path = EXPERIMENT / '.venv' / 'experiment-environment.json'
     if args.record:
