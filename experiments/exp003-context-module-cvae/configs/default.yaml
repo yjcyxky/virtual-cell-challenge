@@ -1,4 +1,6 @@
-issue: https://github.com/yjcyxky/virtual-cell-challenge/issues/32
+issue: https://github.com/yjcyxky/virtual-cell-challenge/issues/33
+protocol: lodo-sufficiency-v1
+cache_source: /home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data
 collection: experiments/exp002-response-transfer-validation/outputs/20260922-c/collection
 gene_axis: data/raw/arc_vcc2026_controls/gene_names.csv
 panels: [H1:Training, H1:Validation, H1:Test, replogle:K562_gwps, replogle:rpe1, nadig:hepg2, nadig:jurkat]
@@ -9,7 +11,7 @@ minimum_target_cells: 50
 minimum_controls_per_half_batch: 8
 maximum_cells_per_target: 128
 maximum_controls_per_half_batch: 64
-unseen_target_percent: 20
+unseen_target_percent: 0
 modules_per_family: 24
 minimum_module_genes: 12
 maximum_module_genes: 300
@@ -22,14 +24,22 @@ module_off_support_weight: 0.02
 response_weight: 1.0
 learning_rate: 0.0003
 weight_decay: 0.0001
-epochs: 16
-steps_per_epoch: 512
-minimum_epochs: 8
-patience: 4
-kl_warmup_epochs: 4
+minimum_learning_rate: 0.00003
+decay_cycles: 10
+patience_cycles: 3
+kl_warmup_steps: 2048
+loss_relative_range: 0.01
+stability_epsilon: 0.00000001
+validation_min_delta: 0.001
 tasks_per_step: 4
 cells_per_task: 16
-validation_tasks: 128
+prior_diagnostic_tasks: 128
+prediction_seeds: [101, 202, 303]
+prediction_batch_cells: 128
+official_version: 0.16.0
+official_commit: 5e64833518a6603a0301cbe28185d49c30f4a986
+official_de_backend: gpudge
+official_device: cuda
 evaluation_cells: 128
 checkpoint_every_steps: 128
 bootstrap_repeats: 1000

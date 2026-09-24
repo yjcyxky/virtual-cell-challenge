@@ -3,6 +3,8 @@ name = "vcc-context-module-cvae"
 version = "0.1.0"
 requires-python = "==3.14.*"
 dependencies = [
+    "cell-eval2[gpudge]",
+    "cupy-cuda13x>=14.2.0",
     "h5py==3.16.0",
     "numpy==2.5.3",
     "pandas==3.0.6",
@@ -17,9 +19,11 @@ dependencies = [
 
 [tool.uv]
 package = false
+required-environments = ["sys_platform == 'linux' and platform_machine == 'aarch64'"]
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu130" }
+cell-eval2 = { git = "https://github.com/ArcInstitute/cell-eval2", rev = "5e64833518a6603a0301cbe28185d49c30f4a986" }
 
 [[tool.uv.index]]
 name = "pytorch-cu130"

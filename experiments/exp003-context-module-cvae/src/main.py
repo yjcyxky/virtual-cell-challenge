@@ -1,4 +1,4 @@
-"""Issue #32 entry: one identity from validation through training and local evaluation."""
+"""Issue #33 entry: one identity from validation through training and local evaluation."""
 import argparse
 import base64
 import hashlib
@@ -18,7 +18,6 @@ import yaml
 from data import ROOT, EXPERIMENT, CountData, prepare, hash_file, write_json
 from priors import prepare_priors
 from training import experiment
-from comparison import compare_trials, comparison_sources
 
 
 class Tee:
@@ -45,6 +44,9 @@ def completion_summary(tracked, result, delivery):
     tracked.summary.update({'pipeline_status': 'completed', 'artifact_status': delivery['status'], 'local_only': True,
                             'macro_response_mse': result['macro']['response_mse'],
                             'mse_improvement_vs_zero': result['mse_improvement_vs_zero_fraction']})
+    if 'mean_validation_score' in result:
+        tracked.summary.update({'mean_official_method_validation_score': result['mean_validation_score'],
+                                'models_trained': result['models_trained'], 'validation_used_for_selection': True})
 
 
 def verify_remote_artifact(output, delivery):
@@ -79,14 +81,13 @@ def finalize_run(run_id):
     assert result['status'] == 'trained_and_locally_evaluated' and result['contexts'] == len(config['contexts'])
     assert not result['official_submission']
     checkpoints = {}
-    for key in ['holdout-' + c for c in config['contexts']] + ['final']:
+    for key in ['holdout-' + c for c in config['contexts']]:
         path = output / 'checkpoints' / f'{key}-last.pt'
         state = torch.load(path, map_location='cpu', weights_only=False)
         assert {'model', 'optimizer', 'scheduler', 'sampler', 'random', 'progress'} <= state.keys()
         assert state['progress']['complete'], 'cannot_finalize_incomplete_fit:' + key
         checkpoints[key] = hash_file(path)
-        if key != 'final':
-            assert (output / 'predictions' / key / 'complete.json').is_file()
+        assert (output / 'predictions' / key / 'complete.json').is_file()
     delivery = json.loads((output / 'artifact.json').read_text())
     verify_remote_artifact(output, delivery)
     tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
@@ -128,16 +129,23 @@ def artifact(tracked, output, online):
     paths += sorted((output / 'cache').glob('*/evidence-scope.json'))
     paths += sorted((output / 'cache').glob('*/state-scope.json'))
     paths += sorted((output / 'cache').glob('*/split.json'))
-    paths += sorted((output / 'cache').glob('*/reused-preprocessing.json'))
     paths += sorted((output / 'cache').glob('*/prior-strength.npy'))
     paths += sorted((output / 'predictions').glob('*/example-*.npz'))
     paths += [output / 'cache' / 'priors' / n for n in ['modules.npz', 'modules.json', 'complete.json']]
     paths += [output / 'cache' / n for n in ['data-reference.json', 'readout-support.json', 'tests.log']]
     paths += sorted((output / 'cache').glob('config-before-validation-repair-*.yaml'))
-    paths += sorted(output.glob('comparison*.csv')) + sorted(output.glob('comparison*.parquet')) + sorted(output.glob('comparison.json'))
+    paths += sorted(p for p in (output / 'cache').glob('holdout-*/official/reference-bundle/*') if p.is_file())
+    paths += sorted((output / 'cache').glob('holdout-*/official/cycle-*/summary.json'))
+    paths += sorted((output / 'cache').glob('holdout-*/official/cycle-*/seed-*/scores.csv'))
+    paths += sorted((output / 'cache').glob('holdout-*/official/cycle-*/seed-*/aggregate.csv'))
+    paths += sorted((output / 'predictions').glob('*/best-official.json'))
+    paths += sorted((output / 'predictions').glob('*/official-genes.json'))
+    paths += sorted((output / 'predictions').glob('*/prediction-files.json'))
+    if (output / 'cache' / 'count-cache-compatibility.json').exists():
+        paths.append(output / 'cache' / 'count-cache-compatibility.json')
     item = wandb.Artifact(EXPERIMENT.name + '-' + output.name, type='model', metadata={
         'pipeline_commit': tracked.config['pipeline_commit'], 'local_only': True, 'raw_cells_uploaded': False,
-        'prediction_storage': 'two generated count examples per background; all-task prediction summaries retained locally'})
+        'prediction_storage': 'all three-seed best-checkpoint cell predictions retained locally with hashes; representative generated cells and official scores archived'})
     md5 = {}
     for path in paths:
         assert path.is_file(), str(path)
@@ -169,7 +177,7 @@ def main(args):
     if not re.fullmatch(r'[A-Za-z0-9_-]+', args.run_id):
         raise ValueError('invalid_run_id')
     if args.finalize_only:
-        assert not any(getattr(args, name, None) is not None for name in ['seed', 'variant', 'cache_source', 'reuse_run', 'compare_runs', 'repair_validation_reason', 'restart_from_run']), 'completion_retry_cannot_change_conditions'
+        assert not any(getattr(args, name, None) is not None for name in ['seed', 'variant', 'cache_source', 'repair_validation_reason', 'restart_from_run']), 'completion_retry_cannot_change_conditions'
         assert Path(args.config).resolve() == EXPERIMENT / 'configs/default.yaml'
         finalize_run(args.run_id)
         return
@@ -184,15 +192,6 @@ def main(args):
         value = getattr(args, name)
         if value is not None:
             config[name] = value
-    if args.reuse_run is not None:
-        assert re.fullmatch(r'[A-Za-z0-9_-]+', args.reuse_run)
-        source_run = EXPERIMENT / 'outputs' / args.reuse_run
-        assert (source_run / 'complete.json').exists(), 'reuse_requires_completed_source_run'
-        source_config = yaml.safe_load((source_run / 'config.yaml').read_text())
-        source_data = source_config.get('cache_source', str(source_run / 'cache' / 'data'))
-        if config.get('cache_source'):
-            assert str(Path(config['cache_source']).resolve()) == str(Path(source_data).resolve())
-        config['cache_source'], config['reuse_run'] = source_data, args.reuse_run
     if config.get('cache_source'):
         config['cache_source'] = str(Path(config['cache_source']).resolve())
     if args.restart_from_run is not None:
@@ -202,9 +201,12 @@ def main(args):
         assert source_config['seed'] == config['seed'] and source_config['variant'] == config['variant']
         config['restart_source'] = {'run_id': args.restart_from_run, 'config_sha256': hash_file(source_path),
                                     'pipeline_commit': source_config['pipeline_commit'], 'training_state_reused': False}
-    if args.compare_runs is not None:
-        assert args.run_id not in args.compare_runs, 'comparison_source_cannot_be_current_run'
-        config['comparison_sources'] = comparison_sources(args.compare_runs)
+    assert config['protocol'] == 'lodo-sufficiency-v1'
+    assert config['unseen_target_percent'] == 0
+    assert len(config['contexts']) == 5 and len(config['prediction_seeds']) == 3
+    assert importlib.metadata.version('cell-eval2') == config['official_version']
+    evaluator_origin = json.loads(importlib.metadata.distribution('cell-eval2').read_text('direct_url.json'))
+    assert evaluator_origin['vcs_info']['commit_id'] == config['official_commit'], 'official_evaluator_source_changed'
     commit = committed_pipeline()
     assert torch.cuda.is_available(), 'GPU_required_no_silent_CPU_fallback'
     torch.set_num_threads(8)
@@ -219,7 +221,7 @@ def main(args):
                   source_collection_sha256=hash_file(ROOT / config['collection'] / 'report.json'),
                   gene_axis_sha256=hash_file(ROOT / config['gene_axis']),
                   prior_source_sha256=hash_file(ROOT / 'data/raw/networks/SOURCE.json'),
-                  versions={p: importlib.metadata.version(p) for p in ['torch', 'numpy', 'scipy', 'pandas', 'h5py', 'wandb', 'scikit-learn']},
+                  versions={p: importlib.metadata.version(p) for p in ['torch', 'numpy', 'scipy', 'pandas', 'h5py', 'wandb', 'scikit-learn', 'cell-eval2', 'gpudge', 'cupy-cuda13x', 'polars', 'anndata']},
                   runtime={'python': sys.version, 'executable': sys.executable, 'cuda': torch.version.cuda,
                            'gpu': torch.cuda.get_device_name(), 'architecture': os.uname().machine,
                            'deterministic_algorithms': True, 'float32_matmul_precision': 'high'},
@@ -274,10 +276,6 @@ def main(args):
                      'preparation/common_genes': int(data.common.sum()), 'preparation/cached_cells': len(data.cells)})
         tracked.summary['pipeline_status'] = 'training_and_evaluating'
         result = experiment(data, config, output, priors, tracked)
-        comparison = compare_trials(data, config, output)
-        if comparison is not None:
-            result['comparison'] = comparison
-            tracked.log({'comparison/completed_runs': comparison['run_count'], 'comparison/task_instances': comparison['task_instances']})
         result['wandb_url'] = f'https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{args.run_id}'
         result['wandb_sync'] = 'online' if online else 'pending_offline_sync'
         result['official_submission'] = False
@@ -302,8 +300,6 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int)
     parser.add_argument('--variant', choices=['true_prior', 'random_prior', 'no_prior', 'no_state', 'no_context', 'no_residual', 'no_module'])
     parser.add_argument('--cache-source')
-    parser.add_argument('--reuse-run', help='Reuse explicitly versioned data/PCA/prior diagnostics from a completed same-protocol run.')
     parser.add_argument('--restart-from-run', help='Record the fixed source of an independent from-scratch restart; does not load training state.')
-    parser.add_argument('--compare-runs', nargs='+', help='Completed trial IDs to compare with this trial before final artifact delivery.')
     parser.add_argument('--repair-validation-reason', help='Document a same-config code repair before any optimization; old config is preserved.')
     main(parser.parse_args())

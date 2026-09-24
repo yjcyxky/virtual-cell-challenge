@@ -214,32 +214,28 @@ def evaluate_task(model, data, view, context, target, config, shared=None, save_
     return metrics, prediction
 
 
-def evaluate_context(model, data, view, context, config, directory, shared, global_shared, validation=False):
+def evaluate_context(model, data, view, context, config, directory, shared, global_shared):
+    """Full held-dataset auxiliary metrics; selection uses official.py."""
     model.eval()
-    targets = sorted((t for c, t in data.tasks if c == context and (not validation or not reserved(t, config['unseen_target_percent']))),
-                     key=lambda t: task_seed(context, t))
-    if validation:
-        targets = targets[:config['validation_tasks']]
+    targets = sorted((t for c, t in data.tasks if c == context), key=lambda t: task_seed(context, t))
     rows, predictions = [], []
     for i, target in enumerate(targets):
         metrics, prediction = evaluate_task(model, data, view, context, target, config,
-                                             shared.get(target, global_shared), save_cells=not validation and i < 2)
+                                            shared.get(target, global_shared), save_cells=i < 2)
         rows.append(metrics)
-        if not validation:
-            predictions.append(prediction)
-            if 'cells' in prediction:
-                np.savez_compressed(directory / f'example-{i}.npz', target=target, context=context,
-                                    genes=data.genes, counts=prediction.pop('cells'),
-                                    available_readout_mask=data.masks[context],
-                                    trained_readout_mask=model.trained_readouts.cpu().numpy())
-        if not validation and (i + 1) % 100 == 0:
-            print(json.dumps({'stage': 'outer_evaluation', 'context': context, 'targets_done': i + 1, 'total': len(targets)}), flush=True)
+        predictions.append(prediction)
+        if 'cells' in prediction:
+            np.savez_compressed(directory / f'example-{i}.npz', target=target, context=context,
+                                genes=data.genes, counts=prediction.pop('cells'),
+                                available_readout_mask=data.masks[context],
+                                trained_readout_mask=model.trained_readouts.cpu().numpy())
+        if (i + 1) % 100 == 0:
+            print(json.dumps({'stage': 'auxiliary_validation', 'context': context, 'targets_done': i + 1, 'total': len(targets)}), flush=True)
     frame = pd.DataFrame(rows)
-    if not validation:
-        frame.to_parquet(directory / 'metrics.parquet', index=False)
-        np.savez_compressed(directory / 'predictions.npz', targets=targets,
-                            common_genes=np.asarray(data.genes)[data.common], native_genes=np.asarray(data.genes)[data.masks[context]],
-                            **{key: np.stack([p[key] for p in predictions]) for key in ['common_response', 'native_mean_log', 'native_mean_count']})
+    frame.to_parquet(directory / 'metrics.parquet', index=False)
+    np.savez_compressed(directory / 'predictions.npz', targets=targets,
+                        common_genes=np.asarray(data.genes)[data.common], native_genes=np.asarray(data.genes)[data.masks[context]],
+                        **{key: np.stack([p[key] for p in predictions]) for key in ['common_response', 'native_mean_log', 'native_mean_count']})
     return frame
 
 

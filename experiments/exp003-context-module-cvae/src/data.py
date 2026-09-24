@@ -79,7 +79,7 @@ def prepare(config, output):
     if config.get('cache_source'):
         cache = Path(config['cache_source']).resolve()
         report = json.loads((cache / 'complete.json').read_text())
-        assert report['data_spec_hash'] == data_spec_hash(config), 'cache_data_conditions_differ'
+        validate_cache_protocol(cache, report, config, output)
         verify_cache(cache, report)
         return cache
     cache.mkdir(parents=True, exist_ok=True)
@@ -234,6 +234,31 @@ def verify_cache(cache, report):
         assert hash_file(ROOT / item['path']) == item['sha256'], 'source_changed: ' + item['path']
 
 
+def validate_cache_protocol(cache, report, config, output):
+    """A reservation is a label in the immutable cache, not a cell selection.
+
+    New LODO trials use all cached targets. Check the producer's actual configuration
+    and every other data condition before accepting this explicitly recorded change.
+    Training always derives eligibility from its own config, never cells.reserved.
+    """
+    import yaml
+    if report['data_spec_hash'] == data_spec_hash(config):
+        return
+    source_path = cache.parent.parent / 'config.yaml'
+    source = yaml.safe_load(source_path.read_text())
+    assert source['pipeline_commit'] and report['data_spec_hash'] == data_spec_hash(source)
+    assert config['unseen_target_percent'] == 0, 'cache_data_conditions_differ'
+    compatible = dict(config, unseen_target_percent=source['unseen_target_percent'])
+    assert report['data_spec_hash'] == data_spec_hash(compatible), 'cache_data_conditions_differ'
+    write_json(output / 'cache' / 'count-cache-compatibility.json', {
+        'source_config': str(source_path), 'source_config_sha256': hash_file(source_path),
+        'source_commit': source['pipeline_commit'], 'source_data_spec_hash': report['data_spec_hash'],
+        'consumer_data_spec_hash': data_spec_hash(config),
+        'only_changed_field': 'unseen_target_percent',
+        'old_value': source['unseen_target_percent'], 'new_value': 0,
+        'cached_reservation_column_ignored': True, 'cached_cells_and_values_unchanged': True})
+
+
 class CountData:
     def __init__(self, directory):
         self.directory = Path(directory)
@@ -323,6 +348,9 @@ class BalancedSampler:
         self.queues = {c: [] for c in contexts}
         self.seen = {c: set() for c in contexts}
         self.context_queue = []
+        self.cycle_seen = {c: set() for c in contexts}
+        self.completed_cycles = 0
+        self.last_cycle_coverage = None
 
     def sample(self, tasks, cells):
         if not self.context_queue:
@@ -333,16 +361,29 @@ class BalancedSampler:
             if not self.queues[context]:
                 self.queues[context] = list(self.rng.permutation(self.targets[context]))
             target = self.queues[context].pop(); self.seen[context].add(target)
+            self.cycle_seen[context].add(target)
             groups = self.data.groups[(context, target)]
             construct = self.rng.choice(sorted({g for g, b in groups}))
             batch = self.rng.choice(sorted(b for g, b in groups if g == construct))
             indices = self.rng.choice(groups[(construct, batch)], cells, replace=True)
             result.append((context, target, batch, indices))
+        if all(len(self.cycle_seen[c]) == len(self.targets[c]) for c in self.contexts):
+            self.last_cycle_coverage = {c: len(self.cycle_seen[c]) for c in self.contexts}
+            self.completed_cycles += 1
+            self.cycle_seen = {c: set() for c in self.contexts}
         return result
 
+    @property
+    def coverage_time(self):
+        return self.completed_cycles + min(len(self.cycle_seen[c]) / len(self.targets[c]) for c in self.contexts)
+
     def state_dict(self):
-        return {'rng': self.rng.bit_generator.state, 'queues': self.queues, 'seen': self.seen, 'context_queue': self.context_queue}
+        return {'rng': self.rng.bit_generator.state, 'queues': self.queues, 'seen': self.seen,
+                'context_queue': self.context_queue, 'cycle_seen': self.cycle_seen,
+                'completed_cycles': self.completed_cycles, 'last_cycle_coverage': self.last_cycle_coverage}
 
     def load_state_dict(self, state):
         self.rng.bit_generator.state = state['rng']; self.queues = state['queues']
         self.seen = state['seen']; self.context_queue = state['context_queue']
+        self.cycle_seen = state['cycle_seen']; self.completed_cycles = state['completed_cycles']
+        self.last_cycle_coverage = state['last_cycle_coverage']

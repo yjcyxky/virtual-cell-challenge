@@ -23,8 +23,6 @@ from runtime import verify_environment
 import runtime
 from priors import fold_evidence
 import training
-from comparison import paired_difference
-import comparison
 import main as entrypoint
 
 
@@ -80,7 +78,7 @@ def configuration():
     return dict(variant='true_prior', state_dimensions=3, hidden_dimensions=12, residual_dimensions=2,
                 module_off_support_weight=0.02, state_components=2, data_seed=301, seed=17,
                 contexts=['A', 'B', 'C', 'D', 'E'], unseen_target_percent=20, tasks_per_step=2,
-                cells_per_task=4, kl_warmup_epochs=2, steps_per_epoch=4, response_weight=1.0)
+                cells_per_task=4, kl_warmup_steps=8, response_weight=1.0, prior_diagnostic_tasks=128)
 
 
 def setup_model(variant='true_prior', genes=24):
@@ -342,7 +340,7 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     model.to(device)
     sampler = BalancedSampler(data, ['A', 'B', 'C'], 37, 20)
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=8)
+    scheduler = training.CoverageCosine(optimizer, .001, .0001, 2)
     for step in range(3):
         train_step(model, data, view, sampler, optimizer, scheduler, config, step, device)
     path = tmp_path / 'checkpoint.pt'
@@ -352,7 +350,7 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     recovered, _ = setup_model()
     recovered.to(device)
     opt = torch.optim.AdamW(recovered.parameters(), lr=0.001)
-    sch = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=8)
+    sch = training.CoverageCosine(opt, .001, .0001, 2)
     sampling = BalancedSampler(data, ['A', 'B', 'C'], 99, 20)
     progress = load_checkpoint(path, recovered, opt, sch, sampling, device)
     assert progress == {'next_step': 3, 'stale': 2, 'best_epoch': 1}
@@ -394,7 +392,7 @@ def test_batch_matching_does_not_invent_response_from_composition(tmp_path):
 
 
 def test_prior_diagnostics_never_read_held_or_reserved_perturbations(tmp_path):
-    data = SmallData(); config = configuration(); config['validation_tasks'] = 4
+    data = SmallData(); config = configuration(); config['prior_diagnostic_tasks'] = 4
     data.forbidden = set(np.concatenate([ids for (c, t), ids in data.tasks.items() if c in ['D', 'E'] or reserved(t, 20)]))
     rng = np.random.default_rng(4)
     membership = (rng.random((24, 4)) < 0.5).astype(np.float32)
@@ -466,30 +464,6 @@ def test_environment_verification_rejects_changed_lock_or_package_metadata(tmp_p
             verify_environment(record, changed)
 
 
-def test_preprocessing_reuse_checks_fold_and_never_reuses_model_weights(tmp_path, monkeypatch):
-    monkeypatch.setattr(training, 'EXPERIMENT', tmp_path)
-    monkeypatch.setattr(training, 'preprocessing_identity', lambda commit: {'preparation': 'same'})
-    source = tmp_path / 'outputs' / 'source'; source.mkdir(parents=True)
-    config = yaml.safe_load((Path(__file__).resolve().parents[1] / 'configs/default.yaml').read_text())
-    config.update(pipeline_commit='fixed-code', uv_lock_sha256='fixed-lock')
-    (source / 'config.yaml').write_text(yaml.safe_dump(config))
-    (source / 'artifact.json').write_text(json.dumps({'name': 'fixed-model:v0', 'digest': 'fixed-digest'}))
-    folder = source / 'cache' / 'heldout'; folder.mkdir(parents=True)
-    (folder / 'split.json').write_text(json.dumps({'training_targets_by_context': {'A': ['G1'], 'B': ['G2']}}))
-    for name in ['state.npz', 'shared-response.npz', 'prior-strength.npy', 'prior-evidence.parquet', 'evidence-scope.json']:
-        (folder / name).write_bytes(name.encode())
-    (folder / 'model.pt').write_bytes(b'must-not-reuse')
-    destination = tmp_path / 'new'; destination.mkdir()
-    config.update(reuse_run='source', seed=29)
-    with pytest.raises(AssertionError, match='fold_mismatch'):
-        training.reuse_preprocessing(config, destination, 'heldout', ['D', 'E'])
-    training.reuse_preprocessing(config, destination, 'heldout', ['A', 'B'])
-    assert (destination / 'shared-response.npz').is_symlink()
-    assert not (destination / 'model.pt').exists()
-    assert (destination / 'state.npz').read_bytes() == b'state.npz'
-    (folder / 'state.npz').write_bytes(b'unexpected-change')
-    with pytest.raises(AssertionError):
-        training.reuse_preprocessing(config, destination, 'heldout', ['A', 'B'])
 
 
 def assert_nested_equal(actual, expected):
@@ -509,112 +483,10 @@ def assert_nested_equal(actual, expected):
         assert actual == expected
 
 
-@pytest.mark.parametrize('failure_stage', ['first_step', 'epoch_validation'])
-def test_fit_resume_replays_incomplete_epoch_exactly(tmp_path, monkeypatch, failure_stage):
-    if not torch.cuda.is_available():
-        pytest.skip('native CUDA required for full fit recovery')
-    torch.set_num_threads(2)
-    torch.use_deterministic_algorithms(True)
-    data = SmallData(); config = configuration()
-    config.update(epochs=2, minimum_epochs=2, patience=10, learning_rate=0.001, weight_decay=0.0001,
-                  validation_tasks=3, evaluation_cells=24, checkpoint_every_steps=2, pipeline_commit='test')
-    def construct(data, view, contexts, config, prior_directory, folder):
-        model, _ = setup_model()
-        model.projection.copy_(torch.tensor(view.projection)); model.origin.copy_(torch.tensor(view.origin))
-        model.common.fill_(1)
-        return model
-    monkeypatch.setattr(training, 'construct_model', construct)
-    tracked = SimpleNamespace(log=lambda values: None)
-    def execute(folder):
-        return training.fit(data, ['A', 'B', 'C'], 'D', config, folder, 'heldout', tmp_path, tracked)
-    uninterrupted, interrupted = tmp_path / 'uninterrupted', tmp_path / 'interrupted'
-    execute(uninterrupted)
-    original = training.train_step if failure_stage == 'first_step' else training.evaluate_context
-    name = 'train_step' if failure_stage == 'first_step' else 'evaluate_context'
-    def fail(*args, **kwargs):
-        raise RuntimeError('injected interruption')
-    monkeypatch.setattr(training, name, fail)
-    with pytest.raises(RuntimeError, match='injected interruption'):
-        execute(interrupted)
-    interrupted_state = torch.load(interrupted / 'checkpoints/heldout-last.pt', map_location='cpu', weights_only=False)
-    assert interrupted_state['progress']['next_step'] == (0 if failure_stage == 'first_step' else 2)
-    monkeypatch.setattr(training, name, original)
-    execute(interrupted)
-    expected = torch.load(uninterrupted / 'checkpoints/heldout-last.pt', map_location='cpu', weights_only=False)
-    actual = torch.load(interrupted / 'checkpoints/heldout-last.pt', map_location='cpu', weights_only=False)
-    assert actual['progress']['resume_count'] == 1
-    actual['progress']['resume_count'] = 0
-    assert_nested_equal(actual, expected)
-    selected = torch.load(interrupted / 'checkpoints/heldout-best.pt', map_location='cpu', weights_only=False)
-    expected_selected = torch.load(uninterrupted / 'checkpoints/heldout-best.pt', map_location='cpu', weights_only=False)
-    assert_nested_equal(selected, expected_selected)
-    seen, coverage = comparison.selected_exposure(data, interrupted, config, 'heldout')
-    assert seen == set.union(*(set(v) for v in selected['sampled_training_targets'].values()))
-    assert all(row['replay_matches_checkpoint'] for row in coverage)
 
 
-def test_paired_comparison_balances_contexts_and_rejects_missing_tasks():
-    identity = pd.DataFrame({'seed': [17]*4, 'context': ['A', 'A', 'A', 'B'], 'target': ['x', 'y', 'z', 'x']})
-    reference = identity.assign(response_mse=[2., 2., 2., 8.], response_mae=1., energy_distance=2., original_weight_mse=2.)
-    model = identity.assign(response_mse=[1., 1., 1., 2.], response_mae=.5, energy_distance=1., original_weight_mse=1.)
-    result = paired_difference(model, reference.iloc[::-1], 100, 42)
-    assert result['mean_reference_minus_model']['response_mse'] == 3.5
-    assert result['seed_sample_sd'] is None
-    json.dumps(result, allow_nan=False)
-    with pytest.raises(AssertionError, match='unpaired_tasks'):
-        paired_difference(model, reference.iloc[:-1], 100, 42)
 
 
-def test_trial_comparison_preserves_sources_and_labels_realized_exposure(tmp_path, monkeypatch):
-    monkeypatch.setattr(comparison, 'EXPERIMENT', tmp_path)
-    monkeypatch.setattr(comparison, 'selected_exposure', lambda *args: ({'x'}, [{'replay_matches_checkpoint': True}]))
-    config = yaml.safe_load((Path(__file__).resolve().parents[1] / 'configs/default.yaml').read_text())
-    config.update(pipeline_commit='same', uv_lock_sha256='lock', gene_axis_sha256='axis',
-                  source_collection_sha256='collection', prior_source_sha256='prior', bootstrap_repeats=10)
-    variants = [(v, s) for v in ['true_prior', 'random_prior', 'no_prior'] for s in [17, 29, 43]]
-    variants += [(v, 17) for v in ['no_state', 'no_residual', 'no_module', 'no_context']]
-    columns = ['response_mse', 'response_mae', 'zero_mse', 'zero_mae', 'shared_mse', 'shared_mae',
-               'energy_distance', 'ntc_energy_distance', 'original_weight_mse', 'original_weight_zero_mse',
-               'depth_mean_ratio', 'detection_mae', 'covariance_mse', 'state_composition_l1',
-               'projected_quantile_mae', 'native_response_mse', 'native_zero_mse',
-               'log_mean_raw_count_mse', 'log_mean_raw_count_zero_mse']
-    sources = []
-    for variant, seed in variants:
-        run_id = f'{variant}-{seed}'
-        folder = tmp_path / 'outputs' / run_id; folder.mkdir(parents=True)
-        actual = dict(config, variant=variant, seed=seed, run_id=run_id)
-        rows = []
-        for context in config['contexts']:
-            for target in ['x', 'y']:
-                row = dict.fromkeys(columns, 1.)
-                row.update(context=context, target=target, variant=variant, seed=seed,
-                           response_mse=1. if variant == 'true_prior' else 2.,
-                           reserved_target=target == 'y', target_seen_in_training=target == 'x')
-                rows.append(row)
-        frame = pd.DataFrame(rows)
-        if variant == 'no_context':
-            frame['ntc_sample_response_mse'] = .7; frame['ntc_sample_response_mae'] = .5
-            actual['comparison_sources'] = comparison.comparison_sources(sources)
-        else:
-            (folder / 'complete.json').write_text(json.dumps({'status': 'completed', 'artifact': {'name': run_id + ':v0'}}))
-            sources.append(run_id)
-        frame.to_parquet(folder / 'evaluation-metrics.parquet')
-        (folder / 'config.yaml').write_text(yaml.safe_dump(actual))
-    priors = folder / 'cache/priors'; priors.mkdir(parents=True)
-    np.savez(priors / 'modules.npz', true=np.array([[1.], [0.]]))
-    result = comparison.compare_trials(SimpleNamespace(genes=['x', 'y']), actual, folder)
-    assert result['run_count'] == 13
-    assert result['comparisons']['true_prior_vs_random_prior']['mean_reference_minus_model']['response_mse'] == 1.
-    combined = pd.read_parquet(folder / 'comparison-tasks.parquet')
-    assert combined.actually_sampled_at_selected_checkpoint.equals(combined.target.eq('x'))
-    assert combined.ntc_sample_response_mse.eq(.7).all()
-    first = tmp_path / 'outputs' / sources[0] / 'evaluation-metrics.parquet'
-    original = pd.read_parquet(first)
-    assert 'ntc_sample_response_mse' not in original
-    original['zero_mse'] = 99
-    original.to_parquet(first)
-    with pytest.raises(AssertionError, match='comparison_source_changed'):
-        comparison.compare_trials(SimpleNamespace(genes=['x', 'y']), actual, folder)
 
 
 def test_cached_shared_responses_load_one_matrix_and_preserve_values(tmp_path):
@@ -636,34 +508,6 @@ def test_cached_shared_responses_load_one_matrix_and_preserve_values(tmp_path):
     assert sum(buffers.values()) <= 2 * matrix.nbytes, 'full_matrix_retained_per_target'
 
 
-def test_preprocessing_identity_allows_unrelated_fixes_but_rejects_changed_preparation(tmp_path, monkeypatch):
-    monkeypatch.setattr(training, 'ROOT', tmp_path)
-    experiment = tmp_path / 'experiments/exp003-context-module-cvae'
-    monkeypatch.setattr(training, 'EXPERIMENT', experiment)
-    paths = [experiment / 'src' / f'{name}.py' for name in ['data', 'state', 'priors']]
-    paths += [tmp_path / 'scripts/dossier/rna.py', tmp_path / 'experiments/exp001-context-pair-xgb/src/features.py']
-    for path in paths:
-        path.parent.mkdir(parents=True, exist_ok=True); path.write_text('value = 1\n')
-    evaluation = experiment / 'src/evaluation.py'
-    evaluation.write_text('import numpy as np\ndef response_summary(): return 1\ndef shared_responses():\n    path = cache_path\n    if path.exists():\n        return 10\n    return 2\ndef evaluate_task(): return 3\n')
-    (experiment / 'src/training.py').write_text('def construct_model(): return 1\n')
-    def git(*args):
-        return subprocess.check_output(['git', '-c', 'user.name=Protocol Test', '-c', 'user.email=protocol@example.invalid', *args], cwd=tmp_path, text=True).strip()
-    git('init', '-q'); git('add', '.')
-    git('commit', '-qm', 'original preparation'); first = git('rev-parse', 'HEAD')
-    evaluation.write_text(evaluation.read_text().replace('evaluate_task(): return 3', 'evaluate_task(): return 4'))
-    (experiment / 'src/model.py').write_text('fixed_ablation = True\n')
-    git('add', '.'); git('commit', '-qm', 'unrelated model and evaluation fixes'); second = git('rev-parse', 'HEAD')
-    assert training.preprocessing_identity(first) == training.preprocessing_identity(second)
-    evaluation.write_text(evaluation.read_text().replace('return 10', 'saved = np.load(path)\n        return saved'))
-    git('add', '.'); git('commit', '-qm', 'cache reader memory repair'); reader = git('rev-parse', 'HEAD')
-    assert training.preprocessing_identity(first) == training.preprocessing_identity(reader)
-    evaluation.write_text(evaluation.read_text().replace('    return 2', '    return 5'))
-    git('add', '.'); git('commit', '-qm', 'changed baseline'); third = git('rev-parse', 'HEAD')
-    assert training.preprocessing_identity(first) != training.preprocessing_identity(third)
-    (experiment / 'src/state.py').write_text('value = 2\n')
-    git('add', '.'); git('commit', '-qm', 'changed state producer'); fourth = git('rev-parse', 'HEAD')
-    assert training.preprocessing_identity(third) != training.preprocessing_identity(fourth)
 
 
 def test_completion_summary_uses_the_installed_wandb_API():
@@ -715,7 +559,7 @@ def test_finalization_retry_preserves_training_identity_and_rejects_unfinished_f
     (output / 'failure.json').write_text('{"error":"summary update failed"}')
     prediction = output / 'predictions/holdout-A'; prediction.mkdir(parents=True)
     (prediction / 'complete.json').write_text('{}')
-    for key in ['holdout-A', 'final']:
+    for key in ['holdout-A']:
         torch.save({'model': {}, 'optimizer': {}, 'scheduler': {}, 'sampler': {}, 'random': {},
                     'progress': {'complete': fit_complete}}, output / 'checkpoints' / f'{key}-last.pt')
     tracked = SimpleNamespace(summary=Summary(lambda: {}), log=lambda values: None, finish=lambda **kwargs: None)

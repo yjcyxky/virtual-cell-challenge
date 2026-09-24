@@ -156,7 +156,7 @@ def fold_evidence(data, contexts, true, random, config, directory):
                          'residual_rows_after_batch_centering': len(pooled) - len(batches),
                          'sample_support_sufficient': len(pooled) - len(batches) >= 30, 'target': None})
         tasks = sorted((t for c, t in data.tasks if c == context and not reserved(t, config['unseen_target_percent'])),
-                       key=lambda t: value_key(t))[:config['validation_tasks']]
+                       key=lambda t: value_key(t))[:config['prior_diagnostic_tasks']]
         for target in tasks:
             groups = data.groups[(context, target)]; weights = data.task_weights(context, target)
             observed, matched, observed_w, matched_w, observed_strata, matched_strata = [], [], [], [], [], []
@@ -183,7 +183,7 @@ def fold_evidence(data, contexts, true, random, config, directory):
                'uses_held_perturbations': False, 'candidate_prior': 'degree_matched_random' if config['variant'] == 'random_prior' else 'real_membership_diagnostic',
                'strength_method': '0.25 + 0.75 clip(mean train NTC within-batch candidate-minus-null coherence / 0.15)',
                'perturbation_diagnostic': 'changes in off-diagonal standardized covariance; endpoint association, not causal validity',
-               'unseen_targets_excluded': True, 'minimum_strength': float(strength.min())})
+               'global_target_reservation_percent': config['unseen_target_percent'], 'minimum_strength': float(strength.min())})
     return strength.astype(np.float32)
 
 
