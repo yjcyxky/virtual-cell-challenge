@@ -1,5 +1,13 @@
 # 结果与局限
 
+## 固定学习率重跑 v3（2026-09-24）
+
+用户要求固定 learning rate 重跑后，`20260924-lodo-v2-s17` 已主动中止并标记 `superseded_incomplete`，其完整可恢复 H1 checkpoint 为 32,640 steps、2 个完成周期，停止前学习率为 0.0008342054。已评估最佳为第 1 周期，本地官方方法均分 -0.1940427311；这是未完成试验的阶段结果，不是收敛结论。
+
+v2 记录到的实际开销：第 1 周期抽样监测 222.24 秒、三种子官方验证 206.46 秒，合计约 7.15 分钟；第 2 周期监测 206.96 秒且按计划跳过官方验证。v3 保留这一监测、验证安排及原 loss，仅将学习率固定为 1e-3。早停观察边界独立设为第 10 覆盖周期，仍最早第 13 周期结束，不再等待“达到最低学习率”。
+
+新 run 为 [20260924-lodo-fixedlr-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260924-lodo-fixedlr-s17)，从头训练五折并记录 v2 来源。已移除废弃余弦实现、配置和测试；46 项检查通过，含实际训练周期及 CPU/CUDA 完整恢复后的学习率恒定检查。新训练和性能结果尚未完成，进度由 [Issue #33](https://github.com/yjcyxky/virtual-cell-challenge/issues/33) 记录。以下 v2 和 #32 的记录保留其历史口径。
+
 ## 留一训练协议 v2（2026-09-24）
 
 当前工作由 [Issue #33](https://github.com/yjcyxky/virtual-cell-challenge/issues/33) 追踪。下方 #32 矩阵及其既有结论属于历史结果，未改写。

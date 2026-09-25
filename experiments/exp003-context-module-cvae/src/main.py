@@ -203,7 +203,9 @@ def main(args):
         assert source_config['seed'] == config['seed'] and source_config['variant'] == config['variant']
         config['restart_source'] = {'run_id': args.restart_from_run, 'config_sha256': hash_file(source_path),
                                     'pipeline_commit': source_config['pipeline_commit'], 'training_state_reused': False}
-    assert config['protocol'] == 'lodo-sufficiency-v2'
+    assert config['protocol'] == 'lodo-sufficiency-v3'
+    assert config['learning_rate_schedule'] == 'constant' and config['learning_rate'] > 0
+    assert isinstance(config['stopping_start_cycle'], int) and config['stopping_start_cycle'] > 0
     assert isinstance(config['monitor_layers_per_target'], int) and config['monitor_layers_per_target'] > 0
     assert isinstance(config['validation_interval_cycles'], int) and config['validation_interval_cycles'] > 0
     assert config['unseen_target_percent'] == 0

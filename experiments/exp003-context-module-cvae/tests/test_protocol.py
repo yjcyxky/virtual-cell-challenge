@@ -341,7 +341,7 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     model.to(device)
     sampler = BalancedSampler(data, ['A', 'B', 'C'], 37, 20)
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)
-    scheduler = training.CoverageCosine(optimizer, .001, .0001, 2)
+    scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=1)
     for step in range(3):
         train_step(model, data, view, sampler, optimizer, scheduler, config, step, device)
     path = tmp_path / 'checkpoint.pt'
@@ -351,12 +351,13 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     recovered, _ = setup_model()
     recovered.to(device)
     opt = torch.optim.AdamW(recovered.parameters(), lr=0.001)
-    sch = training.CoverageCosine(opt, .001, .0001, 2)
+    sch = torch.optim.lr_scheduler.ConstantLR(opt, factor=1.0, total_iters=1)
     sampling = BalancedSampler(data, ['A', 'B', 'C'], 99, 20)
     progress = load_checkpoint(path, recovered, opt, sch, sampling, device)
     assert progress == {'next_step': 3, 'stale': 2, 'best_epoch': 1}
     replay = [train_step(recovered, data, view, sampling, opt, sch, config, s, device) for s in range(3, 6)]
     assert replay == future
+    assert all(row['learning_rate'] == .001 for row in replay)
     for k, value in recovered.state_dict().items():
         torch.testing.assert_close(value, expected[k], rtol=0, atol=0)
     assert sampling.context_queue == sampler.context_queue

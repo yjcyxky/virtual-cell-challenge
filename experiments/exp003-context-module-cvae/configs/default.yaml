@@ -1,5 +1,5 @@
 issue: https://github.com/yjcyxky/virtual-cell-challenge/issues/33
-protocol: lodo-sufficiency-v2
+protocol: lodo-sufficiency-v3
 cache_source: /home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data
 collection: experiments/exp002-response-transfer-validation/outputs/20260922-c/collection
 gene_axis: data/raw/arc_vcc2026_controls/gene_names.csv
@@ -23,9 +23,9 @@ residual_dimensions: 8
 module_off_support_weight: 0.02
 response_weight: 1.0
 learning_rate: 0.001
+learning_rate_schedule: constant
 weight_decay: 0.0001
-minimum_learning_rate: 0.0001
-decay_cycles: 10
+stopping_start_cycle: 10
 patience_cycles: 3
 kl_warmup_steps: 2048
 loss_relative_range: 0.01

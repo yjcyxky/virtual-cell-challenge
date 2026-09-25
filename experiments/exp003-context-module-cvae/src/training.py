@@ -13,7 +13,7 @@ from evaluation import evaluate_context, shared_responses, summarize, task_seed
 from model import ModuleCVAE, masked_logcp
 from priors import degree_matched_random, fold_evidence
 from state import FoldView
-from stopping import CoverageCosine, assess_stopping, validation_due
+from stopping import assess_stopping, validation_due
 from official import OfficialValidation
 
 def random_state():
@@ -115,7 +115,7 @@ def train_step(model, data, view, sampler, optimizer, scheduler, config, step, d
         raise FloatingPointError('nonfinite_training_loss')
     loss.backward()
     norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 10, error_if_nonfinite=True)
-    optimizer.step(); scheduler.step(sampler.coverage_time)
+    optimizer.step(); scheduler.step()
     return {'loss': float(loss.detach()), 'response_loss': float(response_loss.detach()), 'gradient_norm': float(norm),
             'kl_beta': beta, 'learning_rate': scheduler.get_last_lr()[0], **{k: float(v.detach()) for k, v in logs.items()}}
 
@@ -225,7 +225,8 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
     view = FoldView(data, contexts, config, cache)
     model = construct_model(data, view, contexts, config, prior_directory, cache).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
-    scheduler = CoverageCosine(optimizer, config['learning_rate'], config['minimum_learning_rate'], config['decay_cycles'])
+    # Identity schedule: LR remains fixed before/after every update and recovery.
+    scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=1)
     sampler = BalancedSampler(data, contexts, fit_seed, config['unseen_target_percent'])
     plan = monitor_plan(data, contexts, config, cache)
     evaluator = OfficialValidation(data, view, validation_context, config, cache, output / 'predictions' / key)
@@ -359,7 +360,7 @@ def experiment(data, config, output, priors, tracked):
                       'last_score': progress['history'][-1]['validation_score'],
                       'training_contexts': training_contexts, 'validation_context': held,
                       'stop_reason': progress['stop_reason'], 'coverage': progress['coverage'],
-                      'best_before_decay_complete': progress['best_cycle'] < config['decay_cycles']}
+                      'best_before_stopping_window': progress['best_cycle'] < config['stopping_start_cycle']}
         write_json(prediction_dir / 'complete.json', folds[held])
         tracked.log({f'validation/{held}/selected_score': progress['best_score']})
         del model, view; torch.cuda.empty_cache()

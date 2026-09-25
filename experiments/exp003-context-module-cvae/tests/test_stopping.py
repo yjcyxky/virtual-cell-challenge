@@ -11,14 +11,14 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from data import BalancedSampler, validate_cache_protocol, data_spec_hash
-from stopping import CoverageCosine, assess_stopping, validation_due
+from stopping import assess_stopping, validation_due
 import training
 from test_protocol import SmallData, configuration, setup_model, assert_nested_equal
 from state import FoldView
 
 
 def stop_config():
-    return dict(decay_cycles=10, patience_cycles=3, kl_warmup_steps=8,
+    return dict(stopping_start_cycle=10, patience_cycles=3, kl_warmup_steps=8,
                 validation_min_delta=.001, loss_relative_range=.01, stability_epsilon=1e-8)
 
 
@@ -27,7 +27,7 @@ def point(cycle, score=.2):
             'training_monitor': {c: {'loss': 1., 'response_loss': .2} for c in 'ABCD'}}
 
 
-def test_no_stop_before_three_whole_floor_cycles():
+def test_no_stop_before_three_whole_cycles_after_coverage_boundary():
     config = stop_config(); history = []; reference = None; stale = 0
     for cycle in range(1, 14):
         history.append(point(cycle))
@@ -74,18 +74,6 @@ def test_coverage_clock_requires_every_task_each_cycle_and_restores():
     for _ in range(30):
         assert_nested_equal(restored.sample(2, 4), sampler.sample(2, 4))
     assert_nested_equal(restored.state_dict(), sampler.state_dict())
-
-
-def test_cosine_holds_floor_without_budget_or_restart():
-    model = torch.nn.Linear(1, 1); opt = torch.optim.AdamW(model.parameters(), lr=.0003)
-    scheduler = CoverageCosine(opt, .0003, .00003, 10)
-    values = []
-    for position in np.linspace(0, 30, 121):
-        scheduler.step(position); values.append(scheduler.get_last_lr()[0])
-    assert all(a >= b for a, b in zip(values, values[1:]))
-    assert all(value == .00003 for value in values[40:])
-    recovery = CoverageCosine(opt, .0003, .00003, 10); recovery.load_state_dict(scheduler.state_dict())
-    assert recovery.get_last_lr() == scheduler.get_last_lr()
 
 
 def test_sampled_training_monitor_is_fixed_weighted_and_never_reads_held_labels(tmp_path):
@@ -179,9 +167,9 @@ def test_recovery_matches_uninterrupted_cycles_and_selection(tmp_path, monkeypat
         pytest.skip('native CUDA required')
     torch.set_num_threads(2); torch.use_deterministic_algorithms(True)
     data = SmallData(); config = configuration()
-    decay_cycles = 4 if failure_stage == 'validation_after_skip' else 1
-    config.update(unseen_target_percent=0, decay_cycles=decay_cycles, patience_cycles=1, kl_warmup_steps=1,
-                  learning_rate=.001, minimum_learning_rate=.0001, weight_decay=.0001,
+    stopping_start_cycle = 4 if failure_stage == 'validation_after_skip' else 1
+    config.update(unseen_target_percent=0, stopping_start_cycle=stopping_start_cycle, patience_cycles=1, kl_warmup_steps=1,
+                  learning_rate=.001, weight_decay=.0001,
                   loss_relative_range=.01, stability_epsilon=1e-8, validation_min_delta=.001,
                   checkpoint_every_steps=2, pipeline_commit='test')
     def construct(data, view, contexts, config, prior_directory, folder):
@@ -220,7 +208,10 @@ def test_recovery_matches_uninterrupted_cycles_and_selection(tmp_path, monkeypat
     assert actual['progress']['resume_count'] == 1
     actual['progress']['resume_count'] = 0
     assert_nested_equal(actual, expected)
-    assert actual['progress']['history'][-1]['cycle'] == decay_cycles + 1
+    assert actual['progress']['history'][-1]['cycle'] == stopping_start_cycle + 1
+    assert actual['optimizer']['param_groups'][0]['lr'] == config['learning_rate']
+    assert actual['scheduler']['base_lrs'] == [config['learning_rate']]
+    assert all(p['learning_rate'] == config['learning_rate'] for p in actual['progress']['history'])
     assert actual['progress']['best_cycle'] == 1
     if failure_stage == 'validation_after_skip':
         assert all(p['validation_score'] is None for p in actual['progress']['history'][1:3])
