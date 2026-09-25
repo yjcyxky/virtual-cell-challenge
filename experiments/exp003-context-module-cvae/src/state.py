@@ -8,6 +8,42 @@ from sklearn.decomposition import PCA
 from data import logcp, write_json
 
 
+def context_features(batch_arrays, coordinates, mask, config):
+    """Describe NTC populations using the same rules in fitting and deployment.
+
+    The caller supplies real technical batches, or one pooled population when
+    batch labels are unavailable. NTC guide identifiers are not batch labels.
+    """
+    z = np.concatenate(coordinates)
+    weight = np.concatenate([np.full(len(v), 1 / len(v)) for v in coordinates])
+    cluster = KMeans(n_clusters=config['state_components'], n_init=5,
+                     random_state=config['data_seed']).fit(z, sample_weight=weight)
+    centers = cluster.cluster_centers_.astype(np.float32)
+    context_mean = np.mean([v.mean(0) for v in coordinates], axis=0).astype(np.float32)
+    scales = np.stack([np.maximum(z[cluster.labels_ == k].std(0), 0.15) if (cluster.labels_ == k).sum() > 2
+                       else np.maximum(z.std(0), 0.15) for k in range(len(centers))]).astype(np.float32)
+    states, diagnostics = [], []
+    for x, zs in zip(batch_arrays, coordinates):
+        mean = x.mean(0); var = x.var(0)
+        theta = np.clip(mean ** 2 / np.maximum(var - mean, 0.01), 0.1, 1000)
+        distances = ((zs[:, None] - centers) ** 2 / np.maximum(scales, 0.2)[None] ** 2).mean(-1)
+        probability = np.exp(-distances + distances.min(1, keepdims=True))
+        probability /= probability.sum(1, keepdims=True)
+        prior_weight = np.maximum(probability.mean(0), 0.01); prior_weight /= prior_weight.sum()
+        library = x.sum(1)
+        covariate = np.concatenate([context_mean, zs.mean(0) - context_mean,
+                                    [np.log1p(library.mean()) / 10, library.std() / max(library.mean(), 1),
+                                     mask.mean()]])
+        states.append({'base': mean.astype(np.float32), 'theta': theta.astype(np.float32),
+                       'centers': centers, 'scales': scales, 'probability': prior_weight.astype(np.float32),
+                       'condition': covariate.astype(np.float32), 'mask': mask})
+        diagnostics.append({'mean_observed_depth': float(library.mean()),
+                            'depth_cv': float(library.std() / max(library.mean(), 1)),
+                            'between_batch_state_squared_distance': float(np.mean((zs.mean(0) - context_mean) ** 2)),
+                            'within_batch_state_variance': float(zs.var(0).mean())})
+    return states, diagnostics
+
+
 class FoldView:
     def __init__(self, data, training_contexts, config, directory):
         self.data, self.config, self.directory = data, config, directory
@@ -42,38 +78,16 @@ class FoldView:
                 x = data.control(context, batch, 0)
                 coordinates.append(self.project(x))
                 batch_arrays.append(x)
-            z = np.concatenate(coordinates)
-            # Equal layer mass in fitting state centers, even when layers have fewer cells.
-            weight = np.concatenate([np.full(len(v), 1 / len(v)) for v in coordinates])
-            cluster = KMeans(n_clusters=config['state_components'], n_init=5,
-                             random_state=config['data_seed']).fit(z, sample_weight=weight)
-            centers = cluster.cluster_centers_.astype(np.float32)
-            context_mean = np.mean([v.mean(0) for v in coordinates], axis=0).astype(np.float32)
-            scales = np.stack([np.maximum(z[cluster.labels_ == k].std(0), 0.15) if (cluster.labels_ == k).sum() > 2
-                               else np.maximum(z.std(0), 0.15) for k in range(len(centers))]).astype(np.float32)
-            for batch, x, zs in zip(batches, batch_arrays, coordinates):
-                mean = x.mean(0); var = x.var(0)
-                theta = np.clip(mean ** 2 / np.maximum(var - mean, 0.01), 0.1, 1000)
+            states, summaries = context_features(batch_arrays, coordinates, data.masks[context], config)
+            for batch, x, state, summary in zip(batches, batch_arrays, states, summaries):
                 ref = data.control(context, batch, 1)
-                distances = ((zs[:, None] - centers) ** 2 / np.maximum(scales, 0.2)[None] ** 2).mean(-1)
-                probability = np.exp(-distances + distances.min(1, keepdims=True))
-                probability /= probability.sum(1, keepdims=True)
-                prior_weight = np.maximum(probability.mean(0), 0.01); prior_weight /= prior_weight.sum()
-                library = x.sum(1)
-                covariate = np.concatenate([context_mean, zs.mean(0) - context_mean,
-                                            [np.log1p(library.mean()) / 10, library.std() / max(library.mean(), 1),
-                                             data.masks[context].mean()]])
                 self.controls[(context, batch)] = {
-                    'base': mean.astype(np.float32), 'theta': theta.astype(np.float32),
+                    **state,
                     'reference': ref.mean(0), 'reference_log': logcp(ref).mean(0),
                     'reference_log_common': logcp(ref, data.common).mean(0),
-                    'centers': centers, 'scales': scales, 'probability': prior_weight.astype(np.float32),
-                    'condition': covariate.astype(np.float32), 'mask': data.masks[context],
                 }
                 diagnostics.append({'context': context, 'batch': batch, 'feature_controls': len(x), 'reference_controls': len(ref),
-                                    'mean_observed_depth': float(library.mean()), 'depth_cv': float(library.std() / max(library.mean(), 1)),
-                                    'between_batch_state_squared_distance': float(np.mean((zs.mean(0) - context_mean) ** 2)),
-                                    'within_batch_state_variance': float(zs.var(0).mean()),
+                                    **summary,
                                     'posterior_cell_type_probability': None, 'state_method': 'train-NTC PCA; NTC-only soft clusters'})
         pd.DataFrame(diagnostics).to_parquet(directory / 'batch-diagnostics.parquet', index=False)
         write_json(directory / 'state-scope.json', {'pca_training_contexts': list(training_contexts),
