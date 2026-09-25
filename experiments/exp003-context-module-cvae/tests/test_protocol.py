@@ -78,7 +78,8 @@ def configuration():
     return dict(variant='true_prior', state_dimensions=3, hidden_dimensions=12, residual_dimensions=2,
                 module_off_support_weight=0.02, state_components=2, data_seed=301, seed=17,
                 contexts=['A', 'B', 'C', 'D', 'E'], unseen_target_percent=20, tasks_per_step=2,
-                cells_per_task=4, kl_warmup_steps=8, response_weight=1.0, prior_diagnostic_tasks=128)
+                cells_per_task=4, kl_warmup_steps=8, response_weight=1.0, prior_diagnostic_tasks=128,
+                monitor_layers_per_target=4, validation_interval_cycles=3)
 
 
 def setup_model(variant='true_prior', genes=24):

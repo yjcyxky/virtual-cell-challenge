@@ -33,6 +33,11 @@ class CoverageCosine:
         self.step(state['position'])
 
 
+def validation_due(cycle, config):
+    """Sparse early selection; every floor cycle is observed for honest patience."""
+    return cycle >= config['decay_cycles'] or (cycle - 1) % config['validation_interval_cycles'] == 0
+
+
 def assess_stopping(history, reference, stale, contexts, config):
     """Pure transition; checkpoint selection deliberately does not use min_delta.
 
@@ -42,6 +47,8 @@ def assess_stopping(history, reference, stale, contexts, config):
     """
     point = history[-1]
     cycle, score = point['cycle'], point['validation_score']
+    if score is None:
+        return {'reference': reference, 'stale': stale, 'stable': False, 'ranges': {}, 'stop': False}
     assert np.isfinite(score)
     window = config['patience_cycles']
     ready = (cycle >= config['decay_cycles'] and point['step'] >= config['kl_warmup_steps'])
@@ -54,7 +61,8 @@ def assess_stopping(history, reference, stale, contexts, config):
     else:
         stale += 1
     tail = history[-(window + 1):]
-    eligible = (len(tail) == window + 1 and tail[0]['cycle'] >= config['decay_cycles']
+    eligible = (len(tail) == window + 1 and all(p['validation_score'] is not None for p in tail)
+                and tail[0]['cycle'] >= config['decay_cycles']
                 and tail[0]['step'] >= config['kl_warmup_steps'])
     ranges = {}
     if eligible:

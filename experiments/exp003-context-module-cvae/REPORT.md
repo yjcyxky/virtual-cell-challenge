@@ -1,5 +1,17 @@
 # 结果与局限
 
+## 留一训练协议 v2（2026-09-24）
+
+当前工作由 [Issue #33](https://github.com/yjcyxky/virtual-cell-challenge/issues/33) 追踪。下方 #32 矩阵及其既有结论属于历史结果，未改写。
+
+用户要求提高学习率、去掉穷举实验层监测并调研扰动预测损失后，已停止 `20260924-lodo-s17`。这是被新协议替代的未完成试验，不能称为正常早停或训练充分。停止时第一折 H1 的最近完整可恢复 checkpoint 为 22,144 optimizer steps，包含一个已发布周期；第 1 周期官方方法本地验证均分为 -0.2255436524。该分数不是完整五折结果，不能用于证明机制失败。旧配置、模型、训练状态、预测及日志保留；[旧 W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260924-lodo-s17) 已标记 superseded_incomplete。
+
+新 run `20260924-lodo-v2-s17` 采用 PLAN 所列协议，从头训练五个模型，并在配置中引用旧 run；不复用其优化状态或历史曲线。初始/最低学习率改为 1e-3/1e-4，其他模型与损失配置暂不变。每个训练靶点固定抽取 4 个实验层作为监测面板，当前 H1 留出折从 1,413,714 次层评估减为 52,104 次，计算单元减少约 96.3%；这是规模计算，不是已测得的端到端加速。官方验证改为第 1、4、7 周期及第 10 周期起逐周期。跳过的验证不会计入无改善；训练监测和官方评分分别记录耗时。
+
+该调整改变监测估计方法、候选 checkpoint 及学习率，因此不能把两个 run 的 loss 曲线拼接或把所有差异单独归因于学习率。47 项功能验证已通过，含固定面板/RNG 隔离、非均匀层概率、跳过验证的耐心计数、CPU/CUDA 监测一致性及跨跳过周期的完整恢复。新训练与五折性能结果尚未完成；[新 W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260924-lodo-v2-s17) 和 Issue 持续记录进度，不以测试通过代替训练完成。Loss 调研及后续变更决策由 Issue 追踪，尚未应用于 v2。
+
+## 历史实验记录
+
 实验：`exp003-context-module-cvae`；需求和进度见 [Issue #32](https://github.com/yjcyxky/virtual-cell-challenge/issues/32)，方法见 [PLAN.md](PLAN.md)。本轮只做本地评估，未提交官方评分。
 
 ## 当前状态

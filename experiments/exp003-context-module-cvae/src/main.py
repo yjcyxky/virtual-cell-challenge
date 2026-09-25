@@ -129,6 +129,8 @@ def artifact(tracked, output, online):
     paths += sorted((output / 'cache').glob('*/evidence-scope.json'))
     paths += sorted((output / 'cache').glob('*/state-scope.json'))
     paths += sorted((output / 'cache').glob('*/split.json'))
+    paths += sorted((output / 'cache').glob('*/monitor-scope.json'))
+    paths += sorted((output / 'cache').glob('*/cycle-*-timing.json'))
     paths += sorted((output / 'cache').glob('*/prior-strength.npy'))
     paths += sorted((output / 'predictions').glob('*/example-*.npz'))
     paths += [output / 'cache' / 'priors' / n for n in ['modules.npz', 'modules.json', 'complete.json']]
@@ -201,7 +203,9 @@ def main(args):
         assert source_config['seed'] == config['seed'] and source_config['variant'] == config['variant']
         config['restart_source'] = {'run_id': args.restart_from_run, 'config_sha256': hash_file(source_path),
                                     'pipeline_commit': source_config['pipeline_commit'], 'training_state_reused': False}
-    assert config['protocol'] == 'lodo-sufficiency-v1'
+    assert config['protocol'] == 'lodo-sufficiency-v2'
+    assert isinstance(config['monitor_layers_per_target'], int) and config['monitor_layers_per_target'] > 0
+    assert isinstance(config['validation_interval_cycles'], int) and config['validation_interval_cycles'] > 0
     assert config['unseen_target_percent'] == 0
     assert len(config['contexts']) == 5 and len(config['prediction_seeds']) == 3
     assert importlib.metadata.version('cell-eval2') == config['official_version']
@@ -229,6 +233,9 @@ def main(args):
                   source_data_run='20260922-c', source_cache_run=None if not config.get('cache_source') else str(Path(config['cache_source']).parents[1]))
     if (output / 'config.yaml').exists():
         previous = yaml.safe_load((output / 'config.yaml').read_text())
+        # Provenance belongs to run identity; no need to repeat it on recovery.
+        if args.restart_from_run is None and 'restart_source' in previous:
+            config['restart_source'] = previous['restart_source']
         if '_pretraining_revisions' in previous:
             config['_pretraining_revisions'] = previous['_pretraining_revisions']
         if previous != config:

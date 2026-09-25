@@ -13,7 +13,7 @@ from evaluation import evaluate_context, shared_responses, summarize, task_seed
 from model import ModuleCVAE, masked_logcp
 from priors import degree_matched_random, fold_evidence
 from state import FoldView
-from stopping import CoverageCosine, assess_stopping
+from stopping import CoverageCosine, assess_stopping, validation_due
 from official import OfficialValidation
 
 def random_state():
@@ -121,21 +121,36 @@ def train_step(model, data, view, sampler, optimizer, scheduler, config, step, d
 
 
 def monitor_plan(data, contexts, config, cache):
-    """Enumerate every target and construct/batch layer, using the training sampling law."""
+    """Fixed stratified MC panel: all targets, training-weighted layer draws per target."""
     path = cache / 'monitor-sampling.parquet'
     rows = []
     n = config['cells_per_task']
+    draws = config['monitor_layers_per_target']
+    assert isinstance(draws, int) and draws > 0
+    coverage = {}
     for context in contexts:
         targets = sorted(t for c, t in data.tasks if c == context and not reserved(t, config['unseen_target_percent']))
+        total_layers, sampled_layers = 0, set()
         for target in targets:
             weights = data.task_weights(context, target)
-            for (construct, batch), ids in sorted(data.groups[(context, target)].items()):
-                seed = task_seed(context, 'loss-monitor|' + target + '|' + str(construct) + '|' + str(batch))
+            keys = sorted(data.groups[(context, target)])
+            probability = np.asarray([weights[key] for key in keys], dtype=float)
+            assert np.all(probability > 0) and abs(probability.sum() - 1) < 1e-6
+            probability /= probability.sum()
+            layer_rng = np.random.default_rng(task_seed(context, f'loss-monitor|{target}|{config["data_seed"]}'))
+            total_layers += len(keys)
+            for draw, selected in enumerate(layer_rng.choice(len(keys), draws, replace=True, p=probability)):
+                construct, batch = keys[selected]
+                ids = data.groups[(context, target)][(construct, batch)]
+                sampled_layers.add((target, construct, batch))
+                seed = task_seed(context, f'loss-monitor-cells|{target}|{draw}|{config["data_seed"]}')
                 rng = np.random.default_rng(seed)
                 rows.append({'context': context, 'target': target, 'construct': construct, 'batch': batch,
-                             'seed': seed, 'weight': weights[(construct, batch)] / len(targets),
+                             'draw': draw, 'seed': seed, 'weight': 1 / (draws * len(targets)),
                              'cells': rng.choice(ids, n, replace=True).tolist(),
                              'controls': rng.choice(data.controls[(context, batch, 1)], n, replace=True).tolist()})
+        coverage[context] = {'targets': len(targets), 'layer_draws': draws * len(targets),
+                             'unique_sampled_layers': len(sampled_layers), 'eligible_layers': total_layers}
     frame = pd.DataFrame(rows)
     if path.exists():
         previous = pd.read_parquet(path)
@@ -144,14 +159,18 @@ def monitor_plan(data, contexts, config, cache):
         assert all(np.array_equal(a, b) for field in ['cells', 'controls'] for a, b in zip(previous[field], frame[field]))
     else:
         frame.to_parquet(path, index=False)
+    write_json(cache / 'monitor-scope.json', {'method': 'fixed training-weighted layer sampling with replacement within every target',
+               'layers_per_target': draws, 'cells_per_layer': n, 'contexts': coverage,
+               'interpretation': 'Monte Carlo training-objective estimate; not exhaustive layer evaluation',
+               'sampling_sha256': hash_file(path)})
     return rows
 
 
 @torch.no_grad()
 def monitor_training(model, data, view, plan, contexts, config, step):
-    """Fixed MC evaluation of the SAME expectation, for all tasks/layers, no held labels.
+    """Fixed MC evaluation of the SAME expectation, for all targets, no held labels.
 
-    Enumerating layers integrates their exact training weights. Each layer uses the
+    Layers are drawn by their training weights then averaged. Each layer uses the
     original cells-per-task sample size for the response loss. Evaluate perturbed and
     NTC terms separately to preserve the original 4:1 mixture even at a tail batch.
     """
@@ -263,18 +282,22 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
             cycle = sampler.completed_cycles
             rng = random_state()
             try:
+                monitor_started = time.monotonic()
                 training_losses = monitor_training(model, data, view, plan, contexts, config, step + 1)
-                validation = evaluator.evaluate(model, cycle)
+                monitor_seconds = time.monotonic() - monitor_started
+                validation_started = time.monotonic()
+                validation = evaluator.evaluate(model, cycle) if validation_due(cycle, config) else None
+                validation_seconds = time.monotonic() - validation_started if validation is not None else 0.
             finally:
                 restore_random(rng)
                 model.train()
-            score = validation['mean_score']
+            score = None if validation is None else validation['mean_score']
             point = {'cycle': cycle, 'step': step + 1, 'learning_rate': scheduler.get_last_lr()[0],
                      'coverage': sampler.last_cycle_coverage, 'training_monitor': training_losses,
-                     'validation_score': score, 'validation_score_sd': validation['score_sd'],
-                     'validation_seed_scores': validation['seed_scores'],
+                     'validation_score': score, 'validation_score_sd': None if validation is None else validation['score_sd'],
+                     'validation_seed_scores': None if validation is None else validation['seed_scores'],
                      'optimization_average': {k: v / progress['cycle_log_count'] for k, v in progress['cycle_log_sums'].items()}}
-            if progress['best_score'] is None or score > progress['best_score']:
+            if score is not None and (progress['best_score'] is None or score > progress['best_score']):
                 evaluator.promote_best(cycle)
                 save_model_state(best, {'model': model.state_dict(), 'config': config, 'training_contexts': contexts,
                                        'cycle': cycle, 'step': step + 1, 'validation_score': score,
@@ -288,16 +311,22 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
             progress['coverage'] = {c: {'seen': len(sampler.seen[c]), 'eligible': len(sampler.targets[c])} for c in contexts}
             if decision['stop']:
                 progress['complete'], progress['stop_reason'] = True, 'normal_sufficiency_early_stopping'
-            # Publish only after loss/official evaluation, best prediction and stop state agree.
+            # Publish after monitoring, any scheduled validation and selection agree.
             save_checkpoint(last, model, optimizer, scheduler, sampler, progress)
             write_json(cache / 'training.json', progress)
             write_json(cache / f'cycle-{cycle:04d}.json', point)
-            tracked.log({f'validation/{key}/score': score, f'validation/{key}/score_sd': validation['score_sd'],
+            timing = {'monitor_seconds': monitor_seconds, 'validation_seconds': validation_seconds}
+            write_json(cache / f'cycle-{cycle:04d}-timing.json', timing)
+            validation_logs = {} if validation is None else {
+                f'validation/{key}/score': score, f'validation/{key}/score_sd': validation['score_sd']}
+            tracked.log({**validation_logs, f'validation/{key}/performed': int(validation is not None),
                          f'train/{key}/cycle': cycle, f'train/{key}/stale': progress['stale'],
+                         **{f'resource/{key}/{k}': v for k, v in timing.items()},
                          f'train/{key}/elapsed_seconds_since_resume': time.monotonic() - started,
                          **{f'monitor/{key}/{c}/{k}': v for c, row in training_losses.items() for k, v in row.items()}})
-            print(json.dumps({'stage': 'cycle', 'fit': key, **point, 'stop': progress['complete']}), flush=True)
-            evaluator.clear_transient()
+            print(json.dumps({'stage': 'cycle', 'fit': key, **point, **timing, 'stop': progress['complete']}), flush=True)
+            if validation is not None:
+                evaluator.clear_transient()
     model.load_state_dict(torch.load(best, map_location=device, weights_only=False)['model'])
     model.eval()
     evaluator.record_prediction_files()
