@@ -47,6 +47,8 @@ class TaskObjective:
     draws use the same batch marginal, shared across target/NTC. Monte Carlo is exact
     in expectation before the nonlinear transforms, not an unbiased loss estimator.
     """
+    components = COMPONENTS
+    loss_terms = LOSS_TERMS
     fields = ('delta', 'ntc', 'response_scale', 'ntc_scale', 'response_weight')
 
     def __init__(self, data, view, contexts, config, cache):
@@ -176,12 +178,16 @@ class TaskObjective:
         observed['predicted_ntc_depth'] = control.sum(-1)
         axis = torch.as_tensor(self.axis, device=device)
         target, control = target.index_select(1, axis), control.index_select(1, axis)
-        return predictive_losses(target, control, target_second, control_second, observed,
-                                 torch.ones_like(target), self.config['depth_log_scale'])
+        values = predictive_losses(target, control, target_second, control_second, observed,
+                                   torch.ones_like(target), self.config['depth_log_scale'])
+        return {**values, **self.additional_losses(target, control, observed, keys, rng)}
+
+    def additional_losses(self, target, control, observed, keys, rng):
+        return {}
 
     def weighted(self, losses):
         assert self.weights is not None
-        return sum(self.weights[k] * losses[k] for k in LOSS_TERMS)
+        return sum(self.weights[k] * losses[k] for k in self.loss_terms)
 
     def calibrate(self, model, contexts, cache, device):
         """Freeze coefficients from training-only gradients; never update parameters."""
@@ -192,7 +198,7 @@ class TaskObjective:
             self.weights = saved['weights']
             return
         parameters = [p for name, p in model.named_parameters() if p.requires_grad and not name.startswith(('posterior.', 'encoder.', 'mask_encoder.'))]
-        norms = {k: [] for k in LOSS_TERMS}
+        norms = {k: [] for k in self.loss_terms}
         module_norms = []
         for context in contexts:
             keys = [key for key in self.keys if key[0] == context]
@@ -216,7 +222,7 @@ class TaskObjective:
                 control_elbo, _ = model(control_x, control_inputs, beta=1.)
                 fraction = self.config['tasks_per_step'] / (self.config['tasks_per_step'] + 1)
                 elbo = fraction * perturbed_elbo + (1-fraction) * control_elbo
-                losses = {'elbo': elbo, **{k: v.mean() for k, v in self.losses(model, selected, rng).items() if k in COMPONENTS}}
+                losses = {'elbo': elbo, **{k: v.mean() for k, v in self.losses(model, selected, rng).items() if k in self.components}}
                 row = {'context': context}
                 for k, loss in losses.items():
                     gradients = torch.autograd.grad(loss, parameters, allow_unused=True, retain_graph=True)
@@ -233,7 +239,7 @@ class TaskObjective:
                             self.config['loss_weight_min'], self.config['loss_weight_max']))
             for k, ratio in self.config['auxiliary_gradient_ratios'].items()}}
         write_json(path, {'weights': self.weights, 'median_gradient_norms': median, 'gradient_samples': module_norms,
-                         'initial_relative_gradient_norms': {k: self.weights[k] * median[k] / median['response_loss'] for k in LOSS_TERMS},
+                         'initial_relative_gradient_norms': {k: self.weights[k] * median[k] / median['response_loss'] for k in self.loss_terms},
                          'statistics_sha256': self.signature, 'optimizer_steps': 0,
                          'method': 'primary delta coefficient 1; auxiliary initial shared-generator gradient norm ratios; frozen',
                          'warning': 'heuristic initialization, not a validation-selected optimum'})

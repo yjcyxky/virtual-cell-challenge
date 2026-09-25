@@ -31,16 +31,17 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def environment_identity():
-    assert Path(sys.prefix).resolve() == (EXPERIMENT / '.venv').resolve(), 'experiment_environment_required'
+def environment_identity(experiment=None):
+    experiment = EXPERIMENT if experiment is None else Path(experiment).resolve()
+    assert Path(sys.prefix).resolve() == (experiment / '.venv').resolve(), 'experiment_environment_required'
     packages = {}
     for package in importlib.metadata.distributions():
         name = package.metadata['Name'].lower().replace('_', '-')
         packages[name] = {'version': package.version, 'metadata': {
             file: hashlib.sha256((package.read_text(file) or '').encode()).hexdigest()
             for file in ['METADATA', 'WHEEL', 'RECORD']}}
-    return {'uv_lock_sha256': digest(EXPERIMENT / 'uv.lock'),
-            'pyproject_sha256': digest(EXPERIMENT / 'pyproject.toml'),
+    return {'uv_lock_sha256': digest(experiment / 'uv.lock'),
+            'pyproject_sha256': digest(experiment / 'pyproject.toml'),
             'python': sys.version, 'base_executable': sys._base_executable,
             'python_executable_sha256': digest(sys._base_executable),
             'pyvenv_sha256': digest(Path(sys.prefix) / 'pyvenv.cfg'),
@@ -56,6 +57,7 @@ def verify_environment(path, current):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--experiment', type=Path, default=EXPERIMENT)
     parser.add_argument('--record', action='store_true', help='Only after successful uv sync under the exclusive environment lock.')
     parser.add_argument('--base-run', nargs=argparse.REMAINDER,
                         help='Launch through the fixed base environment with an isolated process registry.')
@@ -64,8 +66,8 @@ def main():
         if args.record or not args.base_run:
             parser.error('--base-run requires a command and cannot be combined with --record')
         raise SystemExit(run_in_base(args.base_run))
-    identity = environment_identity()
-    path = EXPERIMENT / '.venv' / 'experiment-environment.json'
+    identity = environment_identity(args.experiment)
+    path = args.experiment.resolve() / '.venv' / 'experiment-environment.json'
     if args.record:
         path.write_text(json.dumps(identity, sort_keys=True, indent=2))
     else:

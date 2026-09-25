@@ -554,8 +554,8 @@ def test_finalization_retry_preserves_training_identity_and_rejects_unfinished_f
     import runtime
     from wandb.sdk.wandb_summary import Summary
     monkeypatch.setattr(entrypoint, 'EXPERIMENT', tmp_path)
-    monkeypatch.setattr(entrypoint, 'committed_pipeline', lambda: 'bookkeeping-fix')
-    monkeypatch.setattr(runtime, 'environment_identity', lambda: {'locked': True})
+    monkeypatch.setattr(entrypoint, 'committed_pipeline', lambda experiment=None: 'bookkeeping-fix')
+    monkeypatch.setattr(runtime, 'environment_identity', lambda experiment=None: {'locked': True})
     monkeypatch.setattr(entrypoint, 'verify_remote_artifact', lambda *args: None)
     output = tmp_path / 'outputs' / 'original'; (output / 'checkpoints').mkdir(parents=True)
     config = {'run_id': 'original', 'experiment_id': tmp_path.name, 'variant': 'true_prior', 'contexts': ['A'],

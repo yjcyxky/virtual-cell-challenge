@@ -11,7 +11,7 @@ import torch
 from data import BalancedSampler, reserved, write_json, hash_file
 from evaluation import evaluate_context, shared_responses, summarize, task_seed
 from model import ModuleCVAE
-from objectives import TaskObjective, COMPONENTS, LOSS_TERMS
+from objectives import TaskObjective
 from priors import degree_matched_random, fold_evidence
 from state import FoldView
 from stopping import assess_stopping, validation_due
@@ -108,7 +108,7 @@ def train_step(model, data, view, sampler, optimizer, scheduler, config, step, d
     norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 10, error_if_nonfinite=True)
     optimizer.step(); scheduler.step()
     return {'loss': float(loss.detach()), **{k: float(v.detach()) for k, v in losses.items()},
-            **{'weighted_' + k: float((objective.weights[k] * losses[k]).detach()) for k in LOSS_TERMS},
+            **{'weighted_' + k: float((objective.weights[k] * losses[k]).detach()) for k in objective.loss_terms},
             'gradient_norm': float(norm),
             'kl_beta': beta, 'learning_rate': scheduler.get_last_lr()[0], **{k: float(v.detach()) for k, v in logs.items()}}
 
@@ -162,7 +162,7 @@ def monitor_plan(data, contexts, config, cache):
 @torch.no_grad()
 def monitor_training(model, data, view, plan, contexts, config, step, objective):
     """Monitor NB per layer and predictive losses per complete training task."""
-    result = {c: dict.fromkeys(['loss', 'nll', 'kl_per_gene', *COMPONENTS, 'response_mse', 'zero_response_mse', 'ntc_mse'], 0.) for c in contexts}
+    result = {c: dict.fromkeys(['loss', 'nll', 'kl_per_gene', *objective.components, 'response_mse', 'zero_response_mse', 'ntc_mse'], 0.) for c in contexts}
     device = next(model.parameters()).device
     beta = min(1., step / config['kl_warmup_steps'])
     pert_weight = config['tasks_per_step'] / (config['tasks_per_step'] + 1)
@@ -204,7 +204,7 @@ def monitor_training(model, data, view, plan, contexts, config, step, objective)
                     assert all(torch.isfinite(v).all() for v in values.values()), 'nonfinite_predictive_monitor'
                     for k, value in values.items():
                         result[context][k] += float(value.sum()) / len(keys)
-                result[context]['loss'] += sum(objective.weights[k] * result[context][k] for k in COMPONENTS)
+                result[context]['loss'] += sum(objective.weights[k] * result[context][k] for k in objective.components)
                 result[context]['response_skill_vs_zero'] = 1 - result[context]['response_mse'] / max(result[context]['zero_response_mse'], 1e-12)
                 print(json.dumps({'stage': 'predictive_monitor', 'context': context, 'tasks': len(keys)}), flush=True)
     finally:
@@ -212,7 +212,7 @@ def monitor_training(model, data, view, plan, contexts, config, step, objective)
     return result
 
 
-def fit(data, contexts, validation_context, config, output, key, prior_directory, tracked):
+def fit(data, contexts, validation_context, config, output, key, prior_directory, tracked, components=None):
     assert validation_context not in contexts
     cache = output / 'cache' / key; cache.mkdir(parents=True, exist_ok=True)
     checkpoints = output / 'checkpoints'; checkpoints.mkdir(exist_ok=True)
@@ -221,12 +221,14 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
     fit_seed = config['seed'] + sum(ord(c) for c in key)
     random.seed(fit_seed); np.random.seed(fit_seed); torch.manual_seed(fit_seed)
     view = FoldView(data, contexts, config, cache)
-    model = construct_model(data, view, contexts, config, prior_directory, cache).to(device)
+    factory = construct_model if components is None else components.model_factory
+    objective_type = TaskObjective if components is None else components.objective_type
+    model = factory(data, view, contexts, config, prior_directory, cache).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
     # Identity schedule: LR remains fixed before/after every update and recovery.
     scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=1)
     sampler = BalancedSampler(data, contexts, fit_seed, config['unseen_target_percent'])
-    objective = TaskObjective(data, view, contexts, config, cache)
+    objective = objective_type(data, view, contexts, config, cache)
     plan = monitor_plan(data, contexts, config, cache)
     evaluator = OfficialValidation(data, view, validation_context, config, cache, output / 'predictions' / key)
     write_json(cache / 'split.json', {'training_targets_by_context': sampler.targets,
@@ -349,7 +351,7 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
     return model, view, progress, shared, global_shared
 
 
-def experiment(data, config, output, priors, tracked):
+def experiment(data, config, output, priors, tracked, components=None):
     assert len(config['contexts']) == 5 and config['unseen_target_percent'] == 0
     frames, folds = [], {}
     for held in config['contexts']:
@@ -361,7 +363,7 @@ def experiment(data, config, output, priors, tracked):
             frames.append(pd.read_parquet(prediction_dir / 'metrics.parquet'))
             continue
         print(json.dumps({'stage': 'fit_start', 'fit': key, 'training': training_contexts, 'validation': held}), flush=True)
-        model, view, progress, shared, global_shared = fit(data, training_contexts, held, config, output, key, priors, tracked)
+        model, view, progress, shared, global_shared = fit(data, training_contexts, held, config, output, key, priors, tracked, components)
         frame = evaluate_context(model, data, view, held, config, prediction_dir, shared, global_shared)
         trained_targets = {t for c, t in data.tasks if c in training_contexts}
         frame['target_seen_in_training'] = frame.target.isin(trained_targets)

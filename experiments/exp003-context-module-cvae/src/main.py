@@ -30,9 +30,10 @@ class Tee:
         self.stream.flush(); self.log.flush()
 
 
-def committed_pipeline():
+def committed_pipeline(experiment=None):
+    experiment = EXPERIMENT if experiment is None else Path(experiment)
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-    guarded = [str(EXPERIMENT), 'scripts/dossier/rna.py', 'experiments/exp001-context-pair-xgb/src/features.py']
+    guarded = [str(experiment), str(EXPERIMENT), 'scripts/dossier/rna.py', 'experiments/exp001-context-pair-xgb/src/features.py']
     subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *guarded], cwd=ROOT, check=True)
     untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '--', *guarded], cwd=ROOT, text=True)
     assert not untracked.strip(), 'formal_training_requires_committed_source'
@@ -65,15 +66,16 @@ def verify_remote_artifact(output, delivery):
         assert base64.b64encode(digest.digest()).decode() == entry.digest, 'archived_result_changed:' + name
 
 
-def finalize_run(run_id):
+def finalize_run(run_id, experiment_path=None):
     """Retry bookkeeping only after all fits, evaluation and artifact upload succeeded."""
     import wandb
+    experiment_path = EXPERIMENT if experiment_path is None else Path(experiment_path)
     from runtime import environment_identity
-    output = EXPERIMENT / 'outputs' / run_id
+    output = experiment_path / 'outputs' / run_id
     config = yaml.safe_load((output / 'config.yaml').read_text())
-    assert config['run_id'] == run_id and config['experiment_id'] == EXPERIMENT.name
-    assert environment_identity() == config['environment_identity'], 'completion_retry_environment_changed'
-    commit = committed_pipeline()
+    assert config['run_id'] == run_id and config['experiment_id'] == experiment_path.name
+    assert environment_identity(experiment_path) == config['environment_identity'], 'completion_retry_environment_changed'
+    commit = committed_pipeline(experiment_path)
     if (output / 'complete.json').exists():
         print((output / 'complete.json').read_text())
         return
@@ -90,7 +92,7 @@ def finalize_run(run_id):
         assert (output / 'predictions' / key / 'complete.json').is_file()
     delivery = json.loads((output / 'artifact.json').read_text())
     verify_remote_artifact(output, delivery)
-    tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
+    tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=experiment_path.name,
                          id=run_id, name=f'{config["variant"]}-{run_id}', dir=str(output),
                          resume='must', mode='online', config=config, settings=wandb.Settings(init_timeout=30))
     try:
@@ -136,6 +138,8 @@ def artifact(tracked, output, online):
     paths += sorted((output / 'cache').glob('*/task-statistics/support.parquet'))
     paths += sorted((output / 'cache').glob('*/cycle-*-timing.json'))
     paths += sorted((output / 'cache').glob('*/prior-strength.npy'))
+    paths += sorted((output / 'cache').glob('*/gene-features*.npz'))
+    paths += sorted((output / 'cache').glob('*/gene-features*.json'))
     paths += sorted((output / 'predictions').glob('*/example-*.npz'))
     paths += [output / 'cache' / 'priors' / n for n in ['modules.npz', 'modules.json', 'complete.json']]
     paths += [output / 'cache' / n for n in ['data-reference.json', 'readout-support.json', 'tests.log']]
@@ -149,7 +153,7 @@ def artifact(tracked, output, online):
     paths += sorted((output / 'predictions').glob('*/prediction-files.json'))
     if (output / 'cache' / 'count-cache-compatibility.json').exists():
         paths.append(output / 'cache' / 'count-cache-compatibility.json')
-    item = wandb.Artifact(EXPERIMENT.name + '-' + output.name, type='model', metadata={
+    item = wandb.Artifact(output.parents[1].name + '-' + output.name, type='model', metadata={
         'pipeline_commit': tracked.config['pipeline_commit'], 'local_only': True, 'raw_cells_uploaded': False,
         'prediction_storage': 'all three-seed best-checkpoint cell predictions retained locally with hashes; representative generated cells and official scores archived'})
     md5 = {}
@@ -179,15 +183,16 @@ def artifact(tracked, output, online):
     return result
 
 
-def main(args):
+def main(args, experiment_path=None, components=None):
+    experiment_path = EXPERIMENT if experiment_path is None else Path(experiment_path).resolve()
     if not re.fullmatch(r'[A-Za-z0-9_-]+', args.run_id):
         raise ValueError('invalid_run_id')
     if args.finalize_only:
         assert not any(getattr(args, name, None) is not None for name in ['seed', 'variant', 'cache_source', 'repair_validation_reason', 'restart_from_run']), 'completion_retry_cannot_change_conditions'
-        assert Path(args.config).resolve() == EXPERIMENT / 'configs/default.yaml'
-        finalize_run(args.run_id)
+        assert Path(args.config).resolve() == experiment_path / 'configs/default.yaml'
+        finalize_run(args.run_id, experiment_path)
         return
-    output = EXPERIMENT / 'outputs' / args.run_id
+    output = experiment_path / 'outputs' / args.run_id
     output.mkdir(parents=True, exist_ok=True)
     (output / 'cache').mkdir(exist_ok=True)
     log = (output / 'train.log').open('a', buffering=1)
@@ -202,19 +207,19 @@ def main(args):
         config['cache_source'] = str(Path(config['cache_source']).resolve())
     if args.restart_from_run is not None:
         assert re.fullmatch(r'[A-Za-z0-9_-]+', args.restart_from_run) and args.restart_from_run != args.run_id
-        source_path = EXPERIMENT / 'outputs' / args.restart_from_run / 'config.yaml'
+        source_path = experiment_path / 'outputs' / args.restart_from_run / 'config.yaml'
         source_config = yaml.safe_load(source_path.read_text())
         assert source_config['seed'] == config['seed'] and source_config['variant'] == config['variant']
         config['restart_source'] = {'run_id': args.restart_from_run, 'config_sha256': hash_file(source_path),
                                     'pipeline_commit': source_config['pipeline_commit'], 'training_state_reused': False}
-    assert config['protocol'] == 'lodo-predictive-loss-v4'
+    assert config['protocol'] in ['lodo-predictive-loss-v4', 'lodo-shared-response-v1']
     assert config['learning_rate_schedule'] == 'constant' and config['learning_rate'] > 0
     assert isinstance(config['stopping_start_cycle'], int) and config['stopping_start_cycle'] > 0
     assert isinstance(config['monitor_layers_per_target'], int) and config['monitor_layers_per_target'] > 0
     assert isinstance(config['validation_interval_cycles'], int) and config['validation_interval_cycles'] > 0
     assert config['response_transform'] == 'log1p_cp10k_of_weighted_mean_counts'
     assert config['response_axis'] == 'common_measured_genes'
-    assert set(config['auxiliary_gradient_ratios']) == {'elbo', 'ntc_loss', 'depth_loss'}
+    assert {'elbo', 'ntc_loss', 'depth_loss'} <= set(config['auxiliary_gradient_ratios'])
     assert all(v > 0 for v in config['auxiliary_gradient_ratios'].values())
     assert sum(config['auxiliary_gradient_ratios'].values()) < 1
     assert config['response_scale_floor'] > 0 and config['depth_log_scale'] > 0
@@ -227,17 +232,17 @@ def main(args):
     assert importlib.metadata.version('cell-eval2') == config['official_version']
     evaluator_origin = json.loads(importlib.metadata.distribution('cell-eval2').read_text('direct_url.json'))
     assert evaluator_origin['vcs_info']['commit_id'] == config['official_commit'], 'official_evaluator_source_changed'
-    commit = committed_pipeline()
+    commit = committed_pipeline(experiment_path)
     assert torch.cuda.is_available(), 'GPU_required_no_silent_CPU_fallback'
-    torch.set_num_threads(8)
+    torch.set_num_threads(config.get('cpu_threads', 8))
     torch.set_float32_matmul_precision('high')
     torch.use_deterministic_algorithms(True)
     from runtime import environment_identity, verify_environment
-    environment = environment_identity()
-    verify_environment(EXPERIMENT / '.venv' / 'experiment-environment.json', environment)
-    config.update(experiment_id=EXPERIMENT.name, run_id=args.run_id, pipeline_commit=commit,
+    environment = environment_identity(experiment_path)
+    verify_environment(experiment_path / '.venv' / 'experiment-environment.json', environment)
+    config.update(experiment_id=experiment_path.name, run_id=args.run_id, pipeline_commit=commit,
                   environment_identity=environment,
-                  uv_lock_sha256=hash_file(EXPERIMENT / 'uv.lock'), configuration_sha256=hash_file(config_path),
+                  uv_lock_sha256=hash_file(experiment_path / 'uv.lock'), configuration_sha256=hash_file(config_path),
                   source_collection_sha256=hash_file(ROOT / config['collection'] / 'report.json'),
                   gene_axis_sha256=hash_file(ROOT / config['gene_axis']),
                   prior_source_sha256=hash_file(ROOT / 'data/raw/networks/SOURCE.json'),
@@ -274,20 +279,23 @@ def main(args):
     (output / 'cache').mkdir(exist_ok=True)
     import wandb
     try:
-        tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
+        tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=experiment_path.name,
                              id=args.run_id, name=f'{config["variant"]}-{args.run_id}', dir=str(output),
                              resume='allow', mode='online', config=config, allow_val_change=True, settings=wandb.Settings(init_timeout=30))
         online = True
     except Exception as error:
         print(json.dumps({'stage': 'wandb_offline_fallback', 'reason': str(error)}), flush=True)
-        tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
+        tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=experiment_path.name,
                              id=args.run_id, name=f'{config["variant"]}-{args.run_id}', dir=str(output),
                              mode='offline', config=config)
         online = False
     try:
         tracked.summary['pipeline_status'] = 'validating'
         with (output / 'cache' / 'tests.log').open('a') as testlog:
-            subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', str(EXPERIMENT / 'tests')], cwd=EXPERIMENT,
+            test_paths = [str(experiment_path / 'tests')]
+            if experiment_path != EXPERIMENT:
+                test_paths.append(str(EXPERIMENT / 'tests'))
+            subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider', *test_paths], cwd=experiment_path,
                            stdout=testlog, stderr=subprocess.STDOUT, check=True)
         cache = prepare(config, output)
         data = CountData(cache)
@@ -298,7 +306,7 @@ def main(args):
         tracked.log({'preparation/contexts': len(data.masks), 'preparation/tasks': len(data.tasks),
                      'preparation/common_genes': int(data.common.sum()), 'preparation/cached_cells': len(data.cells)})
         tracked.summary['pipeline_status'] = 'training_and_evaluating'
-        result = experiment(data, config, output, priors, tracked)
+        result = experiment(data, config, output, priors, tracked, components)
         result['wandb_url'] = f'https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{args.run_id}'
         result['wandb_sync'] = 'online' if online else 'pending_offline_sync'
         result['official_submission'] = False
