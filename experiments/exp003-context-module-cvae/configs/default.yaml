@@ -1,5 +1,5 @@
 issue: https://github.com/yjcyxky/virtual-cell-challenge/issues/33
-protocol: lodo-sufficiency-v3
+protocol: lodo-predictive-loss-v4
 cache_source: /home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data
 collection: experiments/exp002-response-transfer-validation/outputs/20260922-c/collection
 gene_axis: data/raw/arc_vcc2026_controls/gene_names.csv
@@ -21,7 +21,19 @@ state_components: 4
 hidden_dimensions: 96
 residual_dimensions: 8
 module_off_support_weight: 0.02
-response_weight: 1.0
+loss_issue: https://github.com/yjcyxky/virtual-cell-challenge/issues/34
+response_transform: log1p_cp10k_of_weighted_mean_counts
+response_axis: common_measured_genes
+loss_calibration_files: cache/holdout-{context}/loss-calibration.json
+response_batch_draws: 8
+response_latent_samples: 2
+response_scale_floor: 0.1
+response_signal_weight_max: 5.0
+depth_log_scale: 0.25
+auxiliary_gradient_ratios: {elbo: 0.1, ntc_loss: 0.25, depth_loss: 0.05}
+loss_calibration_batches_per_context: 4
+loss_weight_min: 0.000001
+loss_weight_max: 100.0
 learning_rate: 0.001
 learning_rate_schedule: constant
 weight_decay: 0.0001

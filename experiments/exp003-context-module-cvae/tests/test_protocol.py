@@ -18,6 +18,7 @@ from model import ModuleCVAE, log_nb
 from priors import degree_matched_random
 from state import FoldView
 from training import save_checkpoint, load_checkpoint, train_step
+from objectives import TaskObjective, COMPONENTS, LOSS_TERMS
 from evaluation import observed_task, evaluate_task, evaluate_context, shared_responses
 from runtime import verify_environment
 import runtime
@@ -78,7 +79,11 @@ def configuration():
     return dict(variant='true_prior', state_dimensions=3, hidden_dimensions=12, residual_dimensions=2,
                 module_off_support_weight=0.02, state_components=2, data_seed=301, seed=17,
                 contexts=['A', 'B', 'C', 'D', 'E'], unseen_target_percent=20, tasks_per_step=2,
-                cells_per_task=4, kl_warmup_steps=8, response_weight=1.0, prior_diagnostic_tasks=128,
+                cells_per_task=4, kl_warmup_steps=8, prior_diagnostic_tasks=128,
+                response_batch_draws=4, response_latent_samples=2, response_scale_floor=.1,
+                response_signal_weight_max=5., depth_log_scale=.25,
+                auxiliary_gradient_ratios=dict(elbo=.1, ntc_loss=.25, depth_loss=.05),
+                loss_calibration_batches_per_context=1, loss_weight_min=.001, loss_weight_max=100.,
                 monitor_layers_per_target=4, validation_interval_cycles=3)
 
 
@@ -339,14 +344,16 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     model, _ = setup_model()
     model.projection.copy_(torch.tensor(view.projection)); model.origin.copy_(torch.tensor(view.origin)); model.common.fill_(1)
     model.to(device)
+    objective = TaskObjective(data, view, ['A', 'B', 'C'], config, tmp_path)
+    objective.weights = {k: 1. for k in LOSS_TERMS}
     sampler = BalancedSampler(data, ['A', 'B', 'C'], 37, 20)
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)
     scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=1)
     for step in range(3):
-        train_step(model, data, view, sampler, optimizer, scheduler, config, step, device)
+        train_step(model, data, view, sampler, optimizer, scheduler, config, step, device, objective)
     path = tmp_path / 'checkpoint.pt'
     save_checkpoint(path, model, optimizer, scheduler, sampler, {'next_step': 3, 'stale': 2, 'best_epoch': 1})
-    future = [train_step(model, data, view, sampler, optimizer, scheduler, config, s, device) for s in range(3, 6)]
+    future = [train_step(model, data, view, sampler, optimizer, scheduler, config, s, device, objective) for s in range(3, 6)]
     expected = {k: v.clone() for k, v in model.state_dict().items()}
     recovered, _ = setup_model()
     recovered.to(device)
@@ -355,7 +362,7 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     sampling = BalancedSampler(data, ['A', 'B', 'C'], 99, 20)
     progress = load_checkpoint(path, recovered, opt, sch, sampling, device)
     assert progress == {'next_step': 3, 'stale': 2, 'best_epoch': 1}
-    replay = [train_step(recovered, data, view, sampling, opt, sch, config, s, device) for s in range(3, 6)]
+    replay = [train_step(recovered, data, view, sampling, opt, sch, config, s, device, objective) for s in range(3, 6)]
     assert replay == future
     assert all(row['learning_rate'] == .001 for row in replay)
     for k, value in recovered.state_dict().items():
@@ -364,10 +371,10 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     assert sampling.queues == sampler.queues
 
 
-def test_conditional_mean_trains_mixture_weights():
+def test_conditional_moments_train_mixture_weights():
     model, batch = setup_model()
     batch['centers'][:, 0] = -1; batch['centers'][:, 1] = 1
-    mean = model.conditional_mean(batch)
+    mean, _ = model.conditional_moments(batch, torch.randn(len(batch['target']), 2, 4, model.d))
     mean.square().mean().backward()
     gradient = model.prior[-1].weight.grad[-1]
     assert torch.isfinite(gradient).all() and gradient.abs().sum() > 0

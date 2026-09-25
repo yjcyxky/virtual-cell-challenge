@@ -109,14 +109,24 @@ class ModuleCVAE(nn.Module):
         rows = torch.arange(len(component), device=component.device)
         return mean[rows, component] + std[rows, component] * torch.randn_like(mean[:, 0])
 
-    def conditional_mean(self, batch, samples_per_component=4):
-        """Differentiable mixture expectation, without interpolating categorical states."""
+    def conditional_moments(self, batch, epsilon):
+        """Prior-predictive mean and raw library second moment, including NB noise.
+
+        Enumerating components keeps mixture weights differentiable. Supplied base
+        noise allows target/NTC common random numbers, not paired observed cells.
+        """
         mean, std, weights = self.prior_parameters(batch)
         n, k, d = mean.shape
-        z = mean[:, :, None] + std[:, :, None] * torch.randn(n, k, samples_per_component, d, device=mean.device)
+        samples_per_component = epsilon.shape[2]
+        z = mean[:, :, None] + std[:, :, None] * epsilon
         repeated = {key: value.repeat_interleave(k * samples_per_component, dim=0) for key, value in batch.items()}
-        mu, _, _ = self.decode(z.reshape(-1, d), repeated)
-        return (mu.reshape(n, k, samples_per_component, -1).mean(2) * weights[..., None]).sum(1)
+        mu, theta, _ = self.decode(z.reshape(-1, d), repeated)
+        mu = mu * repeated['mask']
+        depth = mu.sum(-1).reshape(n, k, samples_per_component)
+        depth_variance = (mu + mu.square() / theta).sum(-1).reshape(n, k, samples_per_component)
+        second = ((depth.square() + depth_variance).mean(2) * weights).sum(1)
+        first = (mu.reshape(n, k, samples_per_component, -1).mean(2) * weights[..., None]).sum(1)
+        return first, second
 
     def decode(self, z, batch):
         context, target, active = self.condition(batch)

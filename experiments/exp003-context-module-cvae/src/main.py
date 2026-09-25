@@ -130,6 +130,10 @@ def artifact(tracked, output, online):
     paths += sorted((output / 'cache').glob('*/state-scope.json'))
     paths += sorted((output / 'cache').glob('*/split.json'))
     paths += sorted((output / 'cache').glob('*/monitor-scope.json'))
+    paths += sorted((output / 'cache').glob('*/loss-calibration.json'))
+    paths += sorted((output / 'cache').glob('*/initial-monitor.json'))
+    paths += sorted((output / 'cache').glob('*/task-statistics/complete.json'))
+    paths += sorted((output / 'cache').glob('*/task-statistics/support.parquet'))
     paths += sorted((output / 'cache').glob('*/cycle-*-timing.json'))
     paths += sorted((output / 'cache').glob('*/prior-strength.npy'))
     paths += sorted((output / 'predictions').glob('*/example-*.npz'))
@@ -203,11 +207,21 @@ def main(args):
         assert source_config['seed'] == config['seed'] and source_config['variant'] == config['variant']
         config['restart_source'] = {'run_id': args.restart_from_run, 'config_sha256': hash_file(source_path),
                                     'pipeline_commit': source_config['pipeline_commit'], 'training_state_reused': False}
-    assert config['protocol'] == 'lodo-sufficiency-v3'
+    assert config['protocol'] == 'lodo-predictive-loss-v4'
     assert config['learning_rate_schedule'] == 'constant' and config['learning_rate'] > 0
     assert isinstance(config['stopping_start_cycle'], int) and config['stopping_start_cycle'] > 0
     assert isinstance(config['monitor_layers_per_target'], int) and config['monitor_layers_per_target'] > 0
     assert isinstance(config['validation_interval_cycles'], int) and config['validation_interval_cycles'] > 0
+    assert config['response_transform'] == 'log1p_cp10k_of_weighted_mean_counts'
+    assert config['response_axis'] == 'common_measured_genes'
+    assert set(config['auxiliary_gradient_ratios']) == {'elbo', 'ntc_loss', 'depth_loss'}
+    assert all(v > 0 for v in config['auxiliary_gradient_ratios'].values())
+    assert sum(config['auxiliary_gradient_ratios'].values()) < 1
+    assert config['response_scale_floor'] > 0 and config['depth_log_scale'] > 0
+    assert config['response_signal_weight_max'] >= 1
+    assert 0 < config['loss_weight_min'] <= config['loss_weight_max']
+    for name in ['response_batch_draws', 'response_latent_samples', 'loss_calibration_batches_per_context']:
+        assert isinstance(config[name], int) and config[name] > 0
     assert config['unseen_target_percent'] == 0
     assert len(config['contexts']) == 5 and len(config['prediction_seeds']) == 3
     assert importlib.metadata.version('cell-eval2') == config['official_version']

@@ -10,7 +10,8 @@ import torch
 
 from data import BalancedSampler, reserved, write_json, hash_file
 from evaluation import evaluate_context, shared_responses, summarize, task_seed
-from model import ModuleCVAE, masked_logcp
+from model import ModuleCVAE
+from objectives import TaskObjective, COMPONENTS, LOSS_TERMS
 from priors import degree_matched_random, fold_evidence
 from state import FoldView
 from stopping import assess_stopping, validation_due
@@ -86,14 +87,7 @@ def construct_model(data, view, contexts, config, prior_directory, folder):
 
 
 
-def response_objective(model, inputs, observed_mean, reference):
-    predicted = model.conditional_mean(inputs)
-    ref = masked_logcp(reference, model.common)
-    delta = (masked_logcp(predicted, model.common) - ref) - (masked_logcp(observed_mean, model.common) - ref)
-    return (delta.square() * model.common).sum(-1).mean() / model.common.sum()
-
-
-def train_step(model, data, view, sampler, optimizer, scheduler, config, step, device):
+def train_step(model, data, view, sampler, optimizer, scheduler, config, step, device, objective):
     groups = sampler.sample(config['tasks_per_step'], config['cells_per_task'])
     specifications = [(c, t, b, len(ids)) for c, t, b, ids in groups]
     selected = [ids for c, t, b, ids in groups]
@@ -104,19 +98,18 @@ def train_step(model, data, view, sampler, optimizer, scheduler, config, step, d
     inputs = view.inputs(specifications, device)
     beta = min(1.0, (step + 1) / config['kl_warmup_steps'])
     optimizer.zero_grad(set_to_none=True)
-    loss, logs = model(x, inputs, beta=beta)
-    t, n = config['tasks_per_step'], config['cells_per_task']
-    task_inputs = {key: value[:t*n:n] for key, value in inputs.items()}
-    observed_mean = x[:t*n].reshape(t, n, -1).mean(1)
-    reference = torch.as_tensor(np.stack([view.controls[(c, b)]['reference'] for c, target, b, ids in groups]), device=device)
-    response_loss = response_objective(model, task_inputs, observed_mean, reference)
-    loss = loss + config['response_weight'] * response_loss
+    elbo, logs = model(x, inputs, beta=beta)
+    predictive = {k: v.mean() for k, v in objective.losses(model, [(c, t) for c, t, b, ids in groups], sampler.rng).items()}
+    losses = {'elbo': elbo, **predictive}
+    loss = objective.weighted(losses)
     if not torch.isfinite(loss):
         raise FloatingPointError('nonfinite_training_loss')
     loss.backward()
     norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 10, error_if_nonfinite=True)
     optimizer.step(); scheduler.step()
-    return {'loss': float(loss.detach()), 'response_loss': float(response_loss.detach()), 'gradient_norm': float(norm),
+    return {'loss': float(loss.detach()), **{k: float(v.detach()) for k, v in losses.items()},
+            **{'weighted_' + k: float((objective.weights[k] * losses[k]).detach()) for k in LOSS_TERMS},
+            'gradient_norm': float(norm),
             'kl_beta': beta, 'learning_rate': scheduler.get_last_lr()[0], **{k: float(v.detach()) for k, v in logs.items()}}
 
 
@@ -159,31 +152,24 @@ def monitor_plan(data, contexts, config, cache):
         assert all(np.array_equal(a, b) for field in ['cells', 'controls'] for a, b in zip(previous[field], frame[field]))
     else:
         frame.to_parquet(path, index=False)
-    write_json(cache / 'monitor-scope.json', {'method': 'fixed training-weighted layer sampling with replacement within every target',
+    write_json(cache / 'monitor-scope.json', {'method': 'NB: fixed training-weighted layer samples; predictive: all tasks with fixed stratified batch draws',
                'layers_per_target': draws, 'cells_per_layer': n, 'contexts': coverage,
                'interpretation': 'Monte Carlo training-objective estimate; not exhaustive layer evaluation',
-               'sampling_sha256': hash_file(path)})
+               'predictive_batch_draws_per_task': config['response_batch_draws'], 'sampling_sha256': hash_file(path)})
     return rows
 
 
 @torch.no_grad()
-def monitor_training(model, data, view, plan, contexts, config, step):
-    """Fixed MC evaluation of the SAME expectation, for all targets, no held labels.
-
-    Layers are drawn by their training weights then averaged. Each layer uses the
-    original cells-per-task sample size for the response loss. Evaluate perturbed and
-    NTC terms separately to preserve the original 4:1 mixture even at a tail batch.
-    """
-    result = {c: dict.fromkeys(['loss', 'response_loss', 'nll', 'kl_per_gene'], 0.) for c in contexts}
+def monitor_training(model, data, view, plan, contexts, config, step, objective):
+    """Monitor NB per layer and predictive losses per complete training task."""
+    result = {c: dict.fromkeys(['loss', 'nll', 'kl_per_gene', *COMPONENTS, 'response_mse', 'zero_response_mse', 'ntc_mse'], 0.) for c in contexts}
     device = next(model.parameters()).device
     beta = min(1., step / config['kl_warmup_steps'])
     pert_weight = config['tasks_per_step'] / (config['tasks_per_step'] + 1)
-    def layer_losses(cells, controls, inputs, ctrl_inputs, reference):
+    def layer_losses(cells, controls, inputs, ctrl_inputs):
         pert_loss, pert_logs = model(cells, inputs, beta=beta)
         ctrl_loss, ctrl_logs = model(controls, ctrl_inputs, beta=beta)
-        response = response_objective(model, {k: v[:1] for k, v in inputs.items()}, cells.mean(0, keepdim=True), reference)
-        return {'loss': pert_weight * pert_loss + (1 - pert_weight) * ctrl_loss + config['response_weight'] * response,
-                'response_loss': response,
+        return {'loss': objective.weights['elbo'] * (pert_weight * pert_loss + (1 - pert_weight) * ctrl_loss),
                 **{k: pert_weight * pert_logs[k] + (1 - pert_weight) * ctrl_logs[k] for k in ['nll', 'kl_per_gene']}}
     # Vectorize independent layer evaluations without pooling their observed means
     # or changing their sample sizes. Ordered 64-layer blocks fix latent RNG streams.
@@ -201,14 +187,26 @@ def monitor_training(model, data, view, plan, contexts, config, step):
                 ctrl_specs = [(c, '__NTC__', b, count) for c, t, b, count in specs]
                 inputs = {k: v.reshape(size, n, *v.shape[1:]) for k, v in view.inputs(specs, device).items()}
                 ctrl_inputs = {k: v.reshape(size, n, *v.shape[1:]) for k, v in view.inputs(ctrl_specs, device).items()}
-                reference = torch.as_tensor(np.stack([view.controls[(r['context'], r['batch'])]['reference'] for r in rows]), device=device)[:, None]
-                values = {k: v.cpu().numpy() for k, v in batched_losses(cells, controls, inputs, ctrl_inputs, reference).items()}
+                values = {k: v.cpu().numpy() for k, v in batched_losses(cells, controls, inputs, ctrl_inputs).items()}
                 assert all(np.isfinite(v).all() for v in values.values()), 'nonfinite_monitor_loss'
                 for j, row in enumerate(rows):
                     for k, value in values.items():
                         result[row['context']][k] += row['weight'] * float(value[j])
                 if start // 10000 != (start + size) // 10000 or start + size == len(plan):
                     print(json.dumps({'stage': 'training_monitor', 'layers_done': start + size, 'layers': len(plan)}), flush=True)
+            for context in contexts:
+                keys = [key for key in objective.keys if key[0] == context]
+                for start in range(0, len(keys), 16):
+                    selected = keys[start:start+16]
+                    seed = task_seed(context, f'predictive-monitor|{start}|{config["data_seed"]}')
+                    torch.manual_seed(seed)
+                    values = objective.losses(model, selected, np.random.default_rng(seed))
+                    assert all(torch.isfinite(v).all() for v in values.values()), 'nonfinite_predictive_monitor'
+                    for k, value in values.items():
+                        result[context][k] += float(value.sum()) / len(keys)
+                result[context]['loss'] += sum(objective.weights[k] * result[context][k] for k in COMPONENTS)
+                result[context]['response_skill_vs_zero'] = 1 - result[context]['response_mse'] / max(result[context]['zero_response_mse'], 1e-12)
+                print(json.dumps({'stage': 'predictive_monitor', 'context': context, 'tasks': len(keys)}), flush=True)
     finally:
         model.train(was_training)
     return result
@@ -228,12 +226,14 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
     # Identity schedule: LR remains fixed before/after every update and recovery.
     scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=1)
     sampler = BalancedSampler(data, contexts, fit_seed, config['unseen_target_percent'])
+    objective = TaskObjective(data, view, contexts, config, cache)
     plan = monitor_plan(data, contexts, config, cache)
     evaluator = OfficialValidation(data, view, validation_context, config, cache, output / 'predictions' / key)
     write_json(cache / 'split.json', {'training_targets_by_context': sampler.targets,
                'validation_context': validation_context, 'validation_targets': evaluator.targets,
                'new_context_input': 'feature-half NTC only', 'model_variant': config['variant'],
                'monitor_plan_sha256': hash_file(cache / 'monitor-sampling.parquet'),
+               'task_statistics_sha256': objective.signature,
                'global_target_reservation_percent': config['unseen_target_percent'],
                'external_prior_enters_generator': config['variant'] != 'no_prior'})
     progress = {'next_step': 0, 'history': [], 'best_score': None, 'best_cycle': None,
@@ -249,19 +249,30 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
         # They cannot consume training RNG, including on a recovery after cache preparation.
         rng = random_state()
         try:
+            objective.calibrate(model, contexts, cache, device)
             evaluator.prepare()
         finally:
             restore_random(rng)
+        if 'loss_weights' in progress:
+            assert progress['loss_weights'] == objective.weights, 'changed_frozen_loss_weights'
+        progress['loss_weights'] = objective.weights
+        tracked.log({f'loss_weights/{key}/{k}': v for k, v in objective.weights.items()})
         if not last.exists():
             save_checkpoint(last, model, optimizer, scheduler, sampler, progress)
         marker = output / 'cache' / 'optimization-started.json'
         if not marker.exists():
             write_json(marker, {'fit': key, 'pipeline_commit': config['pipeline_commit'], 'seed': config['seed']})
+        initial_path = cache / 'initial-monitor.json'
+        if not initial_path.exists():
+            assert progress['next_step'] == 0, 'missing_initial_predictive_monitor'
+            initial = monitor_training(model, data, view, plan, contexts, config, config['kl_warmup_steps'], objective)
+            write_json(initial_path, initial)
+            tracked.log({f'monitor/{key}/{c}/{k}': v for c, row in initial.items() for k, v in row.items()} | {f'train/{key}/cycle': 0})
         model.train(); rolling = []; started = time.monotonic()
         while not progress['complete']:
             step = progress['next_step']
             old_cycle = sampler.completed_cycles
-            logs = train_step(model, data, view, sampler, optimizer, scheduler, config, step, device)
+            logs = train_step(model, data, view, sampler, optimizer, scheduler, config, step, device, objective)
             progress['next_step'] = step + 1; rolling.append(logs)
             for k, value in logs.items():
                 progress['cycle_log_sums'][k] = progress['cycle_log_sums'].get(k, 0.) + value
@@ -274,7 +285,10 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
                     print(json.dumps({'stage': 'optimization', 'fit': key, 'step': step + 1,
                                       'coverage_time': sampler.coverage_time,
                                       'learning_rate': scheduler.get_last_lr()[0],
-                                      'loss': float(np.mean([r['loss'] for r in rolling]))}), flush=True)
+                                      'loss': float(np.mean([r['loss'] for r in rolling])),
+                                      'response_loss': float(np.mean([r['response_loss'] for r in rolling])),
+                                      'response_mse': float(np.mean([r['response_mse'] for r in rolling])),
+                                      'zero_response_mse': float(np.mean([r['zero_response_mse'] for r in rolling]))}), flush=True)
                 rolling = []
             if sampler.completed_cycles == old_cycle:
                 if (step + 1) % config['checkpoint_every_steps'] == 0:
@@ -284,7 +298,7 @@ def fit(data, contexts, validation_context, config, output, key, prior_directory
             rng = random_state()
             try:
                 monitor_started = time.monotonic()
-                training_losses = monitor_training(model, data, view, plan, contexts, config, step + 1)
+                training_losses = monitor_training(model, data, view, plan, contexts, config, step + 1, objective)
                 monitor_seconds = time.monotonic() - monitor_started
                 validation_started = time.monotonic()
                 validation = evaluator.evaluate(model, cycle) if validation_due(cycle, config) else None

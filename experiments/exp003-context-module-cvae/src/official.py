@@ -159,7 +159,14 @@ class OfficialValidation:
                             counts = model.generate(inputs).cpu().numpy()[:, self.axis]
                             assert np.isfinite(counts).all() and counts.min() >= 0
                             assert np.array_equal(counts, np.floor(counts)) and counts.max(initial=0) <= np.iinfo(np.uint32).max
-                            assert np.all(counts.sum(1, dtype=np.float64) <= self.cfg.max_counts_per_cell), 'prediction_exceeds_official_count_limit'
+                            totals = counts.sum(1, dtype=np.float64)
+                            if np.any(totals > self.cfg.max_counts_per_cell):
+                                write_json(cycle_dir / f'invalid-prediction-seed-{seed}.json', {
+                                    'context': self.context, 'cycle': cycle, 'seed': seed, 'target': target,
+                                    'batch': batch, 'start': start, 'maximum_counts': float(totals.max()),
+                                    'invalid_cells': int((totals > self.cfg.max_counts_per_cell).sum()),
+                                    'official_limit': self.cfg.max_counts_per_cell, 'clipped': False})
+                                raise AssertionError('prediction_exceeds_official_count_limit')
                             prediction[start:stop] = counts.astype(np.uint32)
                         if (i + 1) % 1000 == 0:
                             print(json.dumps({'stage': 'official_prediction', 'context': self.context,
