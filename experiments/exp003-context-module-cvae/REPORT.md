@@ -274,3 +274,17 @@ H1/K562/RPE1/HepG2/Jurkat 的可靠可测 readout 分别为 18,005/7,669/8,250/9
 按 Issue #34 与用户本次指令，新目标保留条件 NB ELBO，以真正的双预测分支归一化 delta 为主目标，NB ELBO、NTC 生成锚和原始总计数均值/方差校准作为辅助；观测监督改为全任务独立细胞的实验因素加权统计。详细估计对象、噪声代理、有限 Monte Carlo 偏差和固定梯度校准规则见 PLAN。
 
 新 run 计划为 [20260925-lodo-response-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260925-lodo-response-s17)，固定 LR=0.001，从头初始化，保留五折四训练/一验证、原官方验证/早停安排，不提交 leaderboard。用户已确认使用统一归一化表达差值，具体固定为共同可测基因轴上 `log1p(CP10K(weighted mean counts))` 的扰动减匹配 NTC。delta 系数为 1，三项辅助以初始梯度比例 0.1/0.25/0.05 校准后冻结。代码验证为 54 项通过，覆盖双分支梯度、独立细胞/实验因素权重、归一化与计数尺度区分、NB 总计数二阶矩、无留出响应泄漏以及 CPU/CUDA 完整恢复。新 run 按统一入口执行；运行状态和阶段进度持续记录在 Issue #33/#34 与 W&B，尚无新目标训练性能结论。启动或测试通过不等于五折完成。
+
+## 第 4 周期 checkpoint 的提交文件导出（2026-09-25）
+
+按用户要求完成同一 run 的独立预测阶段：holdout-H1 第 4 覆盖周期、44,946 步，本地 H1 三生成种子均分 -0.06763583483674279。固定 checkpoint `checkpoints/holdout-H1-cycle-0004.pt`，SHA256 `b6548345c029bc3ad6a089c2959a9d5d4eb089b729410c13ab3350162bcb372b`。未训练新模型，也未修改活动训练的源码、权重、输入或环境。导出代码 [49e00ea](https://github.com/yjcyxky/virtual-cell-challenge/commit/49e00ea) 位于独立 `exp003-export-c4` 分支；活动训练 checkout 保持 b16daa1，分支尚未合并。
+
+预测按 PLAN 的部署口径，从官方 validation A/B/C 的 NTC 产生状态，固定 PCA 和原模型负二项生成器；生成 seed=101。全量 360,000×18,533 矩阵，900 组各 400 个细胞，2,347,119,397 个非零元素，逐细胞总计数 4,153–49,648。独立完整矩阵审计和官方 `vcc prep` 均通过；`counts-preserved`，无字段丢弃、基因重排、超限裁剪或重采样。相关测试 56 项通过；状态描述器重构与旧实现 100 个数组及 PCA 逐项相同。完整导出约 847 秒，主训练持续运行。
+
+产物位于原 run 的 `predictions/leaderboard-holdout-H1-cycle-0004-seed-101/`：
+
+- `predictions.vcc`：4,146,370,560 bytes，SHA256 `d4d7e3d73d9bb4761a8320b928a738e36aeace270b9e7be6f03b98a559d874d9`。
+- `predictions.h5ad`：5,432,917,256 bytes，SHA256 `3ca2e7eed47dd38647385afe03d6c8a2aab21c808167cb2bb09f01a470dbf3bb`。
+- `export-identity.json`、`gene-support.csv`、`emission-diagnostics.parquet`、`prediction-audit.json`、`prep.json`、`submission-file.json` 和 `complete.json` 记录来源与校验。固定 checkpoint 和摘要通过 Public API 附加到原 W&B run，避免另开 run 或附加第二个历史写入进程；版本化 Artifact 留到活动训练写入进程结束后统一归档。
+
+本次只生成可提交文件，**未上传、没有新 leaderboard 成绩**。该四背景模型有 7,632 个读出无训练监督、42/300 个官方靶点未在合格训练任务中出现，均保留原模型预测并列入支持台账；没有静默回退 NTC。文件格式合格不代表这些预测可靠。单个 checkpoint 的将来官方分数只提供一个跨数据集对照点；判断本地改善趋势是否迁移到官方需另一周期同口径对照。此导出完成不代表五折训练已完成或充分收敛。
