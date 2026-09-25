@@ -287,4 +287,28 @@ H1/K562/RPE1/HepG2/Jurkat 的可靠可测 readout 分别为 18,005/7,669/8,250/9
 - `predictions.h5ad`：5,432,917,256 bytes，SHA256 `3ca2e7eed47dd38647385afe03d6c8a2aab21c808167cb2bb09f01a470dbf3bb`。
 - `export-identity.json`、`gene-support.csv`、`emission-diagnostics.parquet`、`prediction-audit.json`、`prep.json`、`submission-file.json` 和 `complete.json` 记录来源与校验。固定 checkpoint 和摘要通过 Public API 附加到原 W&B run，避免另开 run 或附加第二个历史写入进程；版本化 Artifact 留到活动训练写入进程结束后统一归档。
 
-本次只生成可提交文件，**未上传、没有新 leaderboard 成绩**。该四背景模型有 7,632 个读出无训练监督、42/300 个官方靶点未在合格训练任务中出现，均保留原模型预测并列入支持台账；没有静默回退 NTC。文件格式合格不代表这些预测可靠。单个 checkpoint 的将来官方分数只提供一个跨数据集对照点；判断本地改善趋势是否迁移到官方需另一周期同口径对照。此导出完成不代表五折训练已完成或充分收敛。
+**导出完成时尚未上传**；用户随后授权提交，其官方结果见下节。该四背景模型有 7,632 个读出无训练监督、42/300 个官方靶点未在合格训练任务中出现，均保留原模型预测并列入支持台账；没有静默回退 NTC。文件格式合格不代表这些预测可靠。单个 checkpoint 的将来官方分数只提供一个跨数据集对照点；判断本地改善趋势是否迁移到官方需另一周期同口径对照。此导出完成不代表五折训练已完成或充分收敛。
+
+## 第 4 周期 checkpoint 的官方评分（2026-09-25）
+
+用户随后明确授权提交上述已校验文件。重新配置 CLI 登录后，提交同一 SHA256 文件，唯一 entry 为 `wDKL5Vvgw5wf2LuqfdUG`，模型名 `ContextModuleCVAE-c4-20260925-lodo-response-s17`。官方状态 `published`，评分和完整回执保存在原导出目录的 `official-summary.json` / `official-status.json`，比较保存为 `official-comparison.json`。未重新训练或更换 checkpoint、生成种子、预测文件。
+
+|评分项|SharedResponseShrink 历史官方|ContextRelationXGB 历史官方|本次 CVAE 官方|同 checkpoint 本地 H1 三种子均值|
+|---|---:|---:|---:|---:|
+|PDS|0.232316|0.007589|0.002145|0.026395|
+|表达 MSE|0.000000|0.000000|0.000000|0.000000|
+|LFC 幅度|0.029302|0.001819|-0.156851|-0.181342|
+|方向 fidelity|-1.439033|-1.722954|-0.024458|-0.195180|
+|方向 reach|0.052035|-0.022812|-0.033825|-0.068508|
+|DE Jaccard|-0.061650|-0.082562|-0.002412|0.012820|
+|六项均分|-0.197838|-0.303153|-0.035900|-0.067636|
+
+官方 partition `val`，panel `vcc2026-val-1`，anchor `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4`。与两次历史回执的 partition/panel/anchor 全部一致。历史排名只保留各次查询时快照，不当作同一时刻排名比较。
+
+本次总分相对 SharedResponseShrink 变化 +0.161938，相对 ContextRelationXGB 变化 +0.267253。这只是完整流程的结果比较：历史方法使用五个训练背景，本次 checkpoint 为 H1 留出、其余四背景训练；不能单独归因于架构或新 loss。
+
+总分提升主要来自方向 fidelity 的大幅改善，并非所有任务都改善：PDS、LFC 幅度和 reach 均低于两次历史官方结果；Jaccard 改善。原始表达误差也不能从归一化 MSE 均为 0 推断为相同：本次回执的 `expr_mse_unbiased_capped_norm` 为 11.966576，历史 XGB 为 2.093375。当前总分仍低于零分参考，不能称为已达到有效泛化。
+
+本地 H1 均分 -0.067635835（三生成种子 SD 0.001110707），生成种子 101 的本地分数 -0.066850369。它和官方 A/B/C 分数使用不同数据、背景均值基线和真实重复 anchor，数值不能直接互换。此次仅得到一个 checkpoint 的跨数据集对应点，仍不足以判断本地周期提升是否同步迁移到官方；该判断需要至少另一周期的同口径结果。官方 validation 的反馈若用于下一轮选择，须作为开发反馈记录。
+
+支持范围限制继续适用：7,632 个读出没有训练监督、42/300 个靶点未在合格训练任务出现。结果和提交身份通过 Public API 附加到原 [W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260925-lodo-response-s17)，不另启历史写入进程；版本化 Artifact 在主训练写入结束后统一归档。此次取得官方分数不代表五折训练已完成或充分收敛。
