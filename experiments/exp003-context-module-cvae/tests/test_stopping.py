@@ -88,7 +88,7 @@ def test_sampled_training_monitor_is_fixed_weighted_and_never_reads_held_labels(
     assert len(plan) == config['monitor_layers_per_target'] * sum(c in contexts for c, t in data.tasks)
     assert all(abs(sum(r['weight'] for r in plan if r['context'] == c) - 1) < 1e-10 for c in contexts)
     objective = training.TaskObjective(data, view, contexts, config, tmp_path)
-    objective.weights = {k: 1. for k in training.LOSS_TERMS}
+    objective.weights = {k: 1. for k in objective.loss_terms}
     state = copy.deepcopy(model.state_dict()); rng = training.random_state()
     first = training.monitor_training(model, data, view, plan, contexts, config, 100, objective)
     assert_nested_equal(training.random_state(), rng)
@@ -135,7 +135,7 @@ def test_monitor_preserves_layer_nb_weights_and_task_predictive_weights(tmp_path
     model, _ = setup_model(); model = model.to(device).eval()
     plan = training.monitor_plan(data, contexts, config, tmp_path)
     objective = training.TaskObjective(data, view, contexts, config, tmp_path)
-    objective.weights = {k: 1. for k in training.LOSS_TERMS}
+    objective.weights = {k: 1. for k in objective.loss_terms}
     # Remove only latent noise to compare the vectorized calculation to independent
     # layer evaluations. Existing fixed-noise tests cover reproducibility and RNG isolation.
     monkeypatch.setattr(torch, 'randn_like', lambda value: torch.zeros_like(value))
