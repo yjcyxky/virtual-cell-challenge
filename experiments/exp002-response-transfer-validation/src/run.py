@@ -39,7 +39,7 @@ def tracking(output, config):
         pass
     options = dict(entity='yjcyxky', project='virtual-cell-challenge', group=EXPERIMENT.name,
                    id=output.name, name=output.name, dir=str(output), config=config)
-    if config.get('run_type') == 'trained_baseline_official_validation_submission':
+    if config.get('run_type') in ['trained_baseline_official_validation_submission', 'calibrated_counts']:
         options['resume'] = 'allow'
     mode = 'online' if credential else 'offline'
     try:
@@ -132,12 +132,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--attach-collector', type=int)
-    parser.add_argument('--scope', choices=['original', 'genetic_only', 'vcc2026'], default='original')
+    parser.add_argument('--scope', choices=['original', 'genetic_only', 'vcc2026', 'calibrated_counts'], default='original')
+    parser.add_argument('--config', default=str(EXPERIMENT / 'configs/native-count-transfer.json'))
     parser.add_argument('--submit', action='store_true', help='Submit the prepared vcc2026 run and wait for its official score.')
     args = parser.parse_args()
-    if args.submit and args.scope != 'vcc2026':
-        parser.error('--submit requires --scope vcc2026')
-    if args.scope == 'vcc2026':
+    if args.submit and args.scope not in ['vcc2026', 'calibrated_counts']:
+        parser.error('--submit requires an official prediction scope')
+    if args.scope == 'calibrated_counts':
+        from count_pipeline import run as count_run
+        count_run(args.run_id, args.config, args.submit)
+    elif args.scope == 'vcc2026':
         from vcc_submission import run as submission_run
         submission_run(args.run_id, args.submit)
     elif args.scope == 'genetic_only':
