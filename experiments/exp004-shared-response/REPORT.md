@@ -35,3 +35,48 @@ partition/panel/anchor 与历史 exp003 回执一致：True。本地 H1 三生�
 本次综合分比历史 exp003 提高 0.004769746，主要表现为 LFC 幅度项改善、方向 fidelity 下降，PDS 和 DE Jaccard 也下降，不能称为各项全面改善。输出中仍有 7,632 个 readout 没有训练表达测量监督，保留共享映射的原始预测。完整计数审计中每细胞总计数为 2,617–37,741，非零计数数目为 2,097,033,529，均符合官方上限。
 
 官方 validation 反馈后续用于模型选择时明确作为开发反馈。此次提交完成不等于五折或 27-run 矩阵完成。[原 W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260925-exp004-conditional-s17) 通过 Public API 附加官网回执与导出身份，不启动第二个 history writer；关键结果的版本化 Artifact 待原训练写入结束后归档。
+
+## K562 留出第 1 周期 checkpoint 的官方评估（2026-09-26）
+
+用户授权使用本地 K562 留出验证取得正分的 checkpoint 生成 VCC 并提交。原 run 仍为
+`20260925-exp004-conditional-s17`，固定保存 `holdout-K562-cycle-0001.pt`，cycle 1、step 1631，
+SHA256 `e23ec3eda6da8841794f4fddc82798b0056755240d4121b90fab533f43d2b041`。
+训练背景为 H1、RPE1、HepG2、Jurkat；本地 K562 三生成种子均分 0.010474894003385757。
+本地留出集用于 checkpoint 选择，官网 A/B/C validation 反馈也按开发反馈记录，不作为独立盲测。
+
+导出提交 `2b73c4dcf5bc99ba8e83f79f6bbc73d0436cd7ee` 在独立导出 worktree 中将原 H1 专用入口
+扩展为显式留出背景选择，并核验 checkpoint 训练背景；原活动训练代码、环境及状态不变。
+4 项导出行为测试通过，未修改模型生成器。CPU、seed 101、每批 128 个细胞，使用官方每个背景
+完整 NTC 池及 checkpoint 固定 PCA。输出 3×300×400=360,000 个细胞、18,533 基因，
+其中 401 个 readout 没有本折训练测量监督，保留原模型输出。
+
+独立全文件审计及官方 `vcc prep` 均通过：2,205,812,105 个非零计数，每细胞总计数 3,344–58,580；
+全部有限非负整数，基因顺序与各组细胞数完全匹配，无裁剪、重抽或基因丢弃。
+VCC 为 3,914,362,880 bytes，SHA256 `bdc75cbf989ae2b2968066fa490213fb5010642b0e0ea9423217da13446230bc`。
+产物、审计与提交回执均在原 run 的 `predictions/leaderboard-holdout-K562-cycle-0001-seed-101/`。
+
+官方模型名 `Exp004-K562-c1-20260925-s17`，entry `8RFfav38cQ1NftnO8EFb`，状态 `published`。
+2026-09-26 回执排名为 881；排名会随其他提交变化。
+
+|评分项|本次 K562 cycle 1 官方|
+|---|---:|
+|PDS|-0.010458697|
+|表达 MSE|0.000000000|
+|LFC 幅度|-0.006873266|
+|方向 fidelity|-0.273966565|
+|方向 reach|-0.007732621|
+|DE Jaccard|-0.042750695|
+|六项均分|-0.056963641|
+
+与此前 H1 cycle 11 的官方均分 -0.031130430 相比，本次低 0.025833211；六项中表达 MSE
+持平，其余五项均较低，最大下降来自方向 fidelity。两次 partition、panel_id、anchor_version
+完全一致（`val`、`vcc2026-val-1`、`vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4`）。
+本地 K562 的正分没有在官方 A/B/C 背景复现；训练背景与训练周期同时不同，不能把差异
+单独归因于某一背景或训练长度。本次按用户指定固定 checkpoint 提交，没有使用官网反馈追加选模。
+
+最终官方回执、导出身份、提交 SHA、完整审计及 prep 回执通过 W&B Public API 上传为原 run
+`predictions/leaderboard-holdout-K562-cycle-0001-seed-101/` 下的独立文件，并核验远端文件大小。
+活动训练持续刷新 summary，独立 API 写入的 summary 字段未能在随后的读取中保留，故不依赖它
+保存本次提交；本地 `wandb-file-sync.json` 记录文件同步状态。保留此前 H1 提交记录，不另建 run 或 history writer。
+关键结果的版本化 Artifact 沿用原活动训练结束后的归档安排。导出行为测试 4 项通过；
+复用正式导出/提交模块，未遗留一次性脚本。源码和报告在独立导出 worktree 提交，活动训练保持运行。
