@@ -177,7 +177,7 @@ def main(args, experiment=EXPERIMENT, model_type=ModuleCVAE):
     assert checkpoint.is_relative_to(run / 'checkpoints') and checkpoint.is_file()
     config = yaml.safe_load((run / 'config.yaml').read_text())
     repo = run.parents[3]
-    output = run / 'predictions' / f'leaderboard-holdout-H1-cycle-{args.cycle:04d}-seed-{args.seed}'
+    output = run / 'predictions' / f'leaderboard-holdout-{args.holdout}-cycle-{args.cycle:04d}-seed-{args.seed}'
     output.mkdir(exist_ok=True, parents=True)
     with (output / '.export.lock').open('w') as lock, (output / 'export.log').open('a', buffering=1) as log:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -195,7 +195,8 @@ def main(args, experiment=EXPERIMENT, model_type=ModuleCVAE):
             checkpoint_hash = hash_file(checkpoint)
             model, saved = restore_model(checkpoint, args.cycle, args.device, model_type)
             assert saved['config'] == config, 'checkpoint_run_identity_mismatch'
-            assert saved['training_contexts'] == ['K562', 'RPE1', 'HepG2', 'Jurkat'], 'export_fold_mismatch'
+            expected_contexts = {'H1', 'K562', 'RPE1', 'HepG2', 'Jurkat'} - {args.holdout}
+            assert len(saved['training_contexts']) == 4 and set(saved['training_contexts']) == expected_contexts, 'export_fold_mismatch'
             official, manifest, genes, targets, sources = official_inputs({
                 'official': str(repo / 'data/raw/arc_vcc2026_controls'), 'cells_per_perturbation': 400})
             assert genes == pd.read_csv(repo / config['gene_axis']).iloc[:, 0].astype(str).tolist()
@@ -236,6 +237,7 @@ def argument_parser():
     parser.add_argument('--run-dir', required=True)
     parser.add_argument('--checkpoint', required=True)
     parser.add_argument('--cycle', required=True, type=int)
+    parser.add_argument('--holdout', choices=['H1', 'K562', 'RPE1', 'HepG2', 'Jurkat'], default='H1')
     parser.add_argument('--seed', type=int, default=101)
     parser.add_argument('--device', choices=['cpu', 'cuda'], default='cuda')
     parser.add_argument('--threads', type=int, default=2)
