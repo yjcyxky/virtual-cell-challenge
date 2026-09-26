@@ -35,6 +35,37 @@ def shared_model(config=None):
     return model, batch
 
 
+@pytest.mark.parametrize('device', ['cpu', 'cuda'])
+def test_export_restores_shared_checkpoint_exactly(tmp_path, device):
+    from submission import restore_model
+    if device == 'cuda' and not torch.cuda.is_available():
+        pytest.skip('CUDA unavailable')
+    if device == 'cuda':
+        try:
+            torch.empty(1, device='cuda')
+        except torch.cuda.OutOfMemoryError:
+            pytest.skip('Active training/scoring leaves no CUDA context capacity')
+        except torch.AcceleratorError as error:
+            if 'out of memory' in str(error):
+                pytest.skip('Active training/scoring leaves no CUDA context capacity')
+            raise
+    model, batch = shared_model()
+    # Exercise trained shared heads and conditional relationships, not only initialization.
+    with torch.no_grad():
+        model.relation_context[-1].weight.normal_(std=.02)
+        model.response_modules[-1].weight.normal_(std=.02)
+    path = tmp_path / 'checkpoint.pt'
+    torch.save({'model': model.state_dict(), 'config': model.config, 'cycle': 11}, path)
+    restored, _ = restore_model(path, 11, device, SharedResponseCVAE)
+    model = model.to(device).eval()
+    batch = {key: value.to(device) for key, value in batch.items()}
+    torch.manual_seed(101); expected = model.generate(batch)
+    torch.manual_seed(101); actual = restored.generate(batch)
+    torch.testing.assert_close(actual, expected, atol=0, rtol=0)
+    with pytest.raises(AssertionError, match='cycle_mismatch'):
+        restore_model(path, 4, device, SharedResponseCVAE)
+
+
 def test_low_rank_operator_matches_explicit_and_changes_cross_ratios():
     base = torch.tensor([[1., 2.], [3., 4.]])
     left = torch.tensor([[1.], [2.]])

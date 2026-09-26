@@ -1,5 +1,11 @@
 # exp004：共享读出与状态条件化响应
 
+## 已授权的第 11 周期官网评估（2026-09-26）
+
+用户明确要求用 `20260925-exp004-conditional-s17` 的 H1 留出第 11 周期 checkpoint 生成 VCC 并提交官网。该任务是原 run 的预测和外部评估，不新建训练 run，不改变训练配置或模型。官方 A/B/C NTC 各自合并为一个无已知技术 batch 的群体，沿用 checkpoint 的 PCA 与原状态构造规则；不把 ntc_id 当 batch。全部 18,533 基因按原共享读出生成，不回退未监督基因为 NTC。
+
+在隔离 checkout 中使用同一 Experiment 现有锁定环境，以 `./reproduce.sh --export-checkpoint --run-dir <原run目录> --checkpoint holdout-H1-best.pt --cycle 11 --seed 101 --device cpu --threads 2 --chunk-cells 128 --cli-project <已有锁定vcc项目>` 导出。入口严格核对 checkpoint 周期、配置、训练背景、模型源码和逐参数恢复。原 run 的 `predictions/leaderboard-holdout-H1-cycle-0011-seed-101/` 保存预测、审计、官方格式验证、摘要和提交回执。预测为 3×300×400 个细胞；超计数上限直接失败，不裁剪、不换种子重抽。CPU 生成与历史 CUDA 导出不保证逐位相同，设备记录在导出身份中。官网反馈用于开发比较，不能当作未触碰的最终测试。
+
 需求与执行进度由 [Issue #35](https://github.com/yjcyxky/virtual-cell-challenge/issues/35) 管理。用户于 2026-09-25 授权完整实现并启动训练、消融；exp003 原工作区及活动 run 保持不变。此分支只复用其数据、训练、评估流程，通过显式模型和目标接口接入 exp004。正式训练代码及锁文件先提交，运行不修改源码或环境。
 
 ## 问题、数据与边界
