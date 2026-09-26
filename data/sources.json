@@ -4,6 +4,24 @@
   "schema_version": 1,
   "sources": [
     {
+      "id": "collectri",
+      "tier": "c",
+      "title": "CollecTRI signed directed TF-target interactions via OmniPath",
+      "citation": "CollecTRI; OmniPath human interaction API, snapshot 2026-09-26.",
+      "license": "Resource-specific terms; see sources and references in the snapshot",
+      "why": "Fixed response-independent directed regulatory features for exp005 cross-context residual prediction.",
+      "caveat": "The CollecTRI-filtered OmniPath response can aggregate evidence from multiple resources. Conflicting signs stay separate; unresolved complexes are excluded. A changed upstream response must not replace this pinned snapshot.",
+      "kind": "http",
+      "files": [
+        {
+          "name": "human-interactions.tsv",
+          "url": "https://omnipathdb.org/interactions?datasets=collectri&organisms=9606&genesymbols=1&fields=sources,references",
+          "bytes": 17027304,
+          "checksum": "sha256:0c4afb99a5590313802beee251b071b332876bea393f03aba8fb822eee28d05c"
+        }
+      ]
+    },
+    {
       "id": "arc_vcc2025_h1",
       "tier": "a",
       "title": "Virtual Cell Challenge 2025 dataset (H1 hESC, CRISPRi, 10x Flex)",
