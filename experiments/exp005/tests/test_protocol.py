@@ -9,7 +9,7 @@ from scipy import sparse
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
 from common import log_profile,stratified_sample,write_json
-from data import GeneIdentity
+from data import GeneIdentity,CountBlock,RawReader,prepare_context,NTC
 from features import Features
 from generation import generate_counts
 from training import Rows,fit,fit_id,select_rounds
@@ -107,3 +107,54 @@ def test_full_state_resume_matches_uninterrupted_training(tmp_path):
     assert uninterrupted.get_dump(dump_format='json')==resumed.get_dump(dump_format='json')
     x=features.matrix('d',np.repeat(np.arange(5),8),np.tile(np.arange(8),5))
     np.testing.assert_array_equal(uninterrupted.inplace_predict(x),resumed.inplace_predict(x))
+
+
+@pytest.mark.parametrize('encoding',['dense','csr'])
+def test_reusable_count_buffers_match_direct_counts(tmp_path,encoding):
+    import h5py
+    import anndata as ad
+    rng=np.random.default_rng(11)
+    raw=rng.poisson(3,(517,35)).astype(np.float32)
+    file=tmp_path/'input.h5ad'
+    ad.AnnData(raw if encoding=='dense' else sparse.csr_matrix(raw)).write_h5ad(file)
+    columns=np.arange(35)[::-2];sums=np.zeros((5,len(columns)),np.float64);expected=np.zeros_like(sums)
+    codes=rng.integers(0,5,len(raw))
+    with h5py.File(file) as handle:
+        reader=RawReader(handle);block=CountBlock(columns,raw.dtype)
+        for start in range(0,len(raw),512):
+            stop=min(start+512,len(raw));rows=np.arange(stop-start)[::2]
+            got=block.select(reader.read(start,stop),rows)
+            want=raw[start:stop][rows][:,columns]
+            np.testing.assert_array_equal(got,want)
+            block.accumulate(sums,codes[start:stop][rows])
+            np.add.at(expected,codes[start:stop][rows],want)
+    np.testing.assert_array_equal(sums,expected)
+    for invalid in [np.nan,np.inf,-1,65536,.5]:
+        changed=raw[:2].copy();changed[0,columns[0]]=invalid
+        with pytest.raises(ValueError):block.select(changed,np.arange(2))
+
+
+def test_whole_context_preparation_preserves_counts_and_full_ntc_baseline(tmp_path):
+    import anndata as ad
+    import pandas as pd
+    rng=np.random.default_rng(2);genes=['A','B','C','D']
+    counts=rng.poisson(5,(21,4)).astype(np.float32)
+    path=tmp_path/'input.h5ad';ad.AnnData(counts).write_h5ad(path)
+    targets=[NTC]*7+['A']*6+['B']*8
+    obs=pd.DataFrame({'target':targets,'original_target':targets,'batch':'one','guide':'guide',
+                      'barcode':[str(i) for i in range(21)],'source_row':np.arange(21)})
+    mapping=pd.DataFrame({'source_position':range(4),'gene':genes,'valid':True})
+    config={'minimum_target_cells':2,'ntc_bag_cells':4,'ntc_augmentation_bags':2,
+            'seed':17,'reference_cells_per_target':4}
+    prepare_context('toy',[(path,obs,mapping)],genes,{g:i for i,g in enumerate(genes)},config,tmp_path)
+    np.testing.assert_array_equal(np.load(tmp_path/'toy/counts.npy'),counts)
+    with np.load(tmp_path/'toy/statistics.npz') as stats:
+        np.testing.assert_array_equal(stats['baseline'],log_profile(counts[:7].sum(0)))
+        np.testing.assert_array_equal(stats['sums'],np.array([counts[7:13].sum(0),counts[13:].sum(0),counts[:7].sum(0)]))
+        np.testing.assert_array_equal(stats['response'],log_profile(stats['sums'][:2])-stats['baseline'])
+    features=np.load(tmp_path/'toy/context-features.npy')
+    np.testing.assert_allclose(features[0,1],(counts[:7]>0).mean(0),rtol=1e-6)
+    expected=np.log1p(((counts[:7].astype(np.float64)/counts[:7].sum(1,keepdims=True)*50000)**2).mean(0))
+    np.testing.assert_allclose(features[0,2],expected,rtol=1e-6)
+    rows=np.load(tmp_path/'toy/evaluation-rows.npy')
+    assert set(range(7))<=set(rows) and len(rows)==7+4+4

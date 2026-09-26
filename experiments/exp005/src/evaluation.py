@@ -30,16 +30,28 @@ def release(path):
     import torch
     if torch.cuda.is_available(): torch.cuda.empty_cache()
 
-def wait_for_anchor_memory(real,context):
+def wait_for_memory(real,context,device,anchor=False):
     # The official anchor makes two copied half-panels and temporary DE tables.
     # Unified CPU/GPU memory is shared with other active experiments on this host.
     # Admission delays execution; it never changes the panel or metric definition.
-    required=2*real.X.nbytes+(12<<30)
+    groups=real.obs.target.nunique()
+    required=(2*real.X.nbytes if anchor else groups*real.n_vars*8*10)+(12<<30)
+    gpu_required=groups*real.n_vars*8*12+(2<<30)
     while True:
         available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines()
                            if line.startswith('MemAvailable:')))*1024
-        if available>=required: return
-        event('waiting_for_anchor_memory',context=context,available_gib=available/(1<<30),required_gib=required/(1<<30))
+        gpu_available=None;gpu_error=None
+        if device=='cuda':
+            import cupy
+            try:gpu_available=cupy.cuda.runtime.memGetInfo()[0]
+            except cupy.cuda.runtime.CUDARuntimeError as error:
+                if error.status!=2:raise
+                gpu_available=0;gpu_error=str(error)
+        if available>=required and (gpu_available is None or gpu_available>=gpu_required):return
+        event('waiting_for_evaluation_resources',context=context,anchor=anchor,
+              available_gib=available/(1<<30),required_gib=required/(1<<30),
+              gpu_available_gib=None if gpu_available is None else gpu_available/(1<<30),
+              gpu_required_gib=gpu_required/(1<<30),gpu_error=gpu_error)
         time.sleep(30)
 
 class Evaluation:
@@ -83,7 +95,7 @@ class Evaluation:
                 # An interrupted atomic official build may leave an incomplete directory.
                 raise ValueError(f'incomplete_official_bundle_requires_inspection:{bundle}')
             event('official_anchor_start',context=context,shape=real.shape)
-            wait_for_anchor_memory(real,context)
+            wait_for_memory(real,context,cfg.device,anchor=True)
             profile=generic_response_profile(real,pert_col=cfg.pert_col,control=cfg.control,exclude_target_gene=False)
             baseline_path=directory/'mean-response-baseline.npy'
             baseline=np.lib.format.open_memmap(baseline_path,mode='w+',dtype=np.float32,shape=real.shape)
@@ -107,6 +119,7 @@ class Evaluation:
         if done.exists(): return json.loads(done.read_text())
         directory.mkdir(parents=True,exist_ok=True)
         real,cfg,bundle=self.prepare(context)
+        wait_for_memory(real,context,cfg.device)
         stats=self.data.contexts[context];targets=stats['targets'];axis=stats['gene_indices']
         if kind=='zero': response=np.zeros_like(stats['response'])
         elif kind=='shared': response=self.shared(context,training_contexts)

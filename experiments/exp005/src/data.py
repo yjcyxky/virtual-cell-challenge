@@ -49,14 +49,69 @@ class GeneIdentity:
         choices = self.aliases.get(value, set())
         return next(iter(choices)) if len(choices) == 1 else None
 
-def dense_block(handle, start, stop):
-    x = handle['X']
-    if isinstance(x, h5py.Dataset): return np.asarray(x[start:stop])
-    if x.attrs.get('encoding-type') != 'csr_matrix': raise ValueError('source_must_be_dense_or_csr')
-    ptr = x['indptr'][start:stop + 1]
-    lo, hi = int(ptr[0]), int(ptr[-1])
-    return sparse.csr_matrix((x['data'][lo:hi], x['indices'][lo:hi], ptr - lo),
-                             shape=(stop-start, int(x.attrs['shape'][1]))).toarray()
+class RawReader:
+    """Reuse HDF5/CSR read buffers: fresh large allocations stall under UMA pressure."""
+    def __init__(self,handle,capacity=512):
+        self.x=handle['X'];x=self.x
+        dense=isinstance(x,h5py.Dataset)
+        if not dense and x.attrs.get('encoding-type')!='csr_matrix':
+            raise ValueError('source_must_be_dense_or_csr')
+        columns=x.shape[1] if dense else int(x.attrs['shape'][1])
+        self.values=np.empty((capacity,columns),dtype=x.dtype if dense else x['data'].dtype)
+        if not dense:
+            self.data=np.empty(capacity*columns,x['data'].dtype)
+            self.indices=np.empty(capacity*columns,x['indices'].dtype)
+
+    def read(self,start,stop):
+        x=self.x;out=self.values[:stop-start]
+        if isinstance(x,h5py.Dataset):
+            x.read_direct(out,np.s_[start:stop,:])
+        else:
+            ptr=x['indptr'][start:stop+1];lo,hi=int(ptr[0]),int(ptr[-1]);size=hi-lo
+            if size:
+                x['data'].read_direct(self.data,np.s_[lo:hi],np.s_[:size])
+                x['indices'].read_direct(self.indices,np.s_[lo:hi],np.s_[:size])
+            sparse.csr_matrix((self.data[:size],self.indices[:size],ptr-lo),shape=out.shape).toarray(out=out)
+        return out
+
+class CountBlock:
+    """Validate and aggregate integer counts without per-batch large allocations."""
+    def __init__(self,columns,dtype,capacity=512):
+        self.columns=np.asarray(columns)
+        shape=(capacity,len(columns))
+        self.canonical=np.empty(shape,dtype)
+        self.selected=np.empty(shape,dtype)
+        self.ordered=np.empty(shape,dtype)
+        self.floor=np.empty(shape,dtype)
+        self.mask=np.empty(shape,bool)
+        self.counts=np.empty(shape,np.uint16)
+        self.profile=np.empty(len(columns),np.float64)
+
+    def select(self,raw,rows):
+        if self.columns.min(initial=0)<0 or self.columns.max(initial=0)>=raw.shape[1]:
+            raise ValueError('invalid_source_gene_positions')
+        np.take(raw,self.columns,axis=1,out=self.canonical[:len(raw)],mode='clip')
+        if np.any(rows<0) or np.any(rows>=len(raw)):raise ValueError('invalid_source_cell_positions')
+        values=self.selected[:len(rows)]
+        np.take(self.canonical[:len(raw)],rows,axis=0,out=values,mode='clip')
+        lower,upper=values.min(initial=0),values.max(initial=0)
+        if not 0<=lower<=upper<=65535:raise ValueError('source_counts_not_finite_nonnegative_uint16')
+        if np.issubdtype(values.dtype,np.floating):
+            np.floor(values,out=self.floor[:len(rows)])
+            np.equal(values,self.floor[:len(rows)],out=self.mask[:len(rows)])
+            if not self.mask[:len(rows)].all():raise ValueError('raw_integer_counts_required')
+        if np.any(values.sum(1)<=0):raise ValueError('empty_cell_after_gene_identity_filter')
+        np.copyto(self.counts[:len(rows)],values,casting='unsafe')
+        return self.counts[:len(rows)]
+
+    def accumulate(self,sums,codes):
+        order=np.argsort(codes,kind='stable')
+        groups,starts=np.unique(codes[order],return_index=True)
+        ends=np.r_[starts[1:],len(codes)]
+        np.take(self.selected[:len(codes)],order,axis=0,out=self.ordered[:len(codes)],mode='clip')
+        for group,lo,hi in zip(groups,starts,ends):
+            np.sum(self.ordered[lo:hi],axis=0,dtype=np.float64,out=self.profile)
+            np.add(sums[group],self.profile,out=sums[group])
 
 def inspect_panel(path, context, identity):
     with h5py.File(path) as h:
@@ -153,29 +208,32 @@ def prepare_context(context, panels, genes, lookup, config, directory):
     frame = frame.loc[frame.target.isin(targets+[NTC])].reset_index(drop=True)
     if not frame.target.eq(NTC).any(): raise ValueError('no_context_NTC')
     shape = (len(frame), len(native))
-    matrix = np.lib.format.open_memmap(folder/'counts.npy', mode='w+', dtype=np.uint16, shape=shape)
     target_index = {t:i for i,t in enumerate(targets + [NTC])}
     sums = np.zeros((len(target_index), len(native)), dtype=np.float64)
     target_codes = frame.target.map(target_index).to_numpy()
-    for number, (path, _, mapping) in enumerate(panels):
-        by_gene = mapping.loc[mapping.valid].set_index('gene').source_position.to_dict()
-        positions = np.array([by_gene[g] for g in native])
-        destination = np.flatnonzero(frame.panel.eq(number))
-        rows = frame.loc[destination,'source_row'].to_numpy()
-        with h5py.File(path) as h:
-            total = len(read_array(h['obs'][h['obs'].attrs.get('_index', '_index')]))
-            for start in range(0, total, 512):
-                lo, hi = np.searchsorted(rows,[start, min(start+512,total)])
-                if lo == hi: continue
-                values = dense_block(h, start, min(start+512,total))[rows[lo:hi]-start][:,positions]
-                if not np.isfinite(values).all() or (values<0).any() or not np.array_equal(values,np.floor(values)):
-                    raise ValueError('raw_integer_counts_required')
-                if values.max(initial=0)>65535: raise ValueError('source_count_exceeds_uint16')
-                if np.any(values.sum(1)<=0): raise ValueError('empty_cell_after_gene_identity_filter')
-                dst = destination[lo:hi]; matrix[dst] = values.astype(np.uint16)
-                np.add.at(sums, target_codes[dst], values)
-                if start % (512*100) == 0: event('prepare_cells', context=context, source=number, row=start, total=total)
-    matrix.flush()
+    # Sequential writes avoid a writable mmap fault for every new output page.
+    written=0
+    with (folder/'counts.npy').open('wb') as stream:
+        np.lib.format.write_array_header_2_0(stream,{'descr':np.dtype(np.uint16).str,'fortran_order':False,'shape':shape})
+        for number, (path, _, mapping) in enumerate(panels):
+            by_gene = mapping.loc[mapping.valid].set_index('gene').source_position.to_dict()
+            positions = np.array([by_gene[g] for g in native])
+            destination = np.flatnonzero(frame.panel.eq(number))
+            rows = frame.loc[destination,'source_row'].to_numpy()
+            with h5py.File(path) as h:
+                reader=RawReader(h);block=CountBlock(positions,reader.values.dtype)
+                total = len(read_array(h['obs'][h['obs'].attrs.get('_index', '_index')]))
+                for start in range(0, total, 512):
+                    lo, hi = np.searchsorted(rows,[start, min(start+512,total)])
+                    if lo == hi: continue
+                    values=block.select(reader.read(start,min(start+512,total)),rows[lo:hi]-start)
+                    dst=destination[lo:hi]
+                    if dst[0]!=written or dst[-1]!=written+len(dst)-1:raise ValueError('nonsequential_preparation')
+                    stream.write(memoryview(values).cast('B'));written+=len(values)
+                    block.accumulate(sums,target_codes[dst])
+                    if start % (512*100) == 0: event('prepare_cells', context=context, source=number, row=start, total=total)
+    if written!=len(frame):raise ValueError('incomplete_context_counts')
+    matrix=np.load(folder/'counts.npy',mmap_mode='r')
     frame.to_parquet(folder/'cells.parquet', index=False)
     controls = np.flatnonzero(frame.target.eq(NTC))
     baseline = log_profile(sums[-1])
@@ -188,13 +246,20 @@ def prepare_context(context, panels, genes, lookup, config, directory):
     bags = [controls[stratified_sample(strata, config['ntc_bag_cells'], np.random.default_rng(seed(config['seed'],context,'bag',i)))]
             for i in range(config['ntc_augmentation_bags'])]
     features = []
+    cells=np.empty((512,len(native)),np.float64);norm=np.empty_like(cells)
+    mask=np.empty(cells.shape,bool);buffer=np.empty(cells.shape,np.uint16)
+    profile=np.empty(len(native),np.float64);depths=np.empty(512,np.float64)
     for rows in [controls] + bags:
         total = np.zeros(len(native)); detected = np.zeros(len(native)); squares = np.zeros(len(native))
         for start in range(0,len(rows),512):
-            cells = np.asarray(matrix[rows[start:start+512]],dtype=np.float64)
-            total += cells.sum(0); detected += (cells>0).sum(0)
-            norm = cells / cells.sum(1,keepdims=True)*50000
-            squares += (norm**2).sum(0)
+            selected=rows[start:start+512];n=len(selected)
+            np.take(matrix,selected,axis=0,out=buffer[:n],mode='clip')
+            np.copyto(cells[:n],buffer[:n])
+            np.sum(cells[:n],axis=0,out=profile);total+=profile
+            np.greater(cells[:n],0,out=mask[:n]);np.sum(mask[:n],axis=0,dtype=np.float64,out=profile);detected+=profile
+            np.sum(cells[:n],axis=1,out=depths[:n])
+            np.divide(cells[:n],depths[:n,None],out=norm[:n]);np.multiply(norm[:n],50000,out=norm[:n])
+            np.square(norm[:n],out=norm[:n]);np.sum(norm[:n],axis=0,out=profile);squares+=profile
         features.append(np.stack([log_profile(total),detected/len(rows),np.log1p(squares/len(rows))]).astype(np.float32))
     np.save(folder/'context-features.npy',np.asarray(features))
     evaluation = list(controls)
@@ -221,15 +286,17 @@ def verify_duplicate_controls(panels, native):
         order = np.argsort(controls.source_row.to_numpy())
         rows = controls.source_row.to_numpy()[order]
         with h5py.File(path) as handle:
+            reader=RawReader(handle);block=CountBlock(columns,reader.values.dtype)
             for start in range(0, len(obs), 512):
                 lo, hi = np.searchsorted(rows, [start, start+512])
                 if lo == hi: continue
-                block = dense_block(handle, start, min(start+512,len(obs)))[rows[lo:hi]-start][:,columns]
-                if (block < 0).any() or block.max(initial=0)>65535 or not np.array_equal(block,np.floor(block)):
-                    raise ValueError('H1_duplicate_controls_not_uint16_counts')
-                values[order[lo:hi]] = block
+                values[order[lo:hi]]=block.select(reader.read(start,min(start+512,len(obs))),rows[lo:hi]-start)
         if original is None: original = values
-        elif not np.array_equal(original,values): raise ValueError('H1_duplicate_NTC_expression_changed')
+        else:
+            for start in range(0,len(values),512):
+                n=min(512,len(values)-start)
+                np.equal(original[start:start+n],values[start:start+n],out=block.mask[:n])
+                if not block.mask[:n].all():raise ValueError('H1_duplicate_NTC_expression_changed')
 
 class Data:
     def __init__(self,directory):

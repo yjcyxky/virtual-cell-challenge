@@ -39,6 +39,8 @@ def pipeline_identity():
 def report(output,result):
     path=EXPERIMENT/'REPORT.md'
     header=f'# exp005 结果\n\nRun `{output.name}`，状态：{result["status"]}。\n\nW&B：{result.get("wandb_url","offline")}\n\n'
+    for repair in result.get('preparation_repairs',[]):
+        header+=f'预处理工程修复（未改变配置，原提交 `{repair["prior_git_commit"]}`）：{repair["reason"]}\n\n'
     if 'outer' in result:
         header+='| 留出 context | 训练轮数 | 官方方法 Overall | 零响应 | 同靶点转移 | 靶点数 | 训练中已见 |\n|---|---:|---:|---:|---:|---:|---:|\n'
         for context,metrics in result['outer'].items():
@@ -47,7 +49,7 @@ def report(output,result):
             shared=baselines.get('shared_response',{}).get('score',float('nan'))
             header+=f'| {context} | {metrics["round"]} | {metrics["score"]:.6f} | {zero:.6f} | {shared:.6f} | {metrics["targets"]} | {metrics["seen_targets"]} |\n'
         header+='\n本地 context-native 面板分数，不等同 A/B/C 榜单。全部外层分数只报告，不用于轮数选择。\n'
-    if 'error' in result:header+='\n阻塞/失败：'+result['error']+'\n'
+    if 'error' in result:header+='\n阻塞/失败：'+result['error'].rstrip()+'\n'
     header+='\n限制：独立细胞背景仅五个且曾用于项目开发；NTC bag 不构成新背景。均值 residual 加 NTC 模板无法完整恢复扰动导致的新状态和分布。原始覆盖不等于合格监督覆盖；未测基因不作零标签。\n'
     path.write_text(header)
 
@@ -57,8 +59,19 @@ def run(args):
         frozen=yaml.safe_load((output/'config.yaml').read_text());config=frozen['configuration']
         identity=pipeline_identity()
         if {k:v for k,v in frozen['identity'].items() if k!='git_commit'}!={k:v for k,v in identity.items() if k!='git_commit'}:
-            raise ValueError('resume_code_or_environment_changed')
-        identity=frozen['identity']
+            # A preprocessing implementation repair is safe before ANY context cache
+            # completes. Partial files are rebuilt, with both code identities retained.
+            compatible={k:v for k,v in frozen['identity'].items() if k not in ['git_commit','code_tree']}=={
+                k:v for k,v in identity.items() if k not in ['git_commit','code_tree']}
+            no_results=not list((output/'cache/data').rglob('complete.json')) and not (output/'checkpoints').exists()
+            changed={p for p in identity['code_tree'] if identity['code_tree'][p]!=frozen['identity']['code_tree'][p]}
+            if not (args.preparation_fix_reason and compatible and no_results and changed<={'experiments/exp005/src'}):
+                raise ValueError('resume_code_or_environment_changed')
+            frozen.setdefault('preparation_repairs',[]).append({'prior_identity':frozen['identity'],
+                 'reason':args.preparation_fix_reason,'at':datetime.now(timezone.utc).isoformat()})
+            frozen['identity']=identity
+            (output/'config.yaml').write_text(yaml.safe_dump(frozen,allow_unicode=True,sort_keys=True))
+        else: identity=frozen['identity']
     else:
         config=yaml.safe_load(Path(args.config).read_text())
         run_id=args.run_id or datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')+'-residual-s'+str(config['seed'])
@@ -77,12 +90,14 @@ def run(args):
     sys.stdout=Tee(sys.stdout);sys.stderr=Tee(sys.stderr)
     os.environ['WANDB_DIR']=str(output)
     options=dict(entity='yjcyxky',project='virtual-cell-challenge',group='exp005',id=output.name,
-                 name=f'exp005-{output.name}',dir=str(output),config=frozen,resume='allow')
+                 name=f'exp005-{output.name}',dir=str(output),config=frozen,resume='allow',allow_val_change=True)
     try:tracked=wandb.init(**options)
     except wandb.errors.Error:
         tracked=wandb.init(**options,mode='offline')
     result={'status':'running','run_id':output.name,'wandb_url':tracked.url,'identity':identity,
-            'wandb_sync':'offline' if tracked.offline else 'online'}
+            'wandb_sync':'offline' if tracked.offline else 'online',
+            'preparation_repairs':[{'prior_git_commit':item['prior_identity']['git_commit'],'reason':item['reason'],'at':item['at']}
+                                   for item in frozen.get('preparation_repairs',[])]}
     write_json(output/'metrics.json',result);report(output,result)
     stop=threading.Event();start=time.monotonic()
     def monitor():
@@ -152,4 +167,5 @@ if __name__=='__main__':
     parser.add_argument('--run-id')
     parser.add_argument('--resume')
     parser.add_argument('--submit',action='store_true')
+    parser.add_argument('--preparation-fix-reason',help='Same-condition repair, only before any completed data cache or training checkpoint.')
     run(parser.parse_args())

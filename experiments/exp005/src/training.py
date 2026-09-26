@@ -58,20 +58,20 @@ def fit(data,features,contexts,limit,config,output,tracked,evaluate):
         np.random.seed(parameters['seed']);random.seed(parameters['seed']);booster=None
     rounds=[i for i in config['checkpoints'] if i<=limit]
     if limit not in rounds: rounds.append(limit)
+    train=None
     # Pending evaluation of an already-written snapshot resumes before further updates.
     for iteration in rounds:
         snapshot=directory/f'round-{iteration:04d}.ubj'
         if iteration<=last:
             loaded=xgb.Booster();loaded.load_model(snapshot)
             evaluate(loaded,iteration);continue
-        event('quantile_matrix',training_contexts=sorted(contexts),resume_round=last)
-        train=xgb.QuantileDMatrix(Rows(data,features,contexts,config),max_bin=config['model']['max_bin'],nthread=config['threads'])
+        if train is None:
+            event('quantile_matrix',training_contexts=sorted(contexts),resume_round=last)
+            train=xgb.QuantileDMatrix(Rows(data,features,contexts,config),max_bin=config['model']['max_bin'],nthread=config['threads'])
         if booster is None: booster=xgb.Booster(parameters,[train])
         event('training',training_contexts=sorted(contexts),from_round=last,to_round=iteration)
         for step in range(last,iteration): booster.update(train,step)
         loss=booster.eval(train,name='train',iteration=iteration)
-        del train
-        import gc;gc.collect()
         booster.save_model(snapshot)
         save_training_state(latest,booster,iteration,identity)
         write_json(directory/'state.json',{'iteration':iteration,'training_contexts':sorted(contexts),'loss':loss,
@@ -80,6 +80,8 @@ def fit(data,features,contexts,limit,config,output,tracked,evaluate):
         tracked.log({f'train/{name}/round':iteration,f'train/{name}/rmse':float(loss.rsplit(':',1)[1])})
         evaluate(booster,iteration)
         last=iteration
+    del train
+    import gc;gc.collect()
     return booster
 
 def select_rounds(contexts,config,results):
