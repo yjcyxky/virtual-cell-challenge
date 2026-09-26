@@ -67,3 +67,11 @@ anchors 不能只做五次普通 half-vs-half 指标平均：LFC NMAE 使用 ful
 薄编排应在一个具有足够 DE 信号的小型整数 counts 数据上，对照同 commit、同 backend 的 `compute_metrics` + `build_real_bundle`：逐 raw metric、各聚合值、五个 anchor、六个 scaled 分数与 Overall；包含 panel-target exclusion、对照池、MSE panel correction、LFC full gate、ties、少于 400 的真实组。再改变小批大小确认结果不依赖分批。浮点误差阈值应按官方同设备测试标准确定，而不是将 DE 集合/排序差异藏进宽容差。
 
 资源验证应记录最大 NTC 背景、实际全 panel 及 anchor 的 host/GPU 峰值，以执行时可用资源留出余量。30 GB 不是用户指定的科学条件；不应人为限制可用约 60 GiB 的机器。若直接路径超出实际资源，再使用经过官方数值对照的薄编排，不能缩减面板、切掉 NTC 或替换官方指标来“通过”。
+
+## 2026-09-26 实现验证与资源观测
+
+exp005 的小型整数数据集成测试已调用固定官方包，成功完成五次 replicate anchor、完整六指标、Overall 及缓存复用。这里是接口和评分链路验证，不是正式训练结果。后续同一测试遇到并发资源压力：CuPy 申请 6,144 bytes 失败，独立 `cuda.runtime.memGetInfo()` 也以 `cudaErrorMemoryAllocation` 失败；不能把 `/proc/meminfo` 的可用内存当成 CUDA 必然可分配的承诺。
+
+独立数组对照定位到大临时数组的首次缺页成本：512×18,000 counts 的完整校验/累计路径，首次分配测得 24.027 s、52,231 次 minor faults、23.993 s system CPU；复用后为 0.02158 s、1 次 minor fault、0 s system CPU。数据读取、校验、分组累计和 NTC 统计因此使用复用缓冲区；计数文件按顺序写入标准 NPY，再只读映射。分组累计与直接计数求和逐元素相同，dense/CSR、末尾短块、非法 counts、完整 NTC baseline 均有测试。训练量化矩阵在同一 fit 的 checkpoints 间复用，完整状态恢复仍通过连续训练对照。
+
+资源等待不改变科学口径：anchor 的 host admission 为两份 reference 矩阵加 12 GiB 余量；普通评分按 DE 面板规模估算 host/GPU 需求，同时检查 CUDA 可用量和上下文分配失败。资源不足每 30 s 记录并等待。估算不是容量保证，并发任务仍可能在检查后改变占用。没有改 CPU DE、删指标或缩小靶点。首次工程修复发生在任何 context cache 或模型完成之前，沿用原 run，保留旧代码身份、修复原因与新身份；已有完整缓存或 checkpoint 时，该特殊修复入口拒绝使用。
