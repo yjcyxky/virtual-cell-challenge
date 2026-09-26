@@ -24,16 +24,32 @@ def stable_seed(seed, *parts):
 
 
 def count_moments(data, ids):
+    """Aggregate native counts before mapping vectors onto the official gene axis.
+
+    Expanding every cell to the union axis creates several large, mostly empty
+    float64 arrays. Native integer sums give the same statistics without that work.
+    """
+    ids = np.asarray(ids, np.int64)
     sums = np.zeros(len(data.genes), np.float64)
     squares, detected = sums.copy(), sums.copy()
-    depths = []
-    for start in range(0, len(ids), 256):
-        x = data.read(ids[start:start + 256]).astype(np.float64)
-        sums += x.sum(0); squares += np.square(x).sum(0); detected += (x > 0).sum(0)
-        depths.extend(x.sum(1).tolist())
+    depths = np.zeros(len(ids), np.float64)
+    panels = data.panel_indices[ids]
+    for panel in np.unique(panels):
+        positions = np.flatnonzero(panels == panel)
+        measured = data.masks[data.panel_context[panel]][data.axes[panel]]
+        axis = data.axes[panel][measured]
+        for start in range(0, len(positions), 256):
+            chunk = positions[start:start + 256]
+            x = data.counts[panel][data.cache_rows[ids[chunk]]]
+            if not measured.all():
+                x = x[:, measured]
+            sums[axis] += x.sum(0, dtype=np.float64)
+            squares[axis] += np.square(x, dtype=np.float64).sum(0)
+            detected[axis] += (x > 0).sum(0)
+            depths[chunk] = x.sum(1, dtype=np.float64)
     mean = sums / len(ids)
     variance = np.maximum(squares / len(ids) - mean ** 2, 0.)
-    return mean, variance, detected / len(ids), np.asarray(depths)
+    return mean, variance, detected / len(ids), depths
 
 
 class Statistics:
@@ -43,7 +59,7 @@ class Statistics:
         self.genes, self.targets, self.contexts = (self.meta[k] for k in ['genes', 'targets', 'contexts'])
         self.target_index = {t: i for i, t in enumerate(self.targets)}
         self.gene_index = {g: i for i, g in enumerate(self.genes)}
-        for name in ['response', 'target_bulk', 'depth_response', 'available', 'masks', 'feature_mean',
+        for name in ['response', 'depth_response', 'available', 'masks', 'feature_mean',
                      'feature_variance', 'feature_detection', 'reference_mean', 'generic']:
             setattr(self, name, np.load(self.directory / (name + '.npy'), mmap_mode='r'))
         self.common = self.masks.all(0)
@@ -121,8 +137,7 @@ def prepare_statistics(data, config, directory):
     c, p, g = len(contexts), len(targets), len(genes)
     shape = (c, p, g)
     response = np.lib.format.open_memmap(directory / 'response.npy', mode='w+', dtype=np.float32, shape=shape)
-    truth = np.lib.format.open_memmap(directory / 'target_bulk.npy', mode='w+', dtype=np.float32, shape=shape)
-    response[:] = np.nan; truth[:] = np.nan
+    response[:] = np.nan
     available = np.zeros((c, p), bool); depth_response = np.full((c, p), np.nan, np.float32)
     masks = np.stack([data.masks[x] for x in contexts])
     controls = {k: np.zeros((c, g), np.float64) for k in ['feature_mean', 'feature_variance', 'feature_detection', 'reference_mean']}
@@ -151,7 +166,6 @@ def prepare_statistics(data, config, directory):
             pi = ti[target]; ids = data.tasks[context, target]
             mu, _, _, depths = count_moments(data, ids)
             value = bulk(mu, config['bulk_target_sum'])
-            truth[ci, pi, mask] = value[mask]
             response[ci, pi, mask] = (value - ref_bulk)[mask]
             available[ci, pi] = True
             depth_response[ci, pi] = np.log(depths.mean() / rdepth.mean())
@@ -167,7 +181,7 @@ def prepare_statistics(data, config, directory):
             total += np.nansum(response[ci, ids[start:start + 64]], axis=0, dtype=np.float64)
         generic[ci, mask] = total[mask] / len(ids)
         print(json.dumps({'stage': 'native_statistics_complete', 'context': context, 'tasks': len(ids), 'readouts': int(mask.sum())}), flush=True)
-    response.flush(); truth.flush(); del response, truth
+    response.flush(); del response
     arrays = dict(controls, available=available, masks=masks, depth_response=depth_response, generic=generic)
     for name, value in arrays.items():
         np.save(directory / (name + '.npy'), value)
