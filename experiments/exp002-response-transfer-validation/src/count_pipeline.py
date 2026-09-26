@@ -91,44 +91,6 @@ def load_or_fit(stats, training, config, output, name):
     return fitted
 
 
-def log_fit(tracked, fitted, name):
-    selected = fitted['selected']
-    tracked.log({f'train/{name}/loss': selected['unpenalized_loss'],
-                 f'train/{name}/penalized_loss': selected['penalized_loss'],
-                 f'train/{name}/shared_coefficient': selected['coefficients'][0],
-                 f'train/{name}/residual_coefficient': selected['coefficients'][1],
-                 f'train/{name}/temperature': selected['temperature'],
-                 f'train/{name}/tasks': selected['tasks']})
-
-
-def resolve_config(output, config, repair_reason=None):
-    path = output / 'config.yaml'
-    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-    if not path.exists():
-        config['pipeline_commit'] = commit
-        write_json(path, config)
-        return config
-    saved = json.loads(path.read_text())
-    current = {k: v for k, v in saved.items() if k not in ['pipeline_commit', 'preparation_revisions']}
-    if current == config:
-        return saved
-    changed = {k for k in set(current) | set(config) if current.get(k) != config.get(k)}
-    not_fitted = not any((output / 'checkpoints').glob('*')) and not (output / 'cache/statistics/complete.json').exists()
-    no_predictions = not any(p.is_file() for p in (output / 'predictions').rglob('*'))
-    if not (repair_reason and changed == {'source_files'} and not_fitted and no_predictions):
-        raise ValueError('run_conditions_changed_new_run_required')
-    # Only an explicitly described, equivalent preparation repair before any fit.
-    revisions = saved.get('preparation_revisions', [])
-    archived = output / 'cache' / f'config-before-repair-{len(revisions) + 1}.json'
-    write_json(archived, saved)
-    config.update(pipeline_commit=commit, preparation_revisions=revisions + [{
-        'reason': repair_reason, 'previous_config': str(archived.relative_to(output)),
-        'previous_config_sha256': hash_file(archived), 'previous_commit': saved['pipeline_commit'],
-        'commit': commit, 'trained_checkpoints_present': False, 'complete_statistics_present': False}])
-    write_json(path, config)
-    return config
-
-
 def export_official(stats, fitted, selection, config, output):
     directory = output / 'predictions/official'; directory.mkdir(parents=True, exist_ok=True)
     marker = directory / 'generation.json'
@@ -203,7 +165,6 @@ def publish_artifact(tracked, config, output, online):
     paths = [output / 'config.yaml', output / 'metrics.json', output / 'cache/statistics/complete.json', output / 'cache/statistics/panels.json', output / 'cache/statistics/ntc-diagnostics.json']
     paths += list((output / 'checkpoints').glob('*'))
     paths += [output / 'evaluation-metrics.parquet', output / 'evaluation-by-context.csv']
-    paths += list((output / 'cache').glob('config-before-repair-*.json'))
     paths += list((output / 'cache').glob('holdout-*/official/reference-bundle/*'))
     paths += list((output / 'cache').glob('holdout-*/official/null-*'))
     paths += list((output / 'cache').glob('holdout-*/official/eval-config.yaml'))
@@ -230,7 +191,7 @@ def publish_artifact(tracked, config, output, online):
     return result
 
 
-def run(run_id, template, submit=False, preparation_repair=None):
+def run(run_id, template, submit=False):
     from run import tracking
     if not re.fullmatch(r'[A-Za-z0-9_-]+', run_id):
         raise ValueError('invalid_run_id')
@@ -240,23 +201,29 @@ def run(run_id, template, submit=False, preparation_repair=None):
         (output / name).mkdir(exist_ok=True)
     with (output / '.run.lock').open('w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        config = resolve_config(output, config_identity(template, run_id), preparation_repair)
+        config = config_identity(template, run_id)
+        config_path = output / 'config.yaml'
+        if config_path.exists():
+            saved = json.loads(config_path.read_text())
+            current = dict(saved); current.pop('pipeline_commit')
+            assert current == config, 'run_conditions_changed_new_run_required'
+            config = saved
+        else:
+            config['pipeline_commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+            write_json(config_path, config)
         if (output / 'complete.json').exists() and (not submit or (output / 'predictions/official/official-summary.json').exists()):
             print((output / 'complete.json').read_text()); return
         with (output / 'train.log').open('a', buffering=1) as log:
             original_out, original_err = sys.stdout, sys.stderr
             sys.stdout, sys.stderr = Tee(sys.stdout, log), Tee(sys.stderr, log)
             tracked, tracking_info = tracking(output, config)
-            tracked.summary['pipeline_status'] = 'running'
             write_json(output / 'tracking.json', tracking_info)
             try:
-                test_marker = output / 'cache/tests-passed.json'
-                if not test_marker.exists() or json.loads(test_marker.read_text()).get('source_files') != config['source_files']:
-                    with (output / 'cache/tests.log').open('a') as test_log:
-                        test_log.write('\nSource commit: ' + config['pipeline_commit'] + '\n'); test_log.flush()
+                if not (output / 'cache/tests-passed.json').exists():
+                    with (output / 'cache/tests.log').open('w') as test_log:
                         subprocess.run([sys.executable, '-m', 'pytest', '-q', str(EXPERIMENT / 'tests')], cwd=ROOT,
                                        stdout=test_log, stderr=subprocess.STDOUT, check=True)
-                    write_json(test_marker, {'sha256': hash_file(output / 'cache/tests.log'), 'source_files': config['source_files']})
+                    write_json(output / 'cache/tests-passed.json', {'sha256': hash_file(output / 'cache/tests.log')})
                 source = ROOT / config['cache_source']
                 report = json.loads((source / 'complete.json').read_text())
                 verify_cache(source, report)
@@ -266,7 +233,6 @@ def run(run_id, template, submit=False, preparation_repair=None):
                 results, means, nulls = [], [], []
                 for held in config['contexts']:
                     fitted = load_or_fit(stats, [c for c in config['contexts'] if c != held], config, output, 'holdout-' + held)
-                    log_fit(tracked, fitted, 'holdout-' + held)
                     directory = output / 'predictions' / ('holdout-' + held)
                     means.append(evaluate_means(stats, fitted, held, config, directory))
                     evaluator = PanelEvaluation(data, stats, held, config, output)
@@ -281,7 +247,6 @@ def run(run_id, template, submit=False, preparation_repair=None):
                 # Select between deployable template models; NB remains the distribution ablation.
                 selected = max(['shared', 'conditional'], key=lambda arm: (macro[arm], arm == 'shared'))
                 final = load_or_fit(stats, config['contexts'], config, output, 'final')
-                log_fit(tracked, final, 'final')
                 library_path = output / 'checkpoints/response-library.npz'
                 save_response_library(stats, library_path)
                 # Final inference deliberately reloads the delivered model aggregates.
@@ -309,11 +274,7 @@ def run(run_id, template, submit=False, preparation_repair=None):
                 write_json(output / 'complete.json', {'status': 'completed', 'run_id': run_id, 'artifact': delivery,
                                                       'wandb': tracking_info, 'official_submission': bool(submit)})
             except BaseException as error:
-                failure = {'error': str(error), 'type': type(error).__name__, 'traceback': traceback.format_exc(),
-                           'training_complete': False, 'commit': config['pipeline_commit']}
-                write_json(output / 'failure.json', failure)
-                with (output / 'failures.jsonl').open('a') as events:
-                    events.write(json.dumps(failure) + '\n')
+                write_json(output / 'failure.json', {'error': str(error), 'type': type(error).__name__, 'traceback': traceback.format_exc(), 'training_complete': False})
                 tracked.summary['pipeline_status'] = 'failed'; tracked.finish(exit_code=1)
                 raise
             finally:

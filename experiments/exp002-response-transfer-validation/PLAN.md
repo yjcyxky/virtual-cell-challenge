@@ -31,8 +31,6 @@
 
 `./reproduce.sh --scope calibrated_counts --run-id <id> --config configs/native-count-transfer.json` 完成环境检查、输入核验、统计、训练、五折评估、全背景拟合和官方预测准备；追加 `--submit` 才执行一次官方提交。所有阶段同一 run/W&B 身份；缓存与预测属于该 run。恢复校验原配置、代码文件、锁文件与数据摘要，复用已完成的确定性统计/模型/评分，不混合不同条件。
 
-尚未产生任何完整统计、训练 checkpoint 或预测时，可用 `--preparation-repair <原因>` 登记等价的准备阶段代码修复；仅允许源码身份变化，配置、数据和环境变化仍须新建 run。旧 config 完整归档并记录新旧 commit，检查日志追加，修复后重新运行验证。已有训练结果时不允许此例外。
-
 本方法无需随机梯度优化器；每折 checkpoint 保存所使用的源响应、掩码、上下文、充分统计量、最优系数、温度、深度系数和校准曲线。生成使用每任务固定种子与配置；原子完成标记保证中断后重放未完成任务。正式执行先提交代码与 uv.lock，活动期不修改代码或环境。W&B 使用 yjcyxky/virtual-cell-challenge，group=exp002-response-transfer-validation，id=run_id，模型和结果上传版本化 Artifact，不上传原始细胞。
 
 交付的 `response-library.npz` 与各折/final JSON checkpoint 可独立加载；`ResponseLibrary` 校验库和 checkpoint 身份，只加载 checkpoint 准许的训练背景标签。正式 A/B/C 推断从归档模型重载，验证推断不依赖预处理统计缓存。Artifact 包含参考分数 bundle、逐任务 raw/aggregate/scaled 指标、生成诊断和拟合模型；大型本地计数预测保留在 run 内并记录哈希。

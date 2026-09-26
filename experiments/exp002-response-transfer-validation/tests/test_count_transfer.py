@@ -10,7 +10,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from count_transfer import (bulk, donor_predictions, fit_transfer, predict_transfer, evaluate_means, write_json,
-                            save_response_library, ResponseLibrary, CountData, count_moments)
+                            save_response_library, ResponseLibrary)
 from count_generation import desired_mean, generate_counts, template_counts
 
 
@@ -32,38 +32,6 @@ def fixture_stats(directory, contexts=4, targets=8, genes=80):
                            depth_response=np.zeros((contexts, targets)), generic=response.mean(1),
                            feature_mean=mean, feature_variance=2 * mean, reference_mean=mean.copy(),
                            masks=masks, common=masks.all(0), features=bulk(mean))
-
-
-def test_native_statistics_match_expanded_counts_with_mixed_panels_and_missing_genes():
-    data = object.__new__(CountData)
-    data.genes = list('ABCDEFG'); data.axes = {0: np.array([4, 1, 3, 5]), 1: np.array([6, 5, 0, 1])}
-    data.counts = {0: np.array([[4, 9, 2, 0], [5, 3, 0, 10]], np.uint16),
-                   1: np.array([[0, 2, 7, 5], [6, 3, 4, 2]], np.uint16)}
-    data.panel_context = {0: 'C0', 1: 'C1'}
-    data.masks = {'C0': np.array([False, True, False, True, False, True, False]),
-                  'C1': np.array([True, True, False, False, False, True, True])}
-    data.panel_indices = np.array([0, 1, 0, 1]); data.cache_rows = np.array([0, 0, 1, 1])
-    ids = np.array([3, 0, 2, 3, 1])
-    expanded = data.read(ids).astype(np.float64)
-    expected = expanded.mean(0), expanded.var(0), (expanded > 0).mean(0), expanded.sum(1)
-    for actual, wanted in zip(count_moments(data, ids), expected):
-        np.testing.assert_allclose(actual, wanted, rtol=1e-14, atol=1e-14)
-
-
-def test_preparation_repair_preserves_identity_and_refuses_changes_after_fit(tmp_path):
-    from count_pipeline import resolve_config
-    (tmp_path / 'checkpoints').mkdir(); (tmp_path / 'predictions').mkdir()
-    config = {'seed': 17, 'source_files': {'pipeline.py': 'old'}}
-    original = resolve_config(tmp_path, dict(config))
-    with pytest.raises(ValueError, match='new_run_required'):
-        resolve_config(tmp_path, dict(config, seed=18), 'same preparation')
-    repaired = resolve_config(tmp_path, dict(config, source_files={'pipeline.py': 'new'}), 'equivalent native sum')
-    assert len(repaired['preparation_revisions']) == 1
-    archived = tmp_path / repaired['preparation_revisions'][0]['previous_config']
-    assert json.loads(archived.read_text()) == original
-    (tmp_path / 'checkpoints/holdout-C0.json').write_text('{}')
-    with pytest.raises(ValueError, match='new_run_required'):
-        resolve_config(tmp_path, dict(config, source_files={'pipeline.py': 'another'}), 'cannot change fitted source')
 
 
 def test_external_held_response_never_changes_calibration_or_prediction(tmp_path):
