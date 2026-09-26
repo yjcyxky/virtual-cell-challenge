@@ -38,6 +38,14 @@ VCC2026 官方任务是未见扰动响应的细胞背景泛化；官方只给新
 
 原始并集缺少的 28 个官方靶点为：ABCD1、CAPRIN2、EPHB2、HEATR6、KIF21B、MAPK7、MLKL、NICN1、PARP3、PBLD、PDK3、PHF11、PSMB9、RAB11FIP5、SEMA4F、SLC44A1、SNN、SOCS5、SPATA20、TAF4、TBC1D19、TDRD7、TESK2、TMEM104、TMEM79、TTBK2、TXNDC16、ZC2HC1A。未逐一核验这些靶点的网络覆盖，不宣称先验已经补齐它们。
 
+### 2025 与 2026 面板的独立复核
+
+针对“两届是否为相同 300 靶点”的疑问，重新从 Arc 官方 GCS 读取 [2025 Training CSV](https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/train/pert_counts_Training.csv)、[Validation CSV](https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/validation/pert_counts_Validation.csv)、[Test CSV](https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/test/pert_counts_Test.csv)，三者均与本地原始文件字节相同，分别含 150/50/100 个靶点。独立审计又确认对应三个 H5AD 的 `obs/target_gene`（排除 non-targeting）与各自 CSV 集合完全一致。
+
+2026 侧直接读取原始 ZIP 中的 `pert_counts.csv`，与解压文件字节相同，SHA256 为 `f57edd7b912ebd718efc7ee9d0f334772513e7cc418d133ce525470e373b3276`，符合 [SOURCE.json](../data/raw/arc_vcc2026_controls/SOURCE.json)；ZIP manifest 指定 `vcc2026-val-1`。因此本结论对应这个已登记的官方 2026 快照，不声称重新下载了当前服务端 2026 ZIP。
+
+两届各有 300 靶点，交集为 13+4+8=25，各自独有 275。`TMSB4X` 仅在 2025，`ABCD1` 仅在 2026。完整交集为：ACLY、ADNP、AKT2、ANKZF1、BRPF1、HDAC8、HSBP1、MED13、MED15、MED25、MTA1、NFE2L1、PLAGL2、RNF2、SHPRH、SIN3B、SLIRP、SMARCA5、STAT6、TARBP2、TRAPPC6A、TWF2、ZFP62、ZNF32、ZNF714。
+
 文献能解释为什么背景之间的靶点集合不相同，但不能代替逐文件交集：Replogle 的 K562 genome-wide screen 包含表达基因、TF 与 common essentials，RPE1 面板主要来自 common essentials 及部分人工选择基因。Nadig 的跨细胞研究也显示 perturbation 响应并非完全跨背景一致；这些发现支持做背景条件化，而不是无条件平均所有来源。[Replogle 原始研究与 Library design](https://pmc.ncbi.nlm.nih.gov/articles/PMC9380471/)、[Nadig 2025 原始研究](https://www.nature.com/articles/s41588-025-02169-3)
 
 ## 哪类先验提供什么信息
