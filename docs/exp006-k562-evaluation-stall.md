@@ -143,3 +143,21 @@ RMSE 0.13802862115792083。完整 reference 写入时，累计 nnz 超过 int32 
 多个种子和含奇数块长的逐元素测试对照公开构造器，连同零元素消除、不可达 profile 质量和全部
 baseline_emission 诊断字段一起比较；实际官方 CUDA 评分亦通过。该存储执行变化不改评分协议。
 继续沿用同一 run，完整记录第二次代码身份迁移；reference 文件、训练配置和 checkpoint 保持原样。
+
+## 完整 K562 恢复验证（仍在运行）
+
+代码 `3a702ef`，同一 run，进程 PID 3803515，于 2026-09-27 01:36:32 UTC 恢复。
+22 项测试通过。01:36:35 开始官方 profile，01:39:17 完成全 9,319 个靶点的 dispersed
+基线写入和校验并调用 `build_real_bundle`，约 2 分 42 秒。官方包和数据面板未修改。
+
+只读调用栈先观察到 CUDA/torch、官方 jackknife 校正，随后在约 01:56 UTC 确认：
+`build_real_bundle → _anchor_leg → compute_replicate_anchor → _score_one_split → _disjoint_halves`。
+因此旧 run 未通过的完整 baseline leg 已在约 17 分钟内通过，当前是后续的五次拆半锚点，
+不能再把这一状态描述为仍卡在基线均值构建。real-side 官方缓存已落盘约 3.2 GiB。
+新旧基线协议不同，这些时间不能当作同口径评分的精确加速倍数。
+
+进程 `THP_enabled=0` 持续生效。计算中确有内存压力，拆半阶段进程 swap 一度约 13 GiB，
+后续有所回落；02:00 UTC 仍在运行，未产生首个 K562 checkpoint Overall。
+原 THP 卡点、CSR int32 溢出和不可能满足的资源等待已分别验证越过；
+完整五次锚点、首个模型评分和整个训练尚未完成，不能宣称端到端成功。
+临时 GDB helper 仅用于读取栈，不改训练进程代码、依赖或主机设置，检查后删除。
