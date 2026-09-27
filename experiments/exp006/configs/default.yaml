@@ -6,9 +6,11 @@ source_run: 20260926-exp005-nested-residual-s17
 source_experiment: exp005
 source_code_commit: 18fe6e2
 source_usage: method and code lineage only; no weights or run caches reused
+supersedes_run: 20260926-exp006-loco-residual-s17
+restart_reason: corrected official baseline protocol; rerun all folds with K562 first to validate the stall fix
 collectri_sha256: 0c4afb99a5590313802beee251b071b332876bea393f03aba8fb822eee28d05c
 seed: 17
-contexts: [H1, K562, RPE1, HepG2, Jurkat]
+contexts: [K562, H1, RPE1, HepG2, Jurkat]
 checkpoints: [1, 16, 64, 128, 256, 384, 512]
 cells_per_prediction: 400
 reference_cells_per_target: 400
