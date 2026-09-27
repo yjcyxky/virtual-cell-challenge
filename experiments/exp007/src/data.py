@@ -119,15 +119,16 @@ class CountBlock:
 def inspect_panel(path, context, identity):
     with h5py.File(path) as h:
         obs, var = read_frame(h['obs']), read_frame(h['var'])
+    official = context in ['A', 'B', 'C']
     is_h1 = context == 'H1'
-    targets = obs['target_gene' if is_h1 else 'gene'].astype(str)
+    targets = obs['target_gene' if is_h1 or official else 'gene'].astype(str)
     canonical = targets.map(lambda t: NTC if t == NTC else identity.canonical(t))
-    guide = obs['guide_id' if is_h1 else 'sgID_AB'].astype(str)
-    batch = obs['batch' if is_h1 else 'gem_group'].astype(str)
+    guide = obs['ntc_id' if official else 'guide_id' if is_h1 else 'sgID_AB'].astype(str)
+    batch = pd.Series('official', index=obs.index) if official else obs['batch' if is_h1 else 'gem_group'].astype(str)
     frame = pd.DataFrame({'target': canonical.to_numpy(), 'original_target': targets.to_numpy(),
                           'guide': guide.to_numpy(), 'batch': batch.to_numpy(),
                           'barcode': obs.index.astype(str), 'source_row': np.arange(len(obs))})
-    names = var.index.astype(str).to_numpy() if is_h1 else var.gene_name.astype(str).to_numpy()
+    names = var.index.astype(str).to_numpy() if is_h1 or official else var.gene_name.astype(str).to_numpy()
     ids = var.gene_id.astype(str).to_numpy() if 'gene_id' in var else var.index.astype(str).to_numpy()
     resolved = [identity.canonical(g) for g in names]
     counts = Counter(g for g in resolved if g is not None)
@@ -136,6 +137,9 @@ def inspect_panel(path, context, identity):
         via_id = identity.canonical(ensg)
         conflict = gene is not None and via_id is not None and gene != via_id
         valid = gene is not None and counts.get(gene, 1) == 1 and not conflict
+        if official:
+            gene = gene or name
+            valid = counts.get(gene, 1) == 1
         rows.append({'source_position': i, 'source_gene': name, 'ensembl': ensg,
                      'gene': gene, 'valid': valid, 'id_conflict': conflict})
     return frame, pd.DataFrame(rows)

@@ -7,7 +7,7 @@
 来源 exp006 commit `2a2a740`、run `20260927-exp006-dispersed-s17`；仅继承方法与源码，
 不复用模型、训练状态或 run 缓存。exp006 的活动代码、输入、环境和历史产物保持只读。
 
-用户指定：只留出 H1。训练背景固定 K562 GWPS、RPE1、HepG2、Jurkat；
+初始训练阶段用户指定：只留出 H1。训练背景固定 K562 GWPS、RPE1、HepG2、Jurkat；
 只拟合一个四背景模型，不进行五折、五背景全量重训或 A/B/C 提交。
 H1 标签仅用于评估与选择检查点；H1 NTC 可用于输入特征与生成基线。
 H1 已用于项目开发，本次分数也是开发验证，不能宣称独立无偏测试。
@@ -96,3 +96,20 @@ W&B entity `yjcyxky`、project `virtual-cell-challenge`、group `exp007`，id �
 结束条件：512 轮有效训练、七个 H1 检查点及两个对照评分、选模证据、模型/预测/指标保存、
 W&B 归档或明确待同步状态、REPORT 结论和代码清理。启动或 smoke test 不算完成。
 资源不足等待并记录，不能干预 exp006；无法继续须记录真实失败或阻塞。
+
+## 2026-09-27 追加：第 512 轮官方提交
+
+用户指定将现有第 512 轮 checkpoint 生成官方 `.vcc` 并提交获取评分。
+此为同一 run 的后续评估，复用原 run_id 与 W&B run，不重训、不改变已有训练和 H1 评估结果。
+原流程完成后，为该 Experiment 锁定新增 `vcc-cli==0.2.1`；记录训练与导出各自的 commit/锁，
+并验证训练时的数值运行时版本和特征、预测、生成实现未改变。
+
+读取已登记、校验哈希的 A/B/C NTC，只构建基线输入与模板；不读取官方扰动标签。
+沿用 log2FC 预测、组成校准和随机舍入，每背景 300 靶点各 400 细胞，官方顺序 18,533 基因。
+预处理写入当前 run 的 `cache/official-export-data/`；预测、校验、`.vcc`、提交回执写入
+`predictions/leaderboard-round-0512-seed-101/`。保留 checkpoint 与输入/输出哈希，
+复用已有全文件 audit、官方 CLI prep 和同 entry 断点上传流程，不绕过任何官方校验。
+
+入口：`./reproduce.sh --resume 20260927-exp007-h1-log2fc-s17 --export-checkpoint 512 --submit`。
+不传 `--submit` 则只导出。官方成绩与本地 H1 口径分开保存，反馈用于开发；
+提交预测及回执归档为版本化 W&B Artifact，REPORT 记录分项、Overall 和限制。

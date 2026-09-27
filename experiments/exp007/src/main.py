@@ -46,7 +46,7 @@ def report(output, result):
            f'W&B：{result.get("wandb_url") or "offline"}',
            '目标：逐细胞 CPM 算术均值的 log2 fold change（epsilon=1e-9），加权平方误差。',
            '划分：K562 / RPE1 / HepG2 / Jurkat 训练，H1 唯一留出背景；一次拟合至 512 轮。',
-           'H1 Overall 选择检查点，因此 H1 是开发验证，不是独立测试；不做五折、全背景重训或榜单提交。',
+           'H1 Overall 选择检查点，因此 H1 是开发验证，不是独立测试；原始训练阶段不做五折、全背景重训或榜单提交。',
            '评分：固定官方六项指标、dispersed 基线、排除自身靶基因；本地原生面板分数不等同 A/B/C 榜单。']
     completed=result.get('validation',{}).get('H1',{})
     lines.append(f'已完成 H1 checkpoint 评分：{len(completed)}/7。')
@@ -193,4 +193,15 @@ if __name__=='__main__':
     parser.add_argument('--config',default='configs/default.yaml')
     parser.add_argument('--run-id')
     parser.add_argument('--resume')
-    run(parser.parse_args())
+    parser.add_argument('--export-checkpoint', type=int, help='Export the final checkpoint of a completed run to official A/B/C.')
+    parser.add_argument('--submit', action='store_true', help='Submit the exported file and wait for official scores.')
+    args = parser.parse_args()
+    if args.export_checkpoint is not None:
+        if not args.resume or args.run_id:
+            parser.error('--export-checkpoint requires --resume RUN_ID and no --run-id')
+        from submission import run as export_run
+        export_run(args.resume, args.export_checkpoint, args.submit)
+    else:
+        if args.submit:
+            parser.error('--submit requires --export-checkpoint')
+        run(args)
