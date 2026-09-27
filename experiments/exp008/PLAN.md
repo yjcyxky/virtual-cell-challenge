@@ -8,7 +8,8 @@
 - 在独立 worktree 开展 exp008。分支 `exp008`，起点为 exp007 的
   `b70b485d24d5abc19c15292769ae07d891be96f5`。
 - 采用 exp007 的模型设计，官方评分部分采用 exp004 的设计。
-- 所有数据集需要预处理，基因限定于 2026 challenge 列出的基因。
+- 表达数据范围仅限 exp007 使用的 H1、K562 GWPS、RPE1、HepG2、Jurkat 五个数据集；
+  五者均需预处理，基因限定于 2026 challenge 列出的基因。
 - 结合既往实验的问题和各数据集特点确定清洗方案；先调查、grill 对齐，再实施。
 - 遵守仓库训练协议：共享输入只读，正式派生产物进入同一 run 的 cache，
   新实验独立锁定环境，历史 run 与原始评分不改写。
@@ -128,52 +129,35 @@ H1 原始轴有 18,080 列，和官方表字面交集 18,077；这是映射前�
 6. 数据清洗规则不根据留出扰动预测误差选择；reference 的准入面板、NTC 隔离和覆盖均固定记录。
    官方 A/B/C controls 的处理另作决定，不能无记录丢弃输入细胞或伪造扰动标签。
 
-## 各数据源的候选处理与用途
+## 五个数据集的处理范围
 
-这里的“全来源处理”首先意味着完整性、模态、身份、条件和角色都有记录。
-不同模态不能用一条 counts 转换规则强行合并；是否进入 exp008 训练仍须对齐。
-旧 `data/README.md` 的下载/转换状态已落后，不能据此重新下载或重做全部适配器。
+用户在 Q3 明确只包含 exp007 使用的五个数据集，对应七个原始 H5AD。
+以下路径相对只读共享 `data/raw/`；五个背景的训练/验证角色随后单独确定。
 
-| 来源 | 已知特点或问题 | 候选清洗与用途 |
+| 数据集 | 固定来源文件 | 清洗关注点 |
 |---|---|---|
-| H1 2025 | 三个 split 共享 NTC；部分 symbol/Ensembl 冲突 | 去确证重复，保留 batch/guide；独立 NTC 分池；潜在监督或留出背景 |
-| Replogle / Nadig | Ensembl 与 symbol 并存，重复 symbol；native 与 scPerturb 存在研究重叠 | 优先明确唯一原始版本；同 study/细胞身份去重；按 GEM/guide 匹配对照；缺测 mask |
-| scPerturb | 54 文件混合 RNA/蛋白、CRISPRi/a/KO、药物与组合干预 | 逐文件核实数值层、干预方式、条件和对照；合格单基因 CRISPRi RNA 才是直接监督候选 |
-| Jiang | 已有五个 verified counts.h5ad 转换；6 细胞系×5刺激形成30条件 | 保留细胞系和刺激；按 Batch_info/bc1_well/sample_ID 匹配同条件 NTC；固定后拆分的 Rep1/2 不当作独立培养 |
-| McFaline | 四组筛选已有转换；混合 CRISPRi/a、药物及联合条件，原始 barcode 大量未成为合格细胞 | 保留 line/drug/dose/guide/hash-well；优先作者 cell-calling 与可核实注释，unassigned guide 不补标签；不同干预分开准入 |
-| Tahoe | 本地是300个表达分片；药物、多 plate/line；存在特殊 CLS token | 按格式显式解码特殊token；匹配同plate/line DMSO；不把药物响应当单基因CRISPRi标签 |
-| scBaseCount | 1,808个H5AD已到位；存在非GEX、物种/文库冲突，缺逐细胞guide标签 | 按上游研究与文库身份准入、研究级去重；确认无干预的人RNA才可考虑背景表示，不能整体当NTC |
-| LINCS / DepMap | Level5 MODZ、bulk表达/依赖性等语义，与单细胞counts不同 | 分别做基因映射和版本登记；如使用仅作明确的先验/辅助信息，不混作counts监督 |
-| HGNC / STRING / Reactome / CollecTRI | 固定外部身份与关系先验；节点变化会改变谱表示 | 固定版本，映射到官方槽位，记录不解析/冲突/丢边；不能把关联边当作有符号因果效应 |
-| 2026 A/B/C | 官方提供的是NTC输入，没有扰动真值 | 验证完整性、轴和计数；处理规则单独固定，不作为扰动监督 |
+| H1 2025 | `arc_vcc2025_h1/adata_{Training,Validation,Test}.h5ad` | 三个 split 共享 NTC；核实计数后去重；保留 batch/guide；独立 NTC 分池；裁决 symbol/Ensembl 冲突 |
+| K562 GWPS | `replogle2022/K562_gwps_raw_singlecell_01.h5ad` | 不并入 essential 或 bulk 版本；按 GEM/guide 核对对照与细胞身份，处理重复 symbol 和缺测 |
+| RPE1 | `replogle2022/rpe1_raw_singlecell_01.h5ad` | 保留独立背景及 GEM；核对任务/对照支持，处理基因映射与缺测 |
+| HepG2 | `nadig2025/GSE264667_hepg2_raw_singlecell_01.h5ad` | 56 个 GEM、4,976 个原始 NTC；匹配控制稀缺，不能借其他研究或 GEM 的细胞冒充匹配控制 |
+| Jurkat | `nadig2025/GSE264667_jurkat_raw_singlecell_01.h5ad` | 55 个 GEM、12,013 个原始 NTC；按来源批次检查身份、任务支持和测量轴 |
 
-scPerturb 较新审计区分 51 RNA/3 protein、44 human/10 mouse；RNA 文件中 47 个
-数值 count-compatible、4 个连续转换尺度。count-compatible 本身不证明原始 UMI 语义。
-scBaseCount 较新语义分类为 1,560 文件支持 human RNA、219 个靶向 guide/receptor/ADT、
-21 个来源歧义、4 个物种冲突、4 个 genomic assay；human RNA 分类也不等于逐细胞已确认 NTC。
+不纳入 Jiang、McFaline、scPerturb、Tahoe、scBaseCount、LINCS、DepMap 或 K562 essential，
+也不为这些范围外数据开发转换/清洗模块。较广来源的前期调查保留于 Git 历史。
 
-较新历史审计实测 Jiang 合计 1,628,476 细胞；Tahoe 本地子集 8,467,330 细胞、
-50 个细胞系、14 个 plates。这些是本次读取既有审计的数字，不是本次重扫全部矩阵所得。
-McFaline GxE2 的 43,209,765 个 barcode 不能作为合格细胞数；作者 CDS 细胞为 989,299，
-另有 62,906 个阈值候选，需要独立准入，不能直接相加当作训练细胞。
-已有转换缓存只有在确认内容哈希、转换语义和适用性后才能固定引用；已有探索报告本身不是清洗后训练集。
+模型已确认沿用 exp007，因此保留其 HGNC 映射与 STRING/Reactome/CollecTRI 固定先验。
+官方 2026 gene_names 与任务清单用于定义挑战契约；A/B/C NTC 仅在后续官方推断方案需要时使用，
+不计入这五个训练/本地验证数据集，是否导出/提交仍待对齐。
 
-证据在原共享数据区的 `data/assessments/`，包括
-`h1-structure-20260919-v3/`、`jiang-dossier-20260919-v2/`、
-`mcfaline-gxe1-dossier-20260919-v2/`、`mcfaline-gxe2-dossier-20260919/`、
-`tahoe-dossier-20260919-v2/`、`scbase-dossier-20260919-v2/overview.json`、
-`scperturb-reviewed-20260919-v2/verification.json`、
-`cross-source-coverage-20260919-v4/panels.json`。正式模块应复用相应解析逻辑并去掉一次性报告职责，
-所有本次派生文件仍写入 exp008 的 run；不延续历史共享区的探索输出模式。
+已有证据位于原共享数据区的 `data/assessments/`：
+`h1-structure-20260919-v3/report.json`、`replogle-structure-20260919/report.json`、
+`replogle-dossier-20260919/decisions.json`、`nadig-structure-20260919/report.json`、
+`nadig-dossier-20260919/decisions.json` 和 `cross-source-coverage-20260919-v4/panels.json`。
+这些是历史审计证据，不替代本次实际输入校验。原生文件已筛过基因，不能恢复其未提供的测量或 QC 信息。
 
-可复用代码包括 `scripts/dossier/rna.py`、`convert_seurat_cache.py`、`prepare_mcfaline.py`、
-`mcfaline.py`、`gxe2_records.py`、`gxe2_capture.py`、`gxe2_context.py`、
-`scperturb_audit.py`、`scperturb_design.py`、`tahoe.py`、`tahoe_counts.py`、
-`prepare_tahoe.py`、`cross_source_identity.py` 与 `cross_source_coverage.py`。
-Jiang 五份 counts 缓存的身份位于 `jiang-cache-20260919/<stimulation>/identity.json`，
-记录计数精确保留。旧 R 转换器硬编码其他环境，需要整理为符合实验协议的路径或引用已核验的
-固定转换产物；McFaline 部分大矩阵标记为 omitted/rebuildable，不能把 identity.json 的存在
-当作全部缓存仍在磁盘的证据。上述为复用线索，未复制代码或执行转换。
+优先复用 `experiments/exp007/src/data.py` 和 `scripts/dossier/rna.py` 的 H5AD、旧 categorical、
+CSR/CSC 读取与身份校验逻辑；修正映射、分池和清洗规则后重新计算统计。
+所有本次派生文件写入 exp008 的 run，不延续历史共享区的探索输出模式。
 
 ## 逐题需求对齐
 
@@ -188,12 +172,14 @@ log2FC 标签（epsilon=1e-9）、加权平方损失和 NTC 模板计数生成�
 不将改变 epsilon、截断标签、调整损失或更换生成器归入本次清洗；极端标签单独诊断。
 具体训练超参数、采样配置和结束条件仍需后续对齐，此项不预先确认它们。
 
+已确认 Q3：表达数据仅包含 exp007 使用的 H1、K562 GWPS、RPE1、HepG2、Jurkat，
+不扩展其他来源；五者都需预处理。固定模型所需映射与网络先验继续沿用。
+
 待对齐的根决策：
 
-- 所有数据的范围：全来源审计与适配、按证据分配用途，还是要求每个来源必须进入训练？
 - 基因范围：18,533 个表达/先验/靶点身份是否统一限制；训练靶点是否仍允许官方 300 以外的轴内基因？
 - 清洗目标：保守去技术错误并保留生物响应，还是显式构建只含高置信有效扰动的监督集？
-- 研究优先级：隔离数据清洗带来的收益，还是在固定模型下优先整合合格来源提高迁移能力？
+- 研究优先级：隔离数据清洗带来的收益，还是在固定模型和五个数据集内优先提高迁移能力？
 
 上述答案决定下一轮：各来源准入/用途、条件粒度、QC 阈值、NTC 分池与标签参照、
 训练权重、留出设计、控制实验数量、官方提交时机、训练结束条件和资源安排。
