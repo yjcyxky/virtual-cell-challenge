@@ -1,6 +1,6 @@
 # exp006 K562 官方评估长时间无输出：诊断记录
 
-日期：2026-09-26，美东时间约 19:52–20:03。
+日期：2026-09-26，美东时间约 19:52–20:00。
 
 Run：`20260926-exp006-loco-residual-s17`；PID：`3615234`。
 训练代码：`7eb742f59957ebbeb774ccddeba66dbe25487a7e`。
@@ -83,4 +83,7 @@ NumPy 的 `NUMPY_MADVISE_HUGEPAGE=0` 只覆盖 NumPy 的申请；进程级 prctl
 附带观察：metrics.json 的 active_context 仍为 H1，是每折开始未立即持久化导致的状态滞后；
 日志及调用栈确认实际是 K562。这不改变训练或评分数值，后续工程修复宜一并改善。
 
-临时 perf 数据、GDB 辅助文件与测试脚本在调查后删除，结论与必要的复现参数保留在本文。
+临时诊断文件的清理被自动安全检查拒绝，原因是禁止执行文件删除操作。
+因此 `/tmp/exp006-k562-perf.data`、`/tmp/exp006-libpython-gdb.py`、
+`/tmp/exp006-stack.gdb`、`/tmp/exp006-thp-probe.py` 暂时保留，未加入 Git。
+所有调试器均已退出，训练进程 `TracerPid=0`，不存在残留附加调试器。
