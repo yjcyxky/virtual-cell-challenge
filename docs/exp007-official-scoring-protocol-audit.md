@@ -155,3 +155,13 @@ Fidelity 使用 `(raw - baseline) / (replicate - baseline)`。仅作标尺敏感
 官方指标文档另说明，baseline profile 来自通过细胞数与 knockdown-efficiency 筛选的 constructs，所展示的测量结果来自 cell-eval2 0.15.0 / competition rule_version 3 的官方 bundles。这不能替代当前回执所标识 `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4` 的构建证据；bundle 名称中的 r4 也不能自动解释为 competition rule_version 4。该文档中“均值响应分配给各扰动”的文字不足以单独判定实际用了 tile 还是 dispersed。[官方 baseline 定义与来源说明](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/vcc2026_metrics/vcc2026-metrics.md#0-overview)。
 
 要确认端到端一致，需要取得对应 r4 bundles 的构建配置/manifest，包括 NTC 来源及划分、profile 筛选、exclude_target_gene、emission 和随机种子。现有 status 回执只有 bundle 身份及汇总分数，没有这些字段。当前可成立的说法仅为“使用官方包默认 baseline 的本地 H1 评估”，不是“已验证复现 leaderboard 评分流程”。
+
+## H1 与提交生成路径是否一致
+
+再次读取训练配置、导出身份和现有缓存：两者完整 configuration 相等；cells_per_prediction=400、prediction_seed=101、lfc_epsilon=1e-9。generation.py、features.py、training.py 与训练 commit 逐字节相同。H1 evaluation.score 和 submission.generate 均调用同一 predict 与 Generator.generate，再经 target_composition、CPM composition 校准和随机取整生成细胞；未发现导出改用另一套生成算法。context/target 参与 seed 派生，因此 seed 规则相同不表示不同背景抽到相同细胞。
+
+直接计算 H1 statistics.npz 的 control_rows 与 evaluation-rows.npy 的交集，输入 NTC 38,176 行全部出现在评分 reference 中，交集也是 38,176。A/B/C 的导出缓存分别有 18,400 个输入 NTC。这说明生成算法一致，但本地复用输入 control 作评分 control 的设计没有模拟官方描述的 held-out control 条件；不能只凭复用生成函数就宣称评估等价。
+
+H1 预测矩阵附加 NTC 是直接调用 scorer 所需的结构；上传文件不含 NTC、平台评分时补 control，是不同阶段的接口差异，本身不构成生成算法变化。关键问题是 scorer 最终采用的 control 来自何处、是否与模型输入隔离。共用 control 可能使基线估计误差相消并带来乐观偏差，当前未量化，也未证明它解释了官方分差的全部或主要部分。
+
+因此现有 H1 分数只能描述该本地条件下的表现，尚未验证能可靠预测官方绝对分数或 checkpoint 排序。修复模拟评估需先固定互不重叠的 input/reference NTC，并同步重建相应特征、预测和评分基准；不能只更换评分端 control，也不能覆写历史分数。本轮只完成一致性核查，未实施新协议或启动重评。
