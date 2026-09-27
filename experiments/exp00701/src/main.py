@@ -62,6 +62,7 @@ def report(output, result):
         metric=r.get('validation',{}).get('H1',{}).get(str(iteration),{})
         score=metric.get('score')
         lines.append(f'| {arm} | {rid} | {r["status"]} | {iteration or "—"} | {score if score is not None else "—"} |')
+    lines=lines[:3]+['\n'.join(lines[3:])]
     lines+=['','训练结束条件：三个新特征组各完成 512 轮与全部 H1 评估；不是以超过基线为完成条件。',
             'H1 用于选轮数和实验开发，不是独立测试。不进行全五背景训练或线上提交。',
             '每个训练样本的实测响应输入排除其接收 context，H1 永远不进入响应特征。模块坐标只从固定 Reactome 建立。',
