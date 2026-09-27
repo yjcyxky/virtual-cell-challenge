@@ -1,0 +1,49 @@
+{
+  "paths": {
+    "H1": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/real-cache/de_wilcoxon_table-fe3ec454e8de1709.parquet",
+    "K562": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp006/experiments/exp006/outputs/20260927-exp006-dispersed-s17/cache/official/K562/real-cache/de_wilcoxon_table-163d7987f0516fa7.parquet",
+    "HepG2": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp005/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/HepG2/real-cache/de_wilcoxon_table-5c04d6c6ccde5717.parquet",
+    "Jurkat": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp005/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/Jurkat/real-cache/de_wilcoxon_table-a9e8fb0247922634.parquet"
+  },
+  "de_params": {
+    "allow_discrete": false,
+    "allow_fractional_counts": false,
+    "autodetect_input_type": false,
+    "backend": "gpudge",
+    "clip_value": null,
+    "control": "non-targeting",
+    "control_source": "real",
+    "epsilon": 1e-09,
+    "fdr_scope": "per_pert",
+    "filter_gene_min_cpm_cell": 5.0,
+    "input_type": "counts",
+    "max_counts_per_cell": 1000000.0,
+    "mean_calc": "arithmetic",
+    "method": "wilcoxon",
+    "pert_col": "target",
+    "target_sum": 1000000.0,
+    "validate_input": true,
+    "version": "v2"
+  },
+  "rpe1_generated_from": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/RPE1",
+  "analysis_date": "2026-09-27",
+  "cell_eval2_commit": "5e64833518a6603a0301cbe28185d49c30f4a986",
+  "rpe1_de_sha256": "9c16ef06ced0379882412b4f3702c7846b3cdcda723fd98822e26cabeb18fc95",
+  "rpe1_de_status": "Computed in a temporary directory for this analysis; reproducible from the fixed evaluation rows and counts, not retained as a training artifact.",
+  "verified_existing_caches": [
+    "native_genes",
+    "cells",
+    "controls",
+    "targets",
+    "source_files",
+    "evaluation_rows_equal",
+    "cells_file_equal",
+    "de_params_equal"
+  ],
+  "summary_sha256": {
+    "pair-summary.csv": "2f18fd92e0c6b021f50c7d968d09c4753ac944815977c390a9762198f41524ee",
+    "per-target-overlap.csv": "0f360edb266676cca8dba419b1b08dae6f69bca24e791dc5b2fd1047802fadb2",
+    "context-summary.csv": "15487b75c80586af607f00a607d8d5643e34f2dd09b1837c9fb4a8da43765781",
+    "knowledge-common-panel.csv": "a1d957905d349307ef0ef25b0502afe6c85ee49fb9aab043b4824d67c4bda1ec"
+  }
+}
