@@ -6,6 +6,8 @@
 
 **跨实验补充核查：exp004 → exp007 的六项 raw 指标公式没有改变，但本地评分协议确实改变了，包括 mean-response baseline 的生成方式、baseline 是否排除自身靶基因、真实参考细胞以及由此重算的 baseline/replicate anchors。不能将“同一官方包、同一指标公式”表述为“本地评分方式完全未变”。** 下文先前关于核心实现未变的判断仅指 exp007 自身训练到导出，不适用于 exp004 到 exp007。
 
+**官方部署证据边界（再次核查公开来源）：当前仅证实 exp007 使用固定官方包的默认 baseline 构造，未证实排行榜实际 r4 bundles 采用相同的构造参数、NTC 选择或 profile 参与集合。不得把此前的“对齐官方 baseline”理解为已经验证与 leaderboard 端到端等价。**
+
 exp007 第 512 轮本地 H1 Overall 为 `0.020419414867561134`，官方 A/B/C Overall 为 `-0.12779834383804198`。这两个数使用不同 reference、panel 和 baseline/replicate anchors，不能把差值解释为同一数据上模型准确度下降同样幅度。
 
 最明显证据是 Fidelity：本地 raw 为 `0.29169028079778847`，官方回执 raw 为 `0.30974049436509715`，后者反而较高；scaled 却从 `0.17928123492966228` 变成 `-0.6867549109343541`。这证明不能将 scaled 跌幅描述成“原始 Fidelity 崩溃”。不同数据的 raw 也不是同条件配对实验，故不能据 raw 较高断言官方泛化更好。
@@ -112,7 +114,7 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
 
 | 项目 | exp004 H1 | exp007 H1 |
 |---|---|---|
-| mean-response baseline | 同一均值向量复制到所有扰动细胞，float32 | 官方 dispersed 重采样生成有细胞间变异的整数 counts |
+| mean-response baseline | 同一均值向量复制到所有扰动细胞，float32 | 官方 dispersed 重采样并逐基因缩放，float32，可非整数 |
 | baseline profile 排除自身靶基因 | `exclude_target_gene=False` | `exclude_target_gene=True` |
 | 真实扰动细胞 | 每靶点最多 128 | 每靶点最多 400，不放回 |
 | 真实 NTC | 独立 reference-half，3,072 | 完整 pool，38,176 |
@@ -141,3 +143,15 @@ exp004 bundle：`experiments/exp004-shared-response/outputs/20260925-exp004-cond
 Fidelity 使用 `(raw - baseline) / (replicate - baseline)`。仅作标尺敏感性的算术示例：固定 exp007 raw `0.2916902808`，使用 exp007 anchors 得 `+0.179281`，代入 exp004 anchors 则约 `-0.984398`。后者不是合法的 exp007 重评成绩，因为 reference、预测样本和基因轴没有同步对齐。它明确说明仅声称“公式相同”不足以证明分数可比。
 
 因此，exp004 本地与官方更接近，不能推出沿用到 exp007 的本地评分仍保持相同校准；exp007 在更低的本地 Fidelity baseline 上取得正分，也不能据此预计官方为正。另一方面，模型也从 CVAE/NB 生成路线换为 XGBoost log2FC 回归加 NTC 模板生成；尚不能将官方模型表现的变化全部归因于评估协议。需要固定 reference、预测及基因轴，分别切换 baseline 构造，才能隔离评分变更的贡献。本次只核查历史证据，没有重评、重训或替换任何历史分数。
+
+## 官方包默认值与排行榜实际配置的证据边界
+
+2026-09-27 重新在线核对固定 commit 的公开源码、比赛指标文档和 CLI 说明。结论如下：
+
+1. **38,176 个 NTC 不是已查证的官方评分数量要求。** 这是 exp007 H1 全部可用 control 的数量，本地选择由 `data.py` / `evaluation.py` 决定。官方 baseline.py 虽在浮点求均值的精度注释中提到 38,176-cell control pool，但函数从调用者传入的 template 取 control 行，没有强制这个数量；这个注释不能证明线上 A/B/C reference 的 NTC 数量。官方比赛文档说明平台从隐藏 reference 取 held-out control，而 phase 发布的 control 是模型输入。exp007 的 reference.json 则明确写入 entire context NTC pool、same source baseline is available to prediction。因此本地模型输入和评分 control 的隔离方式没有复现官方描述。[官方源码](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py#L505)、[官方提交与评分桥接说明](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/vcc2026_metrics/vcc2026-metrics.md#7-submission-file-requirements)。
+2. **baseline profile 的 `exclude_target_gene=True` 有包默认值的直接证据。** `generic_response_profile` 默认开启，计算基因 g 的均值时排除针对 g 的扰动贡献。该开关与六项指标本身的 target exclusion 是不同环节。公开评分回执没有记录 r4 baseline 构建时该开关的实际值，故不能仅由函数默认参数推断部署值。[官方 profile 源码](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py#L104)。
+3. **`emit="dispersed"` 同样有包默认值的直接证据。** `build_baseline_prediction` 默认使用它；内部从 template 的 control 池有放回抽样，再乘逐基因 scale，输出 float32。它使预测细胞具有源 control 的异质性，但不是保证保持原始方差、协方差或真实扰动分布不变。此前“生成整数 counts”的表述错误，现已纠正；模型提交生成器的整数约束与这个评分 baseline 构造不同。尚无 r4 bundle 的 manifest 或构建命令证明线上使用了同一 emission。[官方 emission 源码](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py#L305)。
+
+官方指标文档另说明，baseline profile 来自通过细胞数与 knockdown-efficiency 筛选的 constructs，所展示的测量结果来自 cell-eval2 0.15.0 / competition rule_version 3 的官方 bundles。这不能替代当前回执所标识 `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4` 的构建证据；bundle 名称中的 r4 也不能自动解释为 competition rule_version 4。该文档中“均值响应分配给各扰动”的文字不足以单独判定实际用了 tile 还是 dispersed。[官方 baseline 定义与来源说明](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/vcc2026_metrics/vcc2026-metrics.md#0-overview)。
+
+要确认端到端一致，需要取得对应 r4 bundles 的构建配置/manifest，包括 NTC 来源及划分、profile 筛选、exclude_target_gene、emission 和随机种子。现有 status 回执只有 bundle 身份及汇总分数，没有这些字段。当前可成立的说法仅为“使用官方包默认 baseline 的本地 H1 评估”，不是“已验证复现 leaderboard 评分流程”。
