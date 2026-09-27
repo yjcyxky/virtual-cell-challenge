@@ -1,5 +1,6 @@
 """Verify a uv-synchronized environment without mutating it during active runs."""
 import argparse
+import ctypes
 import hashlib
 import importlib.metadata
 import json
@@ -13,10 +14,36 @@ import tempfile
 EXPERIMENT = Path(__file__).resolve().parents[1]
 
 
+def memory_policy():
+    libc = ctypes.CDLL(None, use_errno=True)
+    libc.prctl.argtypes = [ctypes.c_int] + [ctypes.c_ulong] * 4
+    libc.prctl.restype = ctypes.c_int
+    disabled = libc.prctl(42, 0, 0, 0, 0)  # PR_GET_THP_DISABLE
+    if disabled < 0:
+        raise OSError(ctypes.get_errno(), 'cannot query process THP policy')
+    return {'transparent_hugepages_disabled': disabled == 1,
+            'numpy_madvise_hugepage': os.environ.get('NUMPY_MADVISE_HUGEPAGE')}
+
+
+def configure_memory_policy():
+    """Avoid synchronous THP compaction on GB10; inherited by child processes."""
+    libc = ctypes.CDLL(None, use_errno=True)
+    libc.prctl.argtypes = [ctypes.c_int] + [ctypes.c_ulong] * 4
+    libc.prctl.restype = ctypes.c_int
+    if libc.prctl(41, 1, 0, 0, 0) != 0:  # PR_SET_THP_DISABLE; process only
+        raise OSError(ctypes.get_errno(), 'cannot disable process transparent hugepages')
+    os.environ['NUMPY_MADVISE_HUGEPAGE'] = '0'
+    policy = memory_policy()
+    if not policy['transparent_hugepages_disabled']:
+        raise RuntimeError('process THP policy was not applied')
+    return policy
+
+
 def run_in_base(command):
     """Isolate micromamba's transient registry while preserving the child's caches."""
     if not command:
         raise ValueError('base_command_required')
+    configure_memory_policy()
     restore_cache = (['env', 'XDG_CACHE_HOME=' + os.environ['XDG_CACHE_HOME']]
                      if 'XDG_CACHE_HOME' in os.environ else ['env', '-u', 'XDG_CACHE_HOME'])
     with tempfile.TemporaryDirectory(prefix='vcc-mamba-runtime-') as process_cache:

@@ -1,4 +1,6 @@
 experiment_id: exp006
+evaluation_protocol: cell-eval2-dispersed-exclude-target-v1
+baseline_seed: 0
 submit: true
 source_run: 20260926-exp005-nested-residual-s17
 source_experiment: exp005

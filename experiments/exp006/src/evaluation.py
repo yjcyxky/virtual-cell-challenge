@@ -9,8 +9,9 @@ import anndata as ad
 import numpy as np
 import pandas as pd
 import polars as pl
+from scipy import sparse
 from cell_eval2 import EvalConfig,compute_metrics,aggregate_metrics_wide,score_metrics
-from cell_eval2.baseline import build_run_meta,generic_response_profile
+from cell_eval2.baseline import build_run_meta,generic_response_profile,build_baseline_prediction
 from cell_eval2.run import metric_output_names
 from cell_eval2.real_bundle import build_real_bundle,read_real_bundle
 from cell_eval2.competition import competition_members
@@ -18,6 +19,55 @@ from common import digest,event,write_json
 from generation import Generator
 from training import predict,fit_id
 from data import NTC
+
+EVALUATION_PROTOCOL = 'cell-eval2-dispersed-exclude-target-v1'
+
+
+def write_count_matrix(directory, blocks, shape, dtype):
+    """Stream exact counts into a memory-mapped CSR, without a full dense/COO copy."""
+    directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
+    dtype=np.dtype(dtype)
+    indptr=np.lib.format.open_memmap(directory/'indptr.npy',mode='w+',dtype=np.int64,shape=(shape[0]+1,))
+    indptr[0]=0;row=0;nnz=0
+    with (directory/'data.bin').open('wb') as values, (directory/'indices.bin').open('wb') as indices:
+        for block in blocks:
+            block=np.asarray(block)
+            if block.ndim!=2 or block.shape[1]!=shape[1] or row+len(block)>shape[0]:
+                raise ValueError('count_matrix_block_shape_mismatch')
+            if block.dtype!=dtype:
+                raise ValueError('count_matrix_dtype_mismatch')
+            csr=sparse.csr_matrix(block)
+            csr.data.tofile(values)
+            csr.indices.astype(np.int64,copy=False).tofile(indices)
+            indptr[row+1:row+len(block)+1]=nnz+csr.indptr[1:]
+            row+=len(block);nnz+=csr.nnz
+    if row!=shape[0]:raise ValueError('incomplete_count_matrix')
+    indptr.flush();del indptr
+    metadata={'shape':list(shape),'dtype':dtype.str,'nnz':int(nnz),'index_dtype':'<i8',
+              'files':{name:digest(directory/name) for name in ['data.bin','indices.bin','indptr.npy']}}
+    write_json(directory/'matrix.json',metadata)
+    return read_count_matrix(directory)
+
+
+def read_count_matrix(directory):
+    directory=Path(directory);meta=json.loads((directory/'matrix.json').read_text())
+    nnz=meta['nnz'];dtype=np.dtype(meta['dtype'])
+    matrix=sparse.csr_matrix(tuple(meta['shape']),dtype=dtype)
+    # Assign validated streaming buffers directly: scipy's tuple constructor may
+    # downcast small int64 indices and materialize otherwise file-backed arrays.
+    matrix.data=np.memmap(directory/'data.bin',mode='r',dtype=dtype,shape=(nnz,)) if nnz else np.empty(0,dtype)
+    matrix.indices=np.memmap(directory/'indices.bin',mode='r',dtype=np.int64,shape=(nnz,)) if nnz else np.empty(0,np.int64)
+    matrix.indptr=np.load(directory/'indptr.npy',mmap_mode='r')
+    if len(matrix.indptr)!=matrix.shape[0]+1 or matrix.indptr[0]!=0 or matrix.indptr[-1]!=nnz:
+        raise ValueError('invalid_count_matrix_pointers')
+    matrix.has_sorted_indices=True;matrix.has_canonical_format=True
+    return matrix
+
+
+def matrix_bytes(matrix):
+    if sparse.issparse(matrix):
+        return matrix.data.nbytes+matrix.indices.nbytes+matrix.indptr.nbytes
+    return matrix.nbytes
 
 def release(path):
     gc.collect()
@@ -35,7 +85,7 @@ def wait_for_memory(real,context,device,anchor=False):
     # Unified CPU/GPU memory is shared with other active experiments on this host.
     # Admission delays execution; it never changes the panel or metric definition.
     groups=real.obs.target.nunique()
-    required=(2*real.X.nbytes if anchor else groups*real.n_vars*8*10)+(12<<30)
+    required=(2*matrix_bytes(real.X) if anchor else groups*real.n_vars*8*10)+(12<<30)
     gpu_required=groups*real.n_vars*8*12+(2<<30)
     while True:
         available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines()
@@ -57,6 +107,12 @@ def wait_for_memory(real,context,device,anchor=False):
 class Evaluation:
     def __init__(self,data,config,output,tracked):
         self.data,self.config,self.output,self.tracked=data,config,output,tracked
+        if config.get('evaluation_protocol')!=EVALUATION_PROTOCOL:
+            raise ValueError('evaluation_protocol_changed_new_run_required')
+
+    def protocol(self):
+        return {'id':EVALUATION_PROTOCOL,'baseline_emit':'dispersed','exclude_target_gene':True,
+                'baseline_seed':self.config['baseline_seed']}
 
     def layout(self,context):
         stats=self.data.contexts[context]
@@ -77,18 +133,22 @@ class Evaluation:
     def prepare(self,context):
         directory,cfg=self.settings(context)
         ids,obs,var=self.layout(context)
-        path=directory/'reference.npy'
+        path=directory/'reference'
         if not (directory/'reference.json').exists():
             source=self.data.counts(context)
-            values=np.lib.format.open_memmap(path,mode='w+',dtype=np.uint16,shape=(len(ids),len(var)))
-            for start in range(0,len(ids),256): values[start:start+256]=source[ids[start:start+256]]
-            values.flush();del values,source
-            write_json(directory/'reference.json',{'shape':[len(ids),len(var)],'sha256':digest(path),
+            values=write_count_matrix(path,(source[ids[start:start+256]] for start in range(0,len(ids),256)),
+                                      (len(ids),len(var)),np.uint16)
+            del values,source
+            write_json(directory/'reference.json',{'shape':[len(ids),len(var)],'sha256':digest(path/'matrix.json'),
+                       'evaluation_protocol':self.protocol(),'format':'csr',
                        'targets':'all usable targets, no overlap restriction',
                        'NTC':'entire context NTC pool; same source baseline is available to prediction',
                        'perturbation_cells':f'fixed stratified sample, at most {self.config["reference_cells_per_target"]} per target; no replacement',
                        'scoring':'pinned official vcc2026 method on context-native measured genes, not leaderboard-equivalent'})
-        real=ad.AnnData(np.load(path,mmap_mode='r'),obs=obs,var=var)
+        reference=json.loads((directory/'reference.json').read_text())
+        if reference.get('evaluation_protocol')!=self.protocol():
+            raise ValueError('reference_protocol_changed_new_run_required')
+        real=ad.AnnData(read_count_matrix(path),obs=obs,var=var)
         bundle=directory/'bundle'
         if not (bundle/'manifest.json').exists():
             if bundle.exists() and any(bundle.iterdir()):
@@ -96,18 +156,20 @@ class Evaluation:
                 raise ValueError(f'incomplete_official_bundle_requires_inspection:{bundle}')
             event('official_anchor_start',context=context,shape=real.shape)
             wait_for_memory(real,context,cfg.device,anchor=True)
-            profile=generic_response_profile(real,pert_col=cfg.pert_col,control=cfg.control,exclude_target_gene=False)
-            baseline_path=directory/'mean-response-baseline.npy'
-            baseline=np.lib.format.open_memmap(baseline_path,mode='w+',dtype=np.float32,shape=real.shape)
-            for start in range(0,len(real),256): baseline[start:start+256]=profile.values
-            controls=np.flatnonzero(obs.target.eq(NTC))
-            for start in range(0,len(controls),256): baseline[controls[start:start+256]]=real.X[controls[start:start+256]]
-            baseline.flush()
-            arm=ad.AnnData(baseline,obs=obs.copy(),var=var.copy())
+            event('official_baseline_profile',context=context)
+            profile=generic_response_profile(real,pert_col=cfg.pert_col,control=cfg.control,
+                                             exclude_target_gene=True,target_gene_map=cfg.target_gene_map)
+            event('official_baseline_prediction',context=context,emit='dispersed')
+            arm=build_baseline_prediction(profile,real,pert_col=cfg.pert_col,control=cfg.control,
+                                          emit='dispersed',seed=self.config['baseline_seed'])
+            event('official_bundle_build',context=context)
+            write_json(directory/'baseline-protocol.json',self.protocol())
             build_real_bundle(real,arm,config=cfg,outdir=str(bundle),bundle_id=f'exp006-{context}',
                               base_seed=self.config['replicate_seed'],n_splits=self.config['replicate_splits'])
-            del arm,baseline;gc.collect();baseline_path.unlink()
+            del arm;gc.collect()
             event('official_anchor_ready',context=context)
+        if json.loads((directory/'baseline-protocol.json').read_text())!=self.protocol():
+            raise ValueError('bundle_protocol_changed_new_run_required')
         manifest=read_real_bundle(bundle).manifest
         if manifest['rule_digest'] is None: raise ValueError('invalid_competition_bundle')
         return real,cfg,bundle
@@ -116,7 +178,11 @@ class Evaluation:
         name=fit_id(training_contexts) if training_contexts else 'baseline'
         directory=self.output/'predictions'/name/context/f'{kind}-{iteration:04d}'
         done=directory/'metrics.json'
-        if done.exists(): return json.loads(done.read_text())
+        if done.exists():
+            result=json.loads(done.read_text())
+            if result.get('evaluation_protocol')!=self.protocol():
+                raise ValueError('cached_score_protocol_changed_new_run_required')
+            return result
         directory.mkdir(parents=True,exist_ok=True)
         real,cfg,bundle=self.prepare(context)
         wait_for_memory(real,context,cfg.device)
@@ -125,23 +191,24 @@ class Evaluation:
         elif kind=='shared': response=self.shared(context,training_contexts)
         else: response=predict(booster,features,context,targets,axis)
         np.savez_compressed(directory/'predicted-response.npz',targets=targets,genes=np.array(self.data.genes)[axis],response=response)
-        matrix_path=self.output/'cache'/f'prediction-{context}.npy'
+        matrix_path=self.output/'cache'/f'prediction-{context}'
         cells_per=self.config['cells_per_prediction']
         perturbation_rows=len(targets)*cells_per
         control_ids=stats['control_rows']
-        counts=np.lib.format.open_memmap(matrix_path,mode='w+',dtype=np.uint32,shape=(perturbation_rows+len(control_ids),len(axis)))
         generator=Generator(self.data,context,self.config)
-        for i,target in enumerate(targets):
-            counts[i*cells_per:(i+1)*cells_per]=generator.generate(str(target),response[i])
-            if i%200==0:event('prediction',context=context,model=name,round=iteration,target_index=i,targets=len(targets))
         # Official validate_pair requires equal label sets even with control_source=real.
         # Copy NTC unchanged for structural compatibility; the comparator still uses real NTC.
         source=self.data.counts(context)
-        for start in range(0,len(control_ids),256):
-            counts[perturbation_rows+start:perturbation_rows+start+256]=source[control_ids[start:start+256]]
-        counts.flush();del generator,source
+        def blocks():
+            for i,target in enumerate(targets):
+                yield generator.generate(str(target),response[i])
+                if i%200==0:event('prediction',context=context,model=name,round=iteration,target_index=i,targets=len(targets))
+            for start in range(0,len(control_ids),256):
+                yield source[control_ids[start:start+256]].astype(np.uint32)
+        counts=write_count_matrix(matrix_path,blocks(),(perturbation_rows+len(control_ids),len(axis)),np.uint32)
+        del generator,source
         labels=np.concatenate([np.repeat(targets,cells_per),np.repeat(NTC,len(control_ids))])
-        obs=pd.DataFrame({'target':labels},index=[f'prediction-{i}' for i in range(len(counts))])
+        obs=pd.DataFrame({'target':labels},index=[f'prediction-{i}' for i in range(counts.shape[0])])
         prediction=ad.AnnData(counts,obs=obs,var=pd.DataFrame(index=np.array(self.data.genes)[axis]))
         event('official_score_start',context=context,training_contexts=training_contexts,round=iteration,kind=kind)
         raw=compute_metrics(prediction,real,config=cfg)
@@ -165,15 +232,17 @@ class Evaluation:
         result={'score':score,'components':components,'context':context,'training_contexts':sorted(training_contexts),
                 'round':iteration,'kind':kind,'targets':len(targets),'seen_targets':sum(t in seen for t in targets),
                 'prediction_seed':self.config['prediction_seed'],'reference':str(bundle),
+                'evaluation_protocol':self.protocol(),
                 'panel':'all usable context targets','readout_axis':'context-native measured genes',
                 'scaled_score_scope':'local panel only; not leaderboard-equivalent'}
         self.tracked.log({f'eval/{name}/{context}/{kind}/round':iteration,f'eval/{name}/{context}/{kind}/overall':score,
                           **{f'eval/{name}/{context}/{kind}/{k}':v for k,v in components.items()}})
         event('official_score',**result)
-        del prediction,counts,real,raw;gc.collect();release(matrix_path)
-        if keep: matrix_path.replace(directory/'predicted-counts.npy')
-        else: matrix_path.unlink()
-        if keep: result['counts_sha256']=digest(directory/'predicted-counts.npy')
+        del prediction,counts,real,raw;gc.collect()
+        for name in ['data.bin','indices.bin','indptr.npy']:release(matrix_path/name)
+        if keep:
+            matrix_path.replace(directory/'predicted-counts')
+            result['counts_sha256']=digest(directory/'predicted-counts/matrix.json')
         write_json(done,result)
         return result
 

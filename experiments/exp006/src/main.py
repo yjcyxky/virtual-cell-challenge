@@ -12,6 +12,9 @@ import threading
 import time
 import traceback
 
+from runtime import configure_memory_policy, memory_policy
+configure_memory_policy()  # Before NumPy/CUDA initialize; also covers direct invocation.
+
 import numpy as np
 import wandb
 import yaml
@@ -36,13 +39,15 @@ def pipeline_identity():
     return {'git_commit':git('rev-parse','HEAD'),'uv_lock_sha256':digest(EXPERIMENT/'uv.lock'),
             'code_tree':{path:git('rev-parse',f'HEAD:{path}') for path in paths},
             'environment':json.loads((EXPERIMENT/'.venv/experiment-environment.json').read_text()),
-            'runtime':{p:importlib.metadata.version(p) for p in ['xgboost','cell-eval2','gpudge','numpy','pandas','anndata','wandb']}}
+            'runtime':{p:importlib.metadata.version(p) for p in ['xgboost','cell-eval2','gpudge','numpy','pandas','anndata','wandb']},
+            'memory_policy':memory_policy()}
 
 
 def report(output, result):
     lines=[f'# exp006 结果\n\nRun `{output.name}`，状态：{result["status"]}。',
            f'W&B：{result.get("wandb_url") or "offline"}',
            '协议：五折按背景留一（每折四训一验），按五背景等权均值选一个统一轮数，全五背景从头重训，再提交 leaderboard。',
+           '评分基线：官方 dispersed 构造、排除自身靶基因；协议 cell-eval2-dispersed-exclude-target-v1。',
            '本地分数用于模型选择，属于开发验证结果，不是独立测试成绩；本地原生面板分数不等同 A/B/C 榜单。']
     completed=result.get('validation',{})
     lines.append(f'已完成 checkpoint 背景评分：{sum(len(v) for v in completed.values())}/35。')
@@ -72,14 +77,14 @@ def report(output, result):
         lines.append(f'W&B Artifact：`{result["artifact"]}`。')
     lines.append(f'W&B 日志同步：{result.get("wandb_sync","unknown")}；Artifact 同步：{result.get("artifact_sync","not yet uploaded")}。')
     if 'error' in result: lines.append('失败/阻塞：'+result['error'])
-    lines.append('与 exp005 的差异：模型、数据、固定采样和官方指标相同；由嵌套三背景内层训练改成四背景留一选模，估计目标不同，不把两者验证分数当作同口径独立测试比较。未复用 exp005 权重或 run 缓存。')
+    lines.append('与 exp005 的差异：模型、数据与固定采样沿用，四背景留一选模替代嵌套三背景训练；评分基线改为官方支持的 dispersed/排除靶基因。旧 tile 基线分数不能用于本协议选模或作为同口径成绩比较。未复用旧权重或 run 缓存。')
     lines.append('限制：仅五个独立背景且曾用于项目开发；NTC bag 不是新背景。均值 residual 加 NTC 模板不能完整恢复扰动后的新状态与分布。未测基因不作零标签。')
     # Each run retains its results; this experiment-level report compares their status.
     reports=[]
     for metrics_file in sorted((EXPERIMENT/'outputs').glob('*/metrics.json')):
         if metrics_file.parent==output: continue
         prior=json.loads(metrics_file.read_text())
-        reports.append(f'- `{metrics_file.parent.name}`：{prior["status"]}，来源结果 `{metrics_file.relative_to(EXPERIMENT)}`，W&B {prior.get("wandb_url") or "offline"}。')
+        reports.append(f'- `{metrics_file.parent.name}`：{prior["status"]}，来源结果 `{metrics_file.relative_to(EXPERIMENT)}`，W&B {prior.get("wandb_url") or "offline"}。评估有效性：{prior.get("evaluation_validity","见该 run 配置与结果")}。')
     if reports: lines.append('其他历史 runs：\n\n'+'\n'.join(reports))
     (EXPERIMENT/'REPORT.md').write_text('\n\n'.join(lines)+'\n')
 
@@ -93,6 +98,7 @@ def cross_validate(data, features, evaluation, config, output, tracked, result, 
         training=[c for c in contexts if c!=context]
         result['status']='cross_validation'
         result['active_context']=context
+        persist()
         def validate(booster, iteration):
             metric=evaluation.score(context,training,iteration,booster,features)
             results[(fit_id(training),context,iteration)]=metric

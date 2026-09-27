@@ -55,13 +55,22 @@ Leaderboard 反馈不参与本 run 轮数选择；若后续参考它改模，明
 
 评分固定 cell-eval2 commit `5e64833518a6603a0301cbe28185d49c30f4a986` 的 vcc2026 preset，
 CUDA/gpudge 后端固定。六项 raw / scaled / Overall 均由官方包计算，包括五次拆半 replicate anchors，
-seed 0，及官方 mean-response baseline。官方锚点内部的拆半仅用于评分参照，不是模型 train/val 划分。
+seed 0，及官方 mean-response baseline。基线只通过官方 `generic_response_profile` 与
+`build_baseline_prediction` 构造：`exclude_target_gene=True`、传递官方 target_gene_map、
+`emit="dispersed"`、固定 `baseline_seed=0`；不手写平铺基线。
+评估协议标识为 `cell-eval2-dispersed-exclude-target-v1`，随 run 配置、reference、bundle 基线记录及评分落盘。
+官方锚点内部的拆半仅用于评分参照，不是模型 train/val 划分。
 本地 reference 每 target 固定分层抽最多 400 个真实细胞（不足保留全部，不重采样补真值），
 保留完整 NTC pool；所有 checkpoint 复用同一 reference、anchors 和预测 RNG。
 训练统计仍来自全部合格原始细胞。这与旧 128-cell 缓存不同，不复用旧缓存或旧评价口径。
 本地原生 gene / target 面板不同，分数不是官方 A/B/C leaderboard 的绝对尺度；PDS 不逐块独立排名。
-官方拆半实现需要复制矩阵；进入 anchor 构建前按两份 reference 矩阵加 12 GiB 余量检查可用内存，
+reference 与本地预测按小块写成数值无损的文件映射 CSR，保留完整行列轴、细胞顺序与 counts dtype。
+官方 dispersed 基线因此接收稀疏模板，不再生成全尺寸的稠密平铺基线。
+官方拆半实现需要复制矩阵；进入 anchor 构建前按两份 reference 的实际稀疏存储字节数加 12 GiB 余量检查可用内存，
 资源不足则同一 run 等待并记录原因，不缩减靶点、不改变指标、不干预其他活动实验。
+该检查是预估，不等于保证整个官方构造的峰值；全尺寸 K562 的耗时与内存须在下一次授权 run 实测。
+启动器在导入 NumPy/CUDA 前以进程级 `PR_SET_THP_DISABLE` 禁用透明大页，子进程继承；
+运行身份记录实际 THP 状态及 NumPy 大页设置。主机全局设置和锁定依赖不变。
 
 ## 运行、恢复与交付
 
@@ -80,3 +89,8 @@ REPORT 汇总逐背景开发验证、已见/未见靶点覆盖、统一选模、
 来源：exp005 run `20260926-exp005-nested-residual-s17` 与代码 `18fe6e2`，仅继承方法和源码。
 exp006 使用自己的锁文件、虚拟环境及新 run，从登记原始输入重新预处理，不复用旧模型或 run 缓存。
 相对 exp005：四背景训练替代嵌套内层三背景训练，估计目标改变，成绩不作同口径独立测试对比。
+
+2026-09-26 用户要求停止并修正基线。旧 run `20260926-exp006-loco-residual-s17` 已停止，
+其自建 tile/不排除靶基因的基线及既有 H1 分数按原口径保留，不能用于新协议选模。
+修正后必须新建 run、重新完成五折选模与全量重训；禁止复用旧评分或旧基线锚点。
+当前只完成代码修正与功能验证，没有重启训练或提交 leaderboard。
