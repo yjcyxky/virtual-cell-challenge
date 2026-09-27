@@ -109,3 +109,16 @@ def test_old_score_and_config_cannot_be_reused(tmp_path,toy_inputs):
     (directory/'metrics.json').write_text(json.dumps({'score':123,'round':0}))
     with pytest.raises(ValueError,match='new_run_required'):
         Evaluation(data,config,tmp_path,tracker).score('Toy',[],0,None,None,kind='zero')
+
+
+def test_streaming_pointers_cross_int32_limit(tmp_path,monkeypatch):
+    import evaluation
+    # Simulate three large CSR blocks without allocating billions of entries.
+    # The actual streaming writer must widen block-local pointers BEFORE addition.
+    block_nnz=2**30+1
+    block=SimpleNamespace(data=np.array([],np.uint16),indices=np.array([],np.int32),
+                          indptr=np.array([0,block_nnz],np.int32),nnz=block_nnz)
+    monkeypatch.setattr(evaluation.sparse,'csr_matrix',lambda _:block)
+    monkeypatch.setattr(evaluation,'read_count_matrix',lambda directory:np.load(directory/'indptr.npy'))
+    pointers=write_count_matrix(tmp_path/'large',[np.zeros((1,1),np.uint16)]*3,(3,1),np.uint16)
+    np.testing.assert_array_equal(pointers,np.arange(4,dtype=np.int64)*block_nnz)

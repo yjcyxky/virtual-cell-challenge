@@ -39,7 +39,7 @@ def write_count_matrix(directory, blocks, shape, dtype):
             csr=sparse.csr_matrix(block)
             csr.data.tofile(values)
             csr.indices.astype(np.int64,copy=False).tofile(indices)
-            indptr[row+1:row+len(block)+1]=nnz+csr.indptr[1:]
+            indptr[row+1:row+len(block)+1]=np.add(csr.indptr[1:],nnz,dtype=np.int64)
             row+=len(block);nnz+=csr.nnz
     if row!=shape[0]:raise ValueError('incomplete_count_matrix')
     indptr.flush();del indptr

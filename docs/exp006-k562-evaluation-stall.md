@@ -110,3 +110,23 @@ PID 3615234 已退出，本地 metrics 与原 W&B run summary 已记录 stopped 
 进程级大页策略继承、CUDA/gpudge 六指标与官方完整锚点、完整训练状态恢复。
 测试中的非整数 counts 提示来自官方 dispersed 浮点缩放基线，不是模型预测整数校验被取消。
 用户要求保持停止；尚未用修正代码运行全尺寸 K562，不能据小测试宣称完整实验已恢复或给出加速比。
+
+## 重新运行：CSR 指针边界修正
+
+用户随后授权恢复。新 run `20260927-exp006-dispersed-s17` 从头启动，代码 `f81ed08`，
+K562 折先执行。进程 `/proc/PID/status` 确认 `THP_enabled=0`；第 1 轮训练完成，
+RMSE 0.13802862115792083。完整 reference 写入时，累计 nnz 超过 int32 上限触发
+`OverflowError: Python integer 2148241612 out of bounds for int32`，进程已正常报错退出。
+尚未完成 reference，也未进入官方基线或产生任何新评分。
+
+原因：目标 indptr 虽为 int64，右侧 `nnz + csr.indptr` 仍先按块内 int32 指针计算。
+修复仅把该加法显式指定为 int64，既避免越界前的回绕，也避免越界后的异常。
+通过真实 streaming writer 的合成大块元数据测试复现，不实际分配数十亿元素；
+修正后 16 项测试通过，包含 CUDA/gpudge 完整评分与 checkpoint 恢复。
+
+这是不改变训练与评分定义的存储工程修复，按协议沿用同一 run。恢复前明确校验：
+生产源码仅这一行改变；配置、其他源码树、锁文件、运行时与输入身份不变；
+第 1 轮模型摘要匹配，完整 `latest.pkl` 保留，没有已完成 reference/bundle/评分可被混用。
+将完整旧身份、新身份、修复理由、checkpoint 摘要和测试结果追加到该 run 的配置迁移记录，
+再更新当前代码身份。原失败日志保留，后续 W&B 仍使用同一个 ID。
+未完成 CSR 文件由原写入入口重新生成；不复用损坏指针，也不放宽通用恢复身份检查。
