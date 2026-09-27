@@ -229,6 +229,10 @@ Wilcoxon/gpudge 不自动校正批次，不能把 groupby target 当作已完成
 默认包含自身靶基因；该诊断项不是六项 Overall 指标之一。
 固定 vcc2026 的表达门槛为真实 NTC 的逐细胞 mean CPM>5，过滤后按 target 做 BH；
 NMAE 另有排除自身靶基因及至少 10 个显著基因的 gate，不能拿它替代用户的 DE 排名规则。
+官方 `p_adj_threshold: 0.05` 是调整后 p 值的显著性阈值，既不是每个扰动固定选 5% 的基因，
+也不是按 DE 数量仅保留排名前 5% 的扰动。用户提出希望 follow cell-eval2 以提升成绩后，
+须先澄清这两个不同含义；正确调用官方 DE/评分不自动证明前 5% 训练任务筛选有效。
+公开固定配置：[vcc2026.yaml](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/configs/vcc2026.yaml)。
 DE 数量仍受可测基因、细胞数量、测序深度及批次构成影响；统一列轴和至少 50 个细胞不消除这些差异。
 源码证据为 exp004 独立环境内固定版本的 `cell_eval2/de_compute.py`、`metrics/de.py`、
 `configs/vcc2026.yaml` 与 `run.py`；这里只读取源码，不使用其环境执行 exp008。
