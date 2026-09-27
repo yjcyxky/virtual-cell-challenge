@@ -2,6 +2,8 @@
 
 三组新增 runs 均已完成 512 轮训练、七个 H1 检查点评估和模型 Artifact 上传。历史 exp007 对照直接引用固定结果，未重训或改写。训练代码提交为 `322aeabf0e4841ec4887f4ed983774775cac664a`。
 
+**最新重评（2026-09-27）：三个固定最优模型已按 exp004 的独立 NTC、原 reference 与原 anchors 完成三种子重评，Overall 分别为 −0.100006、−0.119251、−0.164621。完整新口径结果见文末“固定最优模型按 exp004 重评”；以下旧表保留历史口径。**
+
 ## 评分可信度补充核查（2026-09-27）
 
 **本次采用 exp007 本地评分协议，不是 exp004 的独立 control 设计。当前数值及模型排序尚未验证能可靠预测 leaderboard 表现；下文“最佳”“改善”仅描述原本地协议内的观察，不足以确认比赛任务上的有效改进。**
@@ -143,3 +145,73 @@ DEG 与模块组的 HepG2、Jurkat、K562、RPE1 四份证据缓存 SHA-256 完�
 比较产物保存在模块 run 的 [analysis](outputs/20260927-exp00701-modules-s17/analysis/)：`checkpoint-comparison.csv`、`selected-and-final.csv`、`target-subgroups.csv`、`per-target-selected-and-final.parquet`、`paired-target-changes.csv`、`training-feature-gain.csv` 与 `sources.json`。来源配置和 metrics 的 SHA-256 一并记录；所有结果均可追溯至对应模型和预测。分析为现有模块 run 的后续阶段，未另建 run。
 
 分析 Artifact 已同步至 [exp00701-feature-comparison](https://wandb.ai/yjcyxky/virtual-cell-challenge/artifacts/evaluation/exp00701-feature-comparison)；具体版本及同步状态见 [artifact.json](outputs/20260927-exp00701-modules-s17/analysis/artifact.json)。
+
+<!-- exp004-reevaluation -->
+
+## 固定最优模型按 exp004 重评
+
+用户要求保留三个原最优检查点（均 128 轮），仅重新推理和评估；不训练、不重新选轮数。新输入/评估条件各建立独立 run，并固定引用原训练 run。
+
+直接使用 exp004 原 H1 的 40,756 个参考细胞、18,005 基因、297 靶点和 baseline/replicate bundle。输入 NTC 是原 half=0 的 3,072 个；评分 NTC 是原 half=1 的另外 3,072 个，两种原始身份键均验证交集为零。
+
+重算输入半池的 NTC 特征与 CPM 基线，原四背景响应/DE/模块及模型权重固定。基因别名唯一映射后，评分端保留 exp004 原名称与顺序。沿用 exp00701 的 LFC 计数生成算法；模板仅来自输入半池，按 exp004 每靶点/批次参考数量分配。
+
+使用 exp004 原始 tiled baseline 与原 anchors、原配置（只改私有缓存路径），生成种子 101/202/303，汇总均值及样本标准差。这是旧最优 checkpoint 的协议敏感性检验，不是重新训练或独立测试，也不证明等同线上 r4 bundles。
+
+| 特征组 | 状态 | exp004 Overall 均值 ± SD | W&B |
+|---|---|---:|---|
+| continuous | completed | -0.100006 ± 0.001170 | [20260927-exp00701-exp004-continuous-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-continuous-s17) |
+| deg | completed | -0.119251 ± 0.001892 | [20260927-exp00701-exp004-deg-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-deg-s17) |
+| modules | completed | -0.164621 ± 0.001973 | [20260927-exp00701-exp004-modules-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-modules-s17) |
+
+### 重评结果与解释
+
+全部 9 次评分完成。执行代码提交 `e6e81281799a9b4eb217fdd0fa07ccf9eda3cb2b`；三组均固定旧协议选出的第 128 轮。旧分数只作协议对照，不解释成同条件训练性能下降。
+
+| 特征组 | 原 exp007 口径 Overall | exp004 Overall 均值 ± SD | seed 101 | seed 202 | seed 303 |
+|---|---:|---:|---:|---:|---:|
+| 连续响应 | 0.127174 | -0.100006 ± 0.001170 | -0.100591 | -0.100768 | -0.098660 |
+| + DEG 方向证据 | 0.110784 | -0.119251 ± 0.001892 | -0.119339 | -0.121099 | -0.117317 |
+| + 响应模块 | 0.104006 | -0.164621 ± 0.001973 | -0.165034 | -0.166354 | -0.162474 |
+
+以下均为三生成种子均值。原始六指标与归一化分项分开列出；Overall 是归一化六分项平均。
+
+| 原始指标 | 连续响应 | + DEG 方向证据 | + 响应模块 |
+|---|---:|---:|---:|
+| PDS ↑ | 0.717001 | 0.709816 | 0.719856 |
+| Direction Fidelity ↑ | 0.287600 | 0.269616 | 0.172447 |
+| Direction Reach ↑ | 0.155623 | 0.149826 | 0.152922 |
+| DEG Jaccard ↑ | 0.026784 | 0.021456 | 0.035032 |
+| DE-LFC NMAE ↓ | 0.956793 | 0.956422 | 0.957027 |
+| Expression MSE ↓ | 0.941593 | 0.953191 | 0.935304 |
+
+| 归一化分项（均越高越好） | 连续响应 | + DEG 方向证据 | + 响应模块 |
+|---|---:|---:|---:|
+| PDS | 0.497722 | 0.481242 | 0.504271 |
+| Direction Fidelity | -0.999323 | -1.064938 | -1.419465 |
+| Direction Reach | 0.011428 | 0.004493 | 0.008198 |
+| DEG Jaccard | -0.092579 | -0.107353 | -0.069709 |
+| DE-LFC NMAE | -0.031390 | -0.030710 | -0.031819 |
+| Expression MSE | 0.014105 | 0.001757 | 0.020800 |
+
+三组排序保持连续响应 > DEG > 模块，DEG 相对连续响应降低 0.019245，模块相对 DEG 再降低 0.045369；三个匹配生成种子均呈相同排序。SD 只反映固定权重下的生成采样变化，不代表训练种子、靶点或 context 的置信区间。
+
+方向 Fidelity 是主要负贡献：原始值为 0.287600、0.269616、0.172447，均低于 exp004 tiled baseline 的 0.561495，对应归一化分项 −0.999323、−1.064938、−1.419465。该分项可以低于 −1，不是普通方向准确率，也不应人为截断。模块组的 PDS、MSE、Jaccard 比 DEG 组更好，但不足以抵消 Fidelity 损失。因此当前 DEG/模块编码仍未改善方向短板。
+
+不能把新旧总分差额全归因于 control 复用：此次同时对齐了输入 NTC、真实扰动样本、基因轴、生成细胞数和 baseline/replicate anchors。原始 Fidelity 也下降，而 PDS 均略升；缩放基准变化和原始指标变化都存在。此次未对 exp007 历史对照及 shared-response 基线做新协议评分，旧对照数值不能用于新协议增益结论。
+
+真实侧 NMAE 门控排除 8 个空 gate 和 82 个少于 10 个 gated genes 的靶点，因此使用 207 个；其他主要逐靶点指标为 297 个。所有模型和种子使用相同真实侧门控，没有放宽筛选。
+
+评分器对 DEG 和模块各三个种子均给出采样方差诊断：跨扰动预测均值波动/采样校正比约为 0.527–0.532、0.501–0.506，低于 0.7。现有生成器通过校准约束 CPM 均值，生成细胞不能当作普通独立抽样；官方 capped 修正保持启用，未因此停止或修改评分。这是保留原生成算法进行比较时必须记录的局限。
+
+复核完成：35 项测试通过；三组输入/基因映射哈希一致、两类原始 NTC 身份交集为零；模型哈希与原训练检查点一致；9 个预测矩阵均为 40,756 × 18,005；评分配置仅私有缓存路径不同，原 bundle 文件逐一哈希一致；运行后重新校验全部 62 个固定来源文件未变化。仅新增评估入口、固定来源配置和必要隔离/映射测试，临时核查使用命令行及自动清理的系统临时目录。
+
+每个新 run 保留模型、每种子预测 CSR、原始指标/缩放分项和配置；版本化 Artifact 已同步。比较数据保存在末 run 的 [comparison.json](outputs/20260927-exp00701-exp004-modules-s17/comparison.json)。
+
+- 连续响应：[20260927-exp00701-exp004-continuous-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-continuous-s17)；Artifact `yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-exp004-continuous-s17:v0`。
+
+- + DEG 方向证据：[20260927-exp00701-exp004-deg-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-deg-s17)；Artifact `yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-exp004-deg-s17:v0`。
+
+- + 响应模块：[20260927-exp00701-exp004-modules-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-modules-s17)；Artifact `yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-exp004-modules-s17:v0`。
+
+比较 Artifact 已同步至 [exp00701-exp004-reevaluation-comparison:v0](https://wandb.ai/yjcyxky/virtual-cell-challenge/artifacts/evaluation/exp00701-exp004-reevaluation-comparison/v0)，包含比较数据、三组最终 metrics 与报告快照；上传身份及 SHA-256 见末 run 的 `comparison-artifact.json`。三个 W&B run 的 summary 已补充 `exp004/mean_overall`、`exp004/sd_overall` 和六项均值，避免把最后一个种子的 `exp004/overall` 误当作总均值。
