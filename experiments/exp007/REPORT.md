@@ -100,3 +100,21 @@ W&B 日志与版本化模型/结果 Artifact 均已同步；整数预测包含�
   9 份 `156976 × 18008` uint32 CSR 预测、文件长度/元数据哈希及 297 靶点的 LFC 输出。
 - 本次训练实现已移除继承的五折、全量重训和原榜单提交流程，未保留一次性脚本。
   并发追加的官方导出代码与依赖不属于本次训练提交，未改动或清理它们。
+
+## 官方 A/B/C 提交
+
+用户在 H1 开发验证后指定第 512 轮直接导出；沿用四背景 checkpoint，不重训。
+
+导出 commit `138fb832513170a1e7210c41c3046038ea876ed2`；checkpoint SHA-256 `3921541074a4e061d73837c20cd6cf871066fe7b800f0b0077f6b0150b5ec6f3`。
+
+文件：`outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/predictions.vcc`；SHA-256 `4001093ad0047309a4381abbc860462553861a8d6aaf495a13925b31c6f5f562`。
+
+W&B Artifact：`yjcyxky/virtual-cell-challenge/exp007-20260927-exp007-h1-log2fc-s17-official-r512:v0`。
+
+官方 entry `VxirEGSQBl0HhgKDxIYj`；状态 published；Overall **-0.127798344**。
+
+| PDS | MSE | NMAE | Fidelity | Reach | Jaccard |
+|---:|---:|---:|---:|---:|---:|
+| 0.000049858 | 0.000000000 | 0.000890958 | -0.686754911 | -0.013233789 | -0.067742179 |
+
+面板 `vcc2026-val-1`；anchors `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4`。该反馈为开发用途，不与本地 H1 分数直接换算。
