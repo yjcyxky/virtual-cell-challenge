@@ -122,3 +122,28 @@ def test_streaming_pointers_cross_int32_limit(tmp_path,monkeypatch):
     monkeypatch.setattr(evaluation,'read_count_matrix',lambda directory:np.load(directory/'indptr.npy'))
     pointers=write_count_matrix(tmp_path/'large',[np.zeros((1,1),np.uint16)]*3,(3,1),np.uint16)
     np.testing.assert_array_equal(pointers,np.arange(4,dtype=np.int64)*block_nnz)
+
+
+@pytest.mark.parametrize('seed',[0,101])
+@pytest.mark.parametrize('block_rows',[17,256])
+def test_streamed_baseline_is_exact_official_construction(tmp_path,toy_inputs,seed,block_rows):
+    import anndata as ad
+    import evaluation
+    from scipy import sparse
+    from cell_eval2.baseline import generic_response_profile,build_baseline_prediction
+    data,config=toy_inputs
+    counts=np.array(data.counts('Toy'))
+    counts[:400,11]=0  # Unreachable profile mass must match official diagnostics.
+    obs=data.cells('Toy').copy();obs.index=obs.index.astype(str)
+    real=ad.AnnData(sparse.csr_matrix(counts),obs=obs,
+                   var=pd.DataFrame(index=data.genes))
+    profile=generic_response_profile(real,pert_col='target',control='non-targeting')
+    profile.values[10]=0  # Exercise official explicit-zero removal after scaling.
+    expected=build_baseline_prediction(profile,real,pert_col='target',control='non-targeting',seed=seed)
+    actual=evaluation.stream_baseline(profile,real,pert_col='target',control='non-targeting',
+                                    seed=seed,directory=tmp_path/'baseline',block_rows=block_rows)
+    np.testing.assert_array_equal(actual.X.toarray(),expected.X.toarray())
+    assert isinstance(actual.X.data,np.memmap)
+    assert actual.uns==expected.uns
+    pd.testing.assert_frame_equal(actual.obs,expected.obs)
+    pd.testing.assert_frame_equal(actual.var,expected.var)

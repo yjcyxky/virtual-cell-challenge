@@ -11,7 +11,7 @@ import pandas as pd
 import polars as pl
 from scipy import sparse
 from cell_eval2 import EvalConfig,compute_metrics,aggregate_metrics_wide,score_metrics
-from cell_eval2.baseline import build_run_meta,generic_response_profile,build_baseline_prediction
+from cell_eval2.baseline import build_run_meta,generic_response_profile,_emission_scale,_emit_scaled_resample
 from cell_eval2.run import metric_output_names
 from cell_eval2.real_bundle import build_real_bundle,read_real_bundle
 from cell_eval2.competition import competition_members
@@ -31,16 +31,16 @@ def write_count_matrix(directory, blocks, shape, dtype):
     indptr[0]=0;row=0;nnz=0
     with (directory/'data.bin').open('wb') as values, (directory/'indices.bin').open('wb') as indices:
         for block in blocks:
-            block=np.asarray(block)
-            if block.ndim!=2 or block.shape[1]!=shape[1] or row+len(block)>shape[0]:
+            block=block.tocsr() if sparse.issparse(block) else np.asarray(block)
+            if block.ndim!=2 or block.shape[1]!=shape[1] or row+block.shape[0]>shape[0]:
                 raise ValueError('count_matrix_block_shape_mismatch')
             if block.dtype!=dtype:
                 raise ValueError('count_matrix_dtype_mismatch')
-            csr=sparse.csr_matrix(block)
+            csr=block if sparse.issparse(block) else sparse.csr_matrix(block)
             csr.data.tofile(values)
             csr.indices.astype(np.int64,copy=False).tofile(indices)
-            indptr[row+1:row+len(block)+1]=np.add(csr.indptr[1:],nnz,dtype=np.int64)
-            row+=len(block);nnz+=csr.nnz
+            indptr[row+1:row+block.shape[0]+1]=np.add(csr.indptr[1:],nnz,dtype=np.int64)
+            row+=block.shape[0];nnz+=csr.nnz
     if row!=shape[0]:raise ValueError('incomplete_count_matrix')
     indptr.flush();del indptr
     metadata={'shape':list(shape),'dtype':dtype.str,'nnz':int(nnz),'index_dtype':'<i8',
@@ -69,6 +69,46 @@ def matrix_bytes(matrix):
         return matrix.data.nbytes+matrix.indices.nbytes+matrix.indptr.nbytes
     return matrix.nbytes
 
+
+def stream_baseline(profile,real,*,pert_col,control,seed,directory,block_rows=256):
+    """File-backed execution of the pinned official dispersed emission kernel.
+
+    layout() supplies controls first, then sorted contiguous target groups. Verify
+    that contract rather than silently permuting rows or restarting the RNG per block.
+    Parity tests compare values AND diagnostics with build_baseline_prediction.
+    """
+    genes=np.asarray(real.var.index).astype(str)
+    if not np.array_equal(genes,profile.genes):raise ValueError('baseline_gene_axis_mismatch')
+    labels=real.obs[pert_col].to_numpy().astype(str)
+    control_rows=np.flatnonzero(labels==control)
+    targets,sizes=np.unique(labels[labels!=control],return_counts=True)
+    expected=np.concatenate([np.repeat(control,len(control_rows)),np.repeat(targets,sizes)])
+    if not len(control_rows) or not np.array_equal(labels,expected):
+        raise ValueError('baseline_requires_controls_then_sorted_target_groups')
+    ctrl=real.X[control_rows].tocsr()
+    ctrl_pb=np.asarray(ctrl.astype(np.float64).mean(axis=0)).ravel()
+    scale,scale_diag=_emission_scale(profile.values,ctrl_pb,genes)
+    rng=np.random.default_rng(seed)
+    diag={'emit':'dispersed','seed':int(seed),**scale_diag,'n_explicit_zeros_removed':0,
+          'n_rows':int(sizes.sum()),'max_row_total':0.,'max_scaled_noncontrol_row_total':0.,
+          'max_row_total_full_prediction':0.}
+    def blocks():
+        for start in range(0,len(control_rows),block_rows):
+            block=ctrl[start:start+block_rows].astype(np.float32)
+            diag['max_row_total_full_prediction']=max(diag['max_row_total_full_prediction'],float(block.sum(axis=1).max()))
+            yield block
+        for i,size in enumerate(sizes):
+            for start in range(0,int(size),block_rows):
+                block,source,kernel=_emit_scaled_resample(ctrl,[min(block_rows,int(size)-start)],scale,rng)
+                diag['n_explicit_zeros_removed']+=kernel['n_explicit_zeros_removed']
+                diag['max_row_total']=max(diag['max_row_total'],kernel['max_row_total'])
+                diag['max_scaled_noncontrol_row_total']=diag['max_row_total']
+                diag['max_row_total_full_prediction']=max(diag['max_row_total_full_prediction'],kernel['max_row_total'])
+                yield block
+            if i%200==0:event('official_baseline_emission',target_index=i,targets=len(targets))
+    matrix=write_count_matrix(directory,blocks(),real.shape,np.float32)
+    return ad.AnnData(matrix,obs=real.obs.copy(),var=real.var.copy(),uns={'baseline_emission':diag})
+
 def release(path):
     gc.collect()
     if hasattr(os,'posix_fadvise') and Path(path).exists():
@@ -81,15 +121,19 @@ def release(path):
     if torch.cuda.is_available(): torch.cuda.empty_cache()
 
 def wait_for_memory(real,context,device,anchor=False):
-    # The official anchor makes two copied half-panels and temporary DE tables.
+    # Two disjoint half-panels total one full panel; allow another half for the
+    # slice/copy transient. Full reference and baseline are read-only file mappings.
     # Unified CPU/GPU memory is shared with other active experiments on this host.
     # Admission delays execution; it never changes the panel or metric definition.
     groups=real.obs.target.nunique()
-    required=(2*matrix_bytes(real.X) if anchor else groups*real.n_vars*8*10)+(12<<30)
+    required=(int(1.5*matrix_bytes(real.X)) if anchor else groups*real.n_vars*8*10)+(12<<30)
     gpu_required=groups*real.n_vars*8*12+(2<<30)
     while True:
-        available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines()
-                           if line.startswith('MemAvailable:')))*1024
+        memory={line.split()[0].rstrip(':'):int(line.split()[1])*1024
+                for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith(('MemAvailable:','MemTotal:'))}
+        available=memory['MemAvailable']
+        if required>memory.get('MemTotal',float('inf')):
+            raise MemoryError(f'evaluation_requirement_exceeds_host_capacity:{required}')
         gpu_available=None;gpu_error=None
         if device=='cuda':
             import cupy
@@ -160,8 +204,8 @@ class Evaluation:
             profile=generic_response_profile(real,pert_col=cfg.pert_col,control=cfg.control,
                                              exclude_target_gene=True,target_gene_map=cfg.target_gene_map)
             event('official_baseline_prediction',context=context,emit='dispersed')
-            arm=build_baseline_prediction(profile,real,pert_col=cfg.pert_col,control=cfg.control,
-                                          emit='dispersed',seed=self.config['baseline_seed'])
+            arm=stream_baseline(profile,real,pert_col=cfg.pert_col,control=cfg.control,
+                                seed=self.config['baseline_seed'],directory=directory/'baseline')
             event('official_bundle_build',context=context)
             write_json(directory/'baseline-protocol.json',self.protocol())
             build_real_bundle(real,arm,config=cfg,outdir=str(bundle),bundle_id=f'exp006-{context}',

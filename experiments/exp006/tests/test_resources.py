@@ -37,3 +37,21 @@ def test_base_launcher_disables_thp_for_its_child():
     environment={**os.environ,'PYTHONPATH':str(Path(__file__).resolve().parents[1]/'src')}
     checked=subprocess.run([sys.executable,'-c',probe],env=environment,text=True,capture_output=True)
     assert checked.returncode==0,checked.stderr
+
+
+def test_full_k562_anchor_admission_counts_half_copies(monkeypatch):
+    real=SimpleNamespace(X=None,n_vars=8135,obs=pd.DataFrame({'target':['one']}))
+    monkeypatch.setattr(evaluation,'matrix_bytes',lambda _:56<<30)
+    monkeypatch.setattr(Path,'read_text',lambda *a,**k:'MemAvailable: 115343360 kB\nMemTotal: 125829120 kB')
+    def no_wait(_):raise AssertionError('two full copies overestimate the disjoint halves')
+    monkeypatch.setattr(evaluation.time,'sleep',no_wait)
+    evaluation.wait_for_memory(real,'K562','cpu',anchor=True)
+
+
+def test_impossible_memory_requirement_fails_instead_of_waiting(monkeypatch):
+    import pytest
+    real=SimpleNamespace(X=None,n_vars=8135,obs=pd.DataFrame({'target':['one']}))
+    monkeypatch.setattr(evaluation,'matrix_bytes',lambda _:128<<30)
+    monkeypatch.setattr(Path,'read_text',lambda *a,**k:'MemAvailable: 115343360 kB\nMemTotal: 125829120 kB')
+    with pytest.raises(MemoryError,match='exceeds_host_capacity'):
+        evaluation.wait_for_memory(real,'K562','cpu',anchor=True)

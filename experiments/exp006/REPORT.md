@@ -1,6 +1,6 @@
 # exp006 结果
 
-Run `20260927-exp006-dispersed-s17`，状态：failed。
+Run `20260927-exp006-dispersed-s17`，状态：interrupted。
 
 W&B：https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp006-dispersed-s17
 
@@ -14,7 +14,7 @@ W&B：https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp006-dispe
 
 W&B 日志同步：online；Artifact 同步：not yet uploaded。
 
-失败/阻塞：OverflowError: Python integer 2148241612 out of bounds for int32
+失败/阻塞：KeyboardInterrupt: 已正常退出资源等待，正在修正内存门槛与基线构造内存用法。
 
 与 exp005 的差异：模型、数据与固定采样沿用，四背景留一选模替代嵌套三背景训练；评分基线改为官方支持的 dispersed/排除靶基因。旧 tile 基线分数不能用于本协议选模或作为同口径成绩比较。未复用旧权重或 run 缓存。
 

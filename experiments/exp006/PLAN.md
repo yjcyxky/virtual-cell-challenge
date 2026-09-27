@@ -56,7 +56,7 @@ Leaderboard 反馈不参与本 run 轮数选择；若后续参考它改模，明
 评分固定 cell-eval2 commit `5e64833518a6603a0301cbe28185d49c30f4a986` 的 vcc2026 preset，
 CUDA/gpudge 后端固定。六项 raw / scaled / Overall 均由官方包计算，包括五次拆半 replicate anchors，
 seed 0，及官方 mean-response baseline。基线只通过官方 `generic_response_profile` 与
-`build_baseline_prediction` 构造：`exclude_target_gene=True`、传递官方 target_gene_map、
+dispersed emission kernel 构造：`exclude_target_gene=True`、传递官方 target_gene_map、
 `emit="dispersed"`、固定 `baseline_seed=0`；不手写平铺基线。
 评估协议标识为 `cell-eval2-dispersed-exclude-target-v1`，随 run 配置、reference、bundle 基线记录及评分落盘。
 官方锚点内部的拆半仅用于评分参照，不是模型 train/val 划分。
@@ -65,10 +65,13 @@ seed 0，及官方 mean-response baseline。基线只通过官方 `generic_respo
 训练统计仍来自全部合格原始细胞。这与旧 128-cell 缓存不同，不复用旧缓存或旧评价口径。
 本地原生 gene / target 面板不同，分数不是官方 A/B/C leaderboard 的绝对尺度；PDS 不逐块独立排名。
 reference 与本地预测按小块写成数值无损的文件映射 CSR，保留完整行列轴、细胞顺序与 counts dtype。
-官方 dispersed 基线因此接收稀疏模板，不再生成全尺寸的稠密平铺基线。
-官方拆半实现需要复制矩阵；进入 anchor 构建前按两份 reference 的实际稀疏存储字节数加 12 GiB 余量检查可用内存，
+官方 dispersed 基线使用固定版本的 `_emission_scale` 与 `_emit_scaled_resample` 分块写盘，
+沿用完整 NTC 池、官方排序和一个连续 RNG；逐元素及诊断字段对照 `build_baseline_prediction` 验证。
+不复制公式，不修改官方库。这样避免公开全量构造器的多份全尺寸临时数组。
+官方拆半实现需要复制矩阵；两份半矩阵合计一份完整矩阵，另留半份切片复制瞬时空间。
+进入 anchor 构建前按 1.5 份 reference 的实际稀疏存储字节数加 12 GiB 余量检查可用内存，
 资源不足则同一 run 等待并记录原因，不缩减靶点、不改变指标、不干预其他活动实验。
-该检查是预估，不等于保证整个官方构造的峰值；全尺寸 K562 的耗时与内存须在下一次授权 run 实测。
+超过整机容量时直接报错，避免永久等待。该检查是预估，不等于保证整个官方构造的峰值；完整运行仍须实测。
 启动器在导入 NumPy/CUDA 前以进程级 `PR_SET_THP_DISABLE` 禁用透明大页，子进程继承；
 运行身份记录实际 THP 状态及 NumPy 大页设置。主机全局设置和锁定依赖不变。
 
