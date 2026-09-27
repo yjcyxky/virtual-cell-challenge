@@ -4,6 +4,8 @@
 
 ## 结论
 
+**跨实验补充核查：exp004 → exp007 的六项 raw 指标公式没有改变，但本地评分协议确实改变了，包括 mean-response baseline 的生成方式、baseline 是否排除自身靶基因、真实参考细胞以及由此重算的 baseline/replicate anchors。不能将“同一官方包、同一指标公式”表述为“本地评分方式完全未变”。** 下文先前关于核心实现未变的判断仅指 exp007 自身训练到导出，不适用于 exp004 到 exp007。
+
 exp007 第 512 轮本地 H1 Overall 为 `0.020419414867561134`，官方 A/B/C Overall 为 `-0.12779834383804198`。这两个数使用不同 reference、panel 和 baseline/replicate anchors，不能把差值解释为同一数据上模型准确度下降同样幅度。
 
 最明显证据是 Fidelity：本地 raw 为 `0.29169028079778847`，官方回执 raw 为 `0.30974049436509715`，后者反而较高；scaled 却从 `0.17928123492966228` 变成 `-0.6867549109343541`。这证明不能将 scaled 跌幅描述成“原始 Fidelity 崩溃”。不同数据的 raw 也不是同条件配对实验，故不能据 raw 较高断言官方泛化更好。
@@ -101,3 +103,41 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
 另一个已有结果是同口径 H1 的 shared_response 对照 Overall 为 `0.1867720084`，
 高于第 512 轮模型的 `0.0204194149`。本地模型为正不代表它已优于简单迁移基线。
 来源：[完整本地指标](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/metrics.json)。
+
+## exp004 到 exp007：实际评分协议变更
+
+两者均锁定 cell-eval2 commit `5e64833518a6603a0301cbe28185d49c30f4a986`。保存的 EvalConfig 逐字段比较仅 num_threads（8 → 6）、pert_chunk（128 → 64）、cache_real 路径不同；rule_digest 均为 `fb5aa56b74368a7bc5befc8ccca8ca02a2cf4c8c7ad59b156ab86c3ae0859762`。六项 raw 定义、Wilcoxon/BH 阈值、归一化尺度、control_source=real、PDS 排除靶基因设置及 Overall 六项算术平均均未变。replicate 均为五次拆半、base seed 0。
+
+但 EvalConfig 不包含完整的 baseline 构造和 reference 选择逻辑：
+
+| 项目 | exp004 H1 | exp007 H1 |
+|---|---|---|
+| mean-response baseline | 同一均值向量复制到所有扰动细胞，float32 | 官方 dispersed 重采样生成有细胞间变异的整数 counts |
+| baseline profile 排除自身靶基因 | `exclude_target_gene=False` | `exclude_target_gene=True` |
+| 真实扰动细胞 | 每靶点最多 128 | 每靶点最多 400，不放回 |
+| 真实 NTC | 独立 reference-half，3,072 | 完整 pool，38,176 |
+| 真实参考总细胞 | 40,756 | 149,639 |
+| 靶点 / 基因数 | 297 / 18,005 | 297 / 18,008 |
+| NMAE 真实侧筛选后任务数 | 207 | 255 |
+| 预测采样 | 匹配 reference 数量；101/202/303 三 seed 汇总 | 每靶点 400；seed 101 |
+
+这里的 exclude_target_gene 变化只指 **baseline profile 构造**，不能误写为六项指标中的 PDS 靶基因排除开关变化。平铺均值与 dispersed 的细胞间方差不同，会影响 baseline 的 Wilcoxon 显著性及 Fidelity、Reach、Jaccard；reference 数量变化也会影响真实显著基因集和 replicate anchors。尚未进行固定 reference 的配对消融，不能将以下变化全部归因于单独一个开关。
+
+源码来源：exp004 复用 `experiments/exp003-context-module-cvae/src/official.py:120–133`；exp007 为 [evaluation.py](../experiments/exp007/src/evaluation.py)。baseline 变更可追溯至 exp006 commit `b013bbeca93a971894f3a91ad03edbf4e022d809`，2026-09-26 21:11:57 -0400，`fix(exp006): align official baseline and prevent THP stalls`。exp007 继承此协议；[exp006 REPORT](../experiments/exp006/REPORT.md) 已注明旧 tiled baseline 分数不能作为同口径成绩比较。exp004 所引用源码、reference 与 bundle 位于并列 worktree `/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004`。
+
+以下直接读取两个历史 H1 bundle 的 `baseline_agg.csv`（mean 行）与 `anchor_agg.parquet`（replicate 列），未改写历史结果：
+
+| 指标 | exp004 baseline | exp007 baseline | exp004 replicate | exp007 replicate |
+|---|---:|---:|---:|---:|
+| PDS | 0.500000 | 0.496041 | 0.935988 | 0.969554 |
+| Expression error | 0.954841 | 0.961232 | 0.015525 | 0.004945 |
+| LFC-NMAE | 0.939665 | 0.952051 | 0.394003 | 0.341319 |
+| Fidelity | 0.561495 | 0.165003 | 0.835575 | 0.871645 |
+| Reach | 0.146069 | 0.088324 | 0.982044 | 0.987732 |
+| Jaccard | 0.060169 | 0.006344 | 0.420783 | 0.439376 |
+
+exp004 bundle：`experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/`（exp004 worktree）；exp007 bundle：[bundle](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle)。真实样本信息分别来自其相邻 `reference.json` 和参考 obs；NMAE 数量来自 baseline count 行。
+
+Fidelity 使用 `(raw - baseline) / (replicate - baseline)`。仅作标尺敏感性的算术示例：固定 exp007 raw `0.2916902808`，使用 exp007 anchors 得 `+0.179281`，代入 exp004 anchors 则约 `-0.984398`。后者不是合法的 exp007 重评成绩，因为 reference、预测样本和基因轴没有同步对齐。它明确说明仅声称“公式相同”不足以证明分数可比。
+
+因此，exp004 本地与官方更接近，不能推出沿用到 exp007 的本地评分仍保持相同校准；exp007 在更低的本地 Fidelity baseline 上取得正分，也不能据此预计官方为正。另一方面，模型也从 CVAE/NB 生成路线换为 XGBoost log2FC 回归加 NTC 模板生成；尚不能将官方模型表现的变化全部归因于评估协议。需要固定 reference、预测及基因轴，分别切换 baseline 构造，才能隔离评分变更的贡献。本次只核查历史证据，没有重评、重训或替换任何历史分数。
