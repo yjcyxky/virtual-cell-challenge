@@ -1,0 +1,43 @@
+experiment_id: exp007
+evaluation_protocol: cell-eval2-dispersed-exclude-target-v1
+baseline_seed: 0
+prediction_target: log2fc_cpm_mean
+lfc_epsilon: 1.0e-9
+validation_context: H1
+source_run: 20260927-exp006-dispersed-s17
+source_experiment: exp006
+source_code_commit: 2a2a740
+source_usage: method and code lineage only; no weights or run caches reused
+collectri_sha256: 0c4afb99a5590313802beee251b071b332876bea393f03aba8fb822eee28d05c
+seed: 17
+contexts: [K562, H1, RPE1, HepG2, Jurkat]
+checkpoints: [1, 16, 64, 128, 256, 384, 512]
+cells_per_prediction: 400
+reference_cells_per_target: 400
+minimum_target_cells: 50
+ntc_augmentation_bags: 8
+ntc_bag_cells: 400
+training_readouts_per_target: 512
+graph_dimensions: 16
+network_minimum_score: 700
+threads: 6
+official_device: cuda
+official_de_backend: gpudge
+prediction_seed: 101
+replicate_splits: 5
+replicate_seed: 0
+model:
+  objective: reg:squarederror
+  eval_metric: rmse
+  tree_method: hist
+  device: cpu
+  nthread: 6
+  max_depth: 6
+  eta: 0.05
+  min_child_weight: 20
+  subsample: 1.0
+  colsample_bytree: 1.0
+  lambda: 10.0
+  max_bin: 128
+  base_score: 0.0
+  seed_per_iteration: true
