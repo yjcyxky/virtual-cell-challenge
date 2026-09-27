@@ -165,3 +165,11 @@ Fidelity 使用 `(raw - baseline) / (replicate - baseline)`。仅作标尺敏感
 H1 预测矩阵附加 NTC 是直接调用 scorer 所需的结构；上传文件不含 NTC、平台评分时补 control，是不同阶段的接口差异，本身不构成生成算法变化。关键问题是 scorer 最终采用的 control 来自何处、是否与模型输入隔离。共用 control 可能使基线估计误差相消并带来乐观偏差，当前未量化，也未证明它解释了官方分差的全部或主要部分。
 
 因此现有 H1 分数只能描述该本地条件下的表现，尚未验证能可靠预测官方绝对分数或 checkpoint 排序。修复模拟评估需先固定互不重叠的 input/reference NTC，并同步重建相应特征、预测和评分基准；不能只更换评分端 control，也不能覆写历史分数。本轮只完成一致性核查，未实施新协议或启动重评。
+
+## exp004 是否存在同一 control 重用问题
+
+对 exp004 实际 cache_source（exp003 run `20260923-mcvae-true-s17/cache/data`）的 cells.parquet 按身份复核：H1 half=0 的 feature NTC 为 3,072 个，half=1 的 reference NTC 为另外 3,072 个。两种身份键 `(input_sha256, row_index)` 和 `(source_batch, source_barcode)` 的集合交集均为 0；48 个 batch、每个 half 每 batch 64 个。所有 H1 NTC 仅来自 panel-0，没有借 H1 重复面板把同一细胞放入两边。
+
+实际调用路径同样分离：exp003 `state.py` 中 FoldView 的生成输入 base/theta/centers/scales/probability/condition 来自 half=0，inputs 不传 reference 字段；`official.py:80–82` 构造评分 reference 仅选 half=1。故 exp004 不存在本次确认的“同一批 H1 NTC 同时作生成输入和评分 control”问题。此判断不表示其全套评分与排行榜等价：其本地最多 128 扰动细胞、旧 tiled baseline、不同基因轴等差异仍然存在。
+
+沿革应与 baseline emission 修正分开：[exp005 PLAN](../experiments/exp005/PLAN.md) 第 13 行已明确改为不拆 NTC 输入/参照池，第 55 行规定保留完整 NTC pool；exp006/exp007 延续了这一设计。因此 control 隔离丢失至少始于 exp005，不是 exp006 将 tile 改为 dispersed 所必需的结果，也不能据此单因素解释全部分差。
