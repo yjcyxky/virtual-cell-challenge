@@ -51,6 +51,7 @@ def report(output, result):
     for file in sorted((EXPERIMENT/'outputs').glob('*/metrics.json')):
         record=json.loads(file.read_text())
         cfg=yaml.safe_load((file.parent/'config.yaml').read_text())['configuration']
+        if cfg.get('task')=='exp004_reevaluation':continue
         records.append((cfg['feature_mode'],file.parent.name,record))
     lines=['# exp00701 结果',
            'H1 唯一开发留出；四个训练背景。沿用 exp007 标签、采样、512 轮、七个检查点和官方六指标。',
@@ -110,7 +111,10 @@ def run(args):
             raise ValueError('resume_code_or_environment_changed')
         identity=frozen['identity']
     else:
-        config=yaml.safe_load(Path(args.config).read_text())
+        if getattr(args,'reevaluate_exp004',False):
+            from reevaluation import configuration
+            config=configuration(args.feature_mode)
+        else:config=yaml.safe_load(Path(args.config).read_text())
         if config['experiment_id']!='exp00701' or config['prediction_target']!='log2fc_cpm_mean':
             raise ValueError('wrong_experiment_configuration')
         if set(config['contexts'])!={'H1','K562','RPE1','HepG2','Jurkat'} or len(config['contexts'])!=5 or config['validation_context']!='H1':
@@ -127,6 +131,8 @@ def run(args):
                 'split':{'unit':'whole biological context','train':[c for c in config['contexts'] if c!='H1'],
                          'validation':['H1'],'selection':'H1 Overall; earliest checkpoint on tie; development validation'},
                 'created_at':datetime.now(timezone.utc).isoformat()}
+        if config.get('task')=='exp004_reevaluation':
+            frozen['split']['selection']='Fixed original best checkpoint; exp004 input/reference NTC halves; no training or reselection'
         (output/'config.yaml').write_text(yaml.safe_dump(frozen,allow_unicode=True,sort_keys=True))
     log=(output/'train.log').open('a',buffering=1)
     class Tee:
@@ -145,7 +151,11 @@ def run(args):
     result.pop('error',None)
     stop=threading.Event();start=time.monotonic()
     def persist():
-        write_json(output/'metrics.json',result);report(output,result)
+        write_json(output/'metrics.json',result)
+        if config.get('task')=='exp004_reevaluation':
+            from reevaluation import report as reevaluation_report
+            reevaluation_report()
+        else:report(output,result)
     def monitor():
         while not stop.wait(30):
             usage=resource.getrusage(resource.RUSAGE_SELF)
@@ -154,29 +164,37 @@ def run(args):
     thread=threading.Thread(target=monitor,daemon=True);thread.start()
     try:
         persist();event('run_start',run_id=output.name,resume=bool(args.resume),git_commit=identity['git_commit'])
-        reference=attach_reference(config,output)
-        data=prepare(config,output)
-        data_reference={'preparation_sha256':digest(data.directory/'complete.json'),'sources':data.metadata['sources']}
-        frozen['data_reference']=data_reference
-        (output/'config.yaml').write_text(yaml.safe_dump(frozen,allow_unicode=True,sort_keys=True))
-        tracked.config.update({'data_reference':data_reference},allow_val_change=True)
-        prepare_priors(data,config,output)
-        base_features=Features(data,output/'cache/priors')
-        features=prepare_response_features(data,base_features,config,output,reference)
-        frozen['response_features']=json.loads((output/'cache/response-features.json').read_text())
-        (output/'config.yaml').write_text(yaml.safe_dump(frozen,allow_unicode=True,sort_keys=True))
-        tracked.config.update({'response_features':frozen['response_features']},allow_val_change=True)
-        evaluation=Evaluation(data,config,output,tracked)
-        selection=validate_h1(data,features,evaluation,config,output,tracked,result,persist)
+        if config.get('task')=='exp004_reevaluation':
+            from reevaluation import evaluate_run
+            selection=evaluate_run(config,output,tracked,result,persist)
+        else:
+            reference=attach_reference(config,output)
+            data=prepare(config,output)
+            data_reference={'preparation_sha256':digest(data.directory/'complete.json'),'sources':data.metadata['sources']}
+            frozen['data_reference']=data_reference
+            (output/'config.yaml').write_text(yaml.safe_dump(frozen,allow_unicode=True,sort_keys=True))
+            tracked.config.update({'data_reference':data_reference},allow_val_change=True)
+            prepare_priors(data,config,output)
+            base_features=Features(data,output/'cache/priors')
+            features=prepare_response_features(data,base_features,config,output,reference)
+            frozen['response_features']=json.loads((output/'cache/response-features.json').read_text())
+            (output/'config.yaml').write_text(yaml.safe_dump(frozen,allow_unicode=True,sort_keys=True))
+            tracked.config.update({'response_features':frozen['response_features']},allow_val_change=True)
+            evaluation=Evaluation(data,config,output,tracked)
+            selection=validate_h1(data,features,evaluation,config,output,tracked,result,persist)
         result['status']='uploading_artifacts';result['elapsed_seconds']=time.monotonic()-start;persist()
         artifact=wandb.Artifact(f'exp00701-{output.name}',type='model',metadata={'git_commit':identity['git_commit'],
                                'prediction_target':config['prediction_target'],'validation_context':'H1'})
-        paths=[output/'config.yaml',output/'metrics.json',output/'cache/selection.json',output/'cache/reference.json',output/'cache/response-features.json']
-        paths+=list((output/'cache/response-evidence').glob('*'))
-        if (output/'cache/module-basis.npy').exists():paths.append(output/'cache/module-basis.npy')
-        paths+=list((output/'checkpoints').glob('*/*.ubj'))+list((output/'checkpoints').glob('*/latest.pkl'))
-        for pattern in ['**/metrics.json','**/scores.csv','**/aggregate.csv','**/target-support.parquet','**/predicted-response.npz','**/generated-response.npz']:
-            paths+=list((output/'predictions').glob(pattern))
+        if config.get('task')=='exp004_reevaluation':
+            from reevaluation import artifact_files
+            paths=artifact_files(output)
+        else:
+            paths=[output/'config.yaml',output/'metrics.json',output/'cache/selection.json',output/'cache/reference.json',output/'cache/response-features.json']
+            paths+=list((output/'cache/response-evidence').glob('*'))
+            if (output/'cache/module-basis.npy').exists():paths.append(output/'cache/module-basis.npy')
+            paths+=list((output/'checkpoints').glob('*/*.ubj'))+list((output/'checkpoints').glob('*/latest.pkl'))
+            for pattern in ['**/metrics.json','**/scores.csv','**/aggregate.csv','**/target-support.parquet','**/predicted-response.npz','**/generated-response.npz']:
+                paths+=list((output/'predictions').glob(pattern))
         for path in paths:artifact.add_file(str(path),name=str(path.relative_to(output)))
         if tracked.offline:
             tracked.log_artifact(artifact);result['artifact_sync']='pending_offline_sync'
@@ -201,4 +219,6 @@ if __name__=='__main__':
     parser.add_argument('--config',default='configs/continuous.yaml')
     parser.add_argument('--run-id')
     parser.add_argument('--resume')
+    parser.add_argument('--reevaluate-exp004',action='store_true')
+    parser.add_argument('--feature-mode',choices=['continuous','deg','modules'])
     run(parser.parse_args())

@@ -23,6 +23,23 @@ from data import NTC
 EVALUATION_PROTOCOL = 'cell-eval2-dispersed-exclude-target-v1'
 
 
+def score_prediction(prediction,real,cfg,bundle,directory):
+    """The same pinned metric and scaling implementation for both reference protocols."""
+    directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
+    raw=compute_metrics(prediction,real,config=cfg)
+    raw.write_parquet(directory/'raw-metrics.parquet')
+    aggregate=aggregate_metrics_wide(raw,metrics=metric_output_names(cfg));aggregate.write_csv(directory/'aggregate.csv')
+    meta=build_run_meta(cfg,real,prediction);write_json(directory/'run-meta.json',meta)
+    scored=score_metrics(aggregate,real_bundle=str(bundle),user_meta=meta);scored.write_csv(directory/'scores.csv')
+    members=list(competition_members());selected=scored.filter(pl.col('metric').is_in(members))
+    components=dict(zip(selected['metric'].to_list(),selected['from_replicate'].to_list()))
+    if set(components)!=set(members) or not all(v is not None and np.isfinite(v) for v in components.values()):
+        raise ValueError('official_score_is_not_finite')
+    score=float(scored.filter(pl.col('metric')=='avg_score')['from_replicate'].item())
+    if not np.isclose(score,np.mean(list(components.values())),atol=1e-12):raise ValueError('official_average_mismatch')
+    return {'score':score,'components':components}
+
+
 def write_count_matrix(directory, blocks, shape, dtype):
     """Stream exact counts into a memory-mapped CSR, without a full dense/COO copy."""
     directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
@@ -259,17 +276,8 @@ class Evaluation:
         obs=pd.DataFrame({'target':labels},index=[f'prediction-{i}' for i in range(counts.shape[0])])
         prediction=ad.AnnData(counts,obs=obs,var=pd.DataFrame(index=np.array(self.data.genes)[axis]))
         event('official_score_start',context=context,training_contexts=training_contexts,round=iteration,kind=kind)
-        raw=compute_metrics(prediction,real,config=cfg)
-        raw.write_parquet(directory/'raw-metrics.parquet')
-        aggregate=aggregate_metrics_wide(raw,metrics=metric_output_names(cfg));aggregate.write_csv(directory/'aggregate.csv')
-        meta=build_run_meta(cfg,real,prediction);write_json(directory/'run-meta.json',meta)
-        scored=score_metrics(aggregate,real_bundle=str(bundle),user_meta=meta);scored.write_csv(directory/'scores.csv')
-        members=list(competition_members());selected=scored.filter(pl.col('metric').is_in(members))
-        components=dict(zip(selected['metric'].to_list(),selected['from_replicate'].to_list()))
-        if set(components)!=set(members) or not all(v is not None and np.isfinite(v) for v in components.values()):
-            raise ValueError('official_score_is_not_finite')
-        score=float(scored.filter(pl.col('metric')=='avg_score')['from_replicate'].item())
-        if not np.isclose(score,np.mean(list(components.values())),atol=1e-12):raise ValueError('official_average_mismatch')
+        scored_result=score_prediction(prediction,real,cfg,bundle,directory)
+        score,components=scored_result['score'],scored_result['components']
         seen=set().union(*(set(self.data.contexts[c]['targets']) for c in training_contexts)) if training_contexts else set()
         auxiliary=[]
         epsilon=self.config['lfc_epsilon']
@@ -298,7 +306,7 @@ class Evaluation:
         self.tracked.log({f'eval/{name}/{context}/{kind}/round':iteration,f'eval/{name}/{context}/{kind}/overall':score,
                           **{f'eval/{name}/{context}/{kind}/{k}':v for k,v in components.items()}})
         event('official_score',**result)
-        del prediction,counts,real,raw;gc.collect()
+        del prediction,counts,real;gc.collect()
         for name in ['data.bin','indices.bin','indptr.npy']:release(matrix_path/name)
         if keep:
             matrix_path.replace(directory/'predicted-counts')

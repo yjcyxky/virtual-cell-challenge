@@ -307,12 +307,13 @@ def verify_duplicate_controls(panels, native):
                 if not block.mask[:n].all():raise ValueError('H1_duplicate_NTC_expression_changed')
 
 class Data:
-    def __init__(self,directory):
+    def __init__(self,directory,contexts=None):
         self.directory = directory
         self.metadata = json.loads((directory/'complete.json').read_text())
         self.genes = self.metadata['genes']; self.lookup = {g:i for i,g in enumerate(self.genes)}
         self.contexts = {}
         for context in self.metadata['contexts']:
+            if contexts is not None and context not in contexts: continue
             folder = directory/context
             with np.load(folder/'statistics.npz') as z: stats={k:z[k] for k in z.files}
             stats['features'] = np.load(folder/'context-features.npy')

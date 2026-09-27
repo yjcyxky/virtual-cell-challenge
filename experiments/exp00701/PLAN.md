@@ -30,3 +30,15 @@ DE 仅处理四个训练 context。K562/HepG2/Jurkat 引用已验证的真实 DE
 - 每个 run 独立 W&B，entity=yjcyxky、project=virtual-cell-challenge、group=exp00701。保存完整训练 checkpoint、特征身份、模型与必要响应证据，并上传版本化 Artifacts。三个 runs 均有效训练/评估结束并汇总 REPORT 后任务完成，效果低于基线也是有效结果。
 
 入口：`cd experiments/exp00701 && ./reproduce.sh --config configs/continuous.yaml --run-id RUN_ID`；其余配置类同。恢复使用 `./reproduce.sh --resume RUN_ID`，完整恢复训练状态并继续尚未完成的评分，禁止只恢复模型权重或混入改变后的条件。
+
+## 用户追加：固定最优模型按 exp004 重评
+
+三个原 run 的最优检查点均为 128 轮；固定这些权重，仅重新推理与评估，不训练、不重新选择轮数。因输入与评估条件改变，三个模型各自建立独立评估 run，记录原训练 run、模型 SHA-256 和版本化 Artifact 来源；不覆盖旧 run。此任务的结束条件是三组各完成 101/202/303 三个生成种子的评估、保存预测和六项指标及均值/样本标准差、归档并更新报告。
+
+直接复用 exp004 原 H1 reference（40,756 个细胞、18,005 基因、297 靶点）及完整 baseline/replicate bundle：tiled mean-response baseline、profile exclude_target_gene=False、5 次拆半 seed=0。真实参考每靶点至多 128 个细胞。复用已固定的基准，而不是用 exp007 真值重新拟合一个同名基准；scorer 可写缓存复制到本 run。来源及其哈希统一冻结在 `configs/exp004-reference.json`。
+
+输入仅取 exp004 原 half=0 NTC 3,072 个；评分 reference 含原 half=1 NTC 3,072 个，按原始文件/行号和 batch/barcode 两种身份检查交集为零。重算现有特征定义及 CPM 基线；H1 响应数据不进入加载的模型输入。旧基因名称唯一映射至当前模型身份，评分端保留原名称和顺序。四个训练背景的连续响应、DE 证据和模块坐标保持原版。
+
+沿用 exp00701 计数生成算法，模板仅取输入半池，按 exp004 参考的每靶点/批次数量分配；评分方法、参考与 anchors 对齐 exp004，不替换被评估模型的生成算法。附加 NTC 仅用输入半池，实际 comparator 仍为 reference control。三生成种子取同权均值与样本标准差。旧口径选择的最优轮数仍有开发选择偏差；此次检验不证明与线上 r4 bundles 等价。
+
+入口：`./reproduce.sh --reevaluate-exp004 --feature-mode continuous --run-id RUN_ID`（另外两组为 deg、modules）；`./reproduce.sh --resume RUN_ID` 可继续尚未完成的评估，明确不恢复或追加训练。
