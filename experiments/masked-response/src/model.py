@@ -104,7 +104,8 @@ def complete_responses(shared, observed, basis, alpha):
 
 def fit(directory, genes, split, config):
     contexts = split['training_contexts']
-    statistics = {c: dict(np.load(directory/f'{c}-statistics.npz')) for c in contexts}
+    statistics_directory = directory/'selected' if 'training_selection' in config else directory
+    statistics = {c: dict(np.load(statistics_directory/f'{c}-statistics.npz')) for c in contexts}
     model = shared_responses(statistics, contexts, genes, config['model']['weight_cell_unit'],
                              config['model']['gene_chunk'])
     spec = config['representation']

@@ -1,0 +1,45 @@
+{
+  "source_run_id": "masked-response-shared-s01",
+  "files": [
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/raw.parquet",
+      "sha256": "4d383608cf807688f570231db1ee609d0b05326f367a90e11e6a5d6f6183a88b"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/aggregate.csv",
+      "sha256": "f9747cc930ee128a1603156bc011e14f68862e9bd1055b277ea6e5b537ee2398"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/scores.csv",
+      "sha256": "5039c8912dde17ae9482df082cad3dad07f01c3578a2acaec0edcef08032280f"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/run_meta.json",
+      "sha256": "845a28656698b534d14fdb2dae55a324d9c06e5e1c80d3dc2a6f4ce6a415686b"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/result.json",
+      "sha256": "38044972e87d9bb1f23b9a498d9f42aa7c40cd6417fd521080d4a4778e13d7d2"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/raw.parquet",
+      "sha256": "5b5be7a2a9d582cd05ec3ef701766b739bfd2b524e495db695a4ed858077d62d"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/aggregate.csv",
+      "sha256": "e01b64adb2f3e8774cc5e2f3106836cb5fca96592fa808cdacb3ee2b4162b8e1"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/scores.csv",
+      "sha256": "72ce878543fc774a4588aaf0120e22548d98646eed29789dd22e88a55fe85302"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/run_meta.json",
+      "sha256": "c5c7cd9e4aed203777e79dd3d6a8831b5d20ea1fc2ab094b597cd659132f41cf"
+    },
+    {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/result.json",
+      "sha256": "eaebf79f80f3fb10f64a4b70453b70ae6507524889881c508057fdb121680a88"
+    }
+  ]
+}

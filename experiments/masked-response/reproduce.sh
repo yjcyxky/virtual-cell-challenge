@@ -12,7 +12,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 case "$RUN_ID" in
-  masked-response-shared-s01|masked-response-pca-s01|masked-response-program-s01|masked-response-random-s01)
+  masked-response-shared-s01|masked-response-pca-s01|masked-response-program-s01|masked-response-random-s01|masked-response-qc-s01|masked-response-random-thin-s01)
     CONFIG="configs/$RUN_ID.json" ;;
   *) echo "Unknown run: $RUN_ID" >&2; exit 2 ;;
 esac

@@ -15,6 +15,7 @@ import wandb
 from data import ROOT, prepare, write_json, ref, verify_reference_reuse
 from model import fit
 from evaluation import generate, evaluate
+from selection import prepare_selected
 
 sys.path.insert(0, str(ROOT/'scripts'))
 from research import bind, digest, execution_metadata
@@ -66,6 +67,8 @@ def main():
     try:
         print(f'Bound {config["run_id"]} at {research["git_commit"]}; resume={resume}', flush=True)
         axis, split, prepared = prepare(output, config)
+        if 'training_selection' in config:
+            prepared['selection'] = prepare_selected(output, config, axis, split)
         checkpoint_dir = output/'checkpoints'
         checkpoint_dir.mkdir(exist_ok=True)
         checkpoint = checkpoint_dir/'response.npz'
@@ -97,7 +100,7 @@ def main():
                    'wandb_sync': 'online', 'preparation': prepared,
                    'elapsed_seconds_this_attempt': time.monotonic()-started,
                    'resources': {'max_rss_gib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/2**20}}
-        for name in ('representation', 'reference-reuse'):
+        for name in ('representation', 'reference-reuse', 'selection', 'control-provenance'):
             path = output/'cache'/f'{name}.json'
             if path.exists():
                 metrics[name.replace('-', '_')+'_ref'] = ref(path)
@@ -107,7 +110,7 @@ def main():
         artifact.add_file(str(output/'metrics.json'), name='metrics.json')
         artifact.add_file(str(output/'config.yaml'), name='config.yaml')
         artifact.add_file(str(output/'predictions/manifest.json'), name='prediction-manifest.json')
-        for name in ('representation', 'reference-reuse'):
+        for name in ('representation', 'reference-reuse', 'selection', 'control-provenance'):
             path = output/'cache'/f'{name}.json'
             if path.exists():
                 artifact.add_file(str(path), name=f'{name}.json')

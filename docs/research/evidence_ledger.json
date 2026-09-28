@@ -1065,7 +1065,8 @@
         },
         {
           "path": "experiments/masked-response/REPORT.md",
-          "sha256": "015e5af2dbb9e295306f29f5e03012775dc819ff49d2c096616acf51141ab6e9"
+          "sha256": "015e5af2dbb9e295306f29f5e03012775dc819ff49d2c096616acf51141ab6e9",
+          "git_commit": "6e94f5eeafdd167cc07825a904982ab183578f3e"
         },
         {
           "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
@@ -1083,9 +1084,9 @@
       "node_ids": [],
       "hypothesis": "在当前强shared上，额外QC是否提供超过同数量和覆盖随机删减的开发收益？",
       "claim": "待检验：强shared上QC相对匹配随机删减的收益；本轮输出补全结论不能充当QC有效证据。",
-      "limitations": "尚无具体质量规则/匹配方案/完整配置或执行；不把弱响应默认当低质量。",
+      "limitations": "低UMI是待检验质量代理而非技术噪声真值；单H1开发/一个随机选择和生成seed。配置和判据已冻结，尚无候选效果。",
       "source_refs": [],
-      "next_action": "冻结训练内质量代理、匹配删减、数据统计重算与强控制可比性，完成登记后再执行。",
+      "next_action": "按execute门禁顺序完成低深度筛选及匹配随机两次完整训练/官方评分；保留显式历史strong-shared控制。",
       "reopen_when": "关闭后新增质量观测、数据来源或评估背景时另立比较。"
     }
   },

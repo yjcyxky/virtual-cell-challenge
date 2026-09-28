@@ -1382,7 +1382,7 @@
         "G": "G0"
       },
       "signature": "T1-D6-R14-A0-L1-O0-V5-I6-G0",
-      "prior": "P-RELIABILITY",
+      "prior": "低测序深度可能影响响应估计，但也可能代表真实生物差异；与同组合同数量随机删减匹配检验。",
       "local_status": "UNTESTED",
       "execution_role": "candidate",
       "cost": "medium",
@@ -1391,7 +1391,8 @@
         "L02",
         "E-SHARED-QC"
       ],
-      "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。"
+      "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。",
+      "implementation_scope": "C-SHARED-QC：训练批次UMI第10百分位尾部，target×guide×batch至少保留1；QC/随机逐组合计数相同；固定shared与NTC、评价人群。"
     },
     "M-SHARED-QC-RANDOM": {
       "description": "强shared上的匹配随机删减",
@@ -1407,7 +1408,7 @@
         "G": "G0"
       },
       "signature": "T1-D7-R14-A0-L1-O0-V5-I6-G0",
-      "prior": "随机删减对照；匹配质量臂细胞/guide/target/batch保留规模，不使用质量排序。",
+      "prior": "与低深度QC每个target×guide×batch同保留数，固定seed SHA256均匀随机排序，分离质量代理与数量/覆盖效应。",
       "local_status": "UNTESTED",
       "execution_role": "candidate",
       "cost": "medium",
@@ -1416,7 +1417,8 @@
         "L02",
         "E-SHARED-QC"
       ],
-      "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。"
+      "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。",
+      "implementation_scope": "C-SHARED-QC：训练批次UMI第10百分位尾部，target×guide×batch至少保留1；QC/随机逐组合计数相同；固定shared与NTC、评价人群。"
     }
   }
 }
