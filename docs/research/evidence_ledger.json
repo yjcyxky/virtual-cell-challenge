@@ -1126,7 +1126,8 @@
         },
         {
           "path": "experiments/masked-response/REPORT.md",
-          "sha256": "09b227119f8426fe5b340489f4fdfc8de8806cff9d938b41f622d52449102088"
+          "sha256": "09b227119f8426fe5b340489f4fdfc8de8806cff9d938b41f622d52449102088",
+          "git_commit": "3fbc7a5959e87be1636cc594b4aca1155fbfc461"
         },
         {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/paired-all-qc-vs-shared.csv",
