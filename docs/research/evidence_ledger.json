@@ -1032,37 +1032,72 @@
     },
     "E-MASKED-RESPONSE": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-MASKED-RESPONSE",
+      "node_ids": [
+        "masked-response-shared-s01",
+        "masked-response-pca-s01",
+        "masked-response-program-s01",
+        "masked-response-random-s01"
+      ],
+      "claim": "S2-H1/context-seen/seed1，四臂完整拟合与八次fresh官方评分：shared主面板=0.210865634、官方重叠=0.204838178；pca主面板=0.208995405、官方重叠=0.200556713；program主面板=0.209850546、官方重叠=0.200680059；random_program主面板=0.210534747、官方重叠=0.204498131。三候选均未通过相对shared主面板>=+0.02且重叠>=-0.02的预注册联合筛选。真实程序结构相对最强低秩/随机控制的预注册条件未通过。新shared响应及112000行预测计数复现原基线，99个四背景支持靶的候选预测计数保持不变。",
+      "limitations": "仅H1开发背景、一个生成seed及一个基/图seed；4训练背景/2研究，不增加背景独立性。当前6832基因覆盖、rank32、alpha0.1、输出注入位置和固定文库恢复生成器；2387个完整监督训练靶点有选择偏差，低秩仅由完整监督子集拟合。未支持不等于零效应或否定所有先验；全训练缺测基因保持零Δ；未新增官方榜单提交，不声称SOTA。逐靶点SD是面板异质性，不是跨背景置信区间；保持监督Δ也不能隔离计数归一化耦合。",
+      "source_refs": [
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+          "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-pca-s01/metrics.json",
+          "sha256": "75d4303b398701d65fe6468eb510030de851a48c298be2470112325f399deb9b"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-program-s01/metrics.json",
+          "sha256": "d944f11c79be202e28fdfd5249f25b064301dae924065c91e7ec76a3a9470ffb"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-random-s01/metrics.json",
+          "sha256": "f83ea003d46870cd3e763c8f9bbd185127793f6e0b19d636a3c7ec9ce92fc5ec"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-program-s01/cache/comparison.json",
+          "sha256": "89c7604aa114d980791c9fc48e9b5b601aa78b3e0ad67987c69ea6c9ea92682f"
+        },
+        {
+          "path": "experiments/masked-response/REPORT.md",
+          "sha256": "015e5af2dbb9e295306f29f5e03012775dc819ff49d2c096616acf51141ab6e9"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+          "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+        }
+      ],
+      "next_action": "保留shared零回退，结束当前rank32响应补全筛选；推进强shared控制上的基础/QC/匹配随机三臂。旧C-QC草案采用较弱条件ridge，须先重建匹配strong-shared控制、方法坐标和完整配置，不能直接沿用它启动。固定评价人群、基因轴与生成器，单列181仅K562/99多背景支持靶的细胞、guide、靶点保留率和响应强度。",
+      "reopen_when": "新增训练监督、通路/表示来源或外推范围改变时登记新比较；若新背景有独立相反证据再确认，不在本H1上追加秩、alpha或图seed网格覆盖已关闭结论。",
+      "hypothesis": "保持已监督shared响应时，掩码约束的缺失响应补全能否超过零回退，真实程序能否超过匹配随机/训练内低秩表示？"
+    },
+    "E-SHARED-QC": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-SHARED-QC",
       "node_ids": [],
-      "hypothesis": "保持已监督shared响应时，掩码约束的缺失响应补全能否超过零回退，真实程序能否超过匹配随机/训练内低秩表示？",
-      "claim": "待检验：响应补全能否超过强shared，NTC表示结果不能替代这个实验。",
-      "limitations": "已冻结四臂配置/来源/判据，尚无本地方法效果；完整监督目标子集拟合低秩，当前仅H1开发，全球缺测基因仍零回退。",
+      "hypothesis": "在当前强shared上，额外QC是否提供超过同数量和覆盖随机删减的开发收益？",
+      "claim": "待检验：强shared上QC相对匹配随机删减的收益；本轮输出补全结论不能充当QC有效证据。",
+      "limitations": "尚无具体质量规则/匹配方案/完整配置或执行；不把弱响应默认当低质量。",
       "source_refs": [],
-      "next_action": "通过check及已提交门禁，顺序完成四臂正式拟合与官方评分，再按PLAN闭环。",
-      "reopen_when": "关闭后新增训练监督、输出表示来源或外推范围改变时另建比较。"
+      "next_action": "冻结训练内质量代理、匹配删减、数据统计重算与强控制可比性，完成登记后再执行。",
+      "reopen_when": "关闭后新增质量观测、数据来源或评估背景时另立比较。"
     }
   },
   "queue": [
     {
-      "id": "Q-MASKED-RESPONSE",
-      "priority": 1,
-      "comparison_id": "C-MASKED-RESPONSE",
-      "question": "以shared为强基线，响应空间表示能否补全训练中缺少target×gene监督的位置并改善官方指标？",
-      "action": "结束本轮NTC投影/维数局部搜索，保留shared强参照，推进C-MASKED-RESPONSE：保持训练中有直接target×gene监督位置的shared Δ，固定生成器，比较缺失响应位置的零回退、训练内低秩/PCA、真实程序与度数匹配随机程序补全。先只检验训练至少测过的基因，全训练缺测基因仍为零Δ预测并报告覆盖；完整官方输出与H1实测评分轴不缩小。NTC程序阴性不否定响应输出表示或其他先验注入位置。",
-      "requires_evidence": [
-        "E-PROGRAM",
-        "E-RIDGE-STRENGTH"
-      ]
-    },
-    {
       "id": "Q-QUALITY",
-      "priority": 2,
-      "comparison_id": "C-QC",
-      "question": "额外QC改变的是可靠性，还是数量、target覆盖与弱响应人群？",
-      "action": "条件项归因后落实基础/QC/匹配随机三臂，保持评估群体及官方轴；单列181仅K562与99四背景支持靶的保留率，不能把响应强度/覆盖变化当作质量收益。",
+      "priority": 1,
+      "comparison_id": "C-SHARED-QC",
+      "question": "在当前强shared上，额外QC是否提供超过同数量和覆盖随机删减的开发收益？",
+      "action": "保留shared零回退，结束当前rank32响应补全筛选；推进强shared控制上的基础/QC/匹配随机三臂。旧C-QC草案采用较弱条件ridge，须先重建匹配strong-shared控制、方法坐标和完整配置，不能直接沿用它启动。固定评价人群、基因轴与生成器，单列181仅K562/99多背景支持靶的细胞、guide、靶点保留率和响应强度。 已登记C-SHARED-QC及两个draft候选，先落实质量代理/匹配和完整配置。",
       "requires_evidence": [
-        "E-BASE"
+        "E-MASKED-RESPONSE"
       ]
     }
   ]

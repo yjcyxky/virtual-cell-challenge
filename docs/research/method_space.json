@@ -1276,15 +1276,16 @@
       },
       "signature": "T1-D1-R14-A0-L1-O0-V5-I6-G0",
       "prior": "同一数据/权重的逐靶点共享Δ；不把未测零填充作为监督。",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "control",
       "cost": "medium",
       "evidence_ids": [
         "L03",
         "E-MASKED-RESPONSE"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
-      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
+      "selection_basis": "立项来自已关闭NTC路线后的响应空间问题；本地结论见E-MASKED-RESPONSE及result_scope。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。",
+      "result_scope": "C-MASKED-RESPONSE：新shared重算及完整预测复现原参照，是当前本比较保留控制；不是SOTA声明。"
     },
     "M-RESPONSE-PCA": {
       "description": "训练内响应低秩表示补全",
@@ -1301,7 +1302,7 @@
       },
       "signature": "T1-D1-R6-A0-L1-O0-V5-I6-G0",
       "prior": "在通路匹配的训练测量并集轴上，完整监督训练靶点的共享响应作未中心化rank32 SVD，掩码ridge只填缺测；不读取H1标签。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "medium",
       "evidence_ids": [
@@ -1309,8 +1310,9 @@
         "E-MASKED-RESPONSE",
         "L05"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
-      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
+      "selection_basis": "立项来自已关闭NTC路线后的响应空间问题；本地结论见E-MASKED-RESPONSE及result_scope。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。",
+      "result_scope": "C-MASKED-RESPONSE，S2-H1/context-seen/seed1；6832覆盖基因、rank32、alpha0.1、固定生成器，仅缺测补全。主/重叠相对shared差=-0.001870229/-0.004281464，未通过联合采用门槛；仅搁置此实现/范围，不否定所有低秩或先验。"
     },
     "M-RESPONSE-PROGRAM": {
       "description": "功能程序响应表示补全",
@@ -1327,7 +1329,7 @@
       },
       "signature": "T1-D1-R4-A0-L1-O0-V5-I6-G0",
       "prior": "真实基因模块约束输出响应的低秩结构；仅补全规定缺失位置，保留已监督shared Δ。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "medium",
       "evidence_ids": [
@@ -1335,8 +1337,9 @@
         "E-MASKED-RESPONSE",
         "L05"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
-      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
+      "selection_basis": "立项来自已关闭NTC路线后的响应空间问题；本地结论见E-MASKED-RESPONSE及result_scope。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。",
+      "result_scope": "C-MASKED-RESPONSE，S2-H1/context-seen/seed1；6832覆盖基因、rank32、alpha0.1、固定生成器，仅缺测补全。主/重叠相对shared差=-0.001015088/-0.004158118，未通过联合采用门槛；仅搁置此实现/范围，不否定所有低秩或先验。"
     },
     "M-RESPONSE-RANDOM": {
       "description": "匹配随机程序响应补全",
@@ -1353,7 +1356,7 @@
       },
       "signature": "T1-D1-R7-A0-L1-O0-V5-I6-G0",
       "prior": "与真实模块逐基因度数、模块大小、维数、覆盖和重构/正则完全匹配的随机结构。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "medium",
       "evidence_ids": [
@@ -1361,8 +1364,59 @@
         "E-MASKED-RESPONSE",
         "L05"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
-      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
+      "selection_basis": "立项来自已关闭NTC路线后的响应空间问题；本地结论见E-MASKED-RESPONSE及result_scope。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。",
+      "result_scope": "C-MASKED-RESPONSE，S2-H1/context-seen/seed1；6832覆盖基因、rank32、alpha0.1、固定生成器，仅缺测补全。主/重叠相对shared差=-0.000330887/-0.000340047，未通过联合采用门槛；仅搁置此实现/范围，不否定所有低秩或先验。"
+    },
+    "M-SHARED-QC": {
+      "description": "强shared上的额外质量筛选",
+      "axes": {
+        "T": "T1",
+        "D": "D6",
+        "R": "R14",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D6-R14-A0-L1-O0-V5-I6-G0",
+      "prior": "P-RELIABILITY",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L01",
+        "L02",
+        "E-SHARED-QC"
+      ],
+      "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。"
+    },
+    "M-SHARED-QC-RANDOM": {
+      "description": "强shared上的匹配随机删减",
+      "axes": {
+        "T": "T1",
+        "D": "D7",
+        "R": "R14",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D7-R14-A0-L1-O0-V5-I6-G0",
+      "prior": "随机删减对照；匹配质量臂细胞/guide/target/batch保留规模，不使用质量排序。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L01",
+        "L02",
+        "E-SHARED-QC"
+      ],
+      "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。"
     }
   }
 }

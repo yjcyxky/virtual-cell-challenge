@@ -3901,7 +3901,10 @@
         "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
         "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/masked-response/REPORT.md",
+        "sha256": "015e5af2dbb9e295306f29f5e03012775dc819ff49d2c096616acf51141ab6e9"
+      },
       "git_commit": "58a604f6c6482cce8bdda2474d0825128af2070f",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-shared-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/masked-response-shared-s01-result:v0",
@@ -3925,7 +3928,9 @@
         "end_condition": "解析拟合、完整预测、两个面板官方六指标有效、Artifacts；四臂配对分析并关闭E-MASKED-RESPONSE。"
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "58a604f6c6482cce8bdda2474d0825128af2070f",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-MASKED-RESPONSE-evidence:v0"
     },
     "masked-response-pca-s01": {
       "experiment_id": "masked-response",
@@ -4181,7 +4186,10 @@
         "path": "experiments/masked-response/outputs/masked-response-pca-s01/metrics.json",
         "sha256": "75d4303b398701d65fe6468eb510030de851a48c298be2470112325f399deb9b"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/masked-response/REPORT.md",
+        "sha256": "015e5af2dbb9e295306f29f5e03012775dc819ff49d2c096616acf51141ab6e9"
+      },
       "git_commit": "59820797d739bc356abf564423c811ecb16759b4",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-pca-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/masked-response-pca-s01-result:v0",
@@ -4205,7 +4213,9 @@
         "end_condition": "解析拟合、完整预测、两个面板官方六指标有效、Artifacts；四臂配对分析并关闭E-MASKED-RESPONSE。"
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "59820797d739bc356abf564423c811ecb16759b4",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-MASKED-RESPONSE-evidence:v0"
     },
     "masked-response-program-s01": {
       "experiment_id": "masked-response",
@@ -4461,7 +4471,10 @@
         "path": "experiments/masked-response/outputs/masked-response-program-s01/metrics.json",
         "sha256": "d944f11c79be202e28fdfd5249f25b064301dae924065c91e7ec76a3a9470ffb"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/masked-response/REPORT.md",
+        "sha256": "015e5af2dbb9e295306f29f5e03012775dc819ff49d2c096616acf51141ab6e9"
+      },
       "git_commit": "9c2335120c8eab35a2ac7df34fbf2571ff7261f8",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-program-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/masked-response-program-s01-result:v0",
@@ -4485,7 +4498,9 @@
         "end_condition": "解析拟合、完整预测、两个面板官方六指标有效、Artifacts；四臂配对分析并关闭E-MASKED-RESPONSE。"
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "9c2335120c8eab35a2ac7df34fbf2571ff7261f8",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-MASKED-RESPONSE-evidence:v0"
     },
     "masked-response-random-s01": {
       "experiment_id": "masked-response",
@@ -4494,7 +4509,7 @@
       "legacy": false,
       "method_id": "M-RESPONSE-RANDOM",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-MASKED-RESPONSE",
       "controls": [
         "masked-response-shared-s01"
@@ -4737,11 +4752,17 @@
           "sha256": "82bd6f04af3a88089de7ab3c680b21abab57ba9c0a61fdb3b3cd38acd2979f62"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/masked-response/outputs/masked-response-random-s01/metrics.json",
+        "sha256": "f83ea003d46870cd3e763c8f9bbd185127793f6e0b19d636a3c7ec9ce92fc5ec"
+      },
+      "report_ref": {
+        "path": "experiments/masked-response/REPORT.md",
+        "sha256": "015e5af2dbb9e295306f29f5e03012775dc819ff49d2c096616acf51141ab6e9"
+      },
+      "git_commit": "41633c8849ac4c0febe48dc6ad9386c41756d4b0",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-random-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/masked-response-random-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -4761,7 +4782,128 @@
         "source_usage": "复制冻结预处理/NTC/reference bundles；重新计算shared且逐值核验原来源，仅zero/shared/source历史参照分数经审计复用；四新预测重新评分。",
         "end_condition": "解析拟合、完整预测、两个面板官方六指标有效、Artifacts；四臂配对分析并关闭E-MASKED-RESPONSE。"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "code_snapshot_commit": "41633c8849ac4c0febe48dc6ad9386c41756d4b0",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-MASKED-RESPONSE-evidence:v0"
+    },
+    "masked-response-qc-s01": {
+      "experiment_id": "masked-response",
+      "directory": "experiments/masked-response",
+      "run_id": "masked-response-qc-s01",
+      "legacy": false,
+      "method_id": "M-SHARED-QC",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-SHARED-QC",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-MASKED-RESPONSE"
+      ],
+      "evidence_conditions": {
+        "E-MASKED-RESPONSE": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "固定strong-shared及生成器，QC是否超过同数量/覆盖匹配的随机删减；H1开发证据。",
+        "allocation": "数据选择留在masked-response Experiment；当前draft不建run产物/W&B。",
+        "source_usage": "仅复用冻结NTC/reference/bundles。QC训练伪bulk须从允许训练细胞重算；不把基础完整数据伪bulk当作已过滤统计量，不复用模型权重。",
+        "unresolved": [
+          "核验质量字段/guide/batch与可靠性代理；阈值只用训练内信息，不默认把弱响应判为低质量。",
+          "冻结QC与随机臂的匹配单位、细胞/guide/target保留数及停止条件；不通过删除困难H1评分对象涨分。",
+          "保持当前shared模型与零回退；仅改变D。若必须改变其他轴，拆开或声明整包，不能使用较弱旧条件ridge作唯一控制。",
+          "QC改变shared时不能调用要求shared逐值不变的旧reference_reuse检查；设计明确的历史控制来源验证，不绕过检查或改写历史分数。",
+          "落实完整配置/数据哈希/代码锁文件/数值判据/资源预算；需要新匹配基线时另登记run，不因已有分数默认可比。"
+        ]
+      },
+      "blockers": [
+        "质量规则和匹配删减尚未冻结；不能从本轮结果推断QC有效。"
+      ]
+    },
+    "masked-response-random-thin-s01": {
+      "experiment_id": "masked-response",
+      "directory": "experiments/masked-response",
+      "run_id": "masked-response-random-thin-s01",
+      "legacy": false,
+      "method_id": "M-SHARED-QC-RANDOM",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-SHARED-QC",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-MASKED-RESPONSE"
+      ],
+      "evidence_conditions": {
+        "E-MASKED-RESPONSE": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "固定strong-shared及生成器，QC是否超过同数量/覆盖匹配的随机删减；H1开发证据。",
+        "allocation": "数据选择留在masked-response Experiment；当前draft不建run产物/W&B。",
+        "source_usage": "仅复用冻结NTC/reference/bundles。QC训练伪bulk须从允许训练细胞重算；不把基础完整数据伪bulk当作已过滤统计量，不复用模型权重。",
+        "unresolved": [
+          "核验质量字段/guide/batch与可靠性代理；阈值只用训练内信息，不默认把弱响应判为低质量。",
+          "冻结QC与随机臂的匹配单位、细胞/guide/target保留数及停止条件；不通过删除困难H1评分对象涨分。",
+          "保持当前shared模型与零回退；仅改变D。若必须改变其他轴，拆开或声明整包，不能使用较弱旧条件ridge作唯一控制。",
+          "QC改变shared时不能调用要求shared逐值不变的旧reference_reuse检查；设计明确的历史控制来源验证，不绕过检查或改写历史分数。",
+          "落实完整配置/数据哈希/代码锁文件/数值判据/资源预算；需要新匹配基线时另登记run，不因已有分数默认可比。"
+        ]
+      },
+      "blockers": [
+        "质量规则和匹配删减尚未冻结；不能从本轮结果推断QC有效。"
+      ]
     }
   },
   "comparisons": {
@@ -5472,6 +5614,36 @@
       "cost": "medium",
       "priority_basis": "NTC程序/PCA初筛未超过shared；转向直接改善响应及其监督覆盖的模型问题。",
       "evidence_id": "E-MASKED-RESPONSE"
+    },
+    "C-SHARED-QC": {
+      "status": "draft",
+      "purpose": "screen",
+      "hypothesis": "在当前强shared上，额外QC是否提供超过同数量和覆盖随机删减的开发收益？",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "candidates": [
+        "masked-response-qc-s01",
+        "masked-response-random-thin-s01"
+      ],
+      "changed_axes": [
+        "D"
+      ],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": null,
+        "scope": "S2-H1/context-seen/seed1；280主面板和25官方重叠；H1开发证据。",
+        "on_support": "在独立背景或官方面板及配对重复中确认；QC须超过匹配随机，不能归因于样本规模变化。",
+        "on_against": "保留基础shared，搁置该QC实现；回到靶点先验/响应任务问题，不追加H1阈值搜索。",
+        "on_inconclusive": "补齐匹配/覆盖或有效执行；不得把执行失败或更换评分群体解释为质量收益。",
+        "threshold_policy": "检查训练内代理和成本后，在候选结果前冻结主/重叠数值门槛；未冻结不启动。"
+      },
+      "attribution_plan": "基础strong-shared/QC/匹配随机三臂；真实评价人群和官方轴固定，报告181仅K562与99四背景支持靶的保留率、响应强度、guide/batch覆盖。",
+      "cost": "medium",
+      "priority_basis": "执行C-MASKED-RESPONSE预定无信号分支；重新匹配强shared，保留初始化旧C-QC为未执行备选。",
+      "evidence_id": "E-SHARED-QC"
     }
   },
   "continuation_rules": {

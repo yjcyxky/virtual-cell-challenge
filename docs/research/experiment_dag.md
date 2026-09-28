@@ -40,7 +40,9 @@ flowchart TD
   n33["masked-response-shared-s01 | completed"]
   n34["masked-response-pca-s01 | completed"]
   n35["masked-response-program-s01 | completed"]
-  n36["masked-response-random-s01 | ready"]
+  n36["masked-response-random-s01 | completed"]
+  n37["masked-response-qc-s01 | draft"]
+  n38["masked-response-random-thin-s01 | draft"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -190,4 +192,16 @@ flowchart TD
   n12 -.->|"evidence: E-PROGRAM"| n36
   n30 -.->|"evidence: E-RIDGE-STRENGTH"| n36
   n31 -.->|"evidence: E-RIDGE-STRENGTH"| n36
+  n33 -->|control| n37
+  n0 -->|source| n37
+  n33 -.->|"evidence: E-MASKED-RESPONSE"| n37
+  n34 -.->|"evidence: E-MASKED-RESPONSE"| n37
+  n35 -.->|"evidence: E-MASKED-RESPONSE"| n37
+  n36 -.->|"evidence: E-MASKED-RESPONSE"| n37
+  n33 -->|control| n38
+  n0 -->|source| n38
+  n33 -.->|"evidence: E-MASKED-RESPONSE"| n38
+  n34 -.->|"evidence: E-MASKED-RESPONSE"| n38
+  n35 -.->|"evidence: E-MASKED-RESPONSE"| n38
+  n36 -.->|"evidence: E-MASKED-RESPONSE"| n38
 ```
