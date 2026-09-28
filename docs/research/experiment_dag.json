@@ -7130,7 +7130,12 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "code_snapshot_commit": "c180c39862778d934e0f62e24a7f2a41bf1ddf8a"
+      "code_snapshot_commit": "c180c39862778d934e0f62e24a7f2a41bf1ddf8a",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/gene-conditioned-response-C-GENE-DECODER-PACKAGE-evidence:v0",
+      "evidence_publication_ref": {
+        "path": "experiments/gene-conditioned-response/outputs/gene-decoder-s01/cache/evidence-publication.json",
+        "sha256": "b624c3b8107b24ece31e7c09b97913b01f60e6f64a35f63e746337580cbf4755"
+      }
     },
     "cell-cvae-s01": {
       "experiment_id": "conditional-cell-response",
@@ -8061,7 +8066,12 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "code_snapshot_commit": "7ced75d75c19687ec20089863fb32dda9dec322b"
+      "code_snapshot_commit": "7ced75d75c19687ec20089863fb32dda9dec322b",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/conditional-cell-response-C-CELL-VAE-ALIGNED-PACKAGE-evidence:v0",
+      "evidence_publication_ref": {
+        "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/cache/evidence-publication.json",
+        "sha256": "5d88838995a2e305c3efb84cbd134d996a30bcb253c5a46c2f08b4b68cb36a03"
+      }
     },
     "set-distribution-s01": {
       "experiment_id": "set-distribution-response",
