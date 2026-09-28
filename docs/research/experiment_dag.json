@@ -4798,7 +4798,7 @@
       "legacy": false,
       "method_id": "M-SHARED-QC",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-SHARED-QC",
       "controls": [
         "masked-response-shared-s01"
@@ -5066,11 +5066,14 @@
           "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/masked-response/outputs/masked-response-qc-s01/metrics.json",
+        "sha256": "78220ee60c40744f309ad1e68ee96acdb49d63c1a933b421f915307bd145068b"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "git_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-qc-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -5090,7 +5093,9 @@
         "unresolved": [],
         "end_condition": "两次完整拟合/生成、四次官方评分、配对分层分析、Artifacts及close E-SHARED-QC。"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "code_snapshot_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645"
     },
     "masked-response-random-thin-s01": {
       "experiment_id": "masked-response",

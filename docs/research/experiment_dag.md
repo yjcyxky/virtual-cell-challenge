@@ -41,7 +41,7 @@ flowchart TD
   n34["masked-response-pca-s01 | completed"]
   n35["masked-response-program-s01 | completed"]
   n36["masked-response-random-s01 | completed"]
-  n37["masked-response-qc-s01 | ready"]
+  n37["masked-response-qc-s01 | completed"]
   n38["masked-response-random-thin-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
