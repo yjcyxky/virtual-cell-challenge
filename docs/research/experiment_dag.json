@@ -606,20 +606,67 @@
           "E-BASE-OFFICIAL"
         ],
         "config_ref": {
-          "path": "experiments/init-linear/configs/anchor-audit-s01.json",
-          "sha256": "0bf530b1ee8665cbcd327e5ba7864f4b45501eb632b83916daf0573f51439c0b"
+          "path": "experiments/init-linear/configs/anchor-audit-s01-csr.json",
+          "sha256": "d6a7f33b4a394338fa602bad0b2b4b5f459199d014f282a4f3f32a79dc90da63"
         },
         "code_refs": [
           {
             "path": "experiments/init-linear/src/anchor_audit.py",
-            "sha256": "10758d15ab6da82334896b40f7be0addcf3f95470e20286bf92ba677320a3d30"
+            "sha256": "ba7f725bdd49cde9304c9294400e1e63a5ed458f2d847641a5251599554562b6"
           },
           {
             "path": "experiments/init-linear/anchor-audit.sh",
             "sha256": "f11f75f391c044dd01b406256578ea783f2038d2f9c21c8d1ef48bd7ebf3b36f"
           }
         ],
-        "entrypoint": "experiments/init-linear/anchor-audit.sh"
+        "entrypoint": "experiments/init-linear/anchor-audit.sh",
+        "previous_attempts": [
+          {
+            "status": "interrupted",
+            "comparison_id": "C-ANCHOR-AUDIT",
+            "requires_evidence": [
+              "E-BASE-OFFICIAL"
+            ],
+            "config_ref": {
+              "path": "experiments/init-linear/configs/anchor-audit-s01.json",
+              "sha256": "0bf530b1ee8665cbcd327e5ba7864f4b45501eb632b83916daf0573f51439c0b"
+            },
+            "code_refs": [
+              {
+                "path": "experiments/init-linear/src/anchor_audit.py",
+                "sha256": "10758d15ab6da82334896b40f7be0addcf3f95470e20286bf92ba677320a3d30",
+                "git_commit": "e8f0aba9ca54065f677e19f05f0b2e43ac18fb26"
+              },
+              {
+                "path": "experiments/init-linear/anchor-audit.sh",
+                "sha256": "f11f75f391c044dd01b406256578ea783f2038d2f9c21c8d1ef48bd7ebf3b36f",
+                "git_commit": "e8f0aba9ca54065f677e19f05f0b2e43ac18fb26"
+              }
+            ],
+            "entrypoint": "experiments/init-linear/anchor-audit.sh",
+            "reason": "tile dense COO conversion remained CPU-bound over 30 minutes; original dispersed condition completed; terminated incomplete tile and diagnostic replay, no method conclusion.",
+            "identity_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit/identity.json",
+              "sha256": "e873a44435d1a175f1c99ba4e3cc1a9cd1c3b4272c9d36b71bbf341300760893"
+            },
+            "completed_result_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit/all/dispersed-exclude/result.json",
+              "sha256": "03d6f0d5a60590d0d45f39bf275bbd1f5933869b62d4541836e7fee78f329259"
+            },
+            "log_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/anchor-audit.log",
+              "sha256": "ef8866bcce594835604874d965718d1ffd5697714cc44036506a93b400659a63"
+            },
+            "profile_log_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/anchor-audit-profile.log",
+              "sha256": "f997ebe44eff32a568e6cef88fe3164599cb3f6cb21ebef500feb4294cf4f671"
+            },
+            "stack_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit/performance-stacks.log",
+              "sha256": "36e0a41629aec8a26303f28333334099aa72267321c1be5a63fa916c948e2396"
+            }
+          }
+        ]
       }
     },
     "init-absolute-s01": {
@@ -2800,10 +2847,11 @@
         ],
         "completion": "给出官方构建信息的已验证/未知清单，以及固定真实群体下raw不变、scaled受哪些设置影响的可复核比较；任何新默认协议需来源证据和同步重评全部对照。",
         "config_ref": {
-          "path": "experiments/init-linear/configs/anchor-audit-s01.json",
-          "sha256": "0bf530b1ee8665cbcd327e5ba7864f4b45501eb632b83916daf0573f51439c0b"
+          "path": "experiments/init-linear/configs/anchor-audit-s01-csr.json",
+          "sha256": "d6a7f33b4a394338fa602bad0b2b4b5f459199d014f282a4f3f32a79dc90da63"
         },
-        "execution_status_policy": "沿用官方导出机制：已完成fit的追加评估由node.anchor_audit独立门禁；比较保持draft至评估完成，避免把fit完成误当作诊断完成。完整设计和来源先提交，阶段执行后ready并close。"
+        "execution_status_policy": "沿用官方导出机制：已完成fit的追加评估由node.anchor_audit独立门禁；比较保持draft至评估完成，避免把fit完成误当作诊断完成。完整设计和来源先提交，阶段执行后ready并close。",
+        "storage_repair": "Preserve all scientific factors; bound dense conversion by 2048 rows and check every matrix value. Fresh execution directory and original-condition replay, old attempt retained."
       },
       "priority_basis": "两份真实官方回执均与H1绝对分数明显不接近；先解决分数解释和跨群体适用范围，再按单因素改模型。",
       "decision_rule": {

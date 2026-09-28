@@ -57,3 +57,5 @@
 报告各条件 baseline raw、normalized 六项、Overall、有效数、linear−shared 差距，以及固定另一个因素的两项效应和二阶交互。实际官方分差不作为配方选择目标；[公开来源核查](../../docs/research/r4_anchor_audit.md)未找到 r4 构建记录，诊断仅证明本地标尺敏感性。敏感或不敏感均保留原默认协议，除非另有直接官方来源支持新配方；完成后转入已登记条件项消融。
 
 登记沿用官方导出的追加阶段机制：DAG 中 `node.anchor_audit` 冻结配置、源码和前置证据，并由入口检查提交版本；比较对象在阶段执行完成后置 ready 并关闭，避免管理器把已完成拟合误认为本次追加评分已完成。
+
+执行修正：dense tile 在官方 100,000 行块的 COO 转换上持续耗时，旧尝试及调用栈保留。当前阶段配置为 `configs/anchor-audit-s01-csr.json`，产物写入 `cache/anchor-audit-csr/`；官方 tile 矩阵按 2,048 行转换 CSR，每个元素严格核对。评分包、参数、模型 raw 和科学因素不变；新目录重放完整四条件，必须再次复现原条件。旧阶段配置与源码 Git 引用保存在 DAG 的 previous_attempts。

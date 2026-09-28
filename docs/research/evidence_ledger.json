@@ -675,7 +675,8 @@
         },
         {
           "path": "experiments/init-linear/REPORT.md",
-          "sha256": "c8f63973a2d6ede6087b077c51476ad779bf199cd3326238f3220f37526b2c72"
+          "sha256": "c8f63973a2d6ede6087b077c51476ad779bf199cd3326238f3220f37526b2c72",
+          "git_commit": "7f37025fc399e629b1b0a02c0a92bcd76b99dbeb"
         },
         {
           "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/comparison.json",

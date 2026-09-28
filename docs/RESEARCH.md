@@ -48,6 +48,10 @@ Set Encoder 初筛同时引入可训练表示与非线性容量，只能归因�
 
 本地 H1 与官方 A/B/C 的背景、靶点、测量轴、真实群体及 anchors 不同，核查输出同时报告六项 raw、normalized、Overall、分数差和排序。回执未提供的逐背景数据、有效数和精确 anchors 明确为未知。更新 REPORT 时将此前关闭证据的 REPORT 引用固定到旧 Git 版本，保留旧结论；官方反馈作为新的开发证据入账，不覆盖原本地结论。
 
+固定预测的 baseline 敏感性诊断使用 `cd experiments/init-linear && ./anchor-audit.sh`。节点的 `anchor_audit` 登记完整配置、代码、来源和前置证据；执行前检验提交版本，恢复时核对阶段身份，结果追加到原 run。比较对象在追加评分完成后置 ready 并 close，不能把已完成 fit 当成本次评分完成。当前管理器尚不原生区分 fit 与追加阶段，阶段门禁由上述入口执行；直接管理命令仍需人工核对阶段结果，不能把这一边界说成全路径强制保护。
+
+入口固定原 raw aggregate/run_meta，调用官方 real-bundle 和 score 接口；原条件须复现，两个面板分别重建匹配 anchors，之后仅通过官方严格内容缓存复用同一 reference。所有对照统一缩放，原指标保留。核查线上 baseline 的构建条件先读 [r4 来源卡片](research/r4_anchor_audit.md)，采用新默认配方需要直接来源，不能按与榜单的距离挑选。
+
 ## 先看当前决策
 
 在仓库根目录执行：

@@ -9,7 +9,7 @@ import sys
 
 EXPERIMENT = Path(__file__).resolve().parents[1]
 ROOT = EXPERIMENT.parents[1]
-CONFIG = EXPERIMENT / 'configs/anchor-audit-s01.json'
+CONFIG = EXPERIMENT / 'configs/anchor-audit-s01-csr.json'
 sys.path.insert(0, str(ROOT / 'scripts'))
 from research import git, ref_error
 
@@ -44,6 +44,38 @@ def gate(root=ROOT, config_path=CONFIG):
     if comparison != frozen['comparisons'][config['comparison_id']]:
         raise ValueError('audit comparison must be committed')
     return config, node, git(root, 'rev-parse', 'HEAD').stdout.decode().strip()
+
+
+
+def prepare_baseline(prediction, chunk_rows=2048):
+    """Bound dense-to-COO temporaries; verify every value before official scoring."""
+    import numpy as np
+    from scipy import sparse
+    if sparse.issparse(prediction.X):
+        return prediction
+    dense = prediction.X
+    rows, columns = dense.shape
+    nnz = int(np.count_nonzero(dense))
+    index_type = np.int64 if max(nnz, rows, columns) > np.iinfo(np.int32).max else np.int32
+    data = np.empty(nnz, dtype=dense.dtype)
+    indices = np.empty(nnz, dtype=index_type)
+    indptr = np.zeros(rows + 1, dtype=index_type)
+    offset = 0
+    for start in range(0, rows, chunk_rows):
+        stop = min(start + chunk_rows, rows)
+        block = sparse.csr_matrix(dense[start:stop])
+        if not np.array_equal(block.toarray(), dense[start:stop]):
+            raise ValueError('baseline matrix values changed during CSR conversion')
+        end = offset + block.nnz
+        data[offset:end], indices[offset:end] = block.data, block.indices
+        indptr[start + 1:stop + 1] = block.indptr[1:] + offset
+        offset = end
+    if offset != nnz:
+        raise ValueError('incomplete baseline CSR conversion')
+    prediction.X = sparse.csr_matrix((data, indices, indptr), shape=dense.shape, copy=False)
+    prediction.uns['audit_storage'] = {'layout': 'csr', 'chunk_rows': chunk_rows,
+                                       'values_checked': int(rows * columns), 'nnz': nnz}
+    return prediction
 
 
 def scores(aggregate, meta, bundle):
@@ -124,10 +156,12 @@ def evaluate(config, node, directory, tracked):
                                                    exclude_target_gene=condition['exclude_target_gene'])
                 baseline = build_baseline_prediction(profile, real, pert_col=cfg.pert_col,
                                                      control=cfg.control, emit=condition['emit'], seed=config['baseline_seed'])
+                baseline = prepare_baseline(baseline, config['dense_conversion_chunk_rows'])
                 write_json(destination / 'construction.json', {
                     **condition, 'seed': config['baseline_seed'], 'n_excluded': profile.n_excluded,
                     'n_profile_perturbations': profile.n_perturbations,
-                    'baseline_emission': baseline.uns['baseline_emission']})
+                    'baseline_emission': baseline.uns['baseline_emission'],
+                    'storage': baseline.uns.get('audit_storage', {'layout': 'original_csr'})})
                 build_real_bundle(real, baseline, config=cfg, outdir=str(bundle),
                                   bundle_id=f'{config["run_id"]}-audit-{panel}-{label}',
                                   base_seed=config['anchor_seed'], n_splits=config['anchor_splits'])
@@ -195,7 +229,7 @@ def main():
     runtime = {p: importlib.metadata.version(p) for p in training['runtime_versions']}
     if runtime != training['runtime_versions'] or ref(EXPERIMENT / 'uv.lock') != training['lock_ref']:
         raise ValueError('audit environment differs from completed training')
-    directory = output / 'cache/anchor-audit'
+    directory = output / config['output_directory']
     directory.mkdir(parents=True, exist_ok=True)
     with (directory / '.audit.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -207,7 +241,7 @@ def main():
             write_json(identity, {'binding': binding, 'git_commit': commit, 'config': config})
         tracked = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group='init-linear',
                              id=config['run_id'], name=config['run_id'], dir=str(output), resume='must',
-                             config={'anchor_audit': json.loads(identity.read_text())})
+                             config={'anchor_audit_csr': json.loads(identity.read_text())})
         try:
             evaluate(config, node, directory, tracked)
             marker = directory / 'artifact.json'
