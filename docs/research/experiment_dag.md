@@ -42,7 +42,11 @@ flowchart TD
   n35["masked-response-program-s01 | completed"]
   n36["masked-response-random-s01 | completed"]
   n37["masked-response-qc-s01 | completed"]
-  n38["masked-response-random-thin-s01 | ready"]
+  n38["masked-response-random-thin-s01 | completed"]
+  n39["target-response-zero-s01 | draft"]
+  n40["target-response-centroid-s01 | draft"]
+  n41["target-response-go-s01 | draft"]
+  n42["target-response-random-go-s01 | draft"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -206,4 +210,21 @@ flowchart TD
   n34 -.->|"evidence: E-MASKED-RESPONSE"| n38
   n35 -.->|"evidence: E-MASKED-RESPONSE"| n38
   n36 -.->|"evidence: E-MASKED-RESPONSE"| n38
+  n33 -.->|"evidence: E-SHARED-QC"| n39
+  n37 -.->|"evidence: E-SHARED-QC"| n39
+  n38 -.->|"evidence: E-SHARED-QC"| n39
+  n39 -->|control| n40
+  n33 -.->|"evidence: E-SHARED-QC"| n40
+  n37 -.->|"evidence: E-SHARED-QC"| n40
+  n38 -.->|"evidence: E-SHARED-QC"| n40
+  n39 -->|control| n41
+  n40 -->|control| n41
+  n33 -.->|"evidence: E-SHARED-QC"| n41
+  n37 -.->|"evidence: E-SHARED-QC"| n41
+  n38 -.->|"evidence: E-SHARED-QC"| n41
+  n39 -->|control| n42
+  n40 -->|control| n42
+  n33 -.->|"evidence: E-SHARED-QC"| n42
+  n37 -.->|"evidence: E-SHARED-QC"| n42
+  n38 -.->|"evidence: E-SHARED-QC"| n42
 ```

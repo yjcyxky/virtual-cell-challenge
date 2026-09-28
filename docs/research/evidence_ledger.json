@@ -1078,27 +1078,112 @@
       "hypothesis": "保持已监督shared响应时，掩码约束的缺失响应补全能否超过零回退，真实程序能否超过匹配随机/训练内低秩表示？"
     },
     "E-SHARED-QC": {
+      "comparison_id": "C-SHARED-QC",
+      "node_ids": [
+        "masked-response-shared-s01",
+        "masked-response-qc-s01",
+        "masked-response-random-thin-s01"
+      ],
+      "state": "not_supported",
+      "claim": "S2-H1/context-seen/seed1，QC与随机各自完整训练/生成及两套官方评分完成；基础shared主/重叠=0.210865634/0.204838178，QC=0.212761175/0.209636919，匹配随机=0.212329340/0.210258469。QC相对基础主+0.001895541、重叠+0.004798741；相对随机主+0.000431835、重叠−0.000621550，未通过两个对比主>=+0.02且重叠>=−0.02的联合预注册条件。随机相对基础也未达门槛。两候选逐1,554,517个target×guide×batch组合计数相同，2,541,598→2,382,664细胞；17,040训练任务/9,867靶、NTC及测量掩码均保留。",
+      "limitations": "单H1开发背景、一个选择/生成seed；4训练背景/2研究，guide/batch组合及靶点SD不是独立背景重复。低UMI可能反映生物效应；输入已由发布方过滤。随机删除数按QC组合确定，QC−随机仅检验同组合内深度排序增量，不能排除组合间质量信息或否定全部QC。保留至少1细胞限制了稀疏组合中的筛选；改变人群后训练MSE不可直接解释为模型改善。全部方法只覆盖官方272/300监督靶，本轮无新leaderboard提交，不声称SOTA。",
+      "source_refs": [
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+          "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/metrics.json",
+          "sha256": "78220ee60c40744f309ad1e68ee96acdb49d63c1a933b421f915307bd145068b"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-random-thin-s01/metrics.json",
+          "sha256": "214c7e4df36b242fa6f5e9b6a697b3c8bd17ee57c2751bbafdbb134d6464d148"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/selection.json",
+          "sha256": "e48c703512bfd15f699b992a2aaa6f5efbfebaf96e641b22f7acb77d2343e28c"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/control-provenance.json",
+          "sha256": "6a0a2f94e58aac3a39611ec5e40fbc15a91aac812f88335e362fcd26f4b1a612"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-random-thin-s01/cache/selection.json",
+          "sha256": "e1c27d1795987ce04679f2f98be9bce899ee26d5ce4b0bdbf0fb9b93d5025f3c"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-random-thin-s01/cache/control-provenance.json",
+          "sha256": "6a0a2f94e58aac3a39611ec5e40fbc15a91aac812f88335e362fcd26f4b1a612"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/comparison.json",
+          "sha256": "99a695feef3279c70f291eeca157d60e7c0699f412b5c6c052d06afd0aedc362"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/selection-comparison.json",
+          "sha256": "fb484b8580b204fa6334b49460ecb195d1ec45cc4f85199e2237cb6f769e1ed5"
+        },
+        {
+          "path": "experiments/masked-response/REPORT.md",
+          "sha256": "09b227119f8426fe5b340489f4fdfc8de8806cff9d938b41f622d52449102088"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/paired-all-qc-vs-shared.csv",
+          "sha256": "0ab127b5fd7c206057a4384e06448127302a9394de8be3bf9eee2779803db758"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/paired-all-random-vs-shared.csv",
+          "sha256": "3dc5b8438c34221faa7405657346c24fdbf2056c0321f31589390a1573b7d734"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/paired-all-qc-vs-random.csv",
+          "sha256": "983b8695658558a44aba8db74751431307f2bd0586e0a5b7a89196ce4f26d300"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/paired-official_overlap-qc-vs-shared.csv",
+          "sha256": "1ded0b685bc139dfda5c3e7588307f0161fd9afe37413a24aa71718db3732c13"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/paired-official_overlap-random-vs-shared.csv",
+          "sha256": "54161d5602f3bd22c2627bf64407ebfeee9142cae9a3ebeba9215c51cc625dff"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/cache/paired-official_overlap-qc-vs-random.csv",
+          "sha256": "be0148ec501261370e31da819f016906c798e4ed11078b53b68f84e8648ddc8c"
+        }
+      ],
+      "next_action": "保留基础shared零Δ回退，搁置当前低深度筛选及匹配删减，不追加H1分位数搜索。推进C-SHARED-TARGET-PRIOR：在S3-H1全局靶点留出上重新拟合零Δ/无靶点信息的训练均值/真实GO/匹配随机GO四臂；来源响应排除全局留出靶点，不能复用S2控制分数。先冻结先验、匹配、完整配置和判据，再启动。",
+      "reopen_when": "取得独立背景的相反证据，或质量代理/guide剂量信息/来源数据改变时登记新比较；不在当前H1上改分位数覆盖已关闭结果。",
+      "hypothesis": "在当前强shared上，额外QC是否提供超过同数量和覆盖随机删减的开发收益？"
+    },
+    "E-SHARED-TARGET-PRIOR": {
       "kind": "experiment",
       "state": "pending",
-      "comparison_id": "C-SHARED-QC",
-      "node_ids": [],
-      "hypothesis": "在当前强shared上，额外QC是否提供超过同数量和覆盖随机删减的开发收益？",
-      "claim": "待检验：强shared上QC相对匹配随机删减的收益；本轮输出补全结论不能充当QC有效证据。",
-      "limitations": "低UMI是待检验质量代理而非技术噪声真值；单H1开发/一个随机选择和生成seed。配置和判据已冻结，尚无候选效果。",
+      "comparison_id": "C-SHARED-TARGET-PRIOR",
+      "node_ids": [
+        "target-response-zero-s01",
+        "target-response-centroid-s01",
+        "target-response-go-s01",
+        "target-response-random-go-s01"
+      ],
+      "hypothesis": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
+      "claim": "待检验，尚无S3局部方法效果。",
+      "limitations": "GO同功能不保证同扰动响应；仅拟定H1开发joint-OOD筛选；旧S2结果不可代替重新训练与评分。",
       "source_refs": [],
-      "next_action": "按execute门禁顺序完成低深度筛选及匹配随机两次完整训练/官方评分；保留显式历史strong-shared控制。",
-      "reopen_when": "关闭后新增质量观测、数据来源或评估背景时另立比较。"
+      "next_action": "完成四臂可比设计、数据/先验边界、完整配置和判据后check/commit/execute。",
+      "reopen_when": "待完成首次正式归因比较。"
     }
   },
   "queue": [
     {
-      "id": "Q-QUALITY",
+      "id": "Q-UNSEEN-TARGET",
       "priority": 1,
-      "comparison_id": "C-SHARED-QC",
-      "question": "在当前强shared上，额外QC是否提供超过同数量和覆盖随机删减的开发收益？",
-      "action": "保留shared零回退，结束当前rank32响应补全筛选；推进强shared控制上的基础/QC/匹配随机三臂。旧C-QC草案采用较弱条件ridge，须先重建匹配strong-shared控制、方法坐标和完整配置，不能直接沿用它启动。固定评价人群、基因轴与生成器，单列181仅K562/99多背景支持靶的细胞、guide、靶点保留率和响应强度。 已登记C-SHARED-QC及两个draft候选，先落实质量代理/匹配和完整配置。",
+      "comparison_id": "C-SHARED-TARGET-PRIOR",
+      "question": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
+      "action": "保留基础shared零Δ回退，搁置当前低深度筛选及匹配删减，不追加H1分位数搜索。推进C-SHARED-TARGET-PRIOR：在S3-H1全局靶点留出上重新拟合零Δ/无靶点信息的训练均值/真实GO/匹配随机GO四臂；来源响应排除全局留出靶点，不能复用S2控制分数。先冻结先验、匹配、完整配置和判据，再启动。 四个实际run槽位已登记为draft；旧C-TARGET-PRIOR条件ridge草案保留，不直接拿它的S2控制执行。",
       "requires_evidence": [
-        "E-MASKED-RESPONSE"
+        "E-SHARED-QC"
       ]
     }
   ]

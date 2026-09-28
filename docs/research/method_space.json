@@ -154,6 +154,10 @@
         "R14": {
           "description": "原始基因坐标的逐靶点共享响应及监督掩码；无监督坐标零Δ回退",
           "local_status": "UNTESTED"
+        },
+        "R15": {
+          "description": "未见靶点使用训练响应的无靶点信息均值；有监督靶点保持shared；作为GO外推的靶点不可辨识对照",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -1383,7 +1387,7 @@
       },
       "signature": "T1-D6-R14-A0-L1-O0-V5-I6-G0",
       "prior": "低测序深度可能影响响应估计，但也可能代表真实生物差异；与同组合同数量随机删减匹配检验。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "medium",
       "evidence_ids": [
@@ -1392,7 +1396,8 @@
         "E-SHARED-QC"
       ],
       "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。",
-      "implementation_scope": "C-SHARED-QC：训练批次UMI第10百分位尾部，target×guide×batch至少保留1；QC/随机逐组合计数相同；固定shared与NTC、评价人群。"
+      "implementation_scope": "C-SHARED-QC：训练批次UMI第10百分位尾部，target×guide×batch至少保留1；QC/随机逐组合计数相同；固定shared与NTC、评价人群。",
+      "local_scope": "仅C-SHARED-QC当前UMI第10百分位/覆盖保护实现，H1开发seed1未达到+0.02门槛；不等于零效应或全部QC无效。"
     },
     "M-SHARED-QC-RANDOM": {
       "description": "强shared上的匹配随机删减",
@@ -1409,7 +1414,7 @@
       },
       "signature": "T1-D7-R14-A0-L1-O0-V5-I6-G0",
       "prior": "与低深度QC每个target×guide×batch同保留数，固定seed SHA256均匀随机排序，分离质量代理与数量/覆盖效应。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "medium",
       "evidence_ids": [
@@ -1418,7 +1423,86 @@
         "E-SHARED-QC"
       ],
       "selection_basis": "已完成输出补全筛选未超过shared；仅据此固定强模型控制，QC收益仍完全未知。",
-      "implementation_scope": "C-SHARED-QC：训练批次UMI第10百分位尾部，target×guide×batch至少保留1；QC/随机逐组合计数相同；固定shared与NTC、评价人群。"
+      "implementation_scope": "C-SHARED-QC：训练批次UMI第10百分位尾部，target×guide×batch至少保留1；QC/随机逐组合计数相同；固定shared与NTC、评价人群。",
+      "local_scope": "仅C-SHARED-QC当前UMI第10百分位/覆盖保护实现，H1开发seed1未达到+0.02门槛；不等于零效应或全部QC无效。"
+    },
+    "M-SHARED-CENTROID": {
+      "description": "未见靶点的训练响应均值控制",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R15",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R15-A0-L1-O0-V5-I6-G0",
+      "prior": "不含靶点关系的训练响应均值是否已解释相对零Δ的收益；按基因测量掩码拟合，权重待冻结。",
+      "local_status": "UNTESTED",
+      "execution_role": "control",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "L04",
+        "L05",
+        "E-SHARED-TARGET-PRIOR"
+      ],
+      "selection_basis": "初始化未见靶点/GO假设；E-SHARED-QC的预定无信号分支仅用于排期，不作为GO有效证据。"
+    },
+    "M-SHARED-GO": {
+      "description": "保持shared监督坐标的GO靶点外推",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R9",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R9-A0-L1-O0-V5-I6-G0",
+      "prior": "GO相近靶点是否共享可迁移响应；只对需要外推的靶点注入，训练派生表示排除全局留出响应。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "L04",
+        "L05",
+        "E-SHARED-TARGET-PRIOR"
+      ],
+      "selection_basis": "初始化未见靶点/GO假设；E-SHARED-QC的预定无信号分支仅用于排期，不作为GO有效证据。"
+    },
+    "M-SHARED-GO-RANDOM": {
+      "description": "保持shared的匹配随机GO靶点外推",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R10",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R10-A0-L1-O0-V5-I6-G0",
+      "prior": "匹配真实GO覆盖、靶点/模块度数与维数，固定同一响应拟合头，检验注释成员结构的增量。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "L04",
+        "L05",
+        "E-SHARED-TARGET-PRIOR"
+      ],
+      "selection_basis": "初始化未见靶点/GO假设；E-SHARED-QC的预定无信号分支仅用于排期，不作为GO有效证据。"
     }
   }
 }

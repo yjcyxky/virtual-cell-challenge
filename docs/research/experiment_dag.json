@@ -5070,7 +5070,10 @@
         "path": "experiments/masked-response/outputs/masked-response-qc-s01/metrics.json",
         "sha256": "78220ee60c40744f309ad1e68ee96acdb49d63c1a933b421f915307bd145068b"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/masked-response/REPORT.md",
+        "sha256": "09b227119f8426fe5b340489f4fdfc8de8806cff9d938b41f622d52449102088"
+      },
       "git_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-qc-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-result:v0",
@@ -5095,7 +5098,8 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "code_snapshot_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645"
+      "code_snapshot_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-SHARED-QC-evidence:v0"
     },
     "masked-response-random-thin-s01": {
       "experiment_id": "masked-response",
@@ -5104,7 +5108,7 @@
       "legacy": false,
       "method_id": "M-SHARED-QC-RANDOM",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-SHARED-QC",
       "controls": [
         "masked-response-shared-s01"
@@ -5372,11 +5376,17 @@
           "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/masked-response/outputs/masked-response-random-thin-s01/metrics.json",
+        "sha256": "214c7e4df36b242fa6f5e9b6a697b3c8bd17ee57c2751bbafdbb134d6464d148"
+      },
+      "report_ref": {
+        "path": "experiments/masked-response/REPORT.md",
+        "sha256": "09b227119f8426fe5b340489f4fdfc8de8806cff9d938b41f622d52449102088"
+      },
+      "git_commit": "caa7dffbdd735f99fb6c006dce3b6f70301cb0f6",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-random-thin-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/masked-response-random-thin-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -5396,7 +5406,234 @@
         "unresolved": [],
         "end_condition": "两次完整拟合/生成、四次官方评分、配对分层分析、Artifacts及close E-SHARED-QC。"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "code_snapshot_commit": "caa7dffbdd735f99fb6c006dce3b6f70301cb0f6",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-SHARED-QC-evidence:v0"
+    },
+    "target-response-zero-s01": {
+      "experiment_id": "target-response",
+      "directory": "experiments/target-response",
+      "run_id": "target-response-zero-s01",
+      "legacy": false,
+      "method_id": "M-RESPONSE-SHARED",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-SHARED-TARGET-PRIOR",
+      "controls": [],
+      "sources": [],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S3-H1",
+          "target_partition": "global-unseen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
+        "allocation": "新的靶点外推建模路线共用target-response Experiment；当前draft不建训练目录/环境/W&B。",
+        "source_usage": "从冻结原始来源重建S3允许的训练统计量，屏蔽所有全局留出扰动响应；任何复用另登记来源/哈希。S2模型、评分和旧anchors不作为S3结果。",
+        "unresolved": [
+          "核对冻结S3-H1目标集和官方重叠覆盖，落实同群体reference/baseline/anchors及相同生成器；不重新选择评分规则。",
+          "冻结GO GAF来源版本、证据类型/NOT处理、ID映射、模块过滤和未覆盖回退；不将未测基因补成训练零。",
+          "冻结无信息均值的权重与真实/随机GO的同一响应求解头、维数、随机化、已监督坐标保护；需要跨轴联动则诚实登记。",
+          "完整配置、代码/锁文件引用、四run资源和结束条件、预注册主/重叠门槛。"
+        ]
+      },
+      "blockers": [
+        "S3训练边界、GO映射/匹配、响应求解和完整配置尚未冻结；不能启动或宣称有效。"
+      ]
+    },
+    "target-response-centroid-s01": {
+      "experiment_id": "target-response",
+      "directory": "experiments/target-response",
+      "run_id": "target-response-centroid-s01",
+      "legacy": false,
+      "method_id": "M-SHARED-CENTROID",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-SHARED-TARGET-PRIOR",
+      "controls": [
+        "target-response-zero-s01"
+      ],
+      "sources": [],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S3-H1",
+          "target_partition": "global-unseen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
+        "allocation": "新的靶点外推建模路线共用target-response Experiment；当前draft不建训练目录/环境/W&B。",
+        "source_usage": "从冻结原始来源重建S3允许的训练统计量，屏蔽所有全局留出扰动响应；任何复用另登记来源/哈希。S2模型、评分和旧anchors不作为S3结果。",
+        "unresolved": [
+          "核对冻结S3-H1目标集和官方重叠覆盖，落实同群体reference/baseline/anchors及相同生成器；不重新选择评分规则。",
+          "冻结GO GAF来源版本、证据类型/NOT处理、ID映射、模块过滤和未覆盖回退；不将未测基因补成训练零。",
+          "冻结无信息均值的权重与真实/随机GO的同一响应求解头、维数、随机化、已监督坐标保护；需要跨轴联动则诚实登记。",
+          "完整配置、代码/锁文件引用、四run资源和结束条件、预注册主/重叠门槛。"
+        ]
+      },
+      "blockers": [
+        "S3训练边界、GO映射/匹配、响应求解和完整配置尚未冻结；不能启动或宣称有效。"
+      ]
+    },
+    "target-response-go-s01": {
+      "experiment_id": "target-response",
+      "directory": "experiments/target-response",
+      "run_id": "target-response-go-s01",
+      "legacy": false,
+      "method_id": "M-SHARED-GO",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-SHARED-TARGET-PRIOR",
+      "controls": [
+        "target-response-zero-s01",
+        "target-response-centroid-s01"
+      ],
+      "sources": [],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S3-H1",
+          "target_partition": "global-unseen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
+        "allocation": "新的靶点外推建模路线共用target-response Experiment；当前draft不建训练目录/环境/W&B。",
+        "source_usage": "从冻结原始来源重建S3允许的训练统计量，屏蔽所有全局留出扰动响应；任何复用另登记来源/哈希。S2模型、评分和旧anchors不作为S3结果。",
+        "unresolved": [
+          "核对冻结S3-H1目标集和官方重叠覆盖，落实同群体reference/baseline/anchors及相同生成器；不重新选择评分规则。",
+          "冻结GO GAF来源版本、证据类型/NOT处理、ID映射、模块过滤和未覆盖回退；不将未测基因补成训练零。",
+          "冻结无信息均值的权重与真实/随机GO的同一响应求解头、维数、随机化、已监督坐标保护；需要跨轴联动则诚实登记。",
+          "完整配置、代码/锁文件引用、四run资源和结束条件、预注册主/重叠门槛。"
+        ]
+      },
+      "blockers": [
+        "S3训练边界、GO映射/匹配、响应求解和完整配置尚未冻结；不能启动或宣称有效。"
+      ]
+    },
+    "target-response-random-go-s01": {
+      "experiment_id": "target-response",
+      "directory": "experiments/target-response",
+      "run_id": "target-response-random-go-s01",
+      "legacy": false,
+      "method_id": "M-SHARED-GO-RANDOM",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-SHARED-TARGET-PRIOR",
+      "controls": [
+        "target-response-zero-s01",
+        "target-response-centroid-s01"
+      ],
+      "sources": [],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S3-H1",
+          "target_partition": "global-unseen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
+        "allocation": "新的靶点外推建模路线共用target-response Experiment；当前draft不建训练目录/环境/W&B。",
+        "source_usage": "从冻结原始来源重建S3允许的训练统计量，屏蔽所有全局留出扰动响应；任何复用另登记来源/哈希。S2模型、评分和旧anchors不作为S3结果。",
+        "unresolved": [
+          "核对冻结S3-H1目标集和官方重叠覆盖，落实同群体reference/baseline/anchors及相同生成器；不重新选择评分规则。",
+          "冻结GO GAF来源版本、证据类型/NOT处理、ID映射、模块过滤和未覆盖回退；不将未测基因补成训练零。",
+          "冻结无信息均值的权重与真实/随机GO的同一响应求解头、维数、随机化、已监督坐标保护；需要跨轴联动则诚实登记。",
+          "完整配置、代码/锁文件引用、四run资源和结束条件、预注册主/重叠门槛。"
+        ]
+      },
+      "blockers": [
+        "S3训练边界、GO映射/匹配、响应求解和完整配置尚未冻结；不能启动或宣称有效。"
+      ]
     }
   },
   "comparisons": {
@@ -6140,6 +6377,37 @@
       "cost": "medium",
       "priority_basis": "执行C-MASKED-RESPONSE预定无信号分支；重新匹配强shared，保留初始化旧C-QC为未执行备选。",
       "evidence_id": "E-SHARED-QC"
+    },
+    "C-SHARED-TARGET-PRIOR": {
+      "status": "draft",
+      "purpose": "screen",
+      "hypothesis": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
+      "controls": [
+        "target-response-zero-s01",
+        "target-response-centroid-s01"
+      ],
+      "candidates": [
+        "target-response-go-s01",
+        "target-response-random-go-s01"
+      ],
+      "changed_axes": [
+        "R"
+      ],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "S3.Overall",
+        "direction": "maximize",
+        "min_effect": null,
+        "scope": "S3-H1/global-unseen/seed1，70个冻结全局留出靶点；H1继续属于开发背景，非独立确认。官方重叠覆盖及有效数另列。",
+        "on_support": "先在新背景/官方面板或配对重复确认；保留已监督shared，仅在预声明未见范围外推。",
+        "on_against": "保留shared零回退，搁置当前注释外推；转向预留响应任务/生成问题，不在H1上搜索GO维数或图阈值。",
+        "on_inconclusive": "修复训练泄漏、测量/GO覆盖匹配或实际执行；不拿S2分数、零填缺测标签或评分人群变化代替S3对照。",
+        "threshold_policy": "在候选评分前冻结实际意义门槛及真实相对随机/均值的联合条件；尚未完成，保持draft。"
+      },
+      "attribution_plan": "四臂同S3-H1重新拟合。零响应参考之外增加无靶点关系的训练响应均值，区分共同偏移与GO特异信息。真实/随机先验固定覆盖/度数/维数/响应求解及生成器。排除所有训练背景内全局留出靶点标签，NTC只按协议用于生成；必要联动如无法拆分须在ready前改为整包归因。",
+      "cost": "medium",
+      "priority_basis": "执行E-SHARED-QC已登记无信号分支；解决当前shared对官方28个无监督靶点只能零Δ的问题，不主张GO有效。",
+      "evidence_id": "E-SHARED-TARGET-PRIOR"
     }
   },
   "continuation_rules": {
