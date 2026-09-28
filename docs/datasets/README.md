@@ -1,6 +1,6 @@
 # 数据说明与核查记录
 
-当前研究的数据依据见 [五背景数据事实](../research/dataset_foundations.md)，数据登记和获取入口见 [data/README.md](../../data/README.md)。以下审计描述各自日期和选择范围，不能代替新实验实际输入的校验。
+当前研究的数据依据见 [五背景数据事实](../research/dataset_foundations.md)，完整计数核验、官方轴映射和划分见 [2026 数据与评估契约](../research/challenge_protocol.md)，数据登记和获取入口见 [data/README.md](../../data/README.md)。以下审计描述各自日期和选择范围，不能代替新实验实际输入的校验。
 
 | 文档 | 配套证据与边界 |
 |---|---|

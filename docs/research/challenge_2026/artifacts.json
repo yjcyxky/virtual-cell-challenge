@@ -1,0 +1,10 @@
+{
+  "data_audit.json": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85",
+  "gene_mapping.csv.gz": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328",
+  "official_gene_axis.csv": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013",
+  "official_target_coverage.csv": "c52947b78a00456b8c23424b14ace8c98f1763cdfa9837685a10d7c9d9eb25db",
+  "scorer.json": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc",
+  "splits.json": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc",
+  "target_mapping.csv": "148b84d61221f0f22b1c12c365a3ebf0876ddff6cf080e42828f80387a7b94e6",
+  "tasks.csv": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+}

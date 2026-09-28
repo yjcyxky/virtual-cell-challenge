@@ -303,13 +303,15 @@
           "local_status": "UNTESTED"
         },
         "V5": {
-          "description": "冻结的 Pseudo-VCC 协议集合 S0–S4；不参与刷分选优",
+          "description": "S0–S4冻结协议：2026官方完整轴、每背景测量mask、物理NTC及官方cell-eval2；局部分数不等同榜单",
           "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
         "DATA-SOURCES",
-        "TASK-2026"
+        "TASK-2026",
+        "DATA-CHALLENGE-20260928",
+        "PROTOCOL-CHALLENGE-2026"
       ]
     },
     "I": {

@@ -301,7 +301,8 @@
       "source_refs": [
         {
           "path": "docs/RESEARCH.md",
-          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24"
+          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24",
+          "git_commit": "41e29043a476041478f978f48831100adf5a09b5"
         }
       ],
       "next_action": "冻结本地Pseudo-VCC并单报raw指标/覆盖/独立单位",
@@ -320,7 +321,8 @@
       "source_refs": [
         {
           "path": "docs/RESEARCH.md",
-          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24"
+          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24",
+          "git_commit": "41e29043a476041478f978f48831100adf5a09b5"
         }
       ],
       "next_action": "以待证伪假设登记候选，不预选赢家",
@@ -335,7 +337,7 @@
       "claim": "待检验：建立有效简单对照，分辨共享响应、拟合能力与perturbation-specific误差",
       "limitations": "没有本地执行或效应；一seed筛选不能证明跨背景普遍有效",
       "source_refs": [],
-      "next_action": "落实此比较的冻结条件，再按预定方案运行和分析",
+      "next_action": "使用已冻结PSEUDO-VCC-INIT的binding实例化独立fit；落实训练判据，实际构建官方reference/anchors，再完整训练、评估及入账。",
       "reopen_when": "当前为待检验问题；关闭后按同一scope的反证/新数据重新提出比较"
     },
     "E-TASK": {
@@ -541,6 +543,67 @@
       "source_refs": [],
       "next_action": "落实此比较的冻结条件，再按预定方案运行和分析",
       "reopen_when": "当前为待检验问题；关闭后按同一scope的反证/新数据重新提出比较"
+    },
+    "DATA-CHALLENGE-20260928": {
+      "kind": "dataset",
+      "state": "observed",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "七原始H5AD完整哈希/计数核验通过；H1重复NTC表达与标签一致。官方18533基因轴上的每背景测量mask、NTC输入/评分池、15个S0–S4划分已生成并逐字节复现。",
+      "limitations": "结构合格不等于实际六指标可评分；生物重复unknown。四背景HSPA14靶点symbol/Ensembl冲突暂排除；真实弱响应未按效应筛除。没有本地模型效果。",
+      "source_urls": [
+        "https://github.com/ArcInstitute/arc-virtual-cell-atlas/blob/main/virtual-cell-challenge/README.md",
+        "https://plus.figshare.com/articles/dataset/20029387",
+        "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE264667"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/challenge_2026/data_audit.json",
+          "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+        },
+        {
+          "path": "docs/research/challenge_2026/tasks.csv",
+          "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+        },
+        {
+          "path": "docs/research/challenge_2026/target_mapping.csv",
+          "sha256": "148b84d61221f0f22b1c12c365a3ebf0876ddff6cf080e42828f80387a7b94e6"
+        },
+        {
+          "path": "docs/research/challenge_protocol.md",
+          "sha256": "eb2242a0db9c7560f25082c961125b260c94346beffd990de893f3120ef1a808"
+        }
+      ],
+      "next_action": "在对应独立Experiment中按冻结划分构建真实reference及官方anchors，完成C-BASE。",
+      "reopen_when": "官方面板、输入版本、映射证据或物理身份变化时建新契约；历史引用保留。"
+    },
+    "PROTOCOL-CHALLENGE-2026": {
+      "kind": "protocol",
+      "state": "constraint",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "任务以官方完整轴和靶点面板为目标；仅对有测量的官方子轴计算本地评分。cell-eval2固定5e648335及vcc2026 preset，六指标、baseline/anchor使用官方接口。",
+      "limitations": "冻结生成配方尚未产生各真实人群的reference/anchor数值；合成数据接口测试不是模型或真实任务结果。",
+      "source_urls": [
+        "https://vcc-cli-wiki.virtualcellchallenge.org/#submission-requirements-2026",
+        "https://github.com/ArcInstitute/cell-eval2/tree/5e64833518a6603a0301cbe28185d49c30f4a986"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/challenge_protocol.json",
+          "sha256": "dbf4e4b5f68126f1c9a78444c559be17670b0e4bf9cae5ad885cb1e941bf8c71"
+        },
+        {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        {
+          "path": "docs/research/challenge_protocol.md",
+          "sha256": "eb2242a0db9c7560f25082c961125b260c94346beffd990de893f3120ef1a808"
+        }
+      ],
+      "next_action": "训练配置绑定协议binding；各Experiment记录实际reference/anchors及backend身份，官方退化拒绝则保留失败。",
+      "reopen_when": "官方规则或固定评分器版本变更时重新建对照和协议，不静默更换。"
     }
   },
   "queue": [
@@ -549,8 +612,12 @@
       "priority": 1,
       "comparison_id": "C-BASE",
       "question": "五背景/三研究组能形成哪些无泄漏、可评分的S0–S4任务，简单基线解释了什么？",
-      "action": "先冻结物理NTC、映射/缺测、全局target留出和scorer；生成覆盖与可评分清单，再实例化基线。当前不是训练就绪。",
-      "requires_evidence": []
+      "action": "数据正确性、官方轴映射、物理NTC、15个划分和官方scorer配方已冻结。下一步实例化C-BASE独立拟合，配置绑定benchmark；先在其正式流程中生成reference/anchors并核验六指标，再完成基线训练评估和E-BASE。",
+      "requires_evidence": [],
+      "completed_prerequisites": [
+        "DATA-CHALLENGE-20260928",
+        "PROTOCOL-CHALLENGE-2026"
+      ]
     },
     {
       "id": "Q-QUALITY",

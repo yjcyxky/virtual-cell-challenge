@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "panel_id": "vcc2026-val-1",
+  "split_seed": 20260928,
+  "chunk_rows": 1024,
+  "input_ntc_cap": 18400,
+  "minimum_reference_cells": 4,
+  "minimum_reference_rationale": "Local structural eligibility only: at least two real cells per split-half for variance. Actual DE and anchor eligibility is decided by unmodified cell-eval2, not this count rule.",
+  "gene_policy": "Use all 18533 official gene labels in exact CSV order. Map each source to this axis with an explicit measurement mask. Local scoring uses the context-measured official subset; never zero-fill missing measurements. Full-axis output remains the 2026 submission target.",
+  "target_policy": "Official 300 targets are the deployment panel; all valid source targets may supply auxiliary supervision. Report official overlap separately; backgrounds with no overlap remain auxiliary transfer benchmarks.",
+  "mapping_policy": "Exact official slots first, HGNC unique bridges with source Ensembl conflict checks; exclude duplicate mapped features. Preserve distinct official historical labels even when HGNC merges their aliases.",
+  "correctness_policy": "Full finite/nonnegative/integer count scan; remove zero native or zero measured-official libraries, unresolved targets and cells lacking both input/scoring NTC batch support. No response-strength, knockdown, mitochondrial or guide-agreement filtering in this contract.",
+  "ntc_policy": "Deduplicate physical study/context/batch/barcode identities and verify H1 count-vector equality before splitting; balanced deterministic half split within batch, input cap applied with proportional batch quotas; no physical overlap.",
+  "reference_policy": "At most 400 unique real cells per target, deterministic identity ranking. Keep all smaller groups that pass structural eligibility; never replicate real cells. S0 holds out half before the 400 cap. Full local metric populations and undefined metrics must be retained.",
+  "scorer_policy": "Official ArcInstitute/cell-eval2 at 5e64833518a6603a0301cbe28185d49c30f4a986, vcc2026 preset, official baseline/real_bundle/score APIs. Scientific parameters and six-member aggregation are not tuning knobs.",
+  "independence_policy": "Five contexts, three source studies; guide/GEM/seed are not biological repeats. Unresolved replicate identity remains unknown.",
+  "runtime_completion": "Before claiming any normalized local score, materialize the registered reference, official baseline and 5-split anchors, record their hashes and all metric gates. Failure or degenerate anchors blocks Overall; data-contract completion alone is not experiment completion."
+}

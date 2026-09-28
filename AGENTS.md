@@ -6,6 +6,8 @@
 - 小样本指独立背景、研究及扰动组合不足。先修复数据/评估正确性，再研究数据质量、先验和表示；模型容量、目标函数和优化由已识别瓶颈驱动。
 - **初始化依据**：本轮方法空间与前瞻 DAG 以[分享九轴方案](https://chatgpt.com/share/6ab9c3e3-56cc-83e9-bbef-b1f196a8e83c)、五个原始数据集和已发表原始研究建立，不由现有实验、分数或既定模型路线填充。初始方法均为 `UNTESTED`、执行节点均为 `draft`；之后通过实际归因实验积累本地证据。旧结果保留，回顾性纳入另作审计并注明用途。
 - **设计前必读**：[研发依据与轴边界](docs/RESEARCH.md#初始化依据与研究假设)；涉及输入/划分时读[五背景数据事实](docs/research/dataset_foundations.md)，采用论文方法/先验时读[文献卡片](docs/research/literature_foundations.md)。H1、K562 GWPS、RPE1、HepG2、Jurkat 是五背景、三来源研究；元数据覆盖不等于 QC 后监督量。
+- **2026 官方对齐**：输入映射、模型输出和提交以已登记官方 `gene_names.csv` 的完整基因轴、顺序及 `pert_counts.csv` 为目标。各来源保留测量掩码；本地只在该背景真实测得的官方轴子集评分，报告覆盖，不把缺测补零作为监督或评分真值，不默认将任务缩为五背景交集。辅助靶点可用于训练，官方面板覆盖须单列。
+- **官方评估**：使用 DAG 冻结的官方 `cell-eval2` commit 和 `vcc2026` preset，调用其 baseline、real-bundle/anchor 和评分接口。每个参考群体重新生成匹配 anchors；未定义指标与退化参照按官方规则处理，不能自行改公式、删指标或借用旧 anchors。实际配置的 `benchmark` 必须匹配 DAG 协议的 `binding`，否则不能启动。协议冻结不等于已取得六项有效分数。
 - **开始任何研发任务，先执行** `/home/jy001/micromamba/envs/virtual-cell/bin/python scripts/research.py status`，按输出处理未闭环比较或最高优先问题。命令与接入示例见 [RESEARCH.md](docs/RESEARCH.md)。
 - **三份对象是研究管理的唯一事实源**：[Method Space](docs/research/method_space.json) 定义九轴候选及方法坐标；[Experiment DAG](docs/research/experiment_dag.json) 登记实际执行、对照、来源、协议和比较；[Evidence Ledger](docs/research/evidence_ledger.json) 保存有来源的结论、决策与下一步。不要另维护手工实验列表或仅在文字里声明已登记。
 - **证据类型有边界**：`literature/external`、`dataset/observed`、`protocol/constraint` 提供来源依据；`experiment/pending` 是问题，均不代表本地方法有效。只有真实完成的比较可关闭为本地证据；文献、待检验假设不能满足训练前置。`evidence_conditions` 指定继续分支所需结论，失败/证据不足按预定分支处理。

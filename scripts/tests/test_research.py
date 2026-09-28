@@ -541,6 +541,28 @@ class ResearchControlsTests(unittest.TestCase):
         self.write_registries()
         self.cli("check", ok=False)
 
+    def test_challenge_protocol_cannot_be_ready_without_frozen_artifacts(self):
+        self.dag["protocols"]["p"]["contract_kind"] = "vcc2026"
+        self.write_registries()
+        output = self.cli("check", ok=False)
+        self.assertIn("challenge data_audit must have a frozen source reference", output)
+
+    def test_challenge_ready_rejects_nonofficial_scorer_even_with_matching_hash(self):
+        scorer = "docs/research/scorer-fixture.json"
+        self.write_json(scorer, {"repository": "custom-implementation", "preset": "vcc2026"})
+        ref = self.file_ref(scorer)
+        self.dag["protocols"]["p"].update(contract_kind="vcc2026", binding={"scorer": ref}, source_refs=[ref])
+        self.write_registries()
+        output = self.cli("check", ok=False)
+        self.assertIn("fixed official cell-eval2 vcc2026 contract required", output)
+
+    def test_challenge_node_cannot_skip_benchmark_binding(self):
+        self.dag["protocols"]["p"].update(contract_kind="vcc2026", status="draft",
+                                           binding={"data_audit": {"sha256": "a"*64}})
+        self.write_registries()
+        output = self.cli("gate", "baseline", ok=False)
+        self.assertIn("expected_config.benchmark must bind", output)
+
     def test_single_axis_label_cannot_hide_extra_config_changes(self):
         self.add_qc_comparison()
         self.cli("check")

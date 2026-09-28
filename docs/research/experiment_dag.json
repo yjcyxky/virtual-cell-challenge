@@ -7,9 +7,9 @@
   },
   "protocols": {
     "PSEUDO-VCC-INIT": {
-      "status": "draft",
-      "description": "五背景/三研究组的前瞻Pseudo-VCC；冻结后才可训练",
-      "scope": "五背景开发证据；共同可测面板及原生覆盖分别报告；不代表官方完整面板得分",
+      "status": "ready",
+      "description": "五背景/三研究组，官方2026完整基因轴与测量掩码、物理NTC、S0–S4和官方cell-eval2配方已冻结；独立训练仍须节点门禁",
+      "scope": "以vcc2026-val-1完整18533基因轴与300靶点为目标；本地按背景已测官方子轴评价，辅助/官方靶点覆盖分列；本地anchors不代表线上评分尺度",
       "datasets": {
         "DS-H1": {
           "context": "H1",
@@ -58,15 +58,12 @@
         "selection": "开发选择使用训练内嵌套划分；外层响应仅评价。重复探索后外层仍是开发证据，不称最终无偏检验"
       },
       "frozen_before_ready": [
-        "原始版本/哈希与HGNC映射",
-        "物理cell/guide/batch/生物重复身份",
-        "H1重复表达核验与去重",
-        "输入/评分NTC池",
-        "按训练边界拟合的必要QC与缺测mask",
-        "S0–S4 split与每折合格target/gene panel",
-        "scorer commit、六raw指标、normalized anchors与Overall",
-        "阈值与结束条件、训练/生成seed及重复单位",
-        "独立生物重复unknown项和study混杂说明"
+        "实际原始文件SHA256与SOURCE、HGNC映射和官方基因轴",
+        "H1重复表达与标签核验；物理NTC池身份和零重叠规则",
+        "必要计数正确性与映射排除规则、测量mask",
+        "15个S0–S4实际划分、合格target及每背景已测官方面板",
+        "官方cell-eval2固定commit/preset及baseline/anchor生成配方",
+        "生物独立重复unknown和三研究组混杂限制"
       ],
       "evaluation": {
         "primary": "S2.Overall",
@@ -81,7 +78,13 @@
           "runtime"
         ],
         "generation": "400个预测细胞用于官方形态的受控评估；真实组数量不足按冻结scorer规则处理，不复制真实细胞伪造样本量",
-        "reference": "物理分离的评分NTC；reference/anchors按同一协议生成；另测NTC伪扰动与共享响应诊断"
+        "reference": "物理独立评分NTC和逐target固定真实细胞身份；按相同群体调用官方baseline/5次split-half anchor，不复用旧实验参照",
+        "gene_axis": "full official axis + explicit per-context measurement mask; local scorer uses measured official subset in original order",
+        "official_target_reporting": "deployment-panel overlap is separate; auxiliary-panel PDS must not be relabeled as official-panel PDS",
+        "scorer_ref": {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        }
       },
       "source_refs": [
         {
@@ -90,8 +93,108 @@
         },
         {
           "path": "docs/RESEARCH.md",
-          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24"
+          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24",
+          "git_commit": "41e29043a476041478f978f48831100adf5a09b5"
+        },
+        {
+          "path": "docs/research/challenge_2026/artifacts.json",
+          "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+        },
+        {
+          "path": "docs/research/challenge_2026/data_audit.json",
+          "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+        },
+        {
+          "path": "docs/research/challenge_2026/gene_mapping.csv.gz",
+          "sha256": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328"
+        },
+        {
+          "path": "docs/research/challenge_2026/official_gene_axis.csv",
+          "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+        },
+        {
+          "path": "docs/research/challenge_2026/official_target_coverage.csv",
+          "sha256": "c52947b78a00456b8c23424b14ace8c98f1763cdfa9837685a10d7c9d9eb25db"
+        },
+        {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        {
+          "path": "docs/research/challenge_2026/splits.json",
+          "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+        },
+        {
+          "path": "docs/research/challenge_2026/target_mapping.csv",
+          "sha256": "148b84d61221f0f22b1c12c365a3ebf0876ddff6cf080e42828f80387a7b94e6"
+        },
+        {
+          "path": "docs/research/challenge_2026/tasks.csv",
+          "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+        },
+        {
+          "path": "docs/research/challenge_protocol.json",
+          "sha256": "dbf4e4b5f68126f1c9a78444c559be17670b0e4bf9cae5ad885cb1e941bf8c71"
+        },
+        {
+          "path": "docs/research/challenge_protocol.md",
+          "sha256": "eb2242a0db9c7560f25082c961125b260c94346beffd990de893f3120ef1a808"
+        },
+        {
+          "path": "docs/RESEARCH.md",
+          "sha256": "a9a3cef2abf90db02dfff31a2c64cbb4ac415779b6312a0f69905e25ecc6740d"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/dossier/pyproject.toml",
+          "sha256": "f2df037fda8d9b4e5ed6f9fc7f11b86b3ebeaa32e3109b4e26eb7e0e8830cc0e"
+        },
+        {
+          "path": "scripts/dossier/uv.lock",
+          "sha256": "cf814d7c9f78d51290cbefc6b647941aeb7e157f72bf7ea5c8a20ec5b0584dc2"
         }
+      ],
+      "contract_kind": "vcc2026",
+      "binding": {
+        "data_audit": {
+          "path": "docs/research/challenge_2026/data_audit.json",
+          "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+        },
+        "scorer": {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        "artifacts": {
+          "path": "docs/research/challenge_2026/artifacts.json",
+          "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+        },
+        "split_manifest": {
+          "path": "docs/research/challenge_2026/splits.json",
+          "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+        },
+        "gene_axis": {
+          "path": "docs/research/challenge_2026/official_gene_axis.csv",
+          "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+        }
+      },
+      "runtime_requirements": [
+        "记录actual reference/baseline/anchor hashes及effective DE backend和依赖版本",
+        "保留六raw/normalized分项、每指标有效target数与缺失原因；官方退化拒绝时阻止Overall",
+        "oracle评分baseline仅属于评估，不进入模型拟合、特征、QC或参数选择",
+        "训练仅使用split_manifest规定的背景、target与细胞；benchmark等于此协议binding"
+      ],
+      "node_before_ready": [
+        "独立outer_split×target_partition×seed",
+        "完整expected_config及benchmark绑定",
+        "实际训练代码/配置/依赖锁引用",
+        "结束条件、数值判据及计算预算"
       ]
     }
   },
@@ -134,9 +237,9 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ],
         "evaluation_reference_methods": [
           "M-ZERO",
@@ -145,7 +248,7 @@
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-absolute-s01": {
@@ -190,13 +293,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-logfc-s01": {
@@ -241,13 +344,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-qc-s01": {
@@ -292,13 +395,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-random-thin-s01": {
@@ -343,13 +446,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-qc-weight-s01": {
@@ -395,13 +498,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-context-balanced-s01": {
@@ -446,13 +549,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-target-balanced-s01": {
@@ -497,13 +600,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-meanvar-s01": {
@@ -548,13 +651,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-set-s01": {
@@ -599,13 +702,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-pca-s01": {
@@ -650,13 +753,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-program-s01": {
@@ -701,13 +804,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-random-program-s01": {
@@ -752,13 +855,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-pretrained-s01": {
@@ -803,13 +906,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-random-encoder-s01": {
@@ -854,13 +957,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-scfoundation-s01": {
@@ -905,13 +1008,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-random-scfoundation-s01": {
@@ -956,13 +1059,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-go-target-s01": {
@@ -1007,13 +1110,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-random-go-s01": {
@@ -1058,13 +1161,13 @@
         "budget_class": "low",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-mlp-s01": {
@@ -1109,13 +1212,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-direction-loss-s01": {
@@ -1160,13 +1263,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-context-film-s01": {
@@ -1211,13 +1314,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-shared-context-s01": {
@@ -1262,13 +1365,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-twostage-s01": {
@@ -1313,13 +1416,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-gen-nb-s01": {
@@ -1365,14 +1468,13 @@
         "budget_class": "high",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用",
-          "固定被复用均值头的Artifact/commit，填入sources；依据前置结论评估信息价值，不要求FiLM必须获胜"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "init-gen-flow-s01": {
@@ -1418,14 +1520,13 @@
         "budget_class": "high",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用",
-          "固定被复用均值头的Artifact/commit，填入sources；依据前置结论评估信息价值，不要求FiLM必须获胜"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "confirm-qc-s02": {
@@ -1475,13 +1576,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "confirm-random-s02": {
@@ -1529,13 +1630,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "confirm-qc-s03": {
@@ -1585,13 +1686,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     },
     "confirm-random-s03": {
@@ -1639,13 +1740,13 @@
         "budget_class": "medium",
         "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
         "unresolved": [
-          "实际配置/结束条件",
-          "冻结输入/协议与数值判据",
-          "实现、锁文件及已提交引用"
+          "具体outer_split/target_partition/seed、完整配置和结束条件",
+          "实际reference/anchors与六指标有效性须执行核验",
+          "实现、锁文件及已提交引用、比较数值判据"
         ]
       },
       "blockers": [
-        "前瞻计划尚未实例化；先完成协议冻结，再按优先问题选择比较"
+        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
       ]
     }
   },

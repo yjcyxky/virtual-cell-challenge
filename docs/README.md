@@ -8,6 +8,7 @@
 |---|---|
 | 理解九轴、归因设计及研究管理命令 | [RESEARCH.md](RESEARCH.md) |
 | 核对五背景、三来源研究及原始数据边界 | [数据依据](research/dataset_foundations.md) |
+| 使用已核验的 2026 基因轴、NTC 划分和官方评分契约 | [challenge 数据与评估契约](research/challenge_protocol.md) |
 | 查验方法和先验的论文依据 | [文献卡片](research/literature_foundations.md) |
 | 登记候选方法 | [Method Space](research/method_space.json) |
 | 登记执行、对照与前置关系 | [Experiment DAG](research/experiment_dag.json) |

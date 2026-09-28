@@ -143,6 +143,55 @@ def evidence_parents(objects, evidence_id):
     return list(dict.fromkeys(comparison.get("controls", []) + comparison.get("candidates", [])))
 
 
+def challenge_contract_errors(root, pid, protocol, staged=False):
+    """A ready challenge protocol must bind its audited inputs and official scorer."""
+    errors = []
+    binding = protocol.get("binding", {})
+    loaded = {}
+    for key in ("data_audit", "scorer", "artifacts", "split_manifest", "gene_axis"):
+        ref = binding.get(key)
+        if not ref or ref not in protocol.get("source_refs", []):
+            errors.append(f"protocol {pid}: challenge {key} must have a frozen source reference")
+            continue
+        if ref_error(root, ref, staged):
+            continue  # The ordinary source-ref validator reports the precise failure.
+        if key != "gene_axis":
+            try:
+                loaded[key] = json.loads(read_bytes(root, ref["path"], staged))
+            except (ValueError, OSError, ResearchError) as exc:
+                errors.append(f"protocol {pid}: invalid {key}: {exc}")
+    if audit := loaded.get("data_audit"):
+        if audit.get("data_contract_complete") is not True or audit.get("official_manifest", {}).get("season") != "2026":
+            errors.append(f"protocol {pid}: complete 2026 raw-data audit required")
+        n_genes = audit.get("official_manifest", {}).get("n_genes", 0)
+        if not n_genes or len(audit.get("contexts", {})) != 5:
+            errors.append(f"protocol {pid}: official axis and five-context coverage required")
+        for name, context in audit.get("contexts", {}).items():
+            positions = context.get("official_gene_positions", [])
+            if (not positions or positions != sorted(set(positions)) or
+                    any(not isinstance(i, int) or not 0 <= i < n_genes for i in positions)):
+                errors.append(f"protocol {pid}: invalid official measurement mask for {name}")
+            if any(context.get("ntc_pools", {}).get(pool, {}).get("cells", 0) <= 0 for pool in ("input", "score")):
+                errors.append(f"protocol {pid}: separate input and scoring NTC required for {name}")
+    if scorer := loaded.get("scorer"):
+        cfg = scorer.get("effective_config", {})
+        if (scorer.get("repository") != "https://github.com/ArcInstitute/cell-eval2" or
+                not re.fullmatch(r"[0-9a-f]{40}", scorer.get("commit", "")) or
+                scorer.get("preset") != "vcc2026" or len(set(scorer.get("scored_metrics", []))) != 6 or
+                cfg.get("metrics") != "vcc2026" or cfg.get("control_source") != "real" or
+                cfg.get("input_type") != "counts" or cfg.get("cache_strict") is not True):
+            errors.append(f"protocol {pid}: fixed official cell-eval2 vcc2026 contract required")
+        if scorer.get("anchors", {}).get("function") != "cell_eval2.real_bundle.build_real_bundle":
+            errors.append(f"protocol {pid}: official reference/anchor builder required")
+    if manifest := loaded.get("artifacts"):
+        parent = Path(binding["artifacts"]["path"]).parent
+        for filename, sha256 in manifest.items():
+            ref = {"path": str(parent / filename), "sha256": sha256}
+            if ref not in protocol.get("source_refs", []):
+                errors.append(f"protocol {pid}: artifact {filename} is not bound in source_refs")
+    return errors
+
+
 def incomplete(node, dag):
     """Return missing launch requirements without upgrading a draft to ready."""
     missing = list(node.get("blockers", []))
@@ -153,6 +202,9 @@ def incomplete(node, dag):
     protocol = dag.get("protocols", {}).get(node.get("protocol_id"), {})
     if protocol.get("status") != "ready":
         missing.append("evaluation protocol is not ready/frozen")
+    if protocol.get("contract_kind") == "vcc2026":
+        if not protocol.get("binding") or (node.get("expected_config") or {}).get("benchmark") != protocol.get("binding"):
+            missing.append("expected_config.benchmark must bind the frozen challenge data, splits and official scorer")
     comparison = dag.get("comparisons", {}).get(node.get("comparison_id"), {})
     if comparison.get("status") != "ready":
         missing.append("comparison is not ready")
@@ -233,6 +285,8 @@ def validate(root, objects, staged=False):
         refs(f"protocol {pid}", protocol.get("source_refs", []))
         if protocol.get("status") == "ready" and (not protocol.get("scope") or not protocol.get("description")):
             errors.append(f"protocol {pid}: ready requires description and scope")
+        if protocol.get("contract_kind") == "vcc2026" and protocol.get("status") == "ready":
+            errors.extend(challenge_contract_errors(root, pid, protocol, staged))
     new_directories = {}
     for nid, node in nodes.items():
         if node.get("status") not in NODE_STATES or not isinstance(node.get("legacy"), bool):
