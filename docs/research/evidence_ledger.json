@@ -1692,43 +1692,136 @@
           "sha256": "1666ce3b1a4ecd2b4a2d6f603d87ca2a510ef2f93011e374e9464134c574cebc"
         }
       ],
-      "next_action": "旧身份固定代码快照并禁止重启；继续同路线新run cell-cvae-aligned-s01 和独立比较 C-CELL-VAE-ALIGNED-PACKAGE。",
+      "next_action": "原执行已归档且禁止重启。替代完整比较已关闭，结论见 E-CELL-VAE-ALIGNED-PACKAGE；保留此原问题与执行失败，不将零梯度步失败关闭为方法阴性。当前行动由Q-SET-DISTRIBUTION-PACKAGE决定。",
       "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
     },
     "E-CELL-VAE-ALIGNED-PACKAGE": {
       "kind": "experiment",
-      "state": "pending",
       "comparison_id": "C-CELL-VAE-ALIGNED-PACKAGE",
       "node_ids": [
         "masked-response-shared-s01",
         "cell-cvae-aligned-s01"
       ],
-      "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
-      "claim": "修复NTC输入可测边界后的完整VAE整包，尚未训练，无本地效力结论。",
-      "limitations": "修复版在解码器评分后重新冻结，不能称全部配置共同冻结；唯一方法条件修正是encoder输入可测轴，预算和其他超参数保持原方案。",
+      "state": "not_supported",
+      "claim": "NTC条件计数VAE完整8192步、989224细胞似然池及两面板官方评分完成。主Overall 0.080310892（shared 0.210865634，差−0.130554742），重叠0.035925974（差−0.168912204），未达门槛。主280/280靶capped MSE恶化；PDS和NMAE退化，Jaccard/Fidelity均值改善不足以抵消。零扰动生成明显基线漂移：辅助BH发现13697，重采样0。",
+      "limitations": "S2-H1/context-seen/seed1开发证据，只归因于整包；没有背景/训练/生成独立确认。8,192步固定预算不证明充分收敛；稀疏KL日志不能证明全局后验坍塌。原run在训练前失败不是阴性；修复版input encoder用6,123共同可测基因，输出/似然轴不变，在解码器结果后重新冻结。未解决官方28个无来源靶点。",
       "source_refs": [
         {
-          "path": "experiments/conditional-cell-response/configs/cell-cvae-aligned-s01.json",
-          "sha256": "70401db4d4062a0730990063c8aeaafc6d358febf2b5d99b6479f9a723076923"
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/metrics.json",
+          "sha256": "03ffb439d12d5d3acf49af103ad46a4584fdebdecedbd9d6fd51b04f2cf8fc49"
         },
         {
-          "path": "experiments/conditional-cell-response/PLAN.md",
-          "sha256": "181002d8a03ef8705431f625ce2bc71095f7f6076be260fb7331fc379350a9a8"
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+          "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+        },
+        {
+          "path": "experiments/conditional-cell-response/REPORT.md",
+          "sha256": "0536c5e884e7d5c28183e518feac5b81af9ca9951966f61711ce0a0c0fe17f38"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/cache/package-comparison.json",
+          "sha256": "67178b87ebc79bed854e66367bc6f702ba9d37b482b240a09a2e20d08b59584c"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/cache/tracking-verification.json",
+          "sha256": "58d8d65c0bf56dc6768f76050eb4974155cce12d4449f2adbe728a3debe26df0"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/cache/comparison-all-paired.csv",
+          "sha256": "f1c15a7036d3347168847ecd0ce3b0c1116908cc5093c9074bc7048787565b93"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/cache/comparison-official_overlap-paired.csv",
+          "sha256": "458aef6aa381e2954801eddbdabe46e7921fd505ef8ffbe411f21ce46a12a533"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/cache/training-log-summary.json",
+          "sha256": "15cac7c6461948ba8161fad6d1cdfe0de9fe244d0cb9d93ecb50dc936e1bab3a"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-aligned-s01/cache/ntc-diagnostics.json",
+          "sha256": "dbd9af75de943eb4d771390180c4ddfe779ce72038b638f98500ac68e1070df8"
+        },
+        {
+          "path": "docs/research/next_mechanism_sources.md",
+          "sha256": "344ca7b9f11951fc8f3c213204f93c46bc123f6ac73841a8d559a6e20c35e590"
         }
       ],
-      "next_action": "完成8192步及两个正式面板；保留原失败记录，之后与解码器结果共同分配下一机制预算。",
-      "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
+      "next_action": "本轮基因解码和VAE两套方案均无signal，停止当前配置的H1参数网格。第三槽转C-SET-DISTRIBUTION-PACKAGE：经验NTC模板、集合交互、energy分布目标与零扰动恒等约束；先核验真实尺寸输入/资源，再冻结一个完整配置和两面板评估。当前draft不是已训练成果，不要求先过线性头。",
+      "reopen_when": "有明确的新输入/建模机制或训练内证据能改变本配置失败假设，再新建run冻结预算和匹配控制；不自动按H1误差调KL/宽度/步数。",
+      "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？"
+    },
+    "L12": {
+      "kind": "literature",
+      "state": "external",
+      "comparison_id": null,
+      "node_ids": [],
+      "publication": "Adduri等 Cell 2026，2026-08-31在线发表，当前In Press Corrected Proof",
+      "claim": "State ST通过NTC集合交互与分布目标学习扰动；SE是可选表示模块，从头训练ST不要求先在线性头证明。",
+      "limitations": "作者公开ST-Replogle训练与四背景研究有重叠，onehot不自然支持全局未见靶点；本地仅确认SE资产，词表/加载/完整暴露尚不足。正式全文抓取受限，机制事实由固定作者源码核验。",
+      "source_urls": [
+        "https://doi.org/10.1016/j.cell.2026.07.052"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/next_mechanism_sources.md",
+          "sha256": "344ca7b9f11951fc8f3c213204f93c46bc123f6ac73841a8d559a6e20c35e590"
+        }
+      ],
+      "next_action": "作为不同机制整包的来源；具体训练/输入/输出与资源条件另行冻结，文献不代表本地有效。",
+      "reopen_when": "作者代码、输入适配、预训练暴露或发表版本变化时重新核验；本地效力仅由实际完成比较判断。"
+    },
+    "L13": {
+      "kind": "literature",
+      "state": "external",
+      "comparison_id": null,
+      "node_ids": [],
+      "publication": "Bunne等 Nature Methods 2023",
+      "claim": "CellOT用ICNN最优运输将NTC分布映射至已见扰动，最小位移耦合是可检验的结构先验。",
+      "limitations": "原版每扰动独立拟合，不支持全局未见CRISPR靶点；共享条件运输与跨来源测量mask需要新设计，4i资源数字不是本任务预算。",
+      "source_urls": [
+        "https://doi.org/10.1038/s41592-023-01969-x"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/next_mechanism_sources.md",
+          "sha256": "344ca7b9f11951fc8f3c213204f93c46bc123f6ac73841a8d559a6e20c35e590"
+        }
+      ],
+      "next_action": "作为不同机制整包的来源；具体训练/输入/输出与资源条件另行冻结，文献不代表本地有效。",
+      "reopen_when": "作者代码、输入适配、预训练暴露或发表版本变化时重新核验；本地效力仅由实际完成比较判断。"
+    },
+    "E-SET-DISTRIBUTION-PACKAGE": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-SET-DISTRIBUTION-PACKAGE",
+      "node_ids": [
+        "masked-response-shared-s01",
+        "set-distribution-s01"
+      ],
+      "hypothesis": "保留实测NTC细胞模板，学习集合条件异质响应并用分布目标训练，能否在匹配数据和官方评分下超过shared，同时避免当前计数重建的基线漂移？",
+      "claim": "文献支持集合分布学习这一候选；本地尚未实现或训练，无有效性结果。",
+      "limitations": "新机制仅为开发计划；从头训练、H1仅NTC、全轴/实测mask与冻结scorer，整包归因。",
+      "source_refs": [
+        {
+          "path": "docs/research/next_mechanism_sources.md",
+          "sha256": "344ca7b9f11951fc8f3c213204f93c46bc123f6ac73841a8d559a6e20c35e590"
+        }
+      ],
+      "next_action": "执行真实尺寸接口/资源核验，冻结一个完整配置后通过execute/bind完成32768步计划及两面板；冻结前资源核验可调整预算，评分出现后不可延长追分。",
+      "reopen_when": "完整比较完成后按主+0.02及重叠−0.02门槛分配确认或新机制预算；执行失败单独记录。"
     }
   },
   "queue": [
     {
-      "id": "Q-CELL-VAE-PACKAGE",
+      "id": "Q-SET-DISTRIBUTION-PACKAGE",
       "priority": 1,
-      "comparison_id": "C-CELL-VAE-ALIGNED-PACKAGE",
-      "question": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
-      "action": "训练前NTC测量接口失败已保留；执行cell-cvae-aligned-s01完整8192步，保持原模型/目标/预算，正式两面板后统一决策。",
+      "comparison_id": "C-SET-DISTRIBUTION-PACKAGE",
+      "question": "保留实测NTC细胞模板，学习集合条件异质响应并用分布目标训练，能否在匹配数据和官方评分下超过shared，同时避免当前计数重建的基线漂移？",
+      "action": "将未用探索槽转入集合分布机制，先冻结一套可执行方案后完整训练/评分；当前基因解码/VAE追加H1网格预算为零。接口预检不是完成实验。",
       "requires_evidence": [
-        "E-MECHANISM-PORTFOLIO"
+        "E-GENE-DECODER-PACKAGE",
+        "E-CELL-VAE-ALIGNED-PACKAGE"
       ]
     }
   ],

@@ -178,6 +178,10 @@
         "R18": {
           "description": "扰动基因与输出基因共享功能表示，联合NTC基因状态/关系；来源、全轴覆盖及缺注释回退在ready前冻结",
           "local_status": "UNTESTED"
+        },
+        "R19": {
+          "description": "NTC逐细胞token及集合交互，保留细胞状态异质性；靶点条件化，无真实纵向配对",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -282,6 +286,10 @@
         },
         "L8": {
           "description": "掩码一二阶矩估计及有限样本离散度收缩；不是逐细胞NB极大似然",
+          "local_status": "UNTESTED"
+        },
+        "L9": {
+          "description": "实测基因坐标上的集合energy距离与响应辅助目标；明确有限样本估计、尺度和权重",
           "local_status": "UNTESTED"
         }
       },
@@ -404,6 +412,10 @@
         },
         "I8": {
           "description": "目标NTC文库采样及条件Gamma-Poisson生成；不固定每个输出细胞的文库总量",
+          "local_status": "UNTESTED"
+        },
+        "I9": {
+          "description": "以真实NTC细胞为模板的学习残差变换及counts逆映射；零扰动恒等约束，避免重建整个NTC分布",
           "local_status": "UNTESTED"
         }
       },
@@ -1729,7 +1741,7 @@
       },
       "signature": "T4-D2-R5-A3-L5-O0-V5-I1-G1",
       "prior": "条件生成模型可联合学习细胞异质性及可迁移响应；NB似然/KL与训练内响应辅助目标联动。没有真实NTC-扰动细胞配对，不能将随机配对当监督真值；假设失效包括潜变量后验泄漏、背景纠缠及响应被重构目标压低。 已冻结背景/靶点平衡的每条件至多64细胞似然池，辅助项保留全部群体统计；16维标准正态推断prior；缺训练输出屏蔽自由权重，全局未见靶点零Δ回退。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "high",
       "evidence_ids": [
@@ -1739,6 +1751,30 @@
         "E-CELL-VAE-ALIGNED-PACKAGE"
       ],
       "selection_basis": "三机制整包未达到门槛后扩大搜索范围；这是下一轮资源选择，不是方法有效证据。无需先在线性头或完整消融上获胜。"
+    },
+    "M-SET-DISTRIBUTION-PACKAGE": {
+      "description": "NTC集合交互与经验细胞残差分布学习整包",
+      "axes": {
+        "T": "T4",
+        "D": "D2",
+        "R": "R19",
+        "A": "A2",
+        "L": "L9",
+        "O": "O0",
+        "V": "V5",
+        "I": "I9",
+        "G": "G1"
+      },
+      "signature": "T4-D2-R19-A2-L9-O0-V5-I9-G1",
+      "prior": "集合内状态交互与energy分布监督可能支持跨背景异质响应；以实测NTC为模板并约束零扰动恒等。来自State ST机制启发，非作者复现；从头训练，无预训练暴露先验。失效条件包括少背景过拟合、分布距离受非响应方向支配、测量mask造成不可比距离、输出逆变换漂移。整包有价值后再匹配无集合交互/无分布项消融，不要求先过线性头。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "high",
+      "evidence_ids": [
+        "L12",
+        "E-SET-DISTRIBUTION-PACKAGE"
+      ],
+      "selection_basis": "本轮基因解码与计数VAE完整比较均未达标后，把剩余探索槽转向经验细胞集合响应；是资源选择，不是新方法有效证据。"
     }
   }
 }

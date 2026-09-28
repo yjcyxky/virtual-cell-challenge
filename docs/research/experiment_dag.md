@@ -54,7 +54,8 @@ flowchart TD
   n47["distribution-nb-s01 | completed"]
   n48["gene-decoder-s01 | completed"]
   n49["cell-cvae-s01 | failed"]
-  n50["cell-cvae-aligned-s01 | ready"]
+  n50["cell-cvae-aligned-s01 | completed"]
+  n51["set-distribution-s01 | draft"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -290,4 +291,7 @@ flowchart TD
   n44 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n50
   n46 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n50
   n47 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n50
+  n33 -->|control| n51
+  n0 -->|source| n51
+  n50 -->|source| n51
 ```
