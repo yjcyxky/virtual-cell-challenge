@@ -70,7 +70,7 @@ DAG 的 `controls` 表示科学比较，`sources` 表示复用来源，`requires
 
 1. 在 Method Space 选择已有坐标或添加有明确差异的候选，写清先验注入位置与消融。
 2. 在 DAG 建立 comparison：假设、用途、控制/候选节点、变化轴、实际配置变化字段、主指标/方向/实际意义阈值、适用范围，以及支持/反对/证据不足各自的下一步。
-3. 为每次独立训练登记新节点。draft 可不完整；准备启动时补齐 `expected_config`、配置/代码引用、冻结协议和 PLAN，改为 ready，提交这些条件。
+3. 为每次独立训练登记新 run 节点。draft 可不完整；准备启动时补齐 `expected_config`、配置/代码引用、冻结协议和 PLAN，改为 ready，提交这些条件。
 4. 运行 `check`、`gate <node_id>`。相同方法标签不能掩盖实际配置改变；单因素比较须通过实际差异校验。协议不同的比较登记为 `protocol_audit`，不解释为模型增益。
 
 `expected_config` 是训练解析默认值与所有覆盖后的完整配置，而非少数手工摘录字段。`changed_fields` 使用 dotted paths，例如 `model.max_depth`；单因素的 control/candidate 训练种子匹配。配置中的身份字段变化不算方法改动。
@@ -96,12 +96,12 @@ V 轴是冻结评估定义，不作为可刷分参数；真实/随机/无先验�
 # ROOT 指仓库；config 是已解析全部默认值/覆盖的实际配置。
 sys.path.insert(0, str(ROOT / "scripts"))
 from research import bind
-research_metadata = bind(ROOT, experiment_id, config, resume=resume)
+research_metadata = bind(ROOT, run_id, config, resume=resume)
 frozen_config["research"] = research_metadata
-# 将同一 frozen_config 写入 Experiment 的 config.yaml 并传给 wandb.init。
+# 将同一 frozen_config 写入 outputs/<run_id>/config.yaml 并传给 wandb.init。
 ```
 
-完成时 `metrics.json` 保存下列字段，以及比较声明的有限数值主指标和其他科学指标：
+完成时 `outputs/<run_id>/metrics.json` 保存下列字段，以及比较声明的有限数值主指标和其他科学指标：
 
 ```json
 {
@@ -116,7 +116,7 @@ frozen_config["research"] = research_metadata
 这只是字段示意，字符串占位符不会通过结果校验。预测为多个大文件时引用带内容哈希的清单，不复制或逐项上传缓存。
 `execute` 不会凭退出码 0 宣称完成：缺有效评估、模型、预测或绑定身份会拒绝完成登记。失败记录执行失败；科学结论仍由证据关闭步骤给出。
 中断后显式传 `--resume`，训练命令也必须接入已有完整 checkpoint 恢复。管理器不加载模型/优化器，不替代训练状态恢复。
-`bind` 在 `cache/research-binding.json` 留下绑定标记；绑定后失败即使没有最终指标，`execute` 也会保存带身份的失败记录，不能按一次新训练覆盖。修复故障、清除已解决的 blocker 并提交后，再恢复原训练状态。
+`bind` 在 `outputs/<run_id>/cache/research-binding.json` 留下绑定标记；绑定后失败即使没有最终指标，`execute` 也会保存带身份的失败记录，不能按一次新训练覆盖。修复故障、清除已解决的 blocker 并提交后，再恢复原训练状态。
 若环境/输入检查在 `bind` 前失败，可运行 `retry <node_id>`，提交后重新执行同一入口；它只接受条件未变且没有绑定标记或训练产物的执行，并保留失败记录。改变实验条件仍须新建身份。
 
 未登记的实验源码、配置和入口变更会被提交检查拦截。历史恢复从其记录的代码版本进行；初始化不修改旧训练源码、输出或 W&B 记录。
@@ -152,3 +152,7 @@ ln -s ../../.githooks/pre-commit .git/hooks/pre-commit
 来源笔记和本地结果按哈希验证；已经入账的内容更新时保留原引用版本。本工具不自动下载产物或改写线上 W&B。
 
 来源阅读顺序：设计方法先读九轴与上述边界；涉及数据/拆分时读 [dataset_foundations.md](research/dataset_foundations.md)；采用论文方法或先验时读 [literature_foundations.md](research/literature_foundations.md) 对应条目，再登记可证伪对照。
+
+## Experiment 与 run 的当前身份
+
+按用户当前协议，Experiment 是稳定研究路线，DAG 节点是一次独立 run（node_id = run_id）。同路线各 run 共用源码、配置、锁文件和环境，执行产物只写 `experiments/<experiment_id>/outputs/<run_id>/`，W&B group=experiment_id、id=run_id。旧节点没有 run_id 时按历史根目录布局只作兼容，历史结果不迁移。独立 fit_scope 不得混入同一 run。

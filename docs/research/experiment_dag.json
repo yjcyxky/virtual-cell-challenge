@@ -142,7 +142,8 @@
         },
         {
           "path": "docs/RESEARCH.md",
-          "sha256": "a9a3cef2abf90db02dfff31a2c64cbb4ac415779b6312a0f69905e25ecc6740d"
+          "sha256": "a9a3cef2abf90db02dfff31a2c64cbb4ac415779b6312a0f69905e25ecc6740d",
+          "git_commit": "03cf49770cd435a18799cad665513df26f157432"
         },
         {
           "path": "scripts/dossier/challenge.py",
@@ -200,20 +201,137 @@
   },
   "nodes": {
     "init-linear-s01": {
-      "experiment_id": "init-linear-s01",
-      "directory": "experiments/init-linear-s01",
+      "experiment_id": "init-linear",
+      "directory": "experiments/init-linear",
       "legacy": false,
       "method_id": "M-BASE",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "draft",
+      "status": "ready",
       "comparison_id": "C-BASE",
       "controls": [],
       "sources": [],
       "requires_evidence": [],
       "evidence_conditions": {},
-      "config_ref": null,
-      "expected_config": null,
-      "code_refs": [],
+      "config_ref": {
+        "path": "experiments/init-linear/configs/s2-h1-s01.json",
+        "sha256": "f2eaab700d7c6546502ed51f77be7cd91df5af1d49911b3aa6f02b65b1cad437"
+      },
+      "expected_config": {
+        "experiment_id": "init-linear",
+        "run_id": "init-linear-s01",
+        "seed": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          }
+        },
+        "data": {
+          "chunk_rows": 2048,
+          "target_sum": 10000,
+          "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+          "qc": "frozen_correctness_only"
+        },
+        "model": {
+          "kind": "masked_ridge_target_id_plus_linear_ntc_mean",
+          "alpha": 1.0,
+          "weight_cell_unit": 100.0,
+          "gene_chunk": 256,
+          "context_features": "exact_full_train_NTC_span_on_training_measured_intersection",
+          "target_features": "input_NTC_target_mean_div5_and_measurement_indicator",
+          "missing_output": "zero_delta_when_no_training_measurement",
+          "end_condition": "exact_ridge_solution_all_measured_gene_groups"
+        },
+        "generation": {
+          "kind": "fixed_NTC_log_shift_library_preserving_stochastic_round",
+          "cells_per_target": 400,
+          "paired_rng": "seed_plus_frozen_target_index",
+          "missing_input": "zero_baseline_and_zero_delta_with_mask"
+        },
+        "evaluation": {
+          "arms": [
+            "zero",
+            "shared",
+            "source",
+            "linear"
+          ],
+          "single_source": "K562",
+          "panels": [
+            "all",
+            "official_overlap"
+          ],
+          "runtime": {
+            "device": "cuda",
+            "num_threads": 8,
+            "pert_chunk": 16
+          }
+        },
+        "tracking": {
+          "mode": "online"
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/init-linear/src/train.py",
+          "sha256": "a90c47e6d3449af39367651992b1b616b3a3993dbdd0f17fcd55780f173696e3"
+        },
+        {
+          "path": "experiments/init-linear/src/evaluation.py",
+          "sha256": "ab326dd453f473fda1445c82b8a8f0e8380c73514512fc39c615610da3a15f21"
+        },
+        {
+          "path": "experiments/init-linear/src/data.py",
+          "sha256": "4b7637996c89baed3ba5fea3b381a03b17acb0ed6631757aea4c46aa49aaef68"
+        },
+        {
+          "path": "experiments/init-linear/src/model.py",
+          "sha256": "c7796c8ea00c6887f455edc810b33173e46f5cfc14b62904229a320403d29bfe"
+        },
+        {
+          "path": "experiments/init-linear/reproduce.sh",
+          "sha256": "f56010ec6d2825ca90480f7e525353ece3e9cdd87cfd22f6adc570b0ae24c4ef"
+        },
+        {
+          "path": "experiments/init-linear/pyproject.toml",
+          "sha256": "57c109791bae59a7593e7272332e56aa1afc297b63616d5def40cf309ae2457f"
+        },
+        {
+          "path": "experiments/init-linear/uv.lock",
+          "sha256": "aa1d9d73a98203d0acb820f8d7193c9862967b42b0f42fd72a2ce578d2758446"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "cdd9e779d95eb25841f8e2a59c958ba38171d0dafef33ed800624d6c0ee94ed1"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        }
+      ],
       "metrics_ref": null,
       "report_ref": null,
       "git_commit": null,
@@ -230,26 +348,21 @@
         ],
         "comparison": "建立有效简单对照，分辨共享响应、拟合能力与perturbation-specific误差",
         "fit_scope": {
-          "outer_split": null,
-          "target_partition": null
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
-        "unresolved": [
-          "具体outer_split/target_partition/seed、完整配置和结束条件",
-          "实际reference/anchors与六指标有效性须执行核验",
-          "实现、锁文件及已提交引用、比较数值判据"
-        ],
+        "allocation": "独立run；S2-H1/context-seen/seed1，复用init-linear路线代码与环境。其他fold/seed另建run。",
+        "unresolved": [],
         "evaluation_reference_methods": [
           "M-ZERO",
           "M-SHARED",
           "M-SOURCE"
         ]
       },
-      "blockers": [
-        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
-      ]
+      "blockers": [],
+      "run_id": "init-linear-s01"
     },
     "init-absolute-s01": {
       "experiment_id": "init-absolute-s01",
@@ -1752,7 +1865,7 @@
   },
   "comparisons": {
     "C-BASE": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "baseline",
       "hypothesis": "建立有效简单对照，分辨共享响应、拟合能力与perturbation-specific误差",
       "controls": [],
@@ -1764,12 +1877,12 @@
       "decision_rule": {
         "primary_metric": "S2.Overall",
         "direction": "maximize",
-        "min_effect": null,
-        "scope": "同一PSEUDO-VCC-INIT、同一组别/面板；分别报告五背景与全局未见靶点",
-        "on_support": "冻结可重现的比较基线与噪声估计，再进入QC/任务/表示筛选",
-        "on_against": "保留基线，搁置此实现；只在数据/范围变化时重开",
-        "on_inconclusive": "按噪声来源补配对重复或修复覆盖；不得改评分群体追涨分",
-        "threshold_policy": "在看候选结果前用基线重复/实际意义确定阈值并预注册；未定则保持draft"
+        "min_effect": 0.02,
+        "scope": "首个独立run：S2-H1/context-seen/seed1；280辅助靶点主面板及25官方重叠靶点独立bundle。只有一背景，一次拟合，无全局未见靶点结论。",
+        "on_support": "记录单背景筛选线索与有效基线，先补跨背景/配对种子；不宣称普遍优越。",
+        "on_against": "保留有效参照并搁置该线性实现优越性；按分项/覆盖识别下一问题。",
+        "on_inconclusive": "保留有效基线与不确定性，补其他背景/配对种子；评分失败则先修复执行，不能关闭为方法证据。",
+        "threshold_policy": "事前固定normalized Overall差异0.02为复验线索；非统计显著性。linear超过最好参照至少0.02且官方重叠相对该参照下降不超过0.02。"
       },
       "attribution_plan": "冻结其余输入、变换、生成器、预算、划分和种子；实现后核对实际配置差异",
       "cost": "low",

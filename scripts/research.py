@@ -116,7 +116,7 @@ def differences(left, right, prefix=""):
         result = set()
         for key in left.keys() | right.keys():
             field = f"{prefix}.{key}" if prefix else key
-            if not prefix and key == "experiment_id":
+            if not prefix and key in {"experiment_id", "run_id"}:
                 continue
             if key not in left or key not in right:
                 result.add(field)
@@ -320,15 +320,18 @@ def validate(root, objects, staged=False):
                 refs(f"node {nid} {field}", [node[field]])
         refs(f"node {nid} code_refs", node.get("code_refs", []))
         if not node.get("legacy"):
+            if node.get("run_id") and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", str(node["run_id"])):
+                errors.append(f"node {nid}: run_id must be a safe path component")
             comparison = comparisons.get(node.get("comparison_id"), {})
             if comparison and nid not in comparison.get("controls", []) + comparison.get("candidates", []):
                 errors.append(f"node {nid}: not a member of its registered comparison")
-            if nid != node.get("experiment_id"):
-                errors.append(f"node {nid}: node_id must equal experiment_id")
+            if nid != node.get("run_id", node.get("experiment_id")):
+                errors.append(f"node {nid}: node_id must equal run_id (experiment_id for historical layout)")
             directory = node.get("directory")
-            if directory in new_directories:
-                errors.append(f"node {nid}: Experiment directory already used by {new_directories[directory]}")
-            new_directories[directory] = nid
+            output = output_directory(node)
+            if output in new_directories:
+                errors.append(f"node {nid}: Experiment directory already used by {new_directories[output]}")
+            new_directories[output] = nid
             if any("git_commit" in ref for ref in [node.get("config_ref") or {}] + node.get("code_refs", [])):
                 errors.append(f"node {nid}: active config/code references must bind current contents, not historical git_commit")
             if node.get("directory") != f"experiments/{node.get('experiment_id')}":
@@ -336,6 +339,8 @@ def validate(root, objects, staged=False):
             expected = node.get("expected_config")
             if expected and expected.get("experiment_id") != node.get("experiment_id"):
                 errors.append(f"node {nid}: expected_config.experiment_id mismatch")
+            if node.get("run_id") and expected and expected.get("run_id") != node["run_id"]:
+                errors.append(f"node {nid}: expected_config.run_id mismatch")
             if node.get("status") == "ready":
                 errors.extend(f"node {nid}: {item}" for item in incomplete(node, dag))
     seen, active = set(), set()
@@ -522,6 +527,12 @@ def committed(root, paths, revision="HEAD"):
             raise ResearchError(f"uncommitted or changed registered file: {path}")
 
 
+def output_directory(node):
+    """New runs share Experiment code but own their outputs; old layouts stay valid."""
+    return (f"{node['directory']}/outputs/{node['run_id']}" if node.get("run_id")
+            else node["directory"])
+
+
 def metadata(root, objects, nid, commit=None):
     node = objects["experiment_dag"]["nodes"][nid]
     registered_method = objects["method_space"]["methods"][node["method_id"]]
@@ -532,6 +543,8 @@ def metadata(root, objects, nid, commit=None):
     comparison = {key: value for key, value in dag["comparisons"][node["comparison_id"]].items()
                   if key != "status"}
     spec = {field: node.get(field) for field in SPEC_FIELDS}
+    if node.get("run_id"):
+        spec["run_id"] = node["run_id"]
     return {"node_id": nid, "experiment_id": node["experiment_id"], "method_id": node["method_id"],
             "comparison_id": node["comparison_id"], "protocol_id": node["protocol_id"],
             "protocol_sha256": digest(protocol), "effective_config_sha256": digest(node["expected_config"]),
@@ -552,7 +565,7 @@ def gate(root, node_id, *, resume=False, config_path=None):
     allowed = {"failed", "interrupted"} if resume else {"ready"}
     if node.get("status") not in allowed:
         raise ResearchError(f"{node_id}: status {node.get('status')} cannot {'resume' if resume else 'start'}")
-    if not resume and any((local_path(root, node["directory"]) / name).exists()
+    if not resume and any((local_path(root, output_directory(node)) / name).exists()
                           for name in ("metrics.json", "cache/research-binding.json")):
         raise ResearchError(f"{node_id}: existing execution results require explicit recovery or a new Experiment")
     missing = incomplete(node, objects["experiment_dag"])
@@ -582,7 +595,7 @@ def gate(root, node_id, *, resume=False, config_path=None):
         # Unrelated commits are allowed: only registered files must match.
         committed(root, paths[3:], node["git_commit"])
     if resume:
-        directory = local_path(root, node["directory"])
+        directory = local_path(root, output_directory(node))
         if not any((directory / name).is_file() for name in ("config.yaml", "cache/research-binding.json")) or not node.get("metrics_ref"):
             raise ResearchError(f"{node_id}: resume requires frozen binding/config, metrics and full-state checkpoint restoration")
         previous = json.loads(read_bytes(root, node["metrics_ref"]["path"])).get("research", {})
@@ -603,7 +616,8 @@ def bind(root, node_id, actual_config, *, resume=False):
     if canonical(actual_config) != canonical(expected):
         fields = sorted(differences(expected, actual_config))
         raise ResearchError(f"{node_id}: actual_config differs from registered expected_config: {fields or ['experiment_id']}")
-    marker = root / "experiments" / node_id / "cache/research-binding.json"
+    node = load(root)["experiment_dag"]["nodes"][node_id]
+    marker = local_path(root, output_directory(node)) / "cache/research-binding.json"
     marker.parent.mkdir(parents=True, exist_ok=True)
     # Durable before any training output: an interrupted execution may no longer
     # use the pre-binding retry path, even when metrics have not been written.
@@ -672,8 +686,8 @@ def _record(root, node_id, metrics_path):
     if not node or node.get("legacy") or node.get("status") not in {"ready", "failed", "interrupted"}:
         raise ResearchError(f"{node_id}: record requires a nonlegacy, unfinished Experiment")
     path = local_path(root, metrics_path)
-    if not path.is_relative_to(local_path(root, node["directory"])):
-        raise ResearchError("metrics must belong to the Experiment directory")
+    if not path.is_relative_to(local_path(root, output_directory(node))):
+        raise ResearchError("metrics must belong to the registered run output directory")
     result = json.loads(path.read_text())
     node["metrics_ref"] = {"path": str(path.relative_to(root)), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
     require_valid(root, objects)
@@ -705,7 +719,7 @@ def _record(root, node_id, metrics_path):
             if problem:
                 raise ResearchError(f"{field}: {problem}")
     wandb_url = result.get("wandb_url")
-    if wandb_url and wandb_url != f"https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{node['experiment_id']}":
+    if wandb_url and wandb_url != f"https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{node.get('run_id', node['experiment_id'])}":
         raise ResearchError("metrics.wandb_url does not match the Experiment identity")
     node["status"] = result["status"]
     node["git_commit"] = commit
@@ -721,7 +735,9 @@ def execute(root, node_id, command, *, resume=False):
     if not command:
         raise ResearchError("execute requires -- COMMAND [ARG ...]")
     gate(root, node_id, resume=resume)
-    identity = hashlib.sha256(f"{root}:{node_id}".encode()).hexdigest()
+    experiment_id = load(root)["experiment_dag"]["nodes"][node_id]["experiment_id"]
+    # Runs share one environment. Serialize its sync/use for the whole pipeline.
+    identity = hashlib.sha256(f"{root}:{experiment_id}".encode()).hexdigest()
     lock_path = Path(tempfile.gettempdir()) / f"vcc-research-{identity}.lock"
     with lock_path.open("a") as lock:
         try:
@@ -730,13 +746,13 @@ def execute(root, node_id, command, *, resume=False):
             raise ResearchError(f"{node_id}: another execution holds the Experiment lock") from exc
         launch_identity = gate(root, node_id, resume=resume)
         node = load(root)["experiment_dag"]["nodes"][node_id]
-        directory = local_path(root, node["directory"])
+        directory = local_path(root, output_directory(node))
         metrics_path = str((directory / "metrics.json").relative_to(root))
         environment = dict(os.environ, VCC_RESEARCH_NODE=node_id, VCC_RESEARCH_ROOT=str(root),
                            VCC_RESEARCH_RESUME="1" if resume else "0")
         failure, failure_status = None, "failed"
         try:
-            result = subprocess.run(command, cwd=directory, env=environment)
+            result = subprocess.run(command, cwd=local_path(root, node["directory"]), env=environment)
             if result.returncode:
                 failure = f"execution exited {result.returncode}; completed status rejected"
             elif not (directory / "metrics.json").is_file():
@@ -772,7 +788,7 @@ def retry(root, node_id):
         node = objects["experiment_dag"]["nodes"].get(node_id, {})
         if node.get("legacy") or node.get("status") not in {"failed", "interrupted"}:
             raise ResearchError("retry requires a failed/interrupted nonlegacy Experiment")
-        directory = local_path(root, node["directory"])
+        directory = local_path(root, output_directory(node))
         if any((directory / name).exists() for name in
                ("config.yaml", "metrics.json", "cache/research-binding.json")) or any(
                    p.is_file() for name in ("checkpoints", "predictions") for p in (directory / name).rglob("*")):

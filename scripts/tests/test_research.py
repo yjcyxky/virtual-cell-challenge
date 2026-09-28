@@ -232,6 +232,63 @@ class ResearchControlsTests(unittest.TestCase):
             },
         }
 
+    def test_run_identity_uses_own_output_directory(self):
+        node = self.dag["nodes"].pop("baseline")
+        node["run_id"] = "baseline-01"
+        node["expected_config"]["run_id"] = "baseline-01"
+        self.dag["nodes"]["baseline-01"] = node
+        self.dag["comparisons"]["baseline-comparison"]["candidates"] = ["baseline-01"]
+        self.write_json(node["config_ref"]["path"], node["expected_config"])
+        node["config_ref"] = self.file_ref(node["config_ref"]["path"])
+        self.write_registries()
+        self.commit()
+        self.cli("gate", "baseline-01")
+        self.bind("baseline-01")
+        self.assertTrue((self.root/"experiments/baseline/outputs/baseline-01/cache/research-binding.json").exists())
+        self.assertFalse((self.root/"experiments/baseline/cache/research-binding.json").exists())
+        self.assertIn("existing execution results", self.cli("gate", "baseline-01", ok=False))
+
+    def test_execute_records_explicit_run_metrics(self):
+        node = self.dag["nodes"].pop("baseline")
+        node["run_id"] = "baseline-01"
+        node["expected_config"]["run_id"] = "baseline-01"
+        self.dag["nodes"]["baseline-01"] = node
+        self.dag["comparisons"]["baseline-comparison"]["candidates"] = ["baseline-01"]
+        self.write_json(node["config_ref"]["path"], node["expected_config"])
+        node["config_ref"] = self.file_ref(node["config_ref"]["path"])
+        path = self.root/"experiments/baseline/src/main.py"
+        code = path.read_text().replace("node_id = 'baseline'", "node_id = 'baseline-01'")
+        code = code.replace("directory = root / 'experiments' / node_id", "directory = root / 'experiments' / 'baseline'")
+        code = code.replace("mode = sys.argv[3]", "directory = directory / 'outputs' / node_id\nmode = sys.argv[3]")
+        path.write_text(code)
+        node["code_refs"] = [self.file_ref(r["path"]) for r in node["code_refs"]]
+        self.write_registries()
+        self.commit()
+        self.cli("execute", "baseline-01", "--", sys.executable, str(path), str(SCRIPT), str(self.root), "success")
+        result = json.loads((self.root/"docs/research/experiment_dag.json").read_text())
+        self.assertEqual(result["nodes"]["baseline-01"]["status"], "completed")
+        self.assertTrue((self.root/"experiments/baseline/outputs/baseline-01/metrics.json").exists())
+        self.assertFalse((self.root/"experiments/baseline/metrics.json").exists())
+
+    def test_two_runs_may_share_experiment_without_output_collision(self):
+        first = self.dag["nodes"].pop("baseline")
+        for run_id in ["baseline-01", "baseline-02"]:
+            node = copy.deepcopy(first)
+            node["run_id"] = run_id
+            node["expected_config"]["run_id"] = run_id
+            path = f"experiments/baseline/configs/{run_id}.json"
+            self.write_json(path, node["expected_config"])
+            node["config_ref"] = self.file_ref(path)
+            self.dag["nodes"][run_id] = node
+        self.dag["comparisons"]["baseline-comparison"]["candidates"] = ["baseline-01", "baseline-02"]
+        self.write_registries()
+        self.commit()
+        self.cli("check")
+        self.bind("baseline-01")
+        self.bind("baseline-02")
+        for run_id in ["baseline-01", "baseline-02"]:
+            self.assertTrue((self.root/f"experiments/baseline/outputs/{run_id}/cache/research-binding.json").exists())
+
     def add_qc_comparison(self):
         self.space["axes"]["D"]["variants"]["optional-qc"] = "Optional QC"
         self.space["methods"]["qc"] = copy.deepcopy(self.space["methods"]["base"])

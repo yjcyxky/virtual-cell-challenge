@@ -14,10 +14,10 @@
 
 ## 必须完成的研究闭环
 
-1. **登记**：先选可证伪问题。在 Method Space 定义方法，在 DAG 建立比较与实验节点；写清对照、全部实际变化、评估协议、完整生效配置、代码/配置引用、种子、结束条件和结果判据。草案 `design` 不能代替 `expected_config`；按外层划分×靶点分区×seed 为每次独立拟合展开身份，冻结一致的 `fit_scope`，一个 Experiment 不装多折训练。PLAN 引用 `comparison_id`；初始 draft 不创建训练目录或 W&B run。
+1. **登记**：先选可证伪问题。在 Method Space 定义方法，在 DAG 建立比较与实验节点；写清对照、全部实际变化、评估协议、完整生效配置、代码/配置引用、种子、结束条件和结果判据。草案 `design` 不能代替 `expected_config`；按外层划分×靶点分区×seed 为每次独立拟合登记唯一 `run_id`，冻结一致的 `fit_scope`；同一研究路线共用 Experiment 代码和环境。PLAN 引用 `comparison_id`；初始 draft 不创建训练目录或 W&B run。
 2. **校验**：执行 `scripts/research.py check`。单因素比较必须同时通过方法坐标和实际配置差异检查；评估协议不同只作协议诊断。对照关系不等于数据/权重来源，也不自动成为执行前置；需要先有结论时显式声明 `requires_evidence`。
 3. **启动**：新 `reproduce.sh` 通过 `scripts/research.py execute <node_id> -- <训练命令>` 启动，在环境同步/训练前检查登记、冻结引用、已提交代码及前置证据。训练模块解析全部配置后、创建输出/W&B 前调用 `bind(root, node_id, actual_config)`，把返回的 `research` 同时写入实际 config 和 W&B config；CLI 覆盖和默认值不得偏离登记。
-4. **回收**：`execute` 自动核验并登记根目录 metrics 的状态与结果引用。完整训练结果须包含 `research`、有效主指标、`evaluation_completed`、`checkpoint_ref` 和 `predictions_ref`。训练失败与未完成不能成为方法阴性证据；绑定前失败用 `retry` 检查同条件重试，绑定后用 `--resume` 恢复完整训练状态，管理命令不能代替 checkpoint 恢复。
+4. **回收**：`execute` 自动核验并登记对应 `outputs/<run_id>/metrics.json` 的状态与结果引用。完整训练结果须包含 `research`、有效主指标、`evaluation_completed`、`checkpoint_ref` 和 `predictions_ref`。训练失败与未完成不能成为方法阴性证据；绑定前失败用 `retry` 检查同条件重试，绑定后用 `--resume` 恢复完整训练状态，管理命令不能代替 checkpoint 恢复。
 5. **结论与决策**：REPORT 给出比较、配对效应、波动与限制，再用 `scripts/research.py close --file <证据JSON>` 将证据和采用/确认/补对照/搁置决定入账。账本包含下一步与重开条件；`status` 将未关闭比较列为待办。工作区或W&B有分数但未入账，不算研究闭环完成。
 6. **提交**：执行 `check --staged`；仓库 pre-commit 同样检查暂存区三对象和新增训练入口。校验失败须修正对象/入口，不能绕过 hook 交付。历史训练代码保持冻结，恢复从其记录的 Git 版本进行。
 
@@ -35,129 +35,31 @@
 - 固定响应比较生成器，或固定生成器比较响应模型；检查效应偏移和 NTC 伪 DE。分布校准涨分不等于生物响应更准。
 - 单次小涨分仅为线索，未支持只限当前实现与范围。现有 PLAN 的用户约定优先，不自动扩大实验范围；smoke test 不代替训练。每轮最多三个优先问题，以决策影响、信息增量和成本排序。
 
-以下训练协议管理执行、环境和产物；以上研究闭环管理为何做、结果说明什么及接下来做什么。
+## Experiment、run 与训练协议
 
-原则：**一次 Experiment 就是一次完整训练试验，也是唯一的一次 run。** Experiment 统一管理该次训练的研究方案、代码、配置、环境、训练过程和结果；Git 管版本，W&B 管训练记录；交付包含有效训练、评估、结果总结和代码清理。
+- **Experiment 管研究路线，run 管一次完整训练。** 核心建模方法、架构或训练算法重大变化新建 Experiment；调参、工程修复和数据选择留在原 Experiment。从头重训或改变影响结果的条件，创建新的 run_id。DAG 节点对应独立 run，node_id = run_id。
+- 代码、配置模板、PLAN.md、REPORT.md、pyproject.toml、uv.lock、.venv/ 和 reproduce.sh 放在 `experiments/<experiment_id>/`。所有执行产物放在 `outputs/<run_id>/`：config.yaml、train.log、metrics.json、checkpoints/、predictions/、cache/、wandb/。run 不另建源码、环境、PLAN、REPORT 或阶段项目。
+- 输入校验、预处理、训练和评估共用一个 run、输出目录和 W&B run。阶段切换、临时故障重试和同条件恢复沿用原身份，追加日志；恢复完整 checkpoint 训练状态。改变数据、模型、训练配置或使已有结果失效的修复，新建 run。历史结果与评估口径保持不变。
+- 旧目录与旧记录保持原身份。兼容旧入口不授权新任务使用旧的一次 Experiment = 一次 run 规则。
 
-## Experiment
+## 环境、版本与代码清理
 
-- **Experiment** 是一次独立、完整、可复现的训练试验，使用唯一的 `experiment_id`。一个 Experiment 对应一个本地训练目录和一个 W&B run，不再在 Experiment 下设置多个 runs。
-- 输入校验、预处理、训练和评估是同一 Experiment 的连续步骤，共用同一输出目录和 W&B run，不为不同阶段创建额外 Experiment。
-- 阶段切换、同配置下的校验修复、临时故障重试和断点续训沿用原 Experiment，追加日志并保留已有记录。恢复训练须恢复 checkpoint 中完整训练状态，不能只恢复 W&B 日志或模型权重。
-- 从头重训，或改变数据、模型、训练配置等会影响实验结果的条件时，应新建 Experiment。修复会使已有训练结果失效的代码后，也应创建新的 Experiment 重新训练，不得将不同实验条件的训练历史混在同一个 Experiment 中。
-- 如果只是不会影响已有结果有效性的工程修复，可以继续原 Experiment；若无法明确判断，应优先新建 Experiment，以保证结果可追溯。
-- 历史 Experiment 的结果及其评估口径保持不变。比较不同 Experiment 时，应明确说明数据、划分、指标、模型和训练条件等差异。独立复现已有结果时创建新的 Experiment，并记录来源 Experiment。
+- 每个 Experiment 使用一套 uv 管理的 `.venv/`，本路线各 run 共用，不同 Experiment 不共享。基础 Python、uv 和原生库使用已有 micromamba `virtual-cell` 环境；不删除、重建或改变基础环境。
+- uv 经 `micromamba run -n virtual-cell` 调用，显式绑定其 Python，使用 `--no-python-downloads`。通过 uv add/remove/lock 声明依赖，执行只用 `uv sync --locked`、`uv run --locked`。有活动 run 时不修改其代码、输入或环境。
+- 正式训练前提交代码、配置和锁文件，自动记录 Git commit、锁文件哈希及运行时版本。共享 data/ 只读；来源缺失或不匹配时修复来源。缓存归本次 run，复用产物记录固定来源和哈希，不覆盖历史产物。
+- 修改前先找已有实现。src/ 服务正式训练/评估；scripts/ 只放有持续用途的通用工具。一次性查询用命令行或系统临时目录。每次交付前主动删除本次临时代码、重复实现、废弃分支及失效配置/测试，验证并更新引用；其他任务、登记数据和历史产物不在清理范围。
+- `.venv/`、缓存、大型产物不入 Git，密钥、凭据及未经授权的原始数据不上传。
 
-## 目录职责
+## 完整执行与交付
 
-```text
-data/                         # 已登记的共享数据，训练期间只读
-models/                       # 固定版本的第三方模型及权重
-scripts/                      # 有持续用途的通用数据处理与维护工具
-docs/                         # 数据说明、调查结论和跨实验文档
+1. PLAN 写清问题、数据/划分、基线、训练方案、评估和结束条件；run 差异以完整配置表达，登记到 DAG。
+2. `cd experiments/<experiment_id> && ./reproduce.sh` 贯通环境、输入、预处理、训练和评估；通过 run_id 选择/恢复，先执行研究门禁再启动环境。
+3. 实际 config.yaml 保存种子、数据和划分引用、Git commit、锁文件哈希、运行时版本、来源 run 和 research 绑定；与 W&B 配置一致。
+4. 保存评估模型、预测、指标与必要完整训练状态；按预定方案训练到完成并评估。REPORT 比较 runs、记录状态、局限和 W&B 链接；测试反馈参与选择时标为开发证据。
+5. 关闭 Ledger 证据，记录下一步与重开条件，完成清理、验证和提交。低于基线也是有效结果；预检、环境就绪、smoke 或耗尽 Agent 自设预算不算完成。确实不能继续时如实记录失败/阻塞，不写方法阴性结论。
 
-experiments/<experiment_id>/
-  PLAN.md                     # 研究问题、方法、基线和评估方案
-  REPORT.md                   # 本次实验结果、结论与局限
-  src/                        # 正式训练、评估流程所需模块
-  tests/                      # 必要的功能验证
-  configs/                    # 本 Experiment 使用的配置
-  pyproject.toml
-  uv.lock
-  .venv/                      # 本 Experiment 独立环境
-  reproduce.sh                # 完整训练入口，支持恢复
+## W&B
 
-  config.yaml                 # 实际生效配置及数据、代码、环境版本引用
-  train.log
-  metrics.json
-  checkpoints/
-  predictions/
-  cache/                      # 本次预处理结果及临时文件
-  wandb/
-```
-
-目录和产物按需创建。Experiment 根目录同时承担代码、配置、依赖、研究文档和本次训练产物的管理。
-
-查找或新增跨实验文档时，按 [docs 索引](docs/README.md) 归档；单次训练的方案和结果继续写入对应 Experiment 的 PLAN/REPORT。
-
-禁止在 Experiment 内再建立 `runs/`、`outputs/<run_id>/`、`preflight/`、`preparation/` 等第二套实验或阶段管理目录。输入校验、预处理、训练和评估只是同一 Experiment 的流程阶段，而不是独立的 run。
-
-## 代码保留与主动清理
-
-- **先复用，再新增**：修改前查找已有实现，优先更新所属模块。新文件应承担当前需要的独立职责；调参用配置，修复更新原实现，避免积累替代版本。按职责组织模块，不按操作次数或调查步骤拆文件。
-- **保留当前需要的代码**：`src/` 中的模块须服务于正式训练或评估流程，包括必要的数据处理与校验。脚本之间相互引用不构成保留理由，应追溯到实际功能。`scripts/` 同样要求明确的持续用途，不能用来转存一次性脚本。
-- **临时代码临时执行**：一次性查询、排障和探索使用命令行或系统临时目录，用后清理。需要持续复现的数据转换整理为正式模块；调查结论记入文档。
-- **主动删除**：每次交付和提交前，检查本次新增、修改及被替代的代码，删除临时脚本、重复实现、废弃分支，以及随之失效的配置和测试；同步更新引用与文档。清理范围同时包含本次产生的临时代码和本次修改导致失效的旧实现。历史实现由 Git 保存。
-- **验证清理结果**：保留内容必须对应当前功能、必要测试或明确的复现需求；“以后可能有用”不是保留理由。完成与改动影响相匹配的验证后再交付。其他 Experiment 的文件、已登记数据和历史实验产物不属于此次清理范围。
-
-## 环境与版本
-
-- 每个 Experiment 使用一套 uv 管理的 `.venv/`，不同 Experiment 不共享虚拟环境。
-- 基础 Python、uv 和原生库使用已有 micromamba 环境 `virtual-cell`，保持其版本稳定，不删除或重建。
-- uv 经 `micromamba run -n virtual-cell` 调用，显式绑定该环境的 Python，并使用 `--no-python-downloads`。不回退到系统 Python，不启用系统 site-packages，不把 `UV_PROJECT_ENVIRONMENT` 指向基础环境。
-- Agent 自行通过 `uv add/remove/lock` 声明和锁定实验依赖，执行时使用 `uv sync --locked`、`uv run --locked`；不绕过声明安装依赖，不在执行过程中自动修改 lock 文件。
-- 有活动训练时，不修改该 Experiment 正在使用的代码、输入或环境。若需要进行会改变训练条件的修改，应停止原实验并创建新的 Experiment。
-- 代码、配置模板、`pyproject.toml`、`uv.lock` 和研究文档由 Git 管理，按可独立理解的逻辑变更主动提交。
-- 正式训练使用已提交的代码和锁文件，并自动记录 Git commit。
-- 无需为 Experiment 再复制一套源码快照；历史复现通过对应 Git commit、依赖锁和数据版本重建运行条件。
-
-## 完整训练流程
-
-1. **明确方案**
-   在 Experiment 的 `PLAN.md` 中确定研究问题、数据与划分、基线、训练方案、评估指标，以及训练结束条件，例如既定轮数或正常早停。该 Experiment 的实验条件通过配置明确表达。
-
-2. **统一入口**
-   ```bash
-   cd experiments/<experiment_id>
-   ./reproduce.sh
-   ```
-   `reproduce.sh` 应完成环境检查、输入校验、预处理、训练和评估，并支持从该 Experiment 的 checkpoint 恢复，不要求手工激活环境。
-
-3. **自动记录**
-   在 `config.yaml` 中保存实际生效配置、种子、数据及划分的固定版本引用、Git commit、依赖锁版本、关键运行时版本，以及来源 Experiment（如适用）。本地配置与 W&B 使用一致的 Experiment 身份和配置。
-
-4. **输入与输出归位**
-   共享数据只读；本次 Experiment 产生的预处理结果、切分、特征和缓存写入当前 Experiment 的 `cache/` 或相应正式输出目录。
-
-   复用其他 Experiment 的模型、预测或预处理产物时，应引用明确版本并记录来源，不覆写被引用产物。输入缺失或版本不符时修复来源，不静默替换数据或放宽评估标准。
-
-5. **训练与恢复**
-   正常训练过程中持续保存日志、指标及必要 checkpoint。若支持断点训练，checkpoint 必须保存恢复训练所需的完整状态，包括模型、优化器、scheduler、训练步数以及其他必要状态。
-
-6. **评估与结论**
-   保存用于正式评估的模型、预测和指标，按照 `PLAN.md` 中预先确定的划分和评价方法完成评估，并与基线或来源 Experiment 比较。
-
-   将实验状态、主要结果、比较结果、结论、局限和 W&B 链接整理到 `REPORT.md`。
-
-   如果验证集、测试集或 leaderboard 反馈被用于后续模型选择，应明确记录其开发用途，避免混淆最终评估和模型开发过程。
-
-Experiment 完成要求：按照既定方案完成有效训练与评估，保存可追溯结果，更新 `REPORT.md`，并完成代码清理。
-
-效果低于基线也属于有效实验结果。预检通过、环境就绪、仅完成 smoke test 或耗尽 Agent 自设预算均不算 Experiment 完成。确实无法继续时，应如实记录失败状态和阻塞原因，不宣称实验完成。
-
-## W&B 与产物
-
-- 每个 Experiment 对应且仅对应一个 W&B run。
-- 统一使用：
-  - `entity="yjcyxky"`
-  - `project="virtual-cell-challenge"`
-  - `group` 可用于标记更高层次的研究方向或实验系列
-  - `id=experiment_id`
-  - W&B run 名称包含 `experiment_id`
-- 不再设置独立 `run_id`。
-- 输入校验、预处理、训练、验证和测试通过指标前缀、step 或字段区分，而不是创建多个 W&B runs。
-- 记录配置、版本、训练/验证/测试指标、step、运行状态和资源使用。
-- W&B 本地文件写入当前 Experiment 的 `wandb/`。
-- 断网时使用本地记录，恢复网络后同步，并在 `REPORT.md` 中说明同步状态。
-- 保存用于正式评估的模型；支持断点训练时保存最近的完整训练状态。
-- 关键模型和结果上传为版本化 W&B Artifacts。复用其他 Experiment 的 Artifact 时引用固定版本，并记录来源 Experiment。
-- 普通缓存无需逐项归档。
-- `.venv/`、缓存、大型训练产物不进入 Git；密钥、凭据和未经授权的原始数据不得上传。
-
-## Experiment 身份原则
-
-为了避免 Experiment 与 run 两层概念造成管理歧义，本项目统一采用：
-
-**1 Experiment = 1 完整训练 = 1 W&B run = 1 独立结果单元**
-
-只有不会改变实验有效条件的恢复、重试和执行阶段才继续原 Experiment；任何需要重新从头训练、改变结果生成条件或形成新的独立比较结果的情况，都创建新的 `experiment_id`。
+- `entity="yjcyxky"`、`project="virtual-cell-challenge"`、`group=experiment_id`、`id=run_id`；名称含 run_id，本地与线上一一对应。阶段用指标前缀或字段区分。
+- 记录完整配置、版本、训练/验证/测试指标、step、状态和资源使用；本地文件写入该 run 的 wandb/。断网本地记录，恢复后同步并说明状态。
+- 关键模型和结果上传版本化 Artifacts；复用固定版本。普通缓存不逐项归档，原始细胞数据不作为公开 artifact 上传。
