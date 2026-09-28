@@ -36,7 +36,7 @@ flowchart TD
   n29["confirm-random-s03 | draft"]
   n30["init-linear-nocontext-s01 | completed"]
   n31["init-linear-nocontext-a01-s01 | completed"]
-  n32["init-program-raw-s01 | ready"]
+  n32["init-program-raw-s01 | completed"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
