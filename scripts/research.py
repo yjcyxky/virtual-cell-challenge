@@ -23,10 +23,14 @@ AXES = set("TDRALOVIG")
 FILES = {name: f"docs/research/{name}.json" for name in
          ("method_space", "experiment_dag", "evidence_ledger")}
 STATES = {"signal", "supported", "not_supported", "inconclusive"}
+SOURCE_STATES = {"literature": "external", "dataset": "observed", "protocol": "constraint"}
+LOCAL_STATUS_EVIDENCE = {"UNTESTED": set(), "SIGNAL": {"signal", "supported"},
+                         "CONFIRMED": {"supported"}, "REJECTED": {"not_supported"},
+                         "CONTEXT_DEPENDENT": STATES}
 NODE_STATES = {"draft", "ready", "completed", "failed", "interrupted"}
 PURPOSES = {"screen", "confirm", "interaction", "integrate", "protocol_audit", "baseline"}
 SPEC_FIELDS = ("experiment_id", "directory", "method_id", "protocol_id", "comparison_id",
-               "controls", "sources", "requires_evidence", "config_ref", "expected_config", "code_refs")
+               "controls", "sources", "requires_evidence", "evidence_conditions", "config_ref", "expected_config", "code_refs")
 
 
 class ResearchError(ValueError):
@@ -122,6 +126,23 @@ def differences(left, right, prefix=""):
     return {prefix} if left != right else set()
 
 
+def is_closed_experiment(item):
+    return item.get("kind", "experiment") == "experiment" and item.get("state") in STATES
+
+
+def evidence_parents(objects, evidence_id):
+    """Scientific prerequisites depend on all arms of their planned comparison.
+
+    Published findings and dataset facts are inputs to a hypothesis, not results
+    of a local comparison. They never introduce execution dependencies.
+    """
+    item = objects["evidence_ledger"]["evidence"].get(evidence_id, {})
+    if item.get("kind", "experiment") != "experiment":
+        return []
+    comparison = objects["experiment_dag"]["comparisons"].get(item.get("comparison_id"), {})
+    return list(dict.fromkeys(comparison.get("controls", []) + comparison.get("candidates", [])))
+
+
 def incomplete(node, dag):
     """Return missing launch requirements without upgrading a draft to ready."""
     missing = list(node.get("blockers", []))
@@ -135,6 +156,13 @@ def incomplete(node, dag):
     comparison = dag.get("comparisons", {}).get(node.get("comparison_id"), {})
     if comparison.get("status") != "ready":
         missing.append("comparison is not ready")
+    design = node.get("design", {})
+    if "fit_scope" in design:
+        scope = design["fit_scope"]
+        if not isinstance(scope, dict) or any(not scope.get(field) for field in ("outer_split", "target_partition")):
+            missing.append("fit_scope requires a concrete outer_split and target_partition for this independent fit")
+        if (node.get("expected_config") or {}).get("fit_scope") != scope:
+            missing.append("expected_config.fit_scope must equal design.fit_scope")
     return missing
 
 
@@ -166,9 +194,31 @@ def validate(root, objects, staged=False):
         for axis, variant in coords.items():
             if variant not in axes.get(axis, {}).get("variants", {}):
                 errors.append(f"method {mid}: unknown {axis} variant {variant}")
+        local_evidence = []
         for eid in method.get("evidence_ids", []):
             if eid not in evidence:
                 errors.append(f"method {mid}: unknown evidence {eid}")
+                continue
+            item = evidence[eid]
+            if item.get("kind", "experiment") == "experiment":
+                referenced_nodes = evidence_parents(objects, eid) if item.get("state") == "pending" else item.get("node_ids", [])
+                if not any(nodes.get(nid, {}).get("method_id") == mid for nid in referenced_nodes):
+                    errors.append(f"method {mid}: experiment evidence {eid} must include a node using this method")
+                elif is_closed_experiment(item):
+                    local_evidence.append(item)
+        local_status = method.get("local_status")
+        if local_status is not None and local_status not in LOCAL_STATUS_EVIDENCE:
+            errors.append(f"method {mid}: invalid local_status {local_status}")
+        required_states = LOCAL_STATUS_EVIDENCE.get(local_status, set())
+        # Keep existing lowercase result statuses compatible with the formal
+        # local_status field, without allowing literature to upgrade either.
+        old_status = method.get("status")
+        if old_status in STATES:
+            old_allowed = {"signal", "supported"} if old_status == "signal" else {old_status}
+            if not any(item["state"] in old_allowed for item in local_evidence):
+                errors.append(f"method {mid}: local conclusion status requires matching closed experiment evidence")
+        if required_states and not any(item["state"] in required_states for item in local_evidence):
+            errors.append(f"method {mid}: local_status {local_status} requires matching closed experiment evidence")
 
     def refs(label, records):
         if not isinstance(records, list):
@@ -198,6 +248,19 @@ def validate(root, objects, staged=False):
         for eid in node.get("requires_evidence", []):
             if eid not in evidence:
                 errors.append(f"node {nid}: unknown required evidence {eid}")
+            elif evidence[eid].get("kind", "experiment") != "experiment":
+                errors.append(f"node {nid}: required evidence {eid} must be a local experiment conclusion")
+            elif not evidence_parents(objects, eid):
+                errors.append(f"node {nid}: required evidence {eid} has no comparison arms")
+        conditions = node.get("evidence_conditions", {})
+        if not isinstance(conditions, dict):
+            errors.append(f"node {nid}: evidence_conditions must be an object")
+        else:
+            for eid, allowed in conditions.items():
+                if eid not in node.get("requires_evidence", []):
+                    errors.append(f"node {nid}: condition {eid} must also be in requires_evidence")
+                if not isinstance(allowed, list) or not allowed or not set(allowed) <= STATES:
+                    errors.append(f"node {nid}: condition {eid} requires a nonempty list of closed experiment states")
         for field in ("config_ref", "metrics_ref", "report_ref"):
             if node.get(field):
                 refs(f"node {nid} {field}", [node[field]])
@@ -230,7 +293,10 @@ def validate(root, objects, staged=False):
         if nid in seen or nid not in nodes:
             return
         active.add(nid)
-        for parent in nodes[nid].get("controls", []) + nodes[nid].get("sources", []):
+        parents = nodes[nid].get("controls", []) + nodes[nid].get("sources", [])
+        for eid in nodes[nid].get("requires_evidence", []):
+            parents += evidence_parents(objects, eid)
+        for parent in parents:
             visit(parent)
         active.remove(nid)
         seen.add(nid)
@@ -274,9 +340,10 @@ def validate(root, objects, staged=False):
             if not controls:
                 continue
             paired = [n for n in controls if isinstance(n.get("expected_config"), dict)
-                      and n["expected_config"].get("seed") == cfg.get("seed")]
+                      and n["expected_config"].get("seed") == cfg.get("seed")
+                      and n["expected_config"].get("fit_scope") == cfg.get("fit_scope")]
             if "seed" not in cfg or not paired:
-                errors.append(f"comparison {cid}: seed must match a control")
+                errors.append(f"comparison {cid}: seed and fit_scope must match a control")
                 continue
             control = paired[0]
             all_fields.update(differences(control["expected_config"], cfg))
@@ -288,8 +355,33 @@ def validate(root, objects, staged=False):
         if controls and comparison.get("purpose") != "protocol_audit" and all_fields != set(comparison.get("changed_fields", [])):
             errors.append(f"comparison {cid}: actual config changed_fields={sorted(all_fields)} differ from declaration")
     for eid, item in evidence.items():
-        if item.get("state") not in STATES or not item.get("claim") or not item.get("next_action") or not item.get("reopen_when"):
-            errors.append(f"evidence {eid}: state, claim, next_action and reopen_when required")
+        kind = item.get("kind", "experiment")
+        state = item.get("state")
+        if not item.get("claim") or not item.get("next_action") or not item.get("reopen_when"):
+            errors.append(f"evidence {eid}: claim, next_action and reopen_when required")
+        if kind == "experiment":
+            if state not in STATES | {"pending"}:
+                errors.append(f"evidence {eid}: invalid experiment state")
+            if state == "pending" and not item.get("comparison_id"):
+                errors.append(f"evidence {eid}: pending experiment requires comparison_id")
+        elif kind in SOURCE_STATES:
+            if state != SOURCE_STATES[kind]:
+                errors.append(f"evidence {eid}: {kind} state must be {SOURCE_STATES[kind]}")
+            if item.get("node_ids") or item.get("comparison_id"):
+                errors.append(f"evidence {eid}: external sources cannot claim local comparison or node results")
+            urls = item.get("source_urls")
+            if not isinstance(urls, list) or not urls or any(
+                    not isinstance(url, str) or not re.match(r"https?://[^/\s]+", url) for url in urls):
+                errors.append(f"evidence {eid}: external source_urls required")
+            if not item.get("source_refs"):
+                errors.append(f"evidence {eid}: external evidence requires a hashed local source note")
+        else:
+            errors.append(f"evidence {eid}: unknown kind {kind}")
+        if kind in SOURCE_STATES or state == "pending":
+            measured = {"results", "metrics", "local_metrics", "local_effect", "local_effects", "effect",
+                        "effect_size", "effect_sizes", "paired_effect", "Overall", "score"}
+            if measured & item.keys():
+                errors.append(f"evidence {eid}: source facts and pending hypotheses cannot contain local results or effects")
         if item.get("comparison_id") and item["comparison_id"] not in comparisons:
             errors.append(f"evidence {eid}: unknown comparison")
         for nid in item.get("node_ids", []):
@@ -308,6 +400,8 @@ def validate(root, objects, staged=False):
             for eid in item.get("requires_evidence", []):
                 if eid not in evidence:
                     errors.append(f"queue {item.get('id')}: unknown evidence {eid}")
+                elif evidence[eid].get("kind", "experiment") != "experiment":
+                    errors.append(f"queue {item.get('id')}: required evidence {eid} must be a local experiment conclusion")
     return errors
 
 
@@ -351,14 +445,15 @@ def staged_errors(root, objects):
             errors.extend(entry_errors(root, node, True))
     registered = {n.get("directory") for n in nodes.values()}
     for path in changed:
-        if re.fullmatch(r"experiments/[^/]+/reproduce\.sh", path) and str(Path(path).parent) not in registered:
+        training = re.fullmatch(r"(experiments/[^/]+)/(?:src/.+|configs/.+|reproduce\.sh|pyproject\.toml|uv\.lock)", path)
+        if training and training.group(1) not in registered:
             errors.append(f"{path}: Experiment is not registered in the DAG")
     ledger = objects["evidence_ledger"]
     for cid, comparison in objects["experiment_dag"]["comparisons"].items():
         members = comparison.get("controls", []) + comparison.get("candidates", [])
         if comparison.get("status") != "ready" or not members or not all(nodes[n]["status"] == "completed" for n in members):
             continue
-        if not any(item.get("comparison_id") == cid and set(members) <= set(item.get("node_ids", [])) and
+        if not any(is_closed_experiment(item) and item.get("comparison_id") == cid and set(members) <= set(item.get("node_ids", [])) and
                    all(nodes[n].get("metrics_ref") in item.get("source_refs", []) for n in members)
                    for item in ledger["evidence"].values()):
             errors.append(f"comparison {cid}: all arms completed; close evidence with all metrics refs and next decision before committing")
@@ -412,8 +507,10 @@ def gate(root, node_id, *, resume=False, config_path=None):
     ledger = objects["evidence_ledger"]["evidence"]
     for eid in node.get("requires_evidence", []):
         item = ledger.get(eid, {})
-        if item.get("state") not in STATES or not item.get("next_action") or not item.get("reopen_when"):
+        if not is_closed_experiment(item) or not item.get("next_action") or not item.get("reopen_when"):
             raise ResearchError(f"{node_id}: prerequisite evidence {eid} is not closed")
+        if eid in node.get("evidence_conditions", {}) and item.get("state") not in node["evidence_conditions"][eid]:
+            raise ResearchError(f"{node_id}: prerequisite evidence {eid} state {item.get('state')} does not meet evidence_conditions")
     if config_path is not None and local_path(root, config_path) != local_path(root, node["config_ref"]["path"]):
         raise ResearchError(f"{node_id}: actual config path differs from config_ref")
     paths = list(FILES.values()) + [node["config_ref"]["path"]] + [r["path"] for r in node["code_refs"]]
@@ -464,13 +561,27 @@ def bind(root, node_id, actual_config, *, resume=False):
 
 def status(objects):
     dag, ledger = objects["experiment_dag"], objects["evidence_ledger"]
-    closed = {item.get("comparison_id") for item in ledger["evidence"].values()}
+    evidence = ledger["evidence"]
+    closed = {item.get("comparison_id") for item in evidence.values() if is_closed_experiment(item)}
     unclosed = [cid for cid, comparison in dag["comparisons"].items()
                 if comparison.get("status") == "ready" and cid not in closed and
                 all(dag["nodes"][n].get("status") == "completed" for n in
                     comparison.get("controls", []) + comparison.get("candidates", []))]
-    return {"needs_evidence": unclosed,
-            "queue": sorted(ledger.get("queue", []), key=lambda item: item["priority"]),
+    queue = []
+    for item in sorted(ledger.get("queue", []), key=lambda item: item["priority"]):
+        queue.append(dict(item, unmet_evidence=[eid for eid in item.get("requires_evidence", [])
+                                               if not is_closed_experiment(evidence.get(eid, {}))]))
+    pending = [{"id": eid, "comparison_id": item.get("comparison_id"),
+                "hypothesis": item.get("hypothesis", item.get("claim")), "next_action": item.get("next_action")}
+               for eid, item in evidence.items()
+               if item.get("kind", "experiment") == "experiment" and item.get("state") == "pending"]
+    return {"initialization": {"axes": len(objects["method_space"]["axes"]),
+                               "methods": len(objects["method_space"]["methods"]),
+                               "planned_nodes": sum(n.get("status") == "draft" for n in dag["nodes"].values()),
+                               "source_evidence": sum(item.get("kind") in SOURCE_STATES for item in evidence.values()),
+                               "closed_experiment_evidence": sum(is_closed_experiment(item) for item in evidence.values()),
+                               "pending_hypotheses": len(pending)},
+            "needs_evidence": unclosed, "pending_questions": pending, "queue": queue,
             "nodes": {nid: {"status": node["status"], "legacy": node["legacy"],
                             "blockers": [] if node["legacy"] else incomplete(node, dag),
                             "next_command": f"./scripts/research.py gate {nid}" if node["status"] == "ready" and not node["legacy"] else None}
@@ -633,8 +744,18 @@ def _close(root, evidence_path):
     require_valid(root, objects)
     item = json.loads(Path(evidence_path).read_text())
     eid = item.pop("id", item.pop("evidence_id", None))
-    if not eid or eid in objects["evidence_ledger"]["evidence"]:
-        raise ResearchError("new unique evidence id required; retain earlier evidence")
+    previous = objects["evidence_ledger"]["evidence"].get(eid)
+    if not eid or (previous and (previous.get("kind", "experiment") != "experiment" or previous.get("state") != "pending")):
+        raise ResearchError("new unique evidence id or pending hypothesis required; retain closed evidence")
+    if not is_closed_experiment(item):
+        raise ResearchError("close requires a local experiment conclusion, not a source fact or pending hypothesis")
+    if previous:
+        if previous.get("comparison_id") != item.get("comparison_id"):
+            raise ResearchError("closing pending hypothesis must preserve its comparison_id")
+        original_hypothesis = previous.get("hypothesis", previous["claim"])
+        if item.get("hypothesis", original_hypothesis) != original_hypothesis:
+            raise ResearchError("closing pending hypothesis must preserve its original hypothesis")
+        item["hypothesis"] = original_hypothesis
     if not item.get("node_ids") or not item.get("source_refs"):
         raise ResearchError("closing evidence requires node_ids and hashed source_refs")
     if not item.get("limitations"):
@@ -681,7 +802,7 @@ def main(argv=None):
     record_parser.add_argument("--metrics", required=True, help="repository-relative metrics.json")
     retry_parser = commands.add_parser("retry", help="re-arm unchanged pre-binding failure; does not retrain or resume checkpoints")
     retry_parser.add_argument("node")
-    close_parser = commands.add_parser("close", help="append evidence JSON containing id, conclusion, next_action and reopen_when")
+    close_parser = commands.add_parser("close", help="append a local conclusion or close its pending hypothesis ID, retaining earlier conclusions")
     close_parser.add_argument("--file", required=True, help="path to evidence JSON")
     args = parser.parse_args(argv)
     root = args.root.resolve()
@@ -712,16 +833,25 @@ def main(argv=None):
             elif args.command == "status":
                 output = status(objects)
                 if not args.json:
+                    summary = output["initialization"]
+                    print(f"Research: {summary['axes']} axes, {summary['methods']} methods, {summary['planned_nodes']} draft nodes; "
+                          f"{summary['source_evidence']} source records, {summary['pending_hypotheses']} pending hypotheses, "
+                          f"{summary['closed_experiment_evidence']} local conclusions")
                     for cid in output["needs_evidence"]:
                         print(f"FIRST: close completed comparison {cid} with evidence and next decision")
                     for item in output["queue"]:
                         print(f"{item['priority']}. {item['id']}: {item['question']}\n   {item['action']}")
+                        if item["unmet_evidence"]:
+                            print("   Await local evidence: " + ", ".join(item["unmet_evidence"]))
+                    for item in output["pending_questions"]:
+                        print(f"PENDING {item['id']} ({item['comparison_id']}): {item['hypothesis']}")
                     for nid, node in output["nodes"].items():
                         if not node["legacy"]:
                             print(f"{nid} [{node['status']}]: " + ("; ".join(node["blockers"]) or node["next_command"] or "await result/evidence"))
                     return 0
             else:
-                print("# Experiment DAG\n\nGenerated from the Git registry. Edges distinguish controls and reused sources.\n\n```mermaid\nflowchart TD")
+                print("# Experiment DAG\n\nGenerated from the Git registry. Solid edges distinguish controls and reused sources; "
+                      "dashed edges require a local comparison conclusion. Draft nodes are plans, not completed experiments.\n\n```mermaid\nflowchart TD")
                 nodes = objects["experiment_dag"]["nodes"]
                 identifiers = {nid: f"n{i}" for i, nid in enumerate(nodes)}
                 for nid, node in nodes.items():
@@ -731,6 +861,10 @@ def main(argv=None):
                     for field, label in (("controls", "control"), ("sources", "source")):
                         for target in node.get(field, []):
                             print(f"  {identifiers[target]} -->|{label}| {identifiers[nid]}")
+                    for eid in node.get("requires_evidence", []):
+                        label = eid.replace('"', "'").replace("\n", " ")
+                        for target in evidence_parents(objects, eid):
+                            print(f'  {identifiers[target]} -.->|"evidence: {label}"| {identifiers[nid]}')
                 print("```")
                 return 0
         print(json.dumps(output, ensure_ascii=False, indent=2))

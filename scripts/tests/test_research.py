@@ -251,6 +251,240 @@ class ResearchControlsTests(unittest.TestCase):
         self.write_registries()
         self.commit()
 
+    def pending_evidence(self, comparison_id="baseline-comparison"):
+        return {
+            "kind": "experiment", "state": "pending", "comparison_id": comparison_id,
+            "claim": "The registered comparison can falsify the baseline hypothesis.",
+            "node_ids": [], "source_refs": [],
+            "next_action": "Run the complete registered comparison",
+            "reopen_when": "The evaluation protocol changes",
+        }
+
+    def source_evidence(self, kind="literature"):
+        self.write("docs/source-note.md", "# Source note\nPublished finding; not a local result.\n")
+        return {
+            "kind": kind, "state": {"literature": "external", "dataset": "observed", "protocol": "constraint"}[kind],
+            "claim": "The public source motivates a testable local hypothesis.",
+            "comparison_id": None, "node_ids": [],
+            "source_urls": ["https://example.org/primary-source"],
+            "source_refs": [self.file_ref("docs/source-note.md")],
+            "next_action": "Test the hypothesis in a registered comparison",
+            "reopen_when": "Source version or scientific scope changes",
+        }
+
+    def test_source_evidence_types_are_valid_but_not_local_conclusions(self):
+        for kind in ("literature", "dataset", "protocol"):
+            self.ledger["evidence"][kind] = self.source_evidence(kind)
+        self.space["methods"]["base"]["evidence_ids"] = ["literature"]
+        self.write_registries()
+        self.cli("check")
+        state = json.loads(self.cli("status", "--json"))
+        self.assertEqual(state["initialization"]["source_evidence"], 3)
+        self.assertEqual(state["initialization"]["closed_experiment_evidence"], 0)
+
+    def test_external_record_cannot_be_promoted_to_local_evidence(self):
+        for kind in ("literature", "dataset", "protocol"):
+            with self.subTest(kind=kind):
+                item = self.source_evidence(kind)
+                item["state"] = "supported"
+                self.ledger["evidence"] = {"source": item}
+                self.write_registries()
+                self.cli("check", ok=False)
+
+    def test_external_reference_cannot_upgrade_method_to_local_supported(self):
+        self.ledger["evidence"]["published"] = self.source_evidence()
+        self.space["methods"]["base"].update(status="supported", evidence_ids=["published"])
+        self.write_registries()
+        self.assertIn("closed experiment evidence", self.cli("check", ok=False))
+
+    def test_formal_local_status_requires_the_matching_local_conclusion(self):
+        self.ledger["evidence"]["published"] = self.source_evidence()
+        method = self.space["methods"]["base"]
+        method["evidence_ids"] = ["published"]
+        for local_status in ("UNTESTED", "SIGNAL", "CONFIRMED", "REJECTED", "CONTEXT_DEPENDENT", "SUPPORTED"):
+            with self.subTest(source_only=local_status):
+                method["local_status"] = local_status
+                self.write_registries()
+                self.cli("check", ok=local_status == "UNTESTED")
+        method["local_status"] = "UNTESTED"
+        self.write_registries()
+        self.commit()
+        self.execute("complete")
+        self.write_json("proposed-evidence.json", self.completed_evidence())
+        self.cli("close", "--file", "proposed-evidence.json")
+        self.ledger = json.loads((self.root / REGISTRY_DIR / "evidence_ledger.json").read_text())
+        self.dag = json.loads((self.root / REGISTRY_DIR / "experiment_dag.json").read_text())
+        method["evidence_ids"] = ["E-baseline"]
+        cases = (("SIGNAL", "signal", True), ("SIGNAL", "supported", True),
+                 ("CONFIRMED", "supported", True), ("CONFIRMED", "signal", False),
+                 ("REJECTED", "not_supported", True), ("REJECTED", "supported", False),
+                 ("CONTEXT_DEPENDENT", "inconclusive", True))
+        for local_status, evidence_state, accepted in cases:
+            with self.subTest(local_status=local_status, evidence_state=evidence_state):
+                method["local_status"] = local_status
+                self.ledger["evidence"]["E-baseline"]["state"] = evidence_state
+                self.write_registries()
+                self.cli("check", ok=accepted)
+
+    def test_method_cannot_borrow_another_methods_closed_evidence(self):
+        self.add_qc_comparison()
+        self.execute("complete")
+        self.write_json("proposed-evidence.json", self.completed_evidence())
+        self.cli("close", "--file", "proposed-evidence.json")
+        self.ledger = json.loads((self.root / REGISTRY_DIR / "evidence_ledger.json").read_text())
+        self.dag = json.loads((self.root / REGISTRY_DIR / "experiment_dag.json").read_text())
+        self.space["methods"]["base"].update(local_status="CONFIRMED", evidence_ids=["E-baseline"])
+        self.write_registries()
+        self.cli("check")
+        for local_status in ("UNTESTED", "CONFIRMED"):
+            with self.subTest(local_status=local_status):
+                self.space["methods"]["qc"].update(local_status=local_status, evidence_ids=["E-baseline"])
+                self.write_registries()
+                self.assertIn("node using this method", self.cli("check", ok=False))
+
+    def test_external_record_cannot_attach_local_nodes_or_close(self):
+        item = self.source_evidence()
+        self.ledger["evidence"]["published"] = dict(item, node_ids=["baseline"])
+        self.write_registries()
+        self.assertIn("local comparison or node", self.cli("check", ok=False))
+        self.ledger["evidence"] = {}
+        self.write_registries()
+        self.write_json("proposed-evidence.json", dict(item, id="published"))
+        self.assertIn("local experiment conclusion", self.cli("close", "--file", "proposed-evidence.json", ok=False))
+
+    def test_external_evidence_requires_public_url_and_hashed_note(self):
+        for field in ("source_urls", "source_refs"):
+            with self.subTest(field=field):
+                item = self.source_evidence()
+                item[field] = []
+                self.ledger["evidence"] = {"source": item}
+                self.write_registries()
+                self.cli("check", ok=False)
+
+    def test_external_and_pending_records_cannot_claim_local_results(self):
+        for item in (self.source_evidence(), self.pending_evidence()):
+            for field in ("results", "metrics", "local_effect"):
+                with self.subTest(kind=item["kind"], field=field):
+                    self.ledger["evidence"] = {"claim": dict(item, **{field: {"Overall": 0.5}})}
+                    self.write_registries()
+                    self.cli("check", ok=False)
+
+    def test_external_evidence_cannot_satisfy_execution_prerequisite(self):
+        self.ledger["evidence"]["published"] = self.source_evidence()
+        self.dag["nodes"]["baseline"]["requires_evidence"] = ["published"]
+        self.write_registries()
+        self.commit()
+        self.assertIn("local experiment", self.cli("gate", "baseline", ok=False))
+
+    def test_pending_hypothesis_does_not_close_a_completed_comparison(self):
+        self.ledger["evidence"]["E-baseline"] = self.pending_evidence()
+        self.write_registries()
+        self.commit()
+        self.execute("complete")
+        state = json.loads(self.cli("status", "--json"))
+        self.assertEqual(state["needs_evidence"], ["baseline-comparison"])
+        self.assertEqual(state["initialization"]["closed_experiment_evidence"], 0)
+        self.assertEqual(state["pending_questions"][0]["id"], "E-baseline")
+        self.git("add", "--all")
+        self.cli("check", "--staged", ok=False)
+
+    def test_pending_comparison_can_close_same_id_as_signal_once(self):
+        pending = self.pending_evidence()
+        self.ledger["evidence"]["E-baseline"] = pending
+        self.write_registries()
+        self.commit()
+        self.execute("complete")
+        result = self.completed_evidence()
+        result["state"] = "signal"
+        self.write_json("proposed-evidence.json", result)
+        self.cli("close", "--file", "proposed-evidence.json")
+        ledger = json.loads((self.root / REGISTRY_DIR / "evidence_ledger.json").read_text())
+        self.assertEqual(ledger["evidence"]["E-baseline"]["state"], "signal")
+        self.assertEqual(ledger["evidence"]["E-baseline"]["hypothesis"], pending["claim"])
+        self.assertEqual(json.loads(self.cli("status", "--json"))["needs_evidence"], [])
+        self.assertIn("retain closed", self.cli("close", "--file", "proposed-evidence.json", ok=False))
+
+    def test_pending_closure_preserves_comparison_and_hypothesis(self):
+        self.ledger["evidence"]["E-baseline"] = self.pending_evidence()
+        self.write_registries()
+        self.commit()
+        self.execute("complete")
+        for field in ("comparison_id", "hypothesis"):
+            with self.subTest(field=field):
+                item = dict(self.completed_evidence(), **{field: "changed"})
+                self.write_json("proposed-evidence.json", item)
+                self.assertIn("preserve", self.cli("close", "--file", "proposed-evidence.json", ok=False))
+
+    def test_prospective_evidence_dependency_blocks_start_and_has_distinct_graph_edge(self):
+        self.add_qc_comparison()
+        self.ledger["evidence"]["E-baseline"] = self.pending_evidence()
+        self.dag["nodes"]["qc"]["requires_evidence"] = ["E-baseline"]
+        self.write_registries()
+        self.commit()
+        self.cli("check")
+        self.assertIn("not closed", self.cli("gate", "qc", ok=False))
+        graph = self.cli("graph")
+        self.assertIn("-->|control|", graph)
+        self.assertIn('-.->|"evidence: E-baseline"|', graph)
+
+    def test_prospective_evidence_dependency_cycle_is_rejected(self):
+        self.add_node("second", "base", "second-comparison")
+        self.ledger["evidence"] = {
+            "E-baseline": self.pending_evidence(),
+            "E-second": self.pending_evidence("second-comparison"),
+        }
+        self.dag["nodes"]["second"]["requires_evidence"] = ["E-baseline"]
+        self.dag["nodes"]["baseline"]["requires_evidence"] = ["E-second"]
+        self.write_registries()
+        self.assertIn("DAG cycle", self.cli("check", ok=False))
+
+    def test_not_supported_cannot_unlock_supported_only_candidate(self):
+        self.add_qc_comparison()
+        self.ledger["evidence"]["E-baseline"] = self.pending_evidence()
+        self.dag["nodes"]["qc"]["requires_evidence"] = ["E-baseline"]
+        self.dag["nodes"]["qc"]["evidence_conditions"] = {"E-baseline": ["supported"]}
+        self.write_registries()
+        self.commit()
+        self.execute("complete")
+        result = self.completed_evidence()
+        result["state"] = "not_supported"
+        self.write_json("proposed-evidence.json", result)
+        self.cli("close", "--file", "proposed-evidence.json")
+        self.commit()
+        self.assertIn("evidence_conditions", self.cli("gate", "qc", ok=False))
+
+    def test_evidence_conditions_must_name_required_evidence_and_closed_states(self):
+        for conditions in ({"unrequired": ["supported"]}, {"unrequired": ["external"]}):
+            with self.subTest(conditions=conditions):
+                self.dag["nodes"]["baseline"]["evidence_conditions"] = conditions
+                self.write_registries()
+                self.cli("check", ok=False)
+
+    def test_unregistered_training_file_changes_are_rejected_without_legacy_registry(self):
+        for filename in ("src/main.py", "configs/train.json", "reproduce.sh", "pyproject.toml", "uv.lock"):
+            with self.subTest(filename=filename):
+                path = f"experiments/unregistered/{filename}"
+                self.write(path, "unregistered change\n")
+                self.git("add", path)
+                self.assertIn("not registered", self.cli("check", "--staged", ok=False))
+                self.git("reset", "--", path)
+
+    def test_draft_registration_and_graph_do_not_create_experiment_files(self):
+        node = copy.deepcopy(self.dag["nodes"]["baseline"])
+        node.update(experiment_id="future", directory="experiments/future", status="draft",
+                    config_ref=None, expected_config=None, code_refs=[], comparison_id="future-comparison")
+        self.dag["nodes"]["future"] = node
+        comparison = copy.deepcopy(self.dag["comparisons"]["baseline-comparison"])
+        comparison.update(status="draft", candidates=["future"])
+        self.dag["comparisons"]["future-comparison"] = comparison
+        self.ledger["evidence"]["E-future"] = self.pending_evidence("future-comparison")
+        self.write_registries()
+        self.cli("check")
+        self.cli("graph")
+        self.cli("status")
+        self.cli("gate", "future", ok=False)
+        self.assertFalse((self.root / "experiments/future").exists())
+
     def test_registered_fixture_is_usable(self):
         self.cli("check")
         self.cli("status", "--json")
@@ -316,6 +550,39 @@ class ResearchControlsTests(unittest.TestCase):
         candidate["config_ref"] = self.file_ref(candidate["config_ref"]["path"])
         self.write_registries()
         self.cli("check", ok=False)
+
+    def test_same_seed_cannot_pair_different_fit_scopes(self):
+        self.add_qc_comparison()
+        for node_id, outer_split in (("baseline", "fold-a"), ("qc", "fold-b")):
+            node = self.dag["nodes"][node_id]
+            node["expected_config"]["fit_scope"] = {"outer_split": outer_split, "target_partition": "held-out-targets"}
+            self.write_json(node["config_ref"]["path"], node["expected_config"])
+            node["config_ref"] = self.file_ref(node["config_ref"]["path"])
+        self.write_registries()
+        self.assertIn("seed and fit_scope must match", self.cli("check", ok=False))
+        node = self.dag["nodes"]["qc"]
+        node["expected_config"]["fit_scope"]["outer_split"] = "fold-a"
+        self.write_json(node["config_ref"]["path"], node["expected_config"])
+        node["config_ref"] = self.file_ref(node["config_ref"]["path"])
+        self.write_registries()
+        self.cli("check")
+
+    def test_ready_node_requires_its_declared_fit_scope_to_be_frozen_in_config(self):
+        node = self.dag["nodes"]["baseline"]
+        node.update(status="draft", design={"fit_scope": {"outer_split": None, "target_partition": None}})
+        self.write_registries()
+        self.cli("check")
+        node["status"] = "ready"
+        self.write_registries()
+        self.assertIn("concrete outer_split", self.cli("check", ok=False))
+        node["design"]["fit_scope"] = {"outer_split": "fold-a", "target_partition": "held-out-targets"}
+        self.write_registries()
+        self.assertIn("expected_config.fit_scope", self.cli("check", ok=False))
+        node["expected_config"]["fit_scope"] = copy.deepcopy(node["design"]["fit_scope"])
+        self.write_json(node["config_ref"]["path"], node["expected_config"])
+        node["config_ref"] = self.file_ref(node["config_ref"]["path"])
+        self.write_registries()
+        self.cli("check")
 
     def test_unregistered_experiment_cannot_start(self):
         self.cli("gate", "baseline")

@@ -4,12 +4,15 @@
 
 - 由目标背景的 NTC 细胞群和扰动信息预测扰动后表达分布，泛化到未见背景与扰动组合。明确 `Baseline + Δ` 的表达空间；共享响应、背景修正和功能模块都是待检验先验。
 - 小样本指独立背景、研究及扰动组合不足。先修复数据/评估正确性，再研究数据质量、先验和表示；模型容量、目标函数和优化由已识别瓶颈驱动。
+- **初始化依据**：本轮方法空间与前瞻 DAG 以[分享九轴方案](https://chatgpt.com/share/6ab9c3e3-56cc-83e9-bbef-b1f196a8e83c)、五个原始数据集和已发表原始研究建立，不由现有实验、分数或既定模型路线填充。初始方法均为 `UNTESTED`、执行节点均为 `draft`；之后通过实际归因实验积累本地证据。旧结果保留，回顾性纳入另作审计并注明用途。
+- **设计前必读**：[研发依据与轴边界](docs/RESEARCH.md#初始化依据与研究假设)；涉及输入/划分时读[五背景数据事实](docs/research/dataset_foundations.md)，采用论文方法/先验时读[文献卡片](docs/research/literature_foundations.md)。H1、K562 GWPS、RPE1、HepG2、Jurkat 是五背景、三来源研究；元数据覆盖不等于 QC 后监督量。
 - **开始任何研发任务，先执行** `/home/jy001/micromamba/envs/virtual-cell/bin/python scripts/research.py status`，按输出处理未闭环比较或最高优先问题。命令与接入示例见 [RESEARCH.md](docs/RESEARCH.md)。
 - **三份对象是研究管理的唯一事实源**：[Method Space](docs/research/method_space.json) 定义九轴候选及方法坐标；[Experiment DAG](docs/research/experiment_dag.json) 登记实际执行、对照、来源、协议和比较；[Evidence Ledger](docs/research/evidence_ledger.json) 保存有来源的结论、决策与下一步。不要另维护手工实验列表或仅在文字里声明已登记。
+- **证据类型有边界**：`literature/external`、`dataset/observed`、`protocol/constraint` 提供来源依据；`experiment/pending` 是问题，均不代表本地方法有效。只有真实完成的比较可关闭为本地证据；文献、待检验假设不能满足训练前置。`evidence_conditions` 指定继续分支所需结论，失败/证据不足按预定分支处理。
 
 ## 必须完成的研究闭环
 
-1. **登记**：先选可证伪问题。在 Method Space 定义方法，在 DAG 建立比较与实验节点；写清对照、全部实际变化、评估协议、完整生效配置、代码/配置引用、种子、结束条件和结果判据。PLAN 解释理由并引用 `comparison_id`。新实验一训练一身份；历史节点标记 retrospective/legacy，保留原始目录与 W&B ID。
+1. **登记**：先选可证伪问题。在 Method Space 定义方法，在 DAG 建立比较与实验节点；写清对照、全部实际变化、评估协议、完整生效配置、代码/配置引用、种子、结束条件和结果判据。草案 `design` 不能代替 `expected_config`；按外层划分×靶点分区×seed 为每次独立拟合展开身份，冻结一致的 `fit_scope`，一个 Experiment 不装多折训练。PLAN 引用 `comparison_id`；初始 draft 不创建训练目录或 W&B run。
 2. **校验**：执行 `scripts/research.py check`。单因素比较必须同时通过方法坐标和实际配置差异检查；评估协议不同只作协议诊断。对照关系不等于数据/权重来源，也不自动成为执行前置；需要先有结论时显式声明 `requires_evidence`。
 3. **启动**：新 `reproduce.sh` 通过 `scripts/research.py execute <node_id> -- <训练命令>` 启动，在环境同步/训练前检查登记、冻结引用、已提交代码及前置证据。训练模块解析全部配置后、创建输出/W&B 前调用 `bind(root, node_id, actual_config)`，把返回的 `research` 同时写入实际 config 和 W&B config；CLI 覆盖和默认值不得偏离登记。
 4. **回收**：`execute` 自动核验并登记根目录 metrics 的状态与结果引用。完整训练结果须包含 `research`、有效主指标、`evaluation_completed`、`checkpoint_ref` 和 `predictions_ref`。训练失败与未完成不能成为方法阴性证据；绑定前失败用 `retry` 检查同条件重试，绑定后用 `--resume` 恢复完整训练状态，管理命令不能代替 checkpoint 恢复。
@@ -26,7 +29,7 @@
 - 区分正确性处理与可选 QC/重加权；报告保留率、覆盖和响应强度分层。缺测、实测零与非显著分别处理；guide/batch 差异不默认全部是技术噪声。
 - 真实先验与无先验、匹配随机先验或等维表示比较。响应特征排除被预测背景标签；表示拟合遵守训练边界，留出 NTC 适配预先声明。
 - 比较核对数据/划分、基因/靶点面板、输入/评分 NTC、reference、预处理、scorer、baseline/anchors 与采样。新本地基准隔离输入/评分 NTC；换协议须重建对照，保留历史结果。
-- 同时报 raw 六指标、normalized 分项、Overall、配对效应和有效数；区分训练与生成随机性、已见与未见靶点、context/perturbation/joint OOD。H1 或 A/B/C 用于选择后只能称开发证据。
+- 同时报 raw 六指标、normalized 分项、Overall、配对效应和有效数；区分训练与生成随机性、已见与全局未见靶点、context/perturbation/joint OOD。五背景轮换与研究留出分别报告；任何已用于选择的本地背景或 A/B/C 只能称开发证据。
 - 固定响应比较生成器，或固定生成器比较响应模型；检查效应偏移和 NTC 伪 DE。分布校准涨分不等于生物响应更准。
 - 单次小涨分仅为线索，未支持只限当前实现与范围。现有 PLAN 的用户约定优先，不自动扩大实验范围；smoke test 不代替训练。每轮最多三个优先问题，以决策影响、信息增量和成本排序。
 

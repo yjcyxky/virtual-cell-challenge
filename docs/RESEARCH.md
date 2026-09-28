@@ -2,6 +2,38 @@
 
 本仓库使用 **Method Space + Experiment DAG + Evidence Ledger** 驱动研究。规则在 [AGENTS.md](../AGENTS.md)，数据对象由 Git 管理，训练记录和 Artifacts 继续使用 W&B。
 
+## 初始化依据与研究假设
+
+2026-09-27 的初始化依据是[分享对话](https://chatgpt.com/share/6ab9c3e3-56cc-83e9-bbef-b1f196a8e83c)中的九轴框架、[五背景原始数据审计](research/dataset_foundations.md)、[已发表原始论文](research/literature_foundations.md)和官方任务说明。方法候选不从已有实验反推，初始图不导入旧实验，初始账本没有本项目模型效果。旧文件和结果保留在原处及 Git；后续若要纳入，须另作明确的回顾性审计。
+
+分享的核心问题是：独立背景很少，如何用可信数据、可检验先验和有效表示约束假设空间，使模型学到能迁移的响应。`Baseline + Δ_shared + Δ_context + residual` 是可拆解的主干假设；加性空间、逆变换和生成计数必须明确，不能直接把原始 counts、log 表达与 logFC 相加。先验错误或压缩过度也可能降低表现，因此保留绝对表达、简单线性、无先验和匹配随机表示等反证对照。
+
+分享中的方法效果数字、模型排名及“主干”组合均为说明性例子，不是研究结果。九轴完整保留，但各轴不一定正交：例如 CVAE 与 Flow 往往联动架构、损失及采样，须登记整包比较；V 是冻结评价契约。大规模组合搜索和调参等到归因证据出现后再展开。
+
+| 轴 | 初始覆盖与关键反证 |
+|---|---|
+| T 任务 | 绝对表达、平均差、细胞差、logFC、条件分布、平均响应加残差；目标和逆变换联动须明示 |
+| D 数据 | 单来源、合并、背景/靶点平衡、伪配对、课程；新增可靠性过滤、等量随机删减、软权重，区分质量与覆盖 |
+| R 表示 | NTC 均值/方差、集合编码、预训练、基因程序、多视图；保留 PCA、随机程序、随机初始化与扰动基因注释消融 |
+| A 架构 | 线性、小 MLP、Transformer、CVAE、Flow、响应头加生成器；零/共享响应作为同次评估的参照 |
+| L 目标 | count likelihood、响应 MSE、方向、logFC、分布距离、多目标；只在训练内计算响应及权重 |
+| O 优化 | 单阶段、预训练微调、两阶段、课程、困难样本、多来源加权；先固定预算，后研究优化瓶颈 |
+| V 验证 | ID、扰动 OOD、背景 OOD、联合 OOD、研究留出构成 Pseudo-VCC，随机细胞划分只作诊断 |
+| I 推断 | 确定性、NB/Flow 采样、方差/文库校准、集成；固定响应模型再比较生成策略 |
+| G 泛化 | 无条件、背景拼接、FiLM、不变学习、仅 NTC 适配、检索/专家；禁止使用留出背景的扰动标签 |
+
+五背景来自三个研究组：H1；K562 GWPS/RPE1；HepG2/Jurkat。原始元数据说明细胞量、靶点面板及测量基因轴严重不平衡，不能把五背景视作五份独立研究，也不能把更多 bags/种子当更多背景。所有覆盖数字的映射口径及局限见数据审计；初始优先级来自这些设计约束与文献争议，不来自模型分数。
+
+Pseudo-VCC 先冻结五背景轮换留出及全局靶点留出；每折只能看目标背景 NTC，拟合表示、QC 阈值和超参数只用训练边界。H1 三个文件中重复 NTC 必须按物理身份去重后再划池；输入和评分 NTC 分离。研究留出按三个来源组整体移除，同组两个背景不能冒充独立跨研究验证。共同测量基因面板用于受控比较，另报 native/union coverage；未测量不补成监督零。协议草案还需要固定实际文件版本、映射、分组、合格任务与 scorer，当前不能启动训练。
+
+2026 官方任务使用未知背景的 NTC 和 CRISPRi 靶点；验证与最终背景不同。当前提交每背景每靶点 400 个细胞，覆盖官方 18,533 基因轴并输出非负整数 counts；六项 normalized 指标等权聚合。本地须同时保存 raw 分项、逐背景/靶点结果及 reference/scorer 身份，局部基准分数不能直接当榜单分数；细胞采样波动与训练随机性分别记录。[官方任务](https://arcinstitute.org/news/virtual-cell-challenge-2026)、[官方 CLI 与评分要求](https://vcc-cli-wiki.virtualcellchallenge.org/#submission-requirements-2026)
+
+初始 DAG 只预留有具体对照的 draft 槽位；零响应等无需训练的参照随基线执行评估。**每次独立拟合占一个 Experiment**：ready 前须按外层划分、全局靶点分区及 seed 展开实际节点，填写 `design.fit_scope` 和一致的 `expected_config.fit_scope`。一个节点不能装入五折训练；比较层汇总各折，控制按相同 fit_scope 和 seed 配对。
+
+QC 的配对 seed 2/3 确认分支已预留，但只有首轮 signal/supported 才能进入；其余确认与交互等待具体证据后展开。`design` 是待落实方案，不能冒充完整 `expected_config`。单 seed 只产生线索，优化稳定性和跨背景一致性需各自的重复与分层证据。
+
+Set Encoder 初筛同时引入可训练表示与非线性容量，只能归因于表示整包；有信号后须配容量匹配的统计量 encoder。FiLM 与 shared+context 分解分别登记比较；后者还要固定共享项与残差的可辨识约束。生成器可在背景调制没有正收益时继续成为合理问题，不能把某一结构获胜设为所有后续研究的通行证。
+
 ## 先看当前决策
 
 在仓库根目录执行：
@@ -12,7 +44,7 @@
 ./scripts/research.py graph
 ```
 
-`status` 给出当前未关闭比较、优先问题、每个实验缺少的条件及下一步；`check` 校验对象；`graph` 从实际节点和关系生成 Mermaid 图。
+`status` 区分外部来源、待检验问题和本地闭环证据，并给出优先问题与启动缺项；`check` 校验对象；`graph` 从登记节点和关系生成 Mermaid 图。
 [当前 DAG 图](research/experiment_dag.md) 是生成视图，修改对象后用 `./scripts/research.py graph > docs/research/experiment_dag.md` 更新，不手工维护连线。
 
 ## 三个实际对象
@@ -21,13 +53,11 @@
 |---|---|
 | [method_space.json](research/method_space.json) | T/D/R/A/L/O/V/I/G 九轴的明确候选、方法坐标和先验；设计方案时登记 |
 | [experiment_dag.json](research/experiment_dag.json) | 精确实验节点、方法、协议、实际配置、控制/来源关系、结果引用，以及带判据的比较；训练前登记，执行后回填 |
-| [evidence_ledger.json](research/evidence_ledger.json) | 结论、证据文件哈希、适用范围、下一步与重开条件；比较结束后关闭证据，维护最多三个优先问题 |
+| [evidence_ledger.json](research/evidence_ledger.json) | 文献/数据/协议来源与本地实验分类型登记；保存适用范围、下一步与重开条件，维护最多三个优先问题 |
 
-历史节点已经从实际 config、metrics、停止记录及 REPORT 回填。`legacy=true` 与回顾性登记保留历史身份，不能把历史方案补写成预注册。
-零响应和共享响应若是同次执行内的评估基线，保留为该节点结果，不虚造独立训练节点。
-exp008 只有需求草案，登记为 draft 并列出缺项；当前机制不擅自补选其尚未确定的对照，也不创建或启动训练。
+Method 的 `local_status=UNTESTED` 表示在本轮协议上尚未验证。账本 `literature/external` 是作者原任务的观察；`dataset/observed` 是输入事实；`protocol/constraint` 是任务约束；`experiment/pending` 是待检验问题。只有完成本地比较后才产生 `signal / supported / not_supported / inconclusive`，外部论文不能替代一次本地确认。
 
-DAG 的 `controls` 表示科学比较，`sources` 表示数据/模型/代码来源；`requires_evidence` 表示启动前必须有结论。三者不同，候选不因为对照尚未训练就被自动串行化。
+DAG 的 `controls` 表示科学比较，`sources` 表示复用来源，`requires_evidence` 表示决策前置；`evidence_conditions` 进一步限定允许的结论状态。外部证据和 pending 均不能放行，确认通常需要 signal/supported，交互需要 supported。普通对照边本身不强制串行执行。
 节点与配置的哈希引用保留追溯，研究结论只在 Ledger 维护。REPORT 保存详细分析，本文件不复制一份证据排行榜。
 
 ## 建立一次比较
@@ -83,7 +113,7 @@ frozen_config["research"] = research_metadata
 `bind` 在 `cache/research-binding.json` 留下绑定标记；绑定后失败即使没有最终指标，`execute` 也会保存带身份的失败记录，不能按一次新训练覆盖。修复故障、清除已解决的 blocker 并提交后，再恢复原训练状态。
 若环境/输入检查在 `bind` 前失败，可运行 `retry <node_id>`，提交后重新执行同一入口；它只接受条件未变且没有绑定标记或训练产物的执行，并保留失败记录。改变实验条件仍须新建身份。
 
-历史入口已纳入冻结检查，不原地改成新身份。历史恢复从其记录的代码版本进行；本次未修改旧训练源码、输出或 W&B 记录。
+未登记的实验源码、配置和入口变更会被提交检查拦截。历史恢复从其记录的代码版本进行；初始化不修改旧训练源码、输出或 W&B 记录。
 
 ## 关闭证据并决定下一步
 
@@ -96,7 +126,7 @@ frozen_config["research"] = research_metadata
 ```
 
 证据文件包含 `id`、`comparison_id`、`node_ids`、`state`、`claim`、`limitations`、`source_refs`、`next_action`、`reopen_when`；证据正文存入 Ledger，临时输入文件使用系统临时目录并清理。
-状态为 `signal / supported / not_supported / inconclusive`。`close` 检查执行完成、引用及必要决策字段；不会自动将三次生成采样认定为三个生物重复，也不会自动判定科学支持成立。
+本地结果状态为 `signal / supported / not_supported / inconclusive`。可用同一 ID 将 pending 问题关闭成结果，已经关闭的证据不可覆盖。`close` 检查执行完成、引用及必要决策字段；不会自动将三次生成采样认定为三个生物重复，也不会自动判定科学支持成立。
 失败执行先修复或如实保留失败原因，不能用它关闭“方法无效”的证据。证据不足是一种有下一步的结论。
 自动回收不冻结正在撰写的 REPORT；可在训练后完善分析再关闭证据。已入账的报告引用须保留原版本，后续修改前将旧引用固定到含相同内容的 Git commit；不要改写旧证据来迎合新结论。
 
@@ -111,8 +141,8 @@ frozen_config["research"] = research_metadata
 ln -s ../../.githooks/pre-commit .git/hooks/pre-commit
 ```
 
-提交检查约束新实验的登记、标准入口与训练模块接入，并防止修改被冻结的历史训练入口；完成全部比较臂却没有证据及下一步决策时也拒绝提交。启动门禁进一步检查实际配置、哈希和前置证据。
+提交检查约束实验的登记、标准入口与训练模块接入；完成全部比较臂却没有本地证据及下一步决策时也拒绝提交。启动门禁进一步检查实际配置、哈希和前置证据类型/结论。
 这些是标准路径的技术约束，不是针对恶意绕过的安全沙箱。它们能阻止漏登记和不一致，不能证明一个生物假设正确。未接入的新实验不能被标为 ready。
-历史报告按固定 Git 版本读取，本地结果按哈希验证；迁移工作区后须先从登记的固定 Artifact 恢复所需历史文件。本工具不自动下载产物或改写线上 W&B。
+来源笔记和本地结果按哈希验证；已经入账的内容更新时保留原引用版本。本工具不自动下载产物或改写线上 W&B。
 
-方法论依据：[原分享对话](https://chatgpt.com/share/6ab9c3e3-56cc-83e9-bbef-b1f196a8e83c)；VCC 任务依据与历史评分限制保留在 Ledger 的固定来源和各 Experiment REPORT。
+来源阅读顺序：设计方法先读九轴与上述边界；涉及数据/拆分时读 [dataset_foundations.md](research/dataset_foundations.md)；采用论文方法或先验时读 [literature_foundations.md](research/literature_foundations.md) 对应条目，再登记可证伪对照。
