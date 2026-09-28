@@ -14,7 +14,7 @@ flowchart TD
   n7["init-target-balanced-s01 | draft"]
   n8["init-meanvar-s01 | draft"]
   n9["init-set-s01 | draft"]
-  n10["init-pca-s01 | ready"]
+  n10["init-pca-s01 | completed"]
   n11["init-program-s01 | ready"]
   n12["init-random-program-s01 | ready"]
   n13["init-pretrained-s01 | draft"]
