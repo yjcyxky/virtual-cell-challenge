@@ -1704,7 +1704,7 @@
       },
       "signature": "T5-D2-R18-A10-L5-O0-V5-I6-G4",
       "prior": "功能关系与仅NTC状态可通过共享解码函数约束未见target×gene响应；先验注入扰动/readout表示及条件解码。真实/匹配随机或无先验归因后置；失效包括功能关系不对应干预响应、NTC共变不能迁移。来源版本、覆盖及回退须在ready前冻结。 已冻结Reactome/HGNC SHA256、全轴10567功能基因/2003模块、64维固定sketch、NTC状态回退和来源残差锚定；生成沿用固定NTC平移。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "high",
       "evidence_ids": [

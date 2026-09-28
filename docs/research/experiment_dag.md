@@ -52,7 +52,7 @@ flowchart TD
   n45["transport-no-ntc-s01 | draft"]
   n46["composition-lfc-s01 | completed"]
   n47["distribution-nb-s01 | completed"]
-  n48["gene-decoder-s01 | ready"]
+  n48["gene-decoder-s01 | completed"]
   n49["cell-cvae-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1

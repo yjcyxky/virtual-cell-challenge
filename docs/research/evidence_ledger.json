@@ -1620,27 +1620,47 @@
     },
     "E-GENE-DECODER-PACKAGE": {
       "kind": "experiment",
-      "state": "pending",
       "comparison_id": "C-GENE-DECODER-PACKAGE",
       "node_ids": [
         "masked-response-shared-s01",
         "gene-decoder-s01"
       ],
-      "hypothesis": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？",
-      "claim": "两个机制的代码、完整配置、独立环境和结束条件共同冻结；尚未训练，无本地有效性结论。",
-      "limitations": "单H1开发比较；整包联动只能整体归因，单seed不能确认泛化。训练/生成随机性不增加生物独立性。",
+      "state": "not_supported",
+      "claim": "冻结跨基因功能/NTC条件解码整包完成16384步及两面板官方评分。主Overall 0.171241808（shared 0.210865634，差−0.039623826），官方重叠0.162386976（差−0.042451202），未达+0.02/−0.02门槛。Fidelity/Jaccard改善不足以抵消PDS、表达误差和NMAE恶化；主面板仅1/280靶capped MSE改善。",
+      "limitations": "S2-H1/context-seen/seed1开发证据；整包只能整体归因。功能覆盖不是有效性证据；不否定整个功能先验或解码架构家族。逐靶波动不是独立背景不确定性，训练/生成随机性未分别复现。",
       "source_refs": [
         {
-          "path": "experiments/gene-conditioned-response/configs/gene-decoder-s01.json",
-          "sha256": "e7523f3fbfdf1d794bcd7cf5eeaeaccdffc8fbbaa6e87a4d768408cb81f8f059"
+          "path": "experiments/gene-conditioned-response/outputs/gene-decoder-s01/metrics.json",
+          "sha256": "f2b2e6ec15cc4b0f003be86545a7478e6c5b5421606019be193e44303a5d05e7"
         },
         {
-          "path": "experiments/gene-conditioned-response/PLAN.md",
-          "sha256": "2b873d28a408227da8963847015ee3b717eea29f2ca688762ccc40db2d2abc30"
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+          "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+        },
+        {
+          "path": "experiments/gene-conditioned-response/REPORT.md",
+          "sha256": "412b8ba822af5295c3ee13e37a8df7efde6f54c7d2a235c228fdb11dda7816fd"
+        },
+        {
+          "path": "experiments/gene-conditioned-response/outputs/gene-decoder-s01/cache/package-comparison.json",
+          "sha256": "0d3f90c666ee5e064e7754613fc4e807ba54af00cd81ff52864ac370c7dfb1ac"
+        },
+        {
+          "path": "experiments/gene-conditioned-response/outputs/gene-decoder-s01/cache/tracking-verification.json",
+          "sha256": "0d30efa2549959cf929519ba4fd837cd5a2d8dd5911dc9e463154a3cec51a644"
+        },
+        {
+          "path": "experiments/gene-conditioned-response/outputs/gene-decoder-s01/cache/comparison-all-paired.csv",
+          "sha256": "b83ebc6d4fcfe7a68d6005b28524608c8159b95bc788bb2e7b4e519e004971e5"
+        },
+        {
+          "path": "experiments/gene-conditioned-response/outputs/gene-decoder-s01/cache/comparison-official_overlap-paired.csv",
+          "sha256": "97c8c038e8fa683ff5aaa64a9da487ac64cf8a0504b400d0ca2dda9e83bd5c2c"
         }
       ],
-      "next_action": "按冻结预算完成16384步、全官方轴预测和两个官方面板；两条均完成后按预定门槛统一分配下一轮资源。",
-      "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
+      "next_action": "停止该配置的局部H1调参预算，继续已在首个结果前共同冻结的cell-cvae-s01完整8192步及两个官方面板；二者完成后统一决定第三槽，达标者优先新背景，否则另换机制。",
+      "reopen_when": "新的完整机制/输入信息能明确改变外推假设，并重新冻结匹配控制与预算；当前负结果不授权自动做该配置的H1网格。",
+      "hypothesis": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？"
     },
     "E-CELL-VAE-PACKAGE": {
       "kind": "experiment",
@@ -1669,18 +1689,8 @@
   },
   "queue": [
     {
-      "id": "Q-GENE-DECODER-PACKAGE",
-      "priority": 1,
-      "comparison_id": "C-GENE-DECODER-PACKAGE",
-      "question": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？",
-      "action": "优先跨基因条件解码整包，覆盖不局限于当前直接监督坐标；与细胞VAE方案一起在首个结果前冻结，每条一个完整配置。第三槽优先达标方案新背景确认，无信号则换机制。",
-      "requires_evidence": [
-        "E-MECHANISM-PORTFOLIO"
-      ]
-    },
-    {
       "id": "Q-CELL-VAE-PACKAGE",
-      "priority": 2,
+      "priority": 1,
       "comparison_id": "C-CELL-VAE-PACKAGE",
       "question": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
       "action": "给NTC条件逐细胞生成+联合响应目标一个完整探索槽；不等线性头或完整先验消融，亦不按第一条成绩改本条方案。",

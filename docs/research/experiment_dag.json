@@ -6777,7 +6777,7 @@
       "legacy": false,
       "method_id": "M-GENE-DECODER-PACKAGE",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-GENE-DECODER-PACKAGE",
       "controls": [
         "masked-response-shared-s01"
@@ -7093,11 +7093,17 @@
           "sha256": "efd4948398850d2d616ee92c2f3fe3b2aca3980559062bfd55dffa336f44a593"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/gene-conditioned-response/outputs/gene-decoder-s01/metrics.json",
+        "sha256": "f2b2e6ec15cc4b0f003be86545a7478e6c5b5421606019be193e44303a5d05e7"
+      },
+      "report_ref": {
+        "path": "experiments/gene-conditioned-response/REPORT.md",
+        "sha256": "412b8ba822af5295c3ee13e37a8df7efde6f54c7d2a235c228fdb11dda7816fd"
+      },
+      "git_commit": "c180c39862778d934e0f62e24a7f2a41bf1ddf8a",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/gene-decoder-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/gene-decoder-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -7118,7 +7124,9 @@
         "end_condition": "预定完整训练、全轴预测、两个正式官方面板、模型artifact、配对报告和关闭本比较；不以smoke结束。",
         "freeze_group": "two-learned-packages-before-first-new-result"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "code_snapshot_commit": "c180c39862778d934e0f62e24a7f2a41bf1ddf8a"
     },
     "cell-cvae-s01": {
       "experiment_id": "conditional-cell-response",

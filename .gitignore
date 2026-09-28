@@ -10,6 +10,7 @@ data/logs/
 __pycache__/
 *.pyc
 data/assessments/
+experiments/*/outputs/
 
 # 自己生成的派生语料（data/interim/ data/processed/）入库，
 # 其中 >10MB 的走 LFS——见 .gitattributes 与 .githooks/pre-commit
