@@ -197,4 +197,93 @@ PDS、Jaccard 的 raw 在两臂也都下降，表达误差 raw 上升；Expressi
 
 导出验证：10 项模型/生成/导出行为测试通过；两臂全文件审计和官方 prep 均通过（counts-preserved、reordered_genes=false，360,000 细胞完整保留）。按固定的 CSV 第 0/150/299 项抽查 A/B/C 与两臂，共 18 个块、7,200 个细胞，从原 checkpoint 与官方 NTC 回放得到的 counts 与 H5AD **逐值完全一致**；记录见 [export-replay.json](outputs/init-linear-s01/predictions/official-abc/export-replay.json)。抽查不是穷举逐值回放，不能排除所有潜在实现问题。原训练、checkpoint 和本地 metrics 未修改。
 
-关闭 `E-BASE-OFFICIAL` 为 `not_supported`，仅针对“本地与官方分数接近”的主张；保留 `E-BASE` 的原 H1 结论。下一优先问题 `C-ANCHOR-AUDIT`/`E-ANCHOR-AUDIT` 已登记为 draft/pending：核查公开 r4 构建信息，先冻结相同 H1 reference、模型预测及 raw，再设计 baseline emission×exclude_target_gene 的 2×2 协议诊断，记录真实匹配的 anchors。尚未执行此诊断，不按靠近榜单的程度挑选本地配方；无法核实线上条件时保持未知。随后再做匹配正则/权重的条件项消融与跨背景复验，QC 问题保留，当前不扩模型容量。
+该次核查关闭 `E-BASE-OFFICIAL` 为 `not_supported`，仅针对“本地与官方分数接近”的主张；保留 `E-BASE` 的原 H1 结论，并将 `C-ANCHOR-AUDIT` 列为下一优先问题。后续已完成的协议归因见下节；不按靠近榜单的程度挑选本地配方。
+
+## 固定预测的 baseline 归因：C-ANCHOR-AUDIT
+
+同一 H1 reference 和四臂既有预测，执行两个面板×四条件×四臂，共 32 组六项官方评分。四条件仅改变评分 baseline 的 emission 与 profile 自身靶基因排除开关；模型及生成器未修改。原条件分项与 Overall 均以绝对误差 1e-8 通过复现，原预测、raw 结果、reference 和历史 metrics 的哈希在执行前后不变。各面板首轮重新生成五次 anchors，后续由官方严格内容缓存复用相同真实群体的 anchors。
+
+### Overall 与匹配模型差
+
+| 面板 | baseline 条件 | zero | shared | source | linear | linear−shared |
+|---|---|---:|---:|---:|---:|---:|
+| all | dispersed-exclude | -0.064306554 | 0.210865634 | 0.205145532 | 0.161135012 | -0.049730622 |
+| all | tile-exclude | -0.383770096 | 0.050379818 | 0.040362923 | -0.007260840 | -0.057640658 |
+| all | dispersed-include | -0.064480763 | 0.210681728 | 0.204962464 | 0.160945857 | -0.049735871 |
+| all | tile-include | -0.383698906 | 0.050415137 | 0.040399114 | -0.007224848 | -0.057639985 |
+| official_overlap | dispersed-exclude | -0.079036499 | 0.204838178 | 0.204838178 | 0.131713753 | -0.073124425 |
+| official_overlap | tile-exclude | -0.430475895 | 0.029124820 | 0.029124820 | -0.047311103 | -0.076435922 |
+| official_overlap | dispersed-include | -0.079493441 | 0.204678647 | 0.204678647 | 0.131543551 | -0.073135095 |
+| official_overlap | tile-include | -0.430404348 | 0.029175478 | 0.029175478 | -0.047263934 | -0.076439412 |
+
+### Baseline 的 raw 六项
+
+| 面板 | 条件 | PDS | Expression | NMAE | Fidelity | Reach | Jaccard |
+|---|---|---:|---:|---:|---:|---:|---:|
+| all | dispersed-exclude | 0.498796723 | 0.959257899 | 0.940510580 | 0.175818846 | 0.090439645 | 0.009786404 |
+| all | tile-exclude | 0.500000000 | 0.955780100 | 0.941128262 | 0.550014071 | 0.074127955 | 0.145588263 |
+| all | dispersed-include | 0.498847926 | 0.959324739 | 0.940534904 | 0.175623193 | 0.091651891 | 0.009745201 |
+| all | tile-include | 0.500000000 | 0.955846059 | 0.941162818 | 0.549968862 | 0.074158194 | 0.145583634 |
+| official_overlap | dispersed-exclude | 0.508333333 | 0.901515918 | 0.904685626 | 0.164767713 | 0.079565888 | 0.022066627 |
+| official_overlap | tile-exclude | 0.500000000 | 0.894245643 | 0.905842894 | 0.582563853 | 0.014008491 | 0.150867350 |
+| official_overlap | dispersed-include | 0.508333333 | 0.902031383 | 0.904837579 | 0.166625159 | 0.079438802 | 0.022096465 |
+| official_overlap | tile-include | 0.500000000 | 0.894756851 | 0.905987181 | 0.582522297 | 0.014008491 | 0.150903976 |
+
+### 固定模型的 normalized 六项
+
+| 面板 | 条件 | 模型 | PDS | Expression | NMAE | Fidelity | Reach | Jaccard |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| all | dispersed-exclude | linear | 0.358462224 | 0.000000000 | -0.056981668 | 0.438445295 | 0.006505383 | 0.220378836 |
+| all | dispersed-exclude | shared | 0.683671086 | 0.000000000 | -0.143798673 | 0.466853911 | 0.009602085 | 0.248865395 |
+| all | tile-exclude | linear | 0.356857800 | 0.000000000 | -0.055883296 | -0.206659789 | 0.024254620 | -0.162134375 |
+| all | tile-exclude | shared | 0.682879978 | 0.000000000 | -0.142610084 | -0.145615809 | 0.027295998 | -0.119671175 |
+| all | dispersed-include | linear | 0.358394114 | 0.000000000 | -0.056938373 | 0.438602224 | 0.005160490 | 0.220456685 |
+| all | dispersed-include | shared | 0.683637503 | 0.000000000 | -0.143751821 | 0.467002901 | 0.008261383 | 0.248940399 |
+| all | tile-include | linear | 0.356857800 | 0.000000000 | -0.055821916 | -0.206492337 | 0.024222303 | -0.162114937 |
+| all | tile-include | shared | 0.682879978 | 0.000000000 | -0.142543662 | -0.145456828 | 0.027263781 | -0.119652447 |
+| official_overlap | dispersed-exclude | linear | 0.316111489 | 0.000000000 | -0.138976528 | 0.444589360 | -0.049316030 | 0.217874226 |
+| official_overlap | dispersed-exclude | shared | 0.774983005 | 0.000000000 | -0.228931124 | 0.461827256 | -0.009855095 | 0.231005025 |
+| official_overlap | tile-exclude | linear | 0.327540107 | 0.000000000 | -0.136614605 | -0.295340635 | 0.020650297 | -0.200101779 |
+| official_overlap | tile-exclude | shared | 0.778743316 | 0.000000000 | -0.226382660 | -0.255138043 | 0.057480054 | -0.179953748 |
+| official_overlap | dispersed-include | linear | 0.316111489 | 0.000000000 | -0.138665840 | 0.443175271 | -0.049170726 | 0.217811116 |
+| official_overlap | dispersed-include | shared | 0.774983005 | 0.000000000 | -0.228595899 | 0.460457055 | -0.009715256 | 0.230942974 |
+| official_overlap | tile-include | linear | 0.327540107 | 0.000000000 | -0.136320810 | -0.295169016 | 0.020650297 | -0.200284181 |
+| official_overlap | tile-include | shared | 0.778743316 | 0.000000000 | -0.226065662 | -0.254971750 | 0.057480054 | -0.180133088 |
+
+全部四臂的 normalized 分项在 [results.json](outputs/init-linear-s01/cache/anchor-audit-csr/results.json) 与 [分数表](outputs/init-linear-s01/cache/anchor-audit-csr/scores.csv)。raw 模型六项及有效靶点数完全沿用前文，两因素不会增加生物背景或产生新的 raw 效果证据。官方零截断照常保留。每个新 baseline 的完整 aggregate、官方 count 行、anchor split 及标准差保存在对应 bundle；aggregate count 与有限逐靶点数不能混称。
+
+### 2×2 效应（Overall）
+
+| 面板 | 模型 | tile−dispersed，固定 exclude=true | include−exclude，固定 dispersed | 二阶交互 |
+|---|---|---:|---:|---:|
+| all | zero | -0.319463542 | -0.000174209 | +0.000245399 |
+| all | shared | -0.160485816 | -0.000183907 | +0.000219226 |
+| all | source | -0.164782609 | -0.000183068 | +0.000219259 |
+| all | linear | -0.168395852 | -0.000189155 | +0.000225147 |
+| official_overlap | zero | -0.351439395 | -0.000456942 | +0.000528488 |
+| official_overlap | shared | -0.175713358 | -0.000159531 | +0.000210190 |
+| official_overlap | source | -0.175713358 | -0.000159531 | +0.000210190 |
+| official_overlap | linear | -0.179024856 | -0.000170201 | +0.000217370 |
+
+交互为 tile/include − tile/exclude − dispersed/include + dispersed/exclude。它描述同一固定评价群体中分数标尺的非加性；不提供跨背景置信区间。没有新增模型 seed 或生物重复。
+
+
+### 结论与决策
+
+**在这两个固定 H1 面板内，Overall 对评分 baseline 的 emission 明显敏感，但 shared > linear 的结论在全部四条件中保留。** 固定 exclude=true，tile−dispersed 对 linear/shared 的 Overall 影响分别为主面板 −0.168396/−0.160486、官方重叠面板 −0.179025/−0.175713，均超过预定的 0.02 实用阈值。模型预测与 raw 指标没有改变，这些移动来自评分标尺，不能称作模型效果变化。
+
+相同 emission 下，排除自身靶基因开关对 linear/shared 的影响绝对值最大为 0.000189；两因素交互最大为 0.000225。对四臂一起看，zero 的最大排除效应为 0.000457、最大交互为 0.000528，也远小于 emission 效应。主面板的完整排序始终是 shared > source > linear > zero；25 靶 shared/source 一致（仅浮点末位差），两者均优于 linear 与 zero。
+
+主面板 Fidelity baseline 从 dispersed 的 0.175819 变为 tile 的 0.550014，replicate 仍为 0.875746。linear 的 Fidelity normalized 从 0.438445 变为 −0.206660，Jaccard 从 0.220379 变为 −0.162134；二者分别对 Overall 移动贡献 −0.107518 和 −0.063752。它们是同一 reference 内改变 baseline 的算术贡献，不是 H1→A/B/C 迁移贡献。
+
+[公开 r4 核查](../../docs/research/r4_anchor_audit.md)仍未取得线上实际构建配方。主面板 tile/shared 的 0.050380 虽接近官方 0.048975，但 tile/linear 为 −0.007261、官方为 0.033804；不能因为某一臂更接近就认证线上使用 tile。隐藏群体、profile 筛选、逐背景 anchors 与实际版本记录仍未知。
+
+关闭 `E-ANCHOR-AUDIT` 为 `supported`，仅支持上述固定 H1 群体内的标尺敏感性，不新增任何模型优越性证据。保留已冻结 dispersed/exclude=true 协议及历史结果；下一优先执行 `C-CONDITION-ABLATION`，匹配数据、alpha、权重、生成器与评分，只移除 NTC 条件项。候选尚未训练；它新增对本次审计结论的执行前置。QC 继续保留为第二优先问题。取得官方 r4 构建记录、新背景结果或排序翻转时重新打开协议判断。
+
+### 执行修正与复核
+
+初始提交 `e8f0aba` 的主面板原条件已复现；tile 在官方 dense→COO/CSR 大块转换处长时间停留。先保留已完成结果，再中断未完成条件，通过同配置定时调用栈重放定位。旧尝试、源码 Git 引用、原配置、日志和调用栈均保存在 DAG `anchor_audit.previous_attempts`；中断不作为方法阴性结果。
+
+提交 `41f4374` 仅增加分块 CSR 存储转换：官方函数仍生成原 tile counts，每块最多 2,048 行，逐元素核对后再交给未修改的官方 scorer。真实主面板每个 tile 条件核验 2,225,867,322 个值；模型数据、评分人群、公式、baseline 因素、seed 和环境均不变。新目录重跑全部条件和 anchors；原条件两面板均在 1e-8 门限内复现，主面板实际差约 1e-16。小型回归测试先抓到两次整块转换，再验证转换上限、逐值相等、官方 bulk/jackknife 与 CUDA raw/aggregate 一致；加上门禁、错误 reference 与恢复身份测试，共 5 项通过。原生 dense 的全规模 tile 评分未完成，因此没有这一路径与 CSR 的全规模分数直接对照；工程等价依据是全量元素核对、小型官方 CUDA 对照与原条件复现。
+
+完整正式结果与 104 个结果文件已上传 `yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit:v0`，仍使用原 [W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01)。本地 [结果](outputs/init-linear-s01/cache/anchor-audit-csr/results.json)、[归因摘要](outputs/init-linear-s01/cache/anchor-audit-csr/analysis.json)、[执行身份](outputs/init-linear-s01/cache/anchor-audit-csr/identity.json)与分数表均可核查；原始细胞矩阵未作为公开 artifact 上传。

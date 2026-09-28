@@ -338,7 +338,7 @@
       },
       "report_ref": {
         "path": "experiments/init-linear/REPORT.md",
-        "sha256": "c8f63973a2d6ede6087b077c51476ad779bf199cd3326238f3220f37526b2c72"
+        "sha256": "f2d39e555d9e63e34d0fcd32cc795e5b13293681d96792f9f5b0495759e3f48e"
       },
       "git_commit": "26a03062011fe902ee4a2c41cbdc287858ce3561",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01",
@@ -600,7 +600,7 @@
         "comparison_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-official-comparison:v0"
       },
       "anchor_audit": {
-        "status": "registered",
+        "status": "completed",
         "comparison_id": "C-ANCHOR-AUDIT",
         "requires_evidence": [
           "E-BASE-OFFICIAL"
@@ -666,7 +666,21 @@
               "sha256": "36e0a41629aec8a26303f28333334099aa72267321c1be5a63fa916c948e2396"
             }
           }
-        ]
+        ],
+        "result_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/results.json",
+          "sha256": "7ea22e8bf0a5c3641c332e3456df0a3125a5d1c8317a93bdf515ec8710840f6f"
+        },
+        "analysis_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/analysis.json",
+          "sha256": "e515d63b569e12029a11b57c6e23755f2e9de37e20613ead25e125f499280306"
+        },
+        "identity_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/identity.json",
+          "sha256": "b0d915f67cf5e8b0d27958287946f63974ba6edf6e6f76c81abca78fe91f1ab9"
+        },
+        "artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit:v0",
+        "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit-evidence:v0"
       }
     },
     "init-absolute-s01": {
@@ -2183,7 +2197,8 @@
         "init-linear-s01"
       ],
       "requires_evidence": [
-        "E-BASE"
+        "E-BASE",
+        "E-ANCHOR-AUDIT"
       ],
       "evidence_conditions": {
         "E-BASE": [
@@ -2823,7 +2838,7 @@
       "attribution_plan": "No model changes; simultaneous evaluation population/protocol changes prohibit single-factor causal attribution."
     },
     "C-ANCHOR-AUDIT": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "protocol_audit",
       "hypothesis": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
       "controls": [],

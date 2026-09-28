@@ -784,16 +784,120 @@
     },
     "E-ANCHOR-AUDIT": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "supported",
       "comparison_id": "C-ANCHOR-AUDIT",
       "node_ids": [
         "init-linear-s01"
       ],
-      "claim": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
-      "limitations": "官方隐藏真实群体及逐背景r4锚点未公开，本地协议诊断不证明端到端复现线上。",
-      "source_refs": [],
-      "next_action": "执行已冻结anchor-audit.sh，完成两面板四条件四臂诊断，报告全部结果并关闭证据。",
-      "reopen_when": "具体诊断配置与来源冻结且可执行，或官方发布新构建证据。"
+      "claim": "固定H1群体、模型预测和raw指标，baseline emission对linear/shared的Overall造成0.160486–0.179025的移动；排除自身靶基因影响最大0.000189、交互最大0.000225。两面板四条件均保留shared>linear。线上r4实际构建仍未知。",
+      "limitations": "仅H1两个开发面板、固定生成seed；32组评分不是独立生物重复。不能将本地baseline效应分配为H1到A/B/C的因果贡献，不能由一臂更接近榜单认证r4。原生dense全规模tile评分未完成；CSR转换逐值验证且小型官方CUDA raw/aggregate一致，正式评分仍用冻结官方接口。",
+      "source_refs": [
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+          "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+        },
+        {
+          "path": "experiments/init-linear/REPORT.md",
+          "sha256": "f2d39e555d9e63e34d0fcd32cc795e5b13293681d96792f9f5b0495759e3f48e"
+        },
+        {
+          "path": "experiments/init-linear/configs/anchor-audit-s01-csr.json",
+          "sha256": "d6a7f33b4a394338fa602bad0b2b4b5f459199d014f282a4f3f32a79dc90da63"
+        },
+        {
+          "path": "docs/research/r4_anchor_audit.md",
+          "sha256": "c41bd31ce58df29f76b1f12a7a9e209db21e7853b386f37f94a1394db54ac2d7"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/results.json",
+          "sha256": "7ea22e8bf0a5c3641c332e3456df0a3125a5d1c8317a93bdf515ec8710840f6f"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/analysis.json",
+          "sha256": "e515d63b569e12029a11b57c6e23755f2e9de37e20613ead25e125f499280306"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/scores.csv",
+          "sha256": "0a41bfc79f6f1a95d1f75f96ad13d70a746d2bed11033d7e4248c445a705d2f3"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/identity.json",
+          "sha256": "b0d915f67cf5e8b0d27958287946f63974ba6edf6e6f76c81abca78fe91f1ab9"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/artifact.json",
+          "sha256": "c1c31120bc5acf4aabe03f0ba52259f12239aea4ab56645dbbe6934d23b31ea2"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/anchor-audit-csr.log",
+          "sha256": "f72655c5d94a77bc8dfccb789d106be45982b6d32787e0045dab5eb3e3d6e80d"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/anchor-audit-csr/evidence-artifact.json",
+          "sha256": "49c2fb5f1590b15dfbf2a33b87fbebfa9a89a38ae15e00166af9b37863bbe8b5"
+        }
+      ],
+      "decision": "保留原PSEUDO-VCC-INIT dispersed/exclude=true默认协议与历史结果；本次仅确认本地标尺敏感性，不改变方法优越性结论。完成该协议问题后推进匹配条件项消融，不加模型容量。",
+      "next_action": "C-CONDITION-ABLATION/init-linear-nocontext-s01：冻结并完整执行匹配alpha/权重/数据/生成器/评分的NTC条件项禁用消融；QC为第二优先。",
+      "reopen_when": "官方发布r4构建记录、可比逐背景分数；新背景、生成seed或合法baseline条件改变相对排序；发现评分实现/来源不一致。",
+      "metrics": {
+        "conditions": 8,
+        "model_score_sets": 32,
+        "raw_scores_unchanged": true,
+        "original_condition_reproduced": true,
+        "max_abs_Overall_shift_all_arms": 0.3514393953355161,
+        "shared_beats_linear_all_conditions": true,
+        "Overall_contrasts": {
+          "all": {
+            "zero": {
+              "emission_at_exclude": -0.31946354242332253,
+              "include_at_dispersed": -0.00017420931125351757,
+              "interaction": 0.0002453990548922508
+            },
+            "shared": {
+              "emission_at_exclude": -0.16048581607685558,
+              "include_at_dispersed": -0.00018390653513525312,
+              "interaction": 0.00021922564497273145
+            },
+            "source": {
+              "emission_at_exclude": -0.16478260943698725,
+              "include_at_dispersed": -0.00018306752076702182,
+              "interaction": 0.00021925874945191715
+            },
+            "linear": {
+              "emission_at_exclude": -0.16839585184482214,
+              "include_at_dispersed": -0.000189155072552738,
+              "interaction": 0.0002251473849386454
+            }
+          },
+          "official_overlap": {
+            "zero": {
+              "emission_at_exclude": -0.3514393953355161,
+              "include_at_dispersed": -0.0004569420091053711,
+              "interaction": 0.0005284884220141117
+            },
+            "shared": {
+              "emission_at_exclude": -0.17571335814696992,
+              "include_at_dispersed": -0.00015953131118426334,
+              "interaction": 0.0002101900302206583
+            },
+            "source": {
+              "emission_at_exclude": -0.17571335814696995,
+              "include_at_dispersed": -0.00015953131118426334,
+              "interaction": 0.0002101900302206583
+            },
+            "linear": {
+              "emission_at_exclude": -0.17902485563023054,
+              "include_at_dispersed": -0.0001702014686363884,
+              "interaction": 0.00021737030746396546
+            }
+          }
+        }
+      },
+      "artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit:v0",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01",
+      "hypothesis": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit-evidence:v0"
     },
     "P-R4-AUDIT": {
       "kind": "protocol",
@@ -817,28 +921,19 @@
   },
   "queue": [
     {
-      "id": "Q-ANCHOR-AUDIT",
-      "priority": 1,
-      "comparison_id": "C-ANCHOR-AUDIT",
-      "question": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
-      "action": "先核实线上构建信息；固定本地reference和现有两臂预测，登记baseline emission×排除自身靶基因的协议诊断。保持原结果，明确尺度与背景泛化的边界，不先加模型容量。",
-      "requires_evidence": [
-        "E-BASE-OFFICIAL"
-      ]
-    },
-    {
       "id": "Q-CONDITION-ABLATION",
-      "priority": 2,
+      "priority": 1,
       "comparison_id": "C-CONDITION-ABLATION",
       "question": "匹配正则和权重后，当前线性模型的损失能否归因于NTC条件项？",
-      "action": "落实已登记init-linear-nocontext-s01；仅禁用NTC条件项、其余固定。新run仍归init-linear，共享环境；保留历史代码版本及原research绑定。完整训练/评分后关闭E-CONDITION-ABLATION，按预设分支决定是否跨背景复验。",
+      "action": "按已关闭基线与评分审计结论推进init-linear-nocontext-s01：保留原dispersed/exclude=true协议，匹配alpha/权重/数据/生成器，仅移除NTC条件项。先冻结新run完整配置与代码、通过门禁后完整训练评估；不再因未知r4配方搁置模型归因。",
       "requires_evidence": [
-        "E-BASE"
+        "E-BASE",
+        "E-ANCHOR-AUDIT"
       ]
     },
     {
       "id": "Q-QUALITY",
-      "priority": 3,
+      "priority": 2,
       "comparison_id": "C-QC",
       "question": "额外QC改变的是可靠性，还是数量、target覆盖与弱响应人群？",
       "action": "条件项归因后落实基础/QC/匹配随机三臂，保持评估群体及官方轴；单列181仅K562与99四背景支持靶的保留率，不能把响应强度/覆盖变化当作质量收益。",
