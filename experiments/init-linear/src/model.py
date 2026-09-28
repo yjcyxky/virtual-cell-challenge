@@ -58,6 +58,12 @@ def fit(directory, genes, split, config):
     common, center, basis, scale = context_features(stats, contexts, genes)
     feature_args = (genes, common, center, basis, scale)
     features = {c: task_features(stats[c], stats[c]['labels'][1:], *feature_args) for c in contexts}
+    conditioning = config['model'].get('ntc_conditioning', True)
+    if not isinstance(conditioning, bool):
+        raise ValueError('ntc_conditioning must be a boolean')
+    if not conditioning:
+        for x in features.values():
+            x[:, 1:] = 0  # Keep the identical penalized intercept; refit all target effects.
     dimensions = next(iter(features.values())).shape[1]
     effects = np.zeros((len(targets), len(genes)), np.float32)
     coefficients = np.zeros((dimensions, len(genes)), np.float32)
@@ -84,6 +90,7 @@ def fit(directory, genes, split, config):
             mass += weights.sum()*len(col)
         print(f'Ridge solved measurement pattern {pattern}: {len(columns)} genes, {len(target)} tasks', flush=True)
     return dict(targets=targets, effects=effects, beta=coefficients, shared=shared,
+                ntc_conditioning=np.asarray(conditioning),
                 common=common, center=center, basis=basis, scale=np.asarray(scale),
                 trained_mask=masks.any(axis=0), genes=np.asarray(genes),
                 training_mse=np.asarray(loss/mass), training_tasks=np.asarray(sum(len(s['labels'])-1 for s in stats.values())))
@@ -103,6 +110,8 @@ def predict(model, stats, targets, arm, source=None):
         return result
     if arm == 'linear':
         x = task_features(stats, targets, genes, model['common'], model['center'], model['basis'], float(model['scale']))
+        if not bool(model.get('ntc_conditioning', True)):
+            x[:, 1:] = 0
         result[:] = x @ model['beta']
     for i, t in enumerate(targets):
         if t in index:

@@ -2,6 +2,18 @@
 
 本 Experiment 管正则化线性响应路线；首个 run 为 `init-linear-s01`，比较 `C-BASE`，方法 `M-BASE`，证据问题 `E-BASE`。全部生效条件在 configs/s2-h1-s01.json 与 DAG 冻结，执行产物进入 outputs/init-linear-s01/。
 
+## 当前模型实验：C-CONDITION-ABLATION
+
+目标是为 VCC 2026 的高性能方法选择消除条件化与正则化的混杂。新 run `init-linear-nocontext-s01`（M-RIDGE-NO-CONTEXT / E-CONDITION-ABLATION）在同一 S2-H1/context-seen/seed1 上，仅将 NTC 条件项禁用。训练时保留目标 ID 与原截距及其 alpha=1 正则、细胞数/100 权重、测量掩码、目标和解析求解；全部系数重新拟合，不能在旧权重上只关闭推断条件项。没有搜索超参数。
+
+完整配置 `configs/s2-h1-nocontext-s01.json`；`model.ntc_conditioning=false` 是唯一科学差异，原配置默认 true。另一个实际字段 `reuse` 指向有哈希的来源清单：原 run 的完成 metrics/config、五背景预处理统计/输入 NTC/身份、H1 真实参考和两面板各自的官方 bundle。逐文件验证 SHA-256，并核对 benchmark、data、fit_scope、seed、generation、evaluation 一致后复制到本 run，再校验复制内容；不复用模型参数或预测。没有更换参考群体或借用其他群体 anchors。重新生成四臂并评分，zero/shared/source 的复现是计算复用的检查。
+
+执行 `./reproduce.sh --run-id init-linear-nocontext-s01`，同条件恢复追加 `--resume`。复用本 Experiment 的锁定环境；独立 W&B id 与 outputs 目录。旧训练源码由节点 `code_snapshot_commit` 固定到实际执行提交，其 research、metrics 和历史证据不变。
+
+结束条件是精确解析拟合完整完成、全官方轴预测、两个面板×四臂的 raw/normalized 六指标和 Overall 有效，保存 checkpoint/预测清单/结果 Artifact。主判据事先固定：新 linear 相对原 linear 的全 280 靶 Overall 增加至少 0.02，且 25 官方重叠靶下降不超过 0.02。shared/source 只作参照，不替代原 linear 的单因素控制。报告六项配对差、有效数、181 K562-only/99 四背景支持靶的分层及逐靶波动；保持未定义指标原规则。
+
+若满足，记筛选线索并在另一个背景用配对拟合确认；若不满足，分开考察正则、响应表示与生成映射。单 H1、单生成 seed 不能否定 NTC 信息或宣称 SOTA，解析训练无优化随机性也不增加生物重复。完成后关闭账本并更新模型探索优先级，不重开已关闭评分审计。
+
 ## 问题与范围
 
 先验证有效简单对照，分辨共享响应、拟合能力与扰动特异误差。首个独立拟合固定 S2-H1 / context-seen / seed=1：训练 K562、RPE1、HepG2、Jurkat 的所有允许靶点；H1 扰动标签完全留出，只允许 H1 输入 NTC。H1 与训练的两项研究来源分离，测量轴覆盖广，且有 25 个本届官方靶点可单独检验，因此先选此折；没有参考任何旧实验分数。

@@ -34,7 +34,7 @@ flowchart TD
   n27["confirm-random-s02 | draft"]
   n28["confirm-qc-s03 | draft"]
   n29["confirm-random-s03 | draft"]
-  n30["init-linear-nocontext-s01 | draft"]
+  n30["init-linear-nocontext-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -127,4 +127,5 @@ flowchart TD
   n0 -->|control| n30
   n0 -->|source| n30
   n0 -.->|"evidence: E-BASE"| n30
+  n0 -.->|"evidence: E-ANCHOR-AUDIT"| n30
 ```

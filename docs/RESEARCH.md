@@ -133,6 +133,8 @@ frozen_config["research"] = research_metadata
 
 未登记的实验源码、配置和入口变更会被提交检查拦截。历史恢复从其记录的代码版本进行；初始化不修改旧训练源码、输出或 W&B 记录。
 
+同一 Experiment 增加新 run、演进共用源码时，已完成节点可设置 `code_snapshot_commit` 为其 metrics 中的实际 execution commit（未记录 execution 时用 research commit）。校验在该提交读取旧 `code_refs`，并核对已执行登记与原 research 绑定；不修改旧引用、metrics 或科学条件。未完成节点不能使用快照，标准入口也不恢复已完成节点。历史推断/评估需检出各阶段记录的代码提交；新 run 仍须绑定当前源码、配置并通过全部启动门禁。
+
 ### 评估接口修复
 
 完整训练和预测已保存、评估因接口故障未完成时，可沿用原 run 修复适配代码。先保存 `status=failed/interrupted`、`evaluation_completed=false` 的失败快照；在节点登记 `evaluation_repair`：`kind=evaluation_only`、原因、原提交的 `original_code_refs`、准确的 `changed_paths`、快照 `failure_ref`，以及模型、预测清单、每个预测文件和已完成参考 bundle 的 `preserved_refs`。更新当前 `code_refs`，清除已解决 blocker，通过校验并提交后执行 `--resume`。

@@ -974,6 +974,53 @@ class ResearchControlsTests(unittest.TestCase):
         self.write_registries();self.commit()
         self.assertIn("original scientific registration",self.cli("gate","baseline","--resume",ok=False))
 
+    def archive_fixture(self, repaired=False):
+        if repaired:
+            self.register_evaluation_repair()
+        self.execute('complete', resume=repaired)
+        self.dag = json.loads((self.root/REGISTRY_DIR/'experiment_dag.json').read_text())
+        metrics = json.loads((self.root/'experiments/baseline/metrics.json').read_text())
+        self.dag['nodes']['baseline']['code_snapshot_commit'] = metrics.get('execution', metrics['research'])['git_commit']
+        self.write_registries()
+        return metrics
+
+    def test_completed_code_can_evolve_without_rewriting_original_binding(self):
+        for repaired in (False, True):
+            with self.subTest(repaired=repaired):
+                if repaired:
+                    # A separate fixture is required after the first completed execution.
+                    self.setUp()
+                metrics = self.archive_fixture(repaired)
+                self.write('experiments/baseline/src/main.py', '# New code for a subsequent run\n')
+                self.cli('check')
+                import runpy
+                api = runpy.run_path(str(SCRIPT))
+                self.assertEqual(metrics['research'], api['metadata'](self.root, api['load'](self.root), 'baseline', metrics['research']['git_commit']))
+                self.assertIn('cannot resume', self.cli('gate', 'baseline', '--resume', ok=False))
+
+    def test_code_snapshot_rejects_unfinished_runs_and_wrong_execution(self):
+        self.archive_fixture()
+        node = self.dag['nodes']['baseline']
+        node['status'] = 'failed'
+        self.write_registries()
+        self.assertIn('requires a completed run', self.cli('check', ok=False))
+        node['status'] = 'completed'
+        self.commit()
+        node['code_snapshot_commit'] = self.git('rev-parse', 'HEAD')
+        self.write_registries()
+        self.assertIn('recorded execution commit', self.cli('check', ok=False))
+
+    def test_code_snapshot_rejects_changed_registration_or_code_references(self):
+        self.archive_fixture()
+        node = self.dag['nodes']['baseline']
+        node['expected_config']['seed'] = 99
+        self.write_registries()
+        self.assertIn('cannot change the research binding', self.cli('check', ok=False))
+        node['expected_config']['seed'] = 17
+        node['code_refs'][0]['sha256'] = 'a'*64
+        self.write_registries()
+        self.assertIn('executed code references', self.cli('check', ok=False))
+
     def test_evaluation_repair_rejects_changed_checkpoint(self):
         self.register_evaluation_repair()
         self.write("experiments/baseline/checkpoint.bin","changed model")

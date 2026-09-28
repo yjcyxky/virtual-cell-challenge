@@ -1,0 +1,79 @@
+{
+  "experiment_id": "init-linear",
+  "run_id": "init-linear-nocontext-s01",
+  "seed": 1,
+  "fit_scope": {
+    "outer_split": "S2-H1",
+    "target_partition": "context-seen"
+  },
+  "benchmark": {
+    "data_audit": {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    "scorer": {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    "artifacts": {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    "split_manifest": {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    "gene_axis": {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    }
+  },
+  "data": {
+    "chunk_rows": 2048,
+    "target_sum": 10000,
+    "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+    "qc": "frozen_correctness_only"
+  },
+  "model": {
+    "kind": "masked_ridge_target_id_plus_linear_ntc_mean",
+    "alpha": 1.0,
+    "weight_cell_unit": 100.0,
+    "gene_chunk": 256,
+    "context_features": "exact_full_train_NTC_span_on_training_measured_intersection",
+    "target_features": "input_NTC_target_mean_div5_and_measurement_indicator",
+    "missing_output": "zero_delta_when_no_training_measurement",
+    "end_condition": "exact_ridge_solution_all_measured_gene_groups",
+    "ntc_conditioning": false
+  },
+  "generation": {
+    "kind": "fixed_NTC_log_shift_library_preserving_stochastic_round",
+    "cells_per_target": 400,
+    "paired_rng": "seed_plus_frozen_target_index",
+    "missing_input": "zero_baseline_and_zero_delta_with_mask"
+  },
+  "evaluation": {
+    "arms": [
+      "zero",
+      "shared",
+      "source",
+      "linear"
+    ],
+    "single_source": "K562",
+    "panels": [
+      "all",
+      "official_overlap"
+    ],
+    "runtime": {
+      "device": "cuda",
+      "num_threads": 8,
+      "pert_chunk": 16
+    }
+  },
+  "tracking": {
+    "mode": "online"
+  },
+  "reuse": {
+    "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+    "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+  }
+}

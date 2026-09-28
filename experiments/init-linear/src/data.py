@@ -3,6 +3,8 @@ from pathlib import Path
 import json
 import sys
 import gc
+import shutil
+import yaml
 import anndata as ad
 import numpy as np
 import pandas as pd
@@ -37,6 +39,8 @@ def normalized(matrix, target_sum):
 
 def prepare(output, config):
     directory = output / 'cache'
+    if config.get('reuse'):
+        import_cached_inputs(output, config)
     audit = json.loads((ROOT / config['benchmark']['data_audit']['path']).read_text())
     splits = json.loads((ROOT / config['benchmark']['split_manifest']['path']).read_text())
     split = next(s for s in splits if s['id'] == config['fit_scope']['outer_split'])
@@ -135,3 +139,42 @@ def prepare(output, config):
         gc.collect()
     write_json(directory / 'preparation.json', prepared)
     return axis, split, prepared
+
+
+def import_cached_inputs(output, config):
+    """Copy frozen inputs/bundles, never weights or model predictions, into this run."""
+    manifest_ref = config['reuse']
+    if ref(ROOT / manifest_ref['path']) != manifest_ref:
+        raise ValueError('reuse manifest checksum mismatch')
+    manifest = json.loads((ROOT / manifest_ref['path']).read_text())
+    for key in ('source_metrics', 'source_config'):
+        record = manifest[key]
+        if ref(ROOT / record['path']) != record:
+            raise ValueError(f'{key} checksum mismatch')
+    metrics = json.loads((ROOT / manifest['source_metrics']['path']).read_text())
+    previous = yaml.safe_load((ROOT / manifest['source_config']['path']).read_text())
+    if (metrics['status'] != 'completed' or not metrics['evaluation_completed'] or
+            metrics['research']['node_id'] != manifest['source_run_id'] or
+            previous['research'] != metrics['research']):
+        raise ValueError('reuse source is not the registered completed run')
+    for key in ('benchmark', 'data', 'fit_scope', 'seed', 'generation', 'evaluation'):
+        if previous[key] != config[key]:
+            raise ValueError(f'reuse changes frozen {key}')
+    source_cache = (ROOT / manifest['source_metrics']['path']).parent / 'cache'
+    for item in manifest['files']:
+        record, relative = item['ref'], Path(item['destination'])
+        source = ROOT / record['path']
+        if (relative.is_absolute() or '..' in relative.parts or relative.parts[0] != 'cache' or
+                source.resolve() != (source_cache / Path(*relative.parts[1:])).resolve()):
+            raise ValueError('reuse destination must preserve the source cache layout')
+        if ref(source) != record:
+            raise ValueError(f'reuse source checksum mismatch: {source.name}')
+        destination = output / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if not destination.exists():
+            temporary = destination.with_suffix(destination.suffix + '.tmp')
+            shutil.copyfile(source, temporary)
+            temporary.replace(destination)
+        if hash_file(destination) != record['sha256']:
+            raise ValueError(f'reuse destination checksum mismatch: {destination.name}')
+    print(f'Verified {len(manifest["files"])} immutable cache files from {manifest["source_run_id"]}; no weights reused', flush=True)

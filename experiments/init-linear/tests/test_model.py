@@ -65,3 +65,69 @@ def test_count_generator_has_finite_integer_nonnegative_output():
     ntc = sparse.csr_matrix(np.array([[10,3,0],[2,5,1],[4,4,2]],dtype=np.float32))
     out = generate_counts(ntc, np.array([-.8,.1,.2]), 1, 40, 10000).toarray()
     assert np.isfinite(out).all() and (out>=0).all() and np.equal(out,np.floor(out)).all()
+
+
+def test_no_condition_fit_matches_penalized_target_and_intercept_design(tmp_path):
+    from model import predict
+    genes = ['p', 'q', 'unmeasured']
+    stats = {}
+    for context, mean, counts in [('A', [[1,2],[2,5],[1,3]], [10,20,30]),
+                                  ('B', [[3,1],[4,2],[3,5]], [10,40,50])]:
+        stats[context] = dict(labels=np.array(['non-targeting','p','q']), positions=np.array([0,1]),
+                              mean=np.array(mean, dtype=float), counts=np.array(counts))
+        np.savez(tmp_path/f'{context}-statistics.npz', **stats[context])
+    config = {'model': {'weight_cell_unit':100, 'gene_chunk':2, 'alpha':1, 'ntc_conditioning':False}}
+    model = fit(tmp_path, genes, {'training_contexts':['A','B']}, config)
+    design = np.column_stack([np.tile(np.eye(2), (2,1)), np.ones(4)])
+    w = np.array([.2,.3,.4,.5])
+    y = np.concatenate([s['mean'][1:]-s['mean'][0] for s in stats.values()])
+    coef = np.linalg.solve(design.T@(w[:,None]*design)+np.eye(3), design.T@(w[:,None]*y))
+    np.testing.assert_allclose(np.vstack([model['effects'][:,:2],model['beta'][0,:2]]), coef, rtol=1e-6)
+    np.testing.assert_array_equal(model['beta'][1:], 0)
+    np.testing.assert_array_equal(model['effects'][:,2], 0)
+    expected = coef[:2]+coef[2]
+    for s in stats.values():
+        np.testing.assert_allclose(predict(model, s, ['p','q'], 'linear')[:,:2], expected, rtol=1e-6)
+    config['model'].pop('ntc_conditioning')
+    legacy = fit(tmp_path, genes, {'training_contexts':['A','B']}, config)
+    config['model']['ntc_conditioning'] = True
+    enabled = fit(tmp_path, genes, {'training_contexts':['A','B']}, config)
+    for key in legacy:
+        np.testing.assert_array_equal(legacy[key], enabled[key])
+
+
+def test_reused_inputs_reject_changed_scope_or_file_and_never_link_source(tmp_path, monkeypatch):
+    import json
+    import yaml
+    import pytest
+    import data
+    monkeypatch.setattr(data, 'ROOT', tmp_path)
+    source = tmp_path/'experiments/e/outputs/source'
+    destination = tmp_path/'experiments/e/outputs/candidate'
+    (source/'cache').mkdir(parents=True)
+    config = {key: {'fixed': True} for key in ('benchmark','data','fit_scope','generation','evaluation')}
+    config['seed'] = 1
+    binding = {'node_id': 'source'}
+    (source/'metrics.json').write_text(json.dumps({'status':'completed', 'evaluation_completed':True, 'research':binding}))
+    (source/'config.yaml').write_text(yaml.safe_dump(dict(config, research=binding)))
+    cached = source/'cache/A-statistics.npz'
+    cached.write_bytes(b'frozen input statistics')
+    manifest = {'source_run_id':'source', 'source_metrics':data.ref(source/'metrics.json'),
+                'source_config':data.ref(source/'config.yaml'),
+                'files':[{'ref':data.ref(cached), 'destination':'cache/A-statistics.npz'}]}
+    path = tmp_path/'reuse.json'; path.write_text(json.dumps(manifest))
+    config['reuse'] = data.ref(path)
+    data.import_cached_inputs(destination, config)
+    copied = destination/'cache/A-statistics.npz'
+    assert copied.read_bytes() == cached.read_bytes() and copied.stat().st_ino != cached.stat().st_ino
+    config['seed'] = 2
+    with pytest.raises(ValueError, match='frozen seed'):
+        data.import_cached_inputs(destination, config)
+    config['seed'] = 1
+    copied.write_bytes(b'tampered destination')
+    with pytest.raises(ValueError, match='destination checksum'):
+        data.import_cached_inputs(destination, config)
+    assert cached.read_bytes() == b'frozen input statistics'
+    cached.write_bytes(b'tampered source')
+    with pytest.raises(ValueError, match='source checksum'):
+        data.import_cached_inputs(destination, config)

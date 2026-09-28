@@ -332,7 +332,32 @@ def validate(root, objects, staged=False):
         for field in ("config_ref", "metrics_ref", "report_ref"):
             if node.get(field):
                 refs(f"node {nid} {field}", [node[field]])
-        refs(f"node {nid} code_refs", node.get("code_refs", []))
+        code_refs = node.get("code_refs", [])
+        if snapshot := node.get("code_snapshot_commit"):
+            # Completed runs retain their original registration byte-for-byte.
+            # Resolve code at the recorded execution, while newer runs evolve
+            # the same Experiment. This never permits resuming archived code.
+            try:
+                result = json.loads(read_bytes(root, node['metrics_ref']['path'], staged))
+                execution = result.get('execution', result.get('research', {}))
+                if node.get('status') != 'completed' or result.get('status') != 'completed':
+                    raise ResearchError('code snapshot requires a completed run')
+                if snapshot != execution.get('git_commit'):
+                    raise ResearchError('code snapshot must equal the recorded execution commit')
+                recorded = {name: json.loads(git(root, 'show', f'{snapshot}:{path}').stdout)
+                            for name, path in FILES.items()}
+                original = recorded['experiment_dag']['nodes'][nid]
+                if original['code_refs'] != code_refs:
+                    raise ResearchError('code snapshot differs from the executed code references')
+                binding = result['research']
+                if (binding != metadata(root, objects, nid, binding['git_commit']) or
+                        binding != metadata(root, recorded, nid, binding['git_commit'])):
+                    raise ResearchError('code snapshot cannot change the research binding')
+                refs(f"node {nid} archived code", [dict(r, git_commit=snapshot) for r in code_refs])
+            except (ResearchError, ValueError, KeyError, TypeError) as exc:
+                errors.append(f"node {nid}: invalid code snapshot: {exc}")
+        else:
+            refs(f"node {nid} code_refs", code_refs)
         if repair := node.get("evaluation_repair"):
             try:
                 origin = json.loads(git(root, "show", f"{node['git_commit']}:{FILES['experiment_dag']}").stdout)["nodes"][nid]

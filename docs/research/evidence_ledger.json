@@ -798,7 +798,8 @@
         },
         {
           "path": "experiments/init-linear/REPORT.md",
-          "sha256": "f2d39e555d9e63e34d0fcd32cc795e5b13293681d96792f9f5b0495759e3f48e"
+          "sha256": "f2d39e555d9e63e34d0fcd32cc795e5b13293681d96792f9f5b0495759e3f48e",
+          "git_commit": "0817ea3468564fd6584cdeb27d3c192b1b6e09ab"
         },
         {
           "path": "experiments/init-linear/configs/anchor-audit-s01-csr.json",

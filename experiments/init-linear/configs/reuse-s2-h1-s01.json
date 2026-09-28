@@ -1,0 +1,259 @@
+{
+  "source_run_id": "init-linear-s01",
+  "source_metrics": {
+    "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+    "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+  },
+  "source_config": {
+    "path": "experiments/init-linear/outputs/init-linear-s01/config.yaml",
+    "sha256": "079517be25ff37f160c438656a2869d16c006fd15deb19a90635b3c75fc32a84"
+  },
+  "scope": "Identical data statistics, physical NTC/reference populations and their own frozen official bundles; no model weights or predictions reused.",
+  "files": [
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/K562-prepared.json",
+        "sha256": "8589f166dec3c1527ca3708e7afac6521312409498a3f2b703c210c19c12d45e"
+      },
+      "destination": "cache/K562-prepared.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/K562-statistics.npz",
+        "sha256": "34bc4f530285dee498930893ce40bb6b4fd09561e08d49e3cad6d4c53cd65ddc"
+      },
+      "destination": "cache/K562-statistics.npz"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/K562-input.h5ad",
+        "sha256": "4cd5fc2b4c3cdf3a77ab28e7a067ca4b1021ba73f09efc5bde48dfc896cd4a06"
+      },
+      "destination": "cache/K562-input.h5ad"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/K562-identities.parquet",
+        "sha256": "f953ccf225a9a15e7e07ab283595fdcddf36332d34922ddc331087c8f1d7909b"
+      },
+      "destination": "cache/K562-identities.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/RPE1-prepared.json",
+        "sha256": "5c1a9721f73db70b73bf5713eeb27c5711ce25f49685421e590987fc5398fdbc"
+      },
+      "destination": "cache/RPE1-prepared.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/RPE1-statistics.npz",
+        "sha256": "4610ced31077797aa199e5143e2621c2abf76ac66b92b52833dc30c0c3397131"
+      },
+      "destination": "cache/RPE1-statistics.npz"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/RPE1-input.h5ad",
+        "sha256": "9680b7853ab4267756b1d22ac8b2f202d3a6a6a6d643daaf1f2bd4b5eebab1ab"
+      },
+      "destination": "cache/RPE1-input.h5ad"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/RPE1-identities.parquet",
+        "sha256": "e3de1e3d5a39bb6f5bd31e05f3c85459067c880091d13532994cb2a73adbe9cc"
+      },
+      "destination": "cache/RPE1-identities.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/HepG2-prepared.json",
+        "sha256": "a722c8470db0e5be175eeed3970602a4e2a78c8fdd61bc2ac58419a62599f81b"
+      },
+      "destination": "cache/HepG2-prepared.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/HepG2-statistics.npz",
+        "sha256": "ad96627c108c655526c4e066b04fff3fbe99ee37ea90896e16f10d65bd2ba7b1"
+      },
+      "destination": "cache/HepG2-statistics.npz"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/HepG2-input.h5ad",
+        "sha256": "b836c1e9d0bf76b2e0e517b179aa7c8e927a0b5be8fd6ed357cd0a3a189a9e43"
+      },
+      "destination": "cache/HepG2-input.h5ad"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/HepG2-identities.parquet",
+        "sha256": "78ec86a951cce27c5ce535032b3fb40156f6860101494297e5dd7f2c1c4baf5a"
+      },
+      "destination": "cache/HepG2-identities.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/Jurkat-prepared.json",
+        "sha256": "04fd6c2c4e4bb230da3637ecf468d4a1687435df4365213d183e4bf937ac79ff"
+      },
+      "destination": "cache/Jurkat-prepared.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/Jurkat-statistics.npz",
+        "sha256": "c183827bb2e0b41fea82042b081f15323134e9fa29f12873ec29d7c27344a10e"
+      },
+      "destination": "cache/Jurkat-statistics.npz"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/Jurkat-input.h5ad",
+        "sha256": "19c5f73c575f5a9ed68e5c78bc1b6e02f36eb47db80addd8338ac2ce5f415cd6"
+      },
+      "destination": "cache/Jurkat-input.h5ad"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/Jurkat-identities.parquet",
+        "sha256": "6e25da3eb9e57bdb67af860f4c6754b708a01eaf167f209d2066dda975001073"
+      },
+      "destination": "cache/Jurkat-identities.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-prepared.json",
+        "sha256": "0c8b805dad432edc4437f2753ff9ceffddc2b0d34ef3f46133d5364926f65f1a"
+      },
+      "destination": "cache/H1-prepared.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-statistics.npz",
+        "sha256": "95f897ac5a929cb115073ec64842c426ebddeb0c6610cf23eea12c6fd099e13a"
+      },
+      "destination": "cache/H1-statistics.npz"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-input.h5ad",
+        "sha256": "b2a5f19d07f7acc5cd10662052e0558c53c2aea20eeeb5b20225f565b01b60b2"
+      },
+      "destination": "cache/H1-input.h5ad"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-identities.parquet",
+        "sha256": "efae4912f2eb3b710e64290089f17e57a830787f7f38109a50b7c8099249c9c9"
+      },
+      "destination": "cache/H1-identities.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-reference.h5ad",
+        "sha256": "974e5d33ab83747205e7445c04e83485d6557a5073913945c9bee42e9cc3d4c2"
+      },
+      "destination": "cache/H1-reference.h5ad"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_agg.parquet",
+        "sha256": "68e6352e986aac89356ef777e569cf678466357ff6c399f52b5cc9989b3f6d53"
+      },
+      "destination": "cache/bundle-all/anchor_agg.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_meta.json",
+        "sha256": "e895465045e1866214259755d7d055532d140cb05a95d312fbb7f8619374a5e2"
+      },
+      "destination": "cache/bundle-all/anchor_meta.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_splits.parquet",
+        "sha256": "3ff53971f2a29451973c0bd4ac55d0488ea927d065eaa0645419dd89ca52d774"
+      },
+      "destination": "cache/bundle-all/anchor_splits.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/baseline_agg.csv",
+        "sha256": "396e964c9f25c48d3729606c7adffc1a7257f94989a2165fd3336b5546f24991"
+      },
+      "destination": "cache/bundle-all/baseline_agg.csv"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/baseline_meta.json",
+        "sha256": "f11ffe6ecf2f21a857a18b69c91639f8208589c91645d4405431f1ce9d8494f5"
+      },
+      "destination": "cache/bundle-all/baseline_meta.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/config.yaml",
+        "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+      },
+      "destination": "cache/bundle-all/config.yaml"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/manifest.json",
+        "sha256": "0421c9358d81a9e89f0858b45482ca76bc12775e3326bdddebff694d67e2842e"
+      },
+      "destination": "cache/bundle-all/manifest.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/anchor_agg.parquet",
+        "sha256": "9153ce9c8feec98049307172bbc88b3a9de5f4870ec803917c13d541d253c633"
+      },
+      "destination": "cache/bundle-official_overlap/anchor_agg.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/anchor_meta.json",
+        "sha256": "51f0dd8c76f9831794e0c8ab68acd7c109c011781fdf412b666a638dc80812c6"
+      },
+      "destination": "cache/bundle-official_overlap/anchor_meta.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/anchor_splits.parquet",
+        "sha256": "a4ce99114e7fef80d25f9060d589b7f2d0f6547480f654d40047fddeafd17e96"
+      },
+      "destination": "cache/bundle-official_overlap/anchor_splits.parquet"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/baseline_agg.csv",
+        "sha256": "d2a9cf468534900d985e6e8371aeb56cf0fcde3ac1bb25a1275e59b5010a8dbb"
+      },
+      "destination": "cache/bundle-official_overlap/baseline_agg.csv"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/baseline_meta.json",
+        "sha256": "ebae4d80757c95120dc823e67a4fea848132662ca6f2982beb94765ca55a5a38"
+      },
+      "destination": "cache/bundle-official_overlap/baseline_meta.json"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/config.yaml",
+        "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+      },
+      "destination": "cache/bundle-official_overlap/config.yaml"
+    },
+    {
+      "ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/manifest.json",
+        "sha256": "86f5352d3d660fd27d97c01ef928b3a0a3821ff25c9974ed242c2884e4885781"
+      },
+      "destination": "cache/bundle-official_overlap/manifest.json"
+    }
+  ]
+}
