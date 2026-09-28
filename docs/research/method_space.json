@@ -35,6 +35,14 @@
         "T5": {
           "description": "平均响应加条件残差；检查均值约束与重复计入 NTC 方差",
           "local_status": "UNTESTED"
+        },
+        "T8": {
+          "description": "训练细胞算术CPM均值的扰动/NTC log比率；跨背景池化后作用于目标NTC组成",
+          "local_status": "UNTESTED"
+        },
+        "T9": {
+          "description": "联合预测目标细胞群的算术CPM均值与超Poisson离散度变化，保留测量掩码",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -81,7 +89,7 @@
           "local_status": "UNTESTED"
         },
         "D8": {
-          "description": "可靠性软权重；保留人群并记录权重与有效样本量",
+          "description": "跨训练背景有序source→destination任务；靶点及共同实测基因均衡抽样；基础细胞正确性和共享响应来源固定",
           "local_status": "UNTESTED"
         }
       },
@@ -158,6 +166,14 @@
         "R15": {
           "description": "未见靶点使用训练响应的无靶点信息均值；有监督靶点保持shared；作为GO外推的靶点不可辨识对照",
           "local_status": "UNTESTED"
+        },
+        "R16": {
+          "description": "逐基因源响应、源/目标NTC基因和扰动靶基因表达、测量标记、来源支持数及显式响应×状态交互；无目标扰动标签或可学习ID",
+          "local_status": "UNTESTED"
+        },
+        "R17": {
+          "description": "训练内每context×target的一二阶CPM矩及原始测量/支持掩码",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -203,6 +219,14 @@
         "A7": {
           "description": "共享/单来源响应估计参照，在训练任务内评估",
           "local_status": "UNTESTED"
+        },
+        "A8": {
+          "description": "源背景组成logFC池化与目标NTC组成解码，固定伪计数",
+          "local_status": "UNTESTED"
+        },
+        "A9": {
+          "description": "基于矩估计与收缩的条件Gamma-Poisson群体模型，联合转移均值和离散度",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -247,6 +271,10 @@
         "L7": {
           "description": "匹配Δ-MSE、任务权重和截距结构，仅减弱L2岭正则；当前候选alpha=0.1",
           "local_status": "UNTESTED"
+        },
+        "L8": {
+          "description": "掩码一二阶矩估计及有限样本离散度收缩；不是逐细胞NB极大似然",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -281,6 +309,10 @@
         },
         "O5": {
           "description": "多来源梯度/损失加权；与 D 采样策略区别记录",
+          "local_status": "UNTESTED"
+        },
+        "O6": {
+          "description": "固定步数的跨背景episode训练；固定训练内靶点留出诊断，不用H1选checkpoint",
           "local_status": "UNTESTED"
         }
       },
@@ -357,6 +389,14 @@
         "I6": {
           "description": "固定 NTC 重采样与响应映射，用于首轮受控比较",
           "local_status": "UNTESTED"
+        },
+        "I7": {
+          "description": "NTC细胞模板的双比例组成校准与随机取整，固定迭代预算并记录均值实现误差",
+          "local_status": "UNTESTED"
+        },
+        "I8": {
+          "description": "目标NTC文库采样及条件Gamma-Poisson生成；不固定每个输出细胞的文库总量",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -395,6 +435,14 @@
         },
         "G6": {
           "description": "显式共享响应加背景残差；固定分解约束并检查可辨识性",
+          "local_status": "UNTESTED"
+        },
+        "G7": {
+          "description": "跨基因/跨扰动共享的source→target响应迁移函数，使用目标NTC；逐来源迁移后按原细胞权重聚合",
+          "local_status": "UNTESTED"
+        },
+        "G8": {
+          "description": "同样的迁移函数与输入槽，源/目标NTC及其交互全部置零；保留源响应、支持数及on-target信息",
           "local_status": "UNTESTED"
         }
       },
@@ -1503,6 +1551,135 @@
         "E-SHARED-TARGET-PRIOR"
       ],
       "selection_basis": "初始化未见靶点/GO假设；E-SHARED-QC的预定无信号分支仅用于排期，不作为GO有效证据。"
+    },
+    "M-TRANSPORT-LINEAR": {
+      "description": "跨基因/扰动共享的背景间响应迁移：transport-linear-s01",
+      "axes": {
+        "T": "T1",
+        "D": "D8",
+        "R": "R16",
+        "A": "A0",
+        "L": "L1",
+        "O": "O6",
+        "V": "V5",
+        "I": "I6",
+        "G": "G7"
+      },
+      "signature": "T1-D8-R16-A0-L1-O6-V5-I6-G7",
+      "prior": "响应如何随基因基线状态改变可以跨扰动共享；以训练背景互相迁移监督拟合，非NTC表示压缩或只填缺测；零源响应严格映射零。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "L04",
+        "E-TRANSPORT-CAPACITY"
+      ],
+      "selection_basis": "用户要求在多次微小收益后更换核心思路；代码显示旧ridge缺少源响应×状态交互；此机制尚待验证。"
+    },
+    "M-TRANSPORT-MLP": {
+      "description": "跨基因/扰动共享的背景间响应迁移：transport-mlp-s01",
+      "axes": {
+        "T": "T1",
+        "D": "D8",
+        "R": "R16",
+        "A": "A1",
+        "L": "L1",
+        "O": "O6",
+        "V": "V5",
+        "I": "I6",
+        "G": "G7"
+      },
+      "signature": "T1-D8-R16-A1-L1-O6-V5-I6-G7",
+      "prior": "响应如何随基因基线状态改变可以跨扰动共享；以训练背景互相迁移监督拟合，非NTC表示压缩或只填缺测；零源响应严格映射零。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "L04",
+        "E-MECHANISM-PORTFOLIO"
+      ],
+      "selection_basis": "用户要求在多次微小收益后更换核心思路；代码显示旧ridge缺少源响应×状态交互；此机制尚待验证。"
+    },
+    "M-TRANSPORT-NO-NTC": {
+      "description": "跨基因/扰动共享的背景间响应迁移：transport-no-ntc-s01",
+      "axes": {
+        "T": "T1",
+        "D": "D8",
+        "R": "R16",
+        "A": "A1",
+        "L": "L1",
+        "O": "O6",
+        "V": "V5",
+        "I": "I6",
+        "G": "G8"
+      },
+      "signature": "T1-D8-R16-A1-L1-O6-V5-I6-G8",
+      "prior": "响应如何随基因基线状态改变可以跨扰动共享；以训练背景互相迁移监督拟合，非NTC表示压缩或只填缺测；零源响应严格映射零。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "L04",
+        "E-TRANSPORT-CONTEXT"
+      ],
+      "selection_basis": "用户要求在多次微小收益后更换核心思路；代码显示旧ridge缺少源响应×状态交互；此机制尚待验证。"
+    },
+    "M-COMPOSITION-LFC": {
+      "description": "跨背景组成logFC与细胞模板均值校准整包",
+      "axes": {
+        "T": "T8",
+        "D": "D1",
+        "R": "R17",
+        "A": "A8",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I7",
+        "G": "G0"
+      },
+      "signature": "T8-D1-R17-A8-L1-O0-V5-I7-G0",
+      "prior": "不同背景中的相对组成或分布参数变化可能比固定log均值偏移更可迁移；预测和计数生成共同匹配其任务空间。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L01",
+        "L03",
+        "L09",
+        "L10",
+        "E-MECHANISM-PORTFOLIO"
+      ],
+      "selection_basis": "用户授权不同机制整包搜索；尚无本地有效性证据。"
+    },
+    "M-DISTRIBUTION-NB": {
+      "description": "算术均值/离散度迁移与Gamma-Poisson生成整包",
+      "axes": {
+        "T": "T9",
+        "D": "D1",
+        "R": "R17",
+        "A": "A9",
+        "L": "L8",
+        "O": "O0",
+        "V": "V5",
+        "I": "I8",
+        "G": "G0"
+      },
+      "signature": "T9-D1-R17-A9-L8-O0-V5-I8-G0",
+      "prior": "不同背景中的相对组成或分布参数变化可能比固定log均值偏移更可迁移；预测和计数生成共同匹配其任务空间。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L01",
+        "L03",
+        "L09",
+        "L10",
+        "E-MECHANISM-PORTFOLIO"
+      ],
+      "selection_basis": "用户授权不同机制整包搜索；尚无本地有效性证据。"
     }
   }
 }

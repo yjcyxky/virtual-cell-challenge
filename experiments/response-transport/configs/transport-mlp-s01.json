@@ -1,0 +1,122 @@
+{
+  "seed": 1,
+  "fit_scope": {
+    "outer_split": "S2-H1",
+    "target_partition": "context-seen"
+  },
+  "benchmark": {
+    "data_audit": {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    "scorer": {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    "artifacts": {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    "split_manifest": {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    "gene_axis": {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    }
+  },
+  "data": {
+    "chunk_rows": 2048,
+    "target_sum": 10000,
+    "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+    "qc": "frozen_correctness_only"
+  },
+  "generation": {
+    "kind": "fixed_NTC_log_shift_library_preserving_stochastic_round",
+    "cells_per_target": 400,
+    "paired_rng": "seed_plus_frozen_target_index",
+    "missing_input": "zero_baseline_and_zero_delta_with_mask"
+  },
+  "evaluation": {
+    "arms": [
+      "linear"
+    ],
+    "single_source": "K562",
+    "panels": [
+      "all",
+      "official_overlap"
+    ],
+    "runtime": {
+      "device": "cuda",
+      "num_threads": 8,
+      "pert_chunk": 16
+    }
+  },
+  "tracking": {
+    "mode": "online"
+  },
+  "reuse": {
+    "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+    "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+  },
+  "experiment_id": "response-transport",
+  "run_id": "transport-mlp-s01",
+  "control_refs": {
+    "metrics": {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+      "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+    },
+    "config": {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/config.yaml",
+      "sha256": "79ed320c70b420926a78ff126ace98fc64b2e40aa265f2a7a62e0ae6fb3505d8"
+    },
+    "checkpoint": {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/checkpoints/response.npz",
+      "sha256": "6f8ace646c36990c392f3752e74026c23ecb215fb08477efef2d11426659bd03"
+    },
+    "predictions": {
+      "path": "experiments/masked-response/outputs/masked-response-shared-s01/predictions/manifest.json",
+      "sha256": "2accba8fa623fb2b3ffc56ea0040e4e76f997cfce7e8e1734a3b0e7afc72439c"
+    },
+    "scores": {
+      "path": "experiments/masked-response/configs/shared-control-scores.json",
+      "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+    }
+  },
+  "diagnostics": {
+    "seed": 400001,
+    "alpha": 0.05,
+    "kind": "disjoint_ntc_Welch_BH_logCPM_secondary_only"
+  },
+  "model": {
+    "kind": "gene_wise_episodic_response_transport",
+    "end_condition": "4096_fixed_steps_last_checkpoint_all_panels"
+  },
+  "transport": {
+    "head": "mlp",
+    "ntc_conditioning": true,
+    "device": "cuda",
+    "hidden": 64,
+    "response_scale": 0.1,
+    "ntc_scale": 5.0,
+    "support_scale": 1000.0,
+    "weight_cell_unit": 100.0,
+    "steps": 4096,
+    "batch_examples": 8192,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "gradient_clip": 1.0,
+    "checkpoint_every": 256,
+    "validation_seed": 1729,
+    "validation_modulus": 5,
+    "validation_examples_per_pair": 8192,
+    "sampling": "uniform_ordered_pair_then_target_then_common_measured_gene",
+    "checkpoint_selection": "fixed_last",
+    "initialization": "zero_last_layer_identity_transfer",
+    "loss": "unweighted_scalar_delta_MSE",
+    "features": "17_source_delta_NTC_readout_target_support_mask_interactions",
+    "destination_response_features": false,
+    "missing_response": "zero_if_no_measured_donor"
+  }
+}

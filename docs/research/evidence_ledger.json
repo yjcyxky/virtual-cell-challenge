@@ -1174,15 +1174,62 @@
       "source_refs": [],
       "next_action": "完成四臂可比设计、数据/先验边界、完整配置和判据后check/commit/execute。",
       "reopen_when": "待完成首次正式归因比较。"
+    },
+    "E-TRANSPORT-CONTEXT": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-TRANSPORT-CONTEXT",
+      "node_ids": [
+        "transport-no-ntc-s01",
+        "transport-mlp-s01"
+      ],
+      "hypothesis": "固定MLP、episode和预算时，源/目标NTC信息是否有增量？",
+      "claim": "未执行，不能据旧条件ridge或补全阴性推断本方法效果。",
+      "limitations": "仅四训练背景/两研究；episode和基因样本不是新增独立背景。",
+      "source_refs": [],
+      "next_action": "冻结匹配输入与预算、门槛、完整配置后执行三臂训练和官方评分。",
+      "reopen_when": "完成首次归因比较。"
+    },
+    "E-TRANSPORT-CAPACITY": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-TRANSPORT-CAPACITY",
+      "node_ids": [
+        "transport-linear-s01",
+        "transport-mlp-s01"
+      ],
+      "hypothesis": "相同输入与预算下，非线性迁移是否超过含显式交互的线性迁移？",
+      "claim": "未执行，不能据旧条件ridge或补全阴性推断本方法效果。",
+      "limitations": "仅四训练背景/两研究；episode和基因样本不是新增独立背景。",
+      "source_refs": [],
+      "next_action": "冻结匹配输入与预算、门槛、完整配置后执行三臂训练和官方评分。",
+      "reopen_when": "完成首次归因比较。"
+    },
+    "E-MECHANISM-PORTFOLIO": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-MECHANISM-PORTFOLIO",
+      "node_ids": [
+        "masked-response-shared-s01",
+        "transport-mlp-s01",
+        "composition-lfc-s01",
+        "distribution-nb-s01"
+      ],
+      "hypothesis": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
+      "claim": "未执行，不能据旧条件ridge或补全阴性推断本方法效果。",
+      "limitations": "仅四训练背景/两研究；episode和基因样本不是新增独立背景。",
+      "source_refs": [],
+      "next_action": "先完成三个机制整包的正式训练/评分，再统一判断价值与资源分配。",
+      "reopen_when": "三机制完成首次整包比较后按证据分配下一轮；线性和局部消融不是前置。"
     }
   },
   "queue": [
     {
-      "id": "Q-UNSEEN-TARGET",
+      "id": "Q-MECHANISM-SEARCH",
       "priority": 1,
-      "comparison_id": "C-SHARED-TARGET-PRIOR",
-      "question": "排除全局留出靶点的全部来源响应后，真实GO能否在未见靶点上超过零Δ、无靶点信息均值及匹配随机GO？",
-      "action": "保留基础shared零Δ回退，搁置当前低深度筛选及匹配删减，不追加H1分位数搜索。推进C-SHARED-TARGET-PRIOR：在S3-H1全局靶点留出上重新拟合零Δ/无靶点信息的训练均值/真实GO/匹配随机GO四臂；来源响应排除全局留出靶点，不能复用S2控制分数。先冻结先验、匹配、完整配置和判据，再启动。 四个实际run槽位已登记为draft；旧C-TARGET-PRIOR条件ridge草案保留，不直接拿它的S2控制执行。",
+      "comparison_id": "C-MECHANISM-PORTFOLIO",
+      "question": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
+      "action": "三个整包各分配一个完整拟合与两个匹配官方面板评分；全部结果出来后统一分配确认/归因预算。线性/去NTC和GO S3路线保留draft，不作为本轮启动前置。",
       "requires_evidence": [
         "E-SHARED-QC"
       ]

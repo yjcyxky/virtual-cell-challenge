@@ -47,6 +47,11 @@ flowchart TD
   n40["target-response-centroid-s01 | draft"]
   n41["target-response-go-s01 | draft"]
   n42["target-response-random-go-s01 | draft"]
+  n43["transport-linear-s01 | draft"]
+  n44["transport-mlp-s01 | ready"]
+  n45["transport-no-ntc-s01 | draft"]
+  n46["composition-lfc-s01 | ready"]
+  n47["distribution-nb-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -227,4 +232,34 @@ flowchart TD
   n33 -.->|"evidence: E-SHARED-QC"| n42
   n37 -.->|"evidence: E-SHARED-QC"| n42
   n38 -.->|"evidence: E-SHARED-QC"| n42
+  n33 -->|control| n43
+  n0 -->|source| n43
+  n33 -->|source| n43
+  n33 -.->|"evidence: E-SHARED-QC"| n43
+  n37 -.->|"evidence: E-SHARED-QC"| n43
+  n38 -.->|"evidence: E-SHARED-QC"| n43
+  n33 -->|control| n44
+  n0 -->|source| n44
+  n33 -->|source| n44
+  n33 -.->|"evidence: E-SHARED-QC"| n44
+  n37 -.->|"evidence: E-SHARED-QC"| n44
+  n38 -.->|"evidence: E-SHARED-QC"| n44
+  n33 -->|control| n45
+  n0 -->|source| n45
+  n33 -->|source| n45
+  n33 -.->|"evidence: E-SHARED-QC"| n45
+  n37 -.->|"evidence: E-SHARED-QC"| n45
+  n38 -.->|"evidence: E-SHARED-QC"| n45
+  n33 -->|control| n46
+  n0 -->|source| n46
+  n33 -->|source| n46
+  n33 -.->|"evidence: E-SHARED-QC"| n46
+  n37 -.->|"evidence: E-SHARED-QC"| n46
+  n38 -.->|"evidence: E-SHARED-QC"| n46
+  n33 -->|control| n47
+  n0 -->|source| n47
+  n33 -->|source| n47
+  n33 -.->|"evidence: E-SHARED-QC"| n47
+  n37 -.->|"evidence: E-SHARED-QC"| n47
+  n38 -.->|"evidence: E-SHARED-QC"| n47
 ```

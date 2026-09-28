@@ -5634,6 +5634,1012 @@
       "blockers": [
         "S3训练边界、GO映射/匹配、响应求解和完整配置尚未冻结；不能启动或宣称有效。"
       ]
+    },
+    "transport-linear-s01": {
+      "experiment_id": "response-transport",
+      "directory": "experiments/response-transport",
+      "run_id": "transport-linear-s01",
+      "legacy": false,
+      "method_id": "M-TRANSPORT-LINEAR",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-TRANSPORT-CAPACITY",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01"
+      ],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "全已测/有来源响应的迁移学习，整体对shared；同任务匹配非线性与NTC信息消融。",
+        "source_usage": "仅冻结基础伪bulk/NTC/reference/bundles；历史shared仅为独立控制。训练episode不包含H1；不改变生成器。",
+        "unresolved": [
+          "冻结特征、训练靶点诊断划分、步数/optimizer/完整恢复状态、代码环境配置及归因门槛。"
+        ]
+      },
+      "blockers": [
+        "按用户搜索优先指示暂缓；仅在相应机制整包值得追加资源后实例化匹配消融。"
+      ]
+    },
+    "transport-mlp-s01": {
+      "experiment_id": "response-transport",
+      "directory": "experiments/response-transport",
+      "run_id": "transport-mlp-s01",
+      "legacy": false,
+      "method_id": "M-TRANSPORT-MLP",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "ready",
+      "comparison_id": "C-MECHANISM-PORTFOLIO",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01"
+      ],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": {
+        "path": "experiments/response-transport/configs/transport-mlp-s01.json",
+        "sha256": "a73c7c61fe9752e42cf11f1efd4208d11bc7fd39299560da29416c963b5d3fb0"
+      },
+      "expected_config": {
+        "seed": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          }
+        },
+        "data": {
+          "chunk_rows": 2048,
+          "target_sum": 10000,
+          "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+          "qc": "frozen_correctness_only"
+        },
+        "generation": {
+          "kind": "fixed_NTC_log_shift_library_preserving_stochastic_round",
+          "cells_per_target": 400,
+          "paired_rng": "seed_plus_frozen_target_index",
+          "missing_input": "zero_baseline_and_zero_delta_with_mask"
+        },
+        "evaluation": {
+          "arms": [
+            "linear"
+          ],
+          "single_source": "K562",
+          "panels": [
+            "all",
+            "official_overlap"
+          ],
+          "runtime": {
+            "device": "cuda",
+            "num_threads": 8,
+            "pert_chunk": 16
+          }
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "reuse": {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        "experiment_id": "response-transport",
+        "run_id": "transport-mlp-s01",
+        "control_refs": {
+          "metrics": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+            "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+          },
+          "config": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/config.yaml",
+            "sha256": "79ed320c70b420926a78ff126ace98fc64b2e40aa265f2a7a62e0ae6fb3505d8"
+          },
+          "checkpoint": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/checkpoints/response.npz",
+            "sha256": "6f8ace646c36990c392f3752e74026c23ecb215fb08477efef2d11426659bd03"
+          },
+          "predictions": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/predictions/manifest.json",
+            "sha256": "2accba8fa623fb2b3ffc56ea0040e4e76f997cfce7e8e1734a3b0e7afc72439c"
+          },
+          "scores": {
+            "path": "experiments/masked-response/configs/shared-control-scores.json",
+            "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+          }
+        },
+        "diagnostics": {
+          "seed": 400001,
+          "alpha": 0.05,
+          "kind": "disjoint_ntc_Welch_BH_logCPM_secondary_only"
+        },
+        "model": {
+          "kind": "gene_wise_episodic_response_transport",
+          "end_condition": "4096_fixed_steps_last_checkpoint_all_panels"
+        },
+        "transport": {
+          "head": "mlp",
+          "ntc_conditioning": true,
+          "device": "cuda",
+          "hidden": 64,
+          "response_scale": 0.1,
+          "ntc_scale": 5.0,
+          "support_scale": 1000.0,
+          "weight_cell_unit": 100.0,
+          "steps": 4096,
+          "batch_examples": 8192,
+          "learning_rate": 0.001,
+          "weight_decay": 0.0001,
+          "gradient_clip": 1.0,
+          "checkpoint_every": 256,
+          "validation_seed": 1729,
+          "validation_modulus": 5,
+          "validation_examples_per_pair": 8192,
+          "sampling": "uniform_ordered_pair_then_target_then_common_measured_gene",
+          "checkpoint_selection": "fixed_last",
+          "initialization": "zero_last_layer_identity_transfer",
+          "loss": "unweighted_scalar_delta_MSE",
+          "features": "17_source_delta_NTC_readout_target_support_mask_interactions",
+          "destination_response_features": false,
+          "missing_response": "zero_if_no_measured_donor"
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+          "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+          "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+          "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+          "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+          "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-reference-results-s2-h1.json",
+          "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        {
+          "path": "experiments/init-linear/src/data.py",
+          "sha256": "c24ea917769f9236859a07b1983756a19022fcfbb85106c818c41c58dec3fb43"
+        },
+        {
+          "path": "experiments/init-linear/src/evaluation.py",
+          "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
+        },
+        {
+          "path": "experiments/init-linear/src/representation.py",
+          "sha256": "070b69dc8d7eb8ca14c0071bd3163b388db2e70105bf93ac45383e89ddb09cc0"
+        },
+        {
+          "path": "experiments/masked-response/configs/shared-control-scores.json",
+          "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+        },
+        {
+          "path": "experiments/response-transport/PLAN.md",
+          "sha256": "e4ec100652933040164a51940a21c709dec09b1e0f70ef014fb5d8993a3de963"
+        },
+        {
+          "path": "experiments/response-transport/pyproject.toml",
+          "sha256": "73cb80503f096c47f611674ac08558583d3145ed68b403b62dc262b7acc2a0cc"
+        },
+        {
+          "path": "experiments/response-transport/reproduce.sh",
+          "sha256": "69795983a57b9e254d3e6ba3927d6143ae5b5474b9ead9d62a0e0a395433a286"
+        },
+        {
+          "path": "experiments/response-transport/src/model.py",
+          "sha256": "417fef3c44e7977af8f63cc57577c0de3fb35d9a54cc863169ad0a23f2f66491"
+        },
+        {
+          "path": "experiments/response-transport/src/runtime.py",
+          "sha256": "995fc30b4b7854182733a10145bef5aadef035092ac5dfd50d1cbb60bcf46389"
+        },
+        {
+          "path": "experiments/response-transport/src/test_contracts.py",
+          "sha256": "405f8fc5075f719bb1b4312c036d4007c84700e6f70da7977b01ee4440c369ae"
+        },
+        {
+          "path": "experiments/response-transport/src/train.py",
+          "sha256": "f82e4f2b59b00b029e6435fcb2f34aa073df46e73a00c0f6d662cc39b8eafcdd"
+        },
+        {
+          "path": "experiments/response-transport/uv.lock",
+          "sha256": "bf0205a265df1e4d2d2b77e5b80cd369ae4a62beba0f54743b1c5e6ecedc4252"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/heterogeneity.py",
+          "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+        },
+        {
+          "path": "scripts/dossier/profile_responses.py",
+          "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+        },
+        {
+          "path": "scripts/dossier/render.py",
+          "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+        },
+        {
+          "path": "scripts/dossier/response.py",
+          "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "2301a133b7a602ea02e886dc47732ca63d7851c69222ff790f9499598d2f6681"
+        },
+        {
+          "path": "src/vcc_mechanism/__init__.py",
+          "sha256": "8b86146f8effae4b23b80f5ef1fa49ba45d4e5f570e7e113705eb6fa447422ab"
+        },
+        {
+          "path": "src/vcc_mechanism/diagnostics.py",
+          "sha256": "497503ed840f570b58e866410927f5ed1535201c642b4e733efe68f73b9b2d9e"
+        },
+        {
+          "path": "src/vcc_mechanism/inputs.py",
+          "sha256": "057f3af8646f005159acd138f3872426686f4d0273bd5b441b7d5fe59157db6f"
+        },
+        {
+          "path": "src/vcc_mechanism/population.py",
+          "sha256": "bb6513f03b2950dd19f901c21f9aebcb1c77f812200a6a7128d1a93d506fb353"
+        },
+        {
+          "path": "src/vcc_mechanism/runner.py",
+          "sha256": "ca2452dd50c93f6f7ed6c3f4a473977d82e978b8008ea1f0b03cf122f163608e"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
+        "source_usage": "同一冻结输入/NTC/reference/bundles；历史shared是经哈希审计的独立对照；全新整包预测和官方评分。",
+        "unresolved": [],
+        "allocation": "三机制各一个预先冻结完整配置，顺序训练及两面板评分；全部完成后才分配下一轮。",
+        "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
+      },
+      "blockers": []
+    },
+    "transport-no-ntc-s01": {
+      "experiment_id": "response-transport",
+      "directory": "experiments/response-transport",
+      "run_id": "transport-no-ntc-s01",
+      "legacy": false,
+      "method_id": "M-TRANSPORT-NO-NTC",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-TRANSPORT-CONTEXT",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01"
+      ],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "全已测/有来源响应的迁移学习，整体对shared；同任务匹配非线性与NTC信息消融。",
+        "source_usage": "仅冻结基础伪bulk/NTC/reference/bundles；历史shared仅为独立控制。训练episode不包含H1；不改变生成器。",
+        "unresolved": [
+          "冻结特征、训练靶点诊断划分、步数/optimizer/完整恢复状态、代码环境配置及归因门槛。"
+        ]
+      },
+      "blockers": [
+        "按用户搜索优先指示暂缓；仅在相应机制整包值得追加资源后实例化匹配消融。"
+      ]
+    },
+    "composition-lfc-s01": {
+      "experiment_id": "composition-response",
+      "directory": "experiments/composition-response",
+      "run_id": "composition-lfc-s01",
+      "legacy": false,
+      "method_id": "M-COMPOSITION-LFC",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "ready",
+      "comparison_id": "C-MECHANISM-PORTFOLIO",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01"
+      ],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": {
+        "path": "experiments/composition-response/configs/composition-lfc-s01.json",
+        "sha256": "1e667ace358aa157993c435d38d8b58de3d75ca20db2b61f4fab1d0adcf1194d"
+      },
+      "expected_config": {
+        "seed": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          }
+        },
+        "data": {
+          "chunk_rows": 2048,
+          "target_sum": 10000,
+          "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+          "qc": "frozen_correctness_only"
+        },
+        "generation": {
+          "kind": "composition_profile_NTC_template_IPF_stochastic_round",
+          "cells_per_target": 400,
+          "paired_rng": "seed_plus_frozen_target_index",
+          "missing_input": "zero_baseline_and_zero_delta_with_mask",
+          "template_smoothing": 0.01,
+          "ipf_iterations": 64
+        },
+        "evaluation": {
+          "arms": [
+            "linear"
+          ],
+          "single_source": "K562",
+          "panels": [
+            "all",
+            "official_overlap"
+          ],
+          "runtime": {
+            "device": "cuda",
+            "num_threads": 8,
+            "pert_chunk": 16
+          }
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "reuse": {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        "experiment_id": "composition-response",
+        "run_id": "composition-lfc-s01",
+        "control_refs": {
+          "metrics": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+            "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+          },
+          "config": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/config.yaml",
+            "sha256": "79ed320c70b420926a78ff126ace98fc64b2e40aa265f2a7a62e0ae6fb3505d8"
+          },
+          "checkpoint": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/checkpoints/response.npz",
+            "sha256": "6f8ace646c36990c392f3752e74026c23ecb215fb08477efef2d11426659bd03"
+          },
+          "predictions": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/predictions/manifest.json",
+            "sha256": "2accba8fa623fb2b3ffc56ea0040e4e76f997cfce7e8e1734a3b0e7afc72439c"
+          },
+          "scores": {
+            "path": "experiments/masked-response/configs/shared-control-scores.json",
+            "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+          }
+        },
+        "diagnostics": {
+          "seed": 400001,
+          "alpha": 0.05,
+          "kind": "disjoint_ntc_Welch_BH_logCPM_secondary_only"
+        },
+        "model": {
+          "kind": "masked_source_population_moments",
+          "end_condition": "all_allowed_raw_cells_complete_moment_fit_all_panels"
+        },
+        "moments": {
+          "identities": {
+            "path": "data/raw/networks/hgnc_complete_set.txt",
+            "sha256": "9e07bb49393c12aca8bc931a4349010404c24994a8a58745c14676b8c2b74492"
+          },
+          "space": "arithmetic_per_cell_CPM10k",
+          "variance": "unbiased_n_minus_one",
+          "same_base_log_means": "exact_float32_training_allclose_H1_rechunk",
+          "selection": "same_base_cells_no_optional_QC"
+        },
+        "population": {
+          "kind": "composition_lfc",
+          "weight_cell_unit": 100.0,
+          "target_sum": 10000,
+          "unsupported_response": "zero_measured_donor_mask",
+          "pseudocount": 0.1
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/composition-response/PLAN.md",
+          "sha256": "503ff1aaa1a5b137a662003ff767e013f18e68a929dfc0a14669680921cf3a53"
+        },
+        {
+          "path": "experiments/composition-response/pyproject.toml",
+          "sha256": "cfd2fce85801e31ef357cb43415f5ee5cf211275e461f050b9b0001e8b8560de"
+        },
+        {
+          "path": "experiments/composition-response/reproduce.sh",
+          "sha256": "1e814b49a9217bae729b9d549b186fbc110c4d6e3a9cc506ac6a5ad3905f0605"
+        },
+        {
+          "path": "experiments/composition-response/src/model.py",
+          "sha256": "3e3cebeb6073f571ff2f4439dd313d5524cf8ff87c6119f8a6c941db2d39f1fd"
+        },
+        {
+          "path": "experiments/composition-response/src/runtime.py",
+          "sha256": "995fc30b4b7854182733a10145bef5aadef035092ac5dfd50d1cbb60bcf46389"
+        },
+        {
+          "path": "experiments/composition-response/src/train.py",
+          "sha256": "f82e4f2b59b00b029e6435fcb2f34aa073df46e73a00c0f6d662cc39b8eafcdd"
+        },
+        {
+          "path": "experiments/composition-response/uv.lock",
+          "sha256": "51f6dbc6a601cd1792c9a820df107b847c466ba5a3037a908313e7ad65f19aec"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+          "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+          "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+          "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+          "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+          "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-reference-results-s2-h1.json",
+          "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        {
+          "path": "experiments/init-linear/src/data.py",
+          "sha256": "c24ea917769f9236859a07b1983756a19022fcfbb85106c818c41c58dec3fb43"
+        },
+        {
+          "path": "experiments/init-linear/src/evaluation.py",
+          "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
+        },
+        {
+          "path": "experiments/init-linear/src/representation.py",
+          "sha256": "070b69dc8d7eb8ca14c0071bd3163b388db2e70105bf93ac45383e89ddb09cc0"
+        },
+        {
+          "path": "experiments/masked-response/configs/shared-control-scores.json",
+          "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+        },
+        {
+          "path": "experiments/response-transport/PLAN.md",
+          "sha256": "e4ec100652933040164a51940a21c709dec09b1e0f70ef014fb5d8993a3de963"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/heterogeneity.py",
+          "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+        },
+        {
+          "path": "scripts/dossier/profile_responses.py",
+          "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+        },
+        {
+          "path": "scripts/dossier/render.py",
+          "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+        },
+        {
+          "path": "scripts/dossier/response.py",
+          "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "2301a133b7a602ea02e886dc47732ca63d7851c69222ff790f9499598d2f6681"
+        },
+        {
+          "path": "src/vcc_mechanism/__init__.py",
+          "sha256": "8b86146f8effae4b23b80f5ef1fa49ba45d4e5f570e7e113705eb6fa447422ab"
+        },
+        {
+          "path": "src/vcc_mechanism/diagnostics.py",
+          "sha256": "497503ed840f570b58e866410927f5ed1535201c642b4e733efe68f73b9b2d9e"
+        },
+        {
+          "path": "src/vcc_mechanism/inputs.py",
+          "sha256": "057f3af8646f005159acd138f3872426686f4d0273bd5b441b7d5fe59157db6f"
+        },
+        {
+          "path": "src/vcc_mechanism/population.py",
+          "sha256": "bb6513f03b2950dd19f901c21f9aebcb1c77f812200a6a7128d1a93d506fb353"
+        },
+        {
+          "path": "src/vcc_mechanism/runner.py",
+          "sha256": "ca2452dd50c93f6f7ed6c3f4a473977d82e978b8008ea1f0b03cf122f163608e"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
+        "source_usage": "同一冻结输入/NTC/reference/bundles；历史shared是经哈希审计的独立对照；全新整包预测和官方评分。",
+        "unresolved": [],
+        "allocation": "三机制各一个预先冻结完整配置，顺序训练及两面板评分；全部完成后才分配下一轮。",
+        "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
+      },
+      "blockers": []
+    },
+    "distribution-nb-s01": {
+      "experiment_id": "distribution-response",
+      "directory": "experiments/distribution-response",
+      "run_id": "distribution-nb-s01",
+      "legacy": false,
+      "method_id": "M-DISTRIBUTION-NB",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "ready",
+      "comparison_id": "C-MECHANISM-PORTFOLIO",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01"
+      ],
+      "requires_evidence": [
+        "E-SHARED-QC"
+      ],
+      "evidence_conditions": {
+        "E-SHARED-QC": [
+          "not_supported"
+        ]
+      },
+      "config_ref": {
+        "path": "experiments/distribution-response/configs/distribution-nb-s01.json",
+        "sha256": "412e8504fc30fe39f82bd420379ab0b2ffc92872098d737cb938ee4f773ccb5c"
+      },
+      "expected_config": {
+        "seed": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          }
+        },
+        "data": {
+          "chunk_rows": 2048,
+          "target_sum": 10000,
+          "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+          "qc": "frozen_correctness_only"
+        },
+        "generation": {
+          "kind": "conditional_Gamma_Poisson_NTC_library_sampling",
+          "cells_per_target": 400,
+          "paired_rng": "seed_plus_frozen_target_index",
+          "missing_input": "zero_baseline_and_zero_delta_with_mask",
+          "poisson_threshold": 1e-08
+        },
+        "evaluation": {
+          "arms": [
+            "linear"
+          ],
+          "single_source": "K562",
+          "panels": [
+            "all",
+            "official_overlap"
+          ],
+          "runtime": {
+            "device": "cuda",
+            "num_threads": 8,
+            "pert_chunk": 16
+          }
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "reuse": {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        "experiment_id": "distribution-response",
+        "run_id": "distribution-nb-s01",
+        "control_refs": {
+          "metrics": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+            "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+          },
+          "config": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/config.yaml",
+            "sha256": "79ed320c70b420926a78ff126ace98fc64b2e40aa265f2a7a62e0ae6fb3505d8"
+          },
+          "checkpoint": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/checkpoints/response.npz",
+            "sha256": "6f8ace646c36990c392f3752e74026c23ecb215fb08477efef2d11426659bd03"
+          },
+          "predictions": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/predictions/manifest.json",
+            "sha256": "2accba8fa623fb2b3ffc56ea0040e4e76f997cfce7e8e1734a3b0e7afc72439c"
+          },
+          "scores": {
+            "path": "experiments/masked-response/configs/shared-control-scores.json",
+            "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+          }
+        },
+        "diagnostics": {
+          "seed": 400001,
+          "alpha": 0.05,
+          "kind": "disjoint_ntc_Welch_BH_logCPM_secondary_only"
+        },
+        "model": {
+          "kind": "masked_source_population_moments",
+          "end_condition": "all_allowed_raw_cells_complete_moment_fit_all_panels"
+        },
+        "moments": {
+          "identities": {
+            "path": "data/raw/networks/hgnc_complete_set.txt",
+            "sha256": "9e07bb49393c12aca8bc931a4349010404c24994a8a58745c14676b8c2b74492"
+          },
+          "space": "arithmetic_per_cell_CPM10k",
+          "variance": "unbiased_n_minus_one",
+          "same_base_log_means": "exact_float32_training_allclose_H1_rechunk",
+          "selection": "same_base_cells_no_optional_QC"
+        },
+        "population": {
+          "kind": "negative_binomial",
+          "weight_cell_unit": 100.0,
+          "target_sum": 10000,
+          "unsupported_response": "zero_measured_donor_mask",
+          "dispersion_prior_cells": 50.0,
+          "dispersion_floor": 0.001,
+          "dispersion_max": 10.0,
+          "dispersion_noise": "CPM_mean_times_target_sum_times_mean_inverse_measured_library",
+          "mean_response": "arithmetic_CPM_difference",
+          "dispersion_response": "log_ratio_shrunk_extra_Poisson_moments"
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/distribution-response/PLAN.md",
+          "sha256": "68a9444b7b533c951ba79daf4724367228df981964b307828555cdf568d3b4e5"
+        },
+        {
+          "path": "experiments/distribution-response/pyproject.toml",
+          "sha256": "b56e6aef09053f1804b8f6dde3af550225cdb17309880c00e0fae990c1f7035b"
+        },
+        {
+          "path": "experiments/distribution-response/reproduce.sh",
+          "sha256": "58e8ab7d553e8924f538f78972bb21383ee2a2f09171bd2ee606dd709cb3b90a"
+        },
+        {
+          "path": "experiments/distribution-response/src/model.py",
+          "sha256": "3e3cebeb6073f571ff2f4439dd313d5524cf8ff87c6119f8a6c941db2d39f1fd"
+        },
+        {
+          "path": "experiments/distribution-response/src/runtime.py",
+          "sha256": "995fc30b4b7854182733a10145bef5aadef035092ac5dfd50d1cbb60bcf46389"
+        },
+        {
+          "path": "experiments/distribution-response/src/train.py",
+          "sha256": "f82e4f2b59b00b029e6435fcb2f34aa073df46e73a00c0f6d662cc39b8eafcdd"
+        },
+        {
+          "path": "experiments/distribution-response/uv.lock",
+          "sha256": "32e4ed7e3ba6f4aa3b8e0787b87bf934b8fb535046bb70a4305ba79995a65886"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+          "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+          "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+          "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+          "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+          "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-reference-results-s2-h1.json",
+          "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        {
+          "path": "experiments/init-linear/src/data.py",
+          "sha256": "c24ea917769f9236859a07b1983756a19022fcfbb85106c818c41c58dec3fb43"
+        },
+        {
+          "path": "experiments/init-linear/src/evaluation.py",
+          "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
+        },
+        {
+          "path": "experiments/init-linear/src/representation.py",
+          "sha256": "070b69dc8d7eb8ca14c0071bd3163b388db2e70105bf93ac45383e89ddb09cc0"
+        },
+        {
+          "path": "experiments/masked-response/configs/shared-control-scores.json",
+          "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+        },
+        {
+          "path": "experiments/response-transport/PLAN.md",
+          "sha256": "e4ec100652933040164a51940a21c709dec09b1e0f70ef014fb5d8993a3de963"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/heterogeneity.py",
+          "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+        },
+        {
+          "path": "scripts/dossier/profile_responses.py",
+          "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+        },
+        {
+          "path": "scripts/dossier/render.py",
+          "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+        },
+        {
+          "path": "scripts/dossier/response.py",
+          "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "2301a133b7a602ea02e886dc47732ca63d7851c69222ff790f9499598d2f6681"
+        },
+        {
+          "path": "src/vcc_mechanism/__init__.py",
+          "sha256": "8b86146f8effae4b23b80f5ef1fa49ba45d4e5f570e7e113705eb6fa447422ab"
+        },
+        {
+          "path": "src/vcc_mechanism/diagnostics.py",
+          "sha256": "497503ed840f570b58e866410927f5ed1535201c642b4e733efe68f73b9b2d9e"
+        },
+        {
+          "path": "src/vcc_mechanism/inputs.py",
+          "sha256": "057f3af8646f005159acd138f3872426686f4d0273bd5b441b7d5fe59157db6f"
+        },
+        {
+          "path": "src/vcc_mechanism/population.py",
+          "sha256": "bb6513f03b2950dd19f901c21f9aebcb1c77f812200a6a7128d1a93d506fb353"
+        },
+        {
+          "path": "src/vcc_mechanism/runner.py",
+          "sha256": "ca2452dd50c93f6f7ed6c3f4a473977d82e978b8008ea1f0b03cf122f163608e"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
+        "source_usage": "同一冻结输入/NTC/reference/bundles；历史shared是经哈希审计的独立对照；全新整包预测和官方评分。",
+        "unresolved": [],
+        "allocation": "三机制各一个预先冻结完整配置，顺序训练及两面板评分；全部完成后才分配下一轮。",
+        "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
+      },
+      "blockers": []
     }
   },
   "comparisons": {
@@ -6408,6 +7414,126 @@
       "cost": "medium",
       "priority_basis": "执行E-SHARED-QC已登记无信号分支；解决当前shared对官方28个无监督靶点只能零Δ的问题，不主张GO有效。",
       "evidence_id": "E-SHARED-TARGET-PRIOR"
+    },
+    "C-TRANSPORT-CONTEXT": {
+      "status": "draft",
+      "purpose": "screen",
+      "hypothesis": "固定MLP、episode和预算时，源/目标NTC信息是否有增量？",
+      "controls": [
+        "transport-no-ntc-s01"
+      ],
+      "candidates": [
+        "transport-mlp-s01"
+      ],
+      "changed_axes": [
+        "G"
+      ],
+      "changed_fields": [
+        "transport.ntc_conditioning"
+      ],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1；280主面板/25官方重叠，H1开发证据。",
+        "on_support": "进入新背景或配对重复确认；以匹配消融判断NTC、非线性还是迁移监督带来收益，不声称SOTA。",
+        "on_against": "停止本结构；结合训练内迁移误差和生成响应实现误差决定下一问题，不继续H1调宽度/步数。",
+        "on_inconclusive": "恢复完整训练或修正可比条件；未完成不能成为阴性证据。",
+        "threshold_policy": "主面板至少+0.02且官方重叠至少−0.02为开发signal；单seed不确认泛化。"
+      },
+      "attribution_plan": "整体对shared是表示/监督任务/架构/优化/条件化整包；两项匹配消融仅在相应条件一致后解释。固定输出轴、数据正确性、官方评分和生成器。",
+      "cost": "medium",
+      "priority_basis": "用户要求转变思路；检验旧预测形式未表达的交互，覆盖已监督坐标。",
+      "evidence_id": "E-TRANSPORT-CONTEXT"
+    },
+    "C-TRANSPORT-CAPACITY": {
+      "status": "draft",
+      "purpose": "screen",
+      "hypothesis": "相同输入与预算下，非线性迁移是否超过含显式交互的线性迁移？",
+      "controls": [
+        "transport-linear-s01"
+      ],
+      "candidates": [
+        "transport-mlp-s01"
+      ],
+      "changed_axes": [
+        "A"
+      ],
+      "changed_fields": [
+        "transport.head"
+      ],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1；280主面板/25官方重叠，H1开发证据。",
+        "on_support": "进入新背景或配对重复确认；以匹配消融判断NTC、非线性还是迁移监督带来收益，不声称SOTA。",
+        "on_against": "停止本结构；结合训练内迁移误差和生成响应实现误差决定下一问题，不继续H1调宽度/步数。",
+        "on_inconclusive": "恢复完整训练或修正可比条件；未完成不能成为阴性证据。",
+        "threshold_policy": "主面板至少+0.02且官方重叠至少−0.02为开发signal；单seed不确认泛化。"
+      },
+      "attribution_plan": "整体对shared是表示/监督任务/架构/优化/条件化整包；两项匹配消融仅在相应条件一致后解释。固定输出轴、数据正确性、官方评分和生成器。",
+      "cost": "medium",
+      "priority_basis": "用户要求转变思路；检验旧预测形式未表达的交互，覆盖已监督坐标。",
+      "evidence_id": "E-TRANSPORT-CAPACITY"
+    },
+    "C-MECHANISM-PORTFOLIO": {
+      "status": "ready",
+      "purpose": "integrate",
+      "hypothesis": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "candidates": [
+        "transport-mlp-s01",
+        "composition-lfc-s01",
+        "distribution-nb-s01"
+      ],
+      "changed_axes": [
+        "T",
+        "D",
+        "R",
+        "A",
+        "L",
+        "O",
+        "I",
+        "G"
+      ],
+      "changed_fields": [
+        "control_refs",
+        "diagnostics",
+        "generation.ipf_iterations",
+        "generation.kind",
+        "generation.poisson_threshold",
+        "generation.template_smoothing",
+        "model.clamp",
+        "model.completion_alpha",
+        "model.end_condition",
+        "model.gene_chunk",
+        "model.kind",
+        "model.missing_output",
+        "model.reconstruction_weights",
+        "model.weight_cell_unit",
+        "moments",
+        "population",
+        "reference_reuse",
+        "representation",
+        "transport"
+      ],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1；280主面板/25官方重叠，H1开发证据。",
+        "on_support": "首先给达标方案分配独立背景/配对种子确认及必要归因资源；若多方案达标，主面板排序、官方重叠非劣和计算成本共同用于下一轮队列。",
+        "on_against": "停止未达标的具体配置，比较机制失败模式后更换路线；不自动追加局部消融或H1参数网格。",
+        "on_inconclusive": "恢复完整训练或修正可比条件；未完成不能成为阴性证据。",
+        "threshold_policy": "主面板至少+0.02且官方重叠至少−0.02为开发signal；单seed不确认泛化。"
+      },
+      "attribution_plan": "三种机制分别作为完整方案与同一shared控制比较，匹配数据、划分、输出与官方评价；T/A/L/I等联动全部登记，不向单个因素归因。每条一个完整配置，不根据先完成臂的分数改其余方案。",
+      "cost": "medium",
+      "priority_basis": "用户明确要求扩大机制搜索范围、先比较整包价值再拆解；不要求先过线性头。",
+      "evidence_id": "E-MECHANISM-PORTFOLIO"
     }
   },
   "continuation_rules": {
