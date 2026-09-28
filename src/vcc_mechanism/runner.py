@@ -9,6 +9,7 @@ import time
 import yaml
 import wandb
 import torch
+import model as model_module
 
 from data import ROOT, write_json, ref
 from research import execution_metadata
@@ -55,7 +56,9 @@ def run_bound(config, research, resume):
         fit_elapsed = time.monotonic()-started
         generate(output, model, axis, split, config)
         from vcc_mechanism.diagnostics import ntc_audit
-        ntc_audit(output, config)
+        decoder = (lambda ntc: model_module.diagnostic_counts(output, model, ntc, config)) if hasattr(model_module, 'diagnostic_counts') else None
+        ntc_audit(output, config, decoder)
+        del decoder
         del model
         gc.collect(); torch.cuda.empty_cache(); release_file_cache(output)
         result = evaluate(output, split, config, run)

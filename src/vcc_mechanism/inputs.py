@@ -187,7 +187,7 @@ def moments(output, axis, split, config):
 
 def release_file_cache(output):
     """Advisory release of consumed immutable inputs; content and file state unchanged."""
-    paths = list((output/'cache').rglob('*.h5ad')) + list((output/'cache').rglob('*.npz')) + list((output/'predictions').glob('*.h5ad'))
+    paths = list((output/'cache').rglob('*.h5ad')) + list((output/'cache').rglob('*.npz')) + list((output/'cache').rglob('*.npy')) + list((output/'predictions').glob('*.h5ad'))
     audit = json.loads((ROOT/'docs/research/challenge_2026/data_audit.json').read_text())
     paths += [ROOT/r['path'] for r in audit['inputs'] if r['path'].endswith('.h5ad')]
     for path in paths:

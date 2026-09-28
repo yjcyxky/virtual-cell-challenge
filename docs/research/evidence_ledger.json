@@ -1627,10 +1627,19 @@
         "gene-decoder-s01"
       ],
       "hypothesis": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？",
-      "claim": "仅登记下一轮机制问题和资源槽位，未训练、无本地有效性证据。",
-      "limitations": "单H1开发问题；具体结构/目标/采样和完整预算需ready前冻结。文献依据不等于本地方法支持。",
-      "source_refs": [],
-      "next_action": "补齐节点unresolved并与另一新机制共同冻结配置，完成一个完整拟合和两个官方面板；不追加前置线性/全消融要求。",
+      "claim": "两个机制的代码、完整配置、独立环境和结束条件共同冻结；尚未训练，无本地有效性结论。",
+      "limitations": "单H1开发比较；整包联动只能整体归因，单seed不能确认泛化。训练/生成随机性不增加生物独立性。",
+      "source_refs": [
+        {
+          "path": "experiments/gene-conditioned-response/configs/gene-decoder-s01.json",
+          "sha256": "e7523f3fbfdf1d794bcd7cf5eeaeaccdffc8fbbaa6e87a4d768408cb81f8f059"
+        },
+        {
+          "path": "experiments/gene-conditioned-response/PLAN.md",
+          "sha256": "2b873d28a408227da8963847015ee3b717eea29f2ca688762ccc40db2d2abc30"
+        }
+      ],
+      "next_action": "按冻结预算完成16384步、全官方轴预测和两个官方面板；两条均完成后按预定门槛统一分配下一轮资源。",
       "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
     },
     "E-CELL-VAE-PACKAGE": {
@@ -1642,10 +1651,19 @@
         "cell-cvae-s01"
       ],
       "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
-      "claim": "仅登记下一轮机制问题和资源槽位，未训练、无本地有效性证据。",
-      "limitations": "单H1开发问题；具体结构/目标/采样和完整预算需ready前冻结。文献依据不等于本地方法支持。",
-      "source_refs": [],
-      "next_action": "补齐节点unresolved并与另一新机制共同冻结配置，完成一个完整拟合和两个官方面板；不追加前置线性/全消融要求。",
+      "claim": "两个机制的代码、完整配置、独立环境和结束条件共同冻结；尚未训练，无本地有效性结论。",
+      "limitations": "单H1开发比较；整包联动只能整体归因，单seed不能确认泛化。训练/生成随机性不增加生物独立性。",
+      "source_refs": [
+        {
+          "path": "experiments/conditional-cell-response/configs/cell-cvae-s01.json",
+          "sha256": "a1798d72580a60db7f78471887a35248623cbd13d66cc53b6a5a5586b4b72429"
+        },
+        {
+          "path": "experiments/conditional-cell-response/PLAN.md",
+          "sha256": "e1b37384a21d660284e585caa78c9f1018ea82cc9237d6bd60b9957454b84f03"
+        }
+      ],
+      "next_action": "按冻结预算完成8192步、全官方轴预测和两个官方面板；两条均完成后按预定门槛统一分配下一轮资源。",
       "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
     }
   },

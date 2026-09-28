@@ -52,8 +52,8 @@ flowchart TD
   n45["transport-no-ntc-s01 | draft"]
   n46["composition-lfc-s01 | completed"]
   n47["distribution-nb-s01 | completed"]
-  n48["gene-decoder-s01 | draft"]
-  n49["cell-cvae-s01 | draft"]
+  n48["gene-decoder-s01 | ready"]
+  n49["cell-cvae-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -269,7 +269,6 @@ flowchart TD
   n33 -->|control| n48
   n0 -->|source| n48
   n33 -->|source| n48
-  n46 -->|source| n48
   n33 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n48
   n44 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n48
   n46 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n48

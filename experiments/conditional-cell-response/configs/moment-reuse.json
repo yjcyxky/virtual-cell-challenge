@@ -1,0 +1,30 @@
+{
+  "source_run_id": "composition-lfc-s01",
+  "source_metrics": {
+    "path": "experiments/composition-response/outputs/composition-lfc-s01/metrics.json",
+    "sha256": "dd513dd9a9d98319827386d239362d068dd061debf939202374e715698b40a2d"
+  },
+  "files": {
+    "K562": {
+      "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/K562.npz",
+      "sha256": "916d1dece73545326d104ec0980bb7755b11bf89eb3c993c10c4855edfc55384"
+    },
+    "RPE1": {
+      "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/RPE1.npz",
+      "sha256": "c281e21da44a8ac912af56f5a612dcc9bd8da9f8a188f9bf11f2ac29101c4a84"
+    },
+    "HepG2": {
+      "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/HepG2.npz",
+      "sha256": "3ae5e90ddbc236d065f57475007b13030624c1ba96a32858ede1c4814b0092b4"
+    },
+    "Jurkat": {
+      "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/Jurkat.npz",
+      "sha256": "e96b2523313658bb2592ab515e76bffcb5604a31c7b12f15ace663e7485f773f"
+    },
+    "H1": {
+      "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/H1.npz",
+      "sha256": "31b0f52fab9c947e878b5da475f9ed66eb764a3a1a8ed5e0b13b43396b977593"
+    }
+  },
+  "use": "full-population arithmetic moments only; no fitted negative package weights"
+}

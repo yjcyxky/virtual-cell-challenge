@@ -18,7 +18,7 @@ def contrast(x, y, alpha):
                             'welch_bh_discoveries': int((q < alpha).sum())}
 
 
-def ntc_audit(output, config):
+def ntc_audit(output, config, decoder=None):
     spec = config['diagnostics']
     path = output/'cache/ntc-diagnostics.json'
     if path.exists():
@@ -31,7 +31,9 @@ def ntc_audit(output, config):
     reference = real[chosen].to_memory().X; real.file.close()
     rows = np.random.default_rng(spec['seed']).integers(0, ntc.n_obs, config['generation']['cells_per_target'])
     templates = ntc.X[rows]
-    if 'transport' in config:
+    if decoder is not None:
+        generated = decoder(ntc)
+    elif 'transport' in config:
         generated = generate_counts(ntc.X, np.zeros(ntc.n_vars), spec['seed'], config['generation']['cells_per_target'], config['data']['target_sum'])
     else:
         s = dict(np.load(output/'cache/moments/H1.npz'))
