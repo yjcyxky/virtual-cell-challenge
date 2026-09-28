@@ -1,0 +1,3 @@
+run_prefix: 20260925-exp004
+seeds: [17, 29, 43]
+arms: [conditional, reference, shared_readout, shared_target, fixed_relation, random_prior, no_prior, amplitude, specificity]

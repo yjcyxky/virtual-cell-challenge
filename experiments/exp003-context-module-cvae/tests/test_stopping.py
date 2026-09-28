@@ -88,7 +88,7 @@ def test_sampled_training_monitor_is_fixed_weighted_and_never_reads_held_labels(
     assert len(plan) == config['monitor_layers_per_target'] * sum(c in contexts for c, t in data.tasks)
     assert all(abs(sum(r['weight'] for r in plan if r['context'] == c) - 1) < 1e-10 for c in contexts)
     objective = training.TaskObjective(data, view, contexts, config, tmp_path)
-    objective.weights = {k: 1. for k in training.LOSS_TERMS}
+    objective.weights = {k: 1. for k in objective.loss_terms}
     state = copy.deepcopy(model.state_dict()); rng = training.random_state()
     first = training.monitor_training(model, data, view, plan, contexts, config, 100, objective)
     assert_nested_equal(training.random_state(), rng)
@@ -96,7 +96,7 @@ def test_sampled_training_monitor_is_fixed_weighted_and_never_reads_held_labels(
     assert first == training.monitor_training(model, data, view, plan, contexts, config, 100, objective)
     assert training.monitor_plan(data, contexts, config, tmp_path) == plan
     for row in first.values():
-        assert row['loss'] == pytest.approx(row['nll'] + row['kl_per_gene'] + sum(row[k] for k in training.COMPONENTS))
+        assert row['loss'] == pytest.approx(row['nll'] + row['kl_per_gene'] + sum(row[k] for k in objective.components))
 
 
 def test_monitor_samples_training_layer_mass_not_uniform_layers(tmp_path):
@@ -135,13 +135,13 @@ def test_monitor_preserves_layer_nb_weights_and_task_predictive_weights(tmp_path
     model, _ = setup_model(); model = model.to(device).eval()
     plan = training.monitor_plan(data, contexts, config, tmp_path)
     objective = training.TaskObjective(data, view, contexts, config, tmp_path)
-    objective.weights = {k: 1. for k in training.LOSS_TERMS}
+    objective.weights = {k: 1. for k in objective.loss_terms}
     # Remove only latent noise to compare the vectorized calculation to independent
     # layer evaluations. Existing fixed-noise tests cover reproducibility and RNG isolation.
     monkeypatch.setattr(torch, 'randn_like', lambda value: torch.zeros_like(value))
     monkeypatch.setattr(torch, 'randn', lambda *shape, **kwargs: torch.zeros(*shape, **kwargs))
     actual = training.monitor_training(model, data, view, plan, contexts, config, 100, objective)
-    expected = {c: dict.fromkeys(['loss', 'nll', 'kl_per_gene', *training.COMPONENTS, 'response_mse', 'zero_response_mse', 'ntc_mse'], 0.) for c in contexts}
+    expected = {c: dict.fromkeys(['loss', 'nll', 'kl_per_gene', *objective.components, 'response_mse', 'zero_response_mse', 'ntc_mse'], 0.) for c in contexts}
     fraction = config['tasks_per_step'] / (config['tasks_per_step'] + 1)
     with torch.no_grad():
         for row in plan:
@@ -161,7 +161,7 @@ def test_monitor_preserves_layer_nb_weights_and_task_predictive_weights(tmp_path
             values = objective.losses(model, keys, np.random.default_rng(seed))
             for k, value in values.items():
                 expected[c][k] = float(value.mean())
-            expected[c]['loss'] += sum(expected[c][k] for k in training.COMPONENTS)
+            expected[c]['loss'] += sum(expected[c][k] for k in objective.components)
     for c in contexts:
         for k in expected[c]:
             assert actual[c][k] == pytest.approx(expected[c][k], rel=2e-6, abs=1e-7)
