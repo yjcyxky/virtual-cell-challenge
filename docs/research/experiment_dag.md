@@ -51,7 +51,9 @@ flowchart TD
   n44["transport-mlp-s01 | completed"]
   n45["transport-no-ntc-s01 | draft"]
   n46["composition-lfc-s01 | completed"]
-  n47["distribution-nb-s01 | ready"]
+  n47["distribution-nb-s01 | completed"]
+  n48["gene-decoder-s01 | draft"]
+  n49["cell-cvae-s01 | draft"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -235,9 +237,10 @@ flowchart TD
   n33 -->|control| n43
   n0 -->|source| n43
   n33 -->|source| n43
-  n33 -.->|"evidence: E-SHARED-QC"| n43
-  n37 -.->|"evidence: E-SHARED-QC"| n43
-  n38 -.->|"evidence: E-SHARED-QC"| n43
+  n33 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n43
+  n44 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n43
+  n46 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n43
+  n47 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n43
   n33 -->|control| n44
   n0 -->|source| n44
   n33 -->|source| n44
@@ -247,9 +250,10 @@ flowchart TD
   n33 -->|control| n45
   n0 -->|source| n45
   n33 -->|source| n45
-  n33 -.->|"evidence: E-SHARED-QC"| n45
-  n37 -.->|"evidence: E-SHARED-QC"| n45
-  n38 -.->|"evidence: E-SHARED-QC"| n45
+  n33 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n45
+  n44 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n45
+  n46 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n45
+  n47 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n45
   n33 -->|control| n46
   n0 -->|source| n46
   n33 -->|source| n46
@@ -262,4 +266,20 @@ flowchart TD
   n33 -.->|"evidence: E-SHARED-QC"| n47
   n37 -.->|"evidence: E-SHARED-QC"| n47
   n38 -.->|"evidence: E-SHARED-QC"| n47
+  n33 -->|control| n48
+  n0 -->|source| n48
+  n33 -->|source| n48
+  n46 -->|source| n48
+  n33 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n48
+  n44 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n48
+  n46 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n48
+  n47 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n48
+  n33 -->|control| n49
+  n0 -->|source| n49
+  n33 -->|source| n49
+  n46 -->|source| n49
+  n33 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n49
+  n44 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n49
+  n46 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n49
+  n47 -.->|"evidence: E-MECHANISM-PORTFOLIO"| n49
 ```

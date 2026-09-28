@@ -5748,11 +5748,12 @@
         "masked-response-shared-s01"
       ],
       "requires_evidence": [
-        "E-SHARED-QC"
+        "E-MECHANISM-PORTFOLIO"
       ],
       "evidence_conditions": {
-        "E-SHARED-QC": [
-          "not_supported"
+        "E-MECHANISM-PORTFOLIO": [
+          "signal",
+          "supported"
         ]
       },
       "config_ref": null,
@@ -5783,7 +5784,7 @@
         ]
       },
       "blockers": [
-        "按用户搜索优先指示暂缓；仅在相应机制整包值得追加资源后实例化匹配消融。"
+        "当前迁移整包未获signal；停止本配置的局部消融预算。新的独立整包机制不受此归因分支的前置限制。"
       ]
     },
     "transport-mlp-s01": {
@@ -6066,7 +6067,10 @@
         "path": "experiments/response-transport/outputs/transport-mlp-s01/metrics.json",
         "sha256": "504a78f79a3fc080fbdb1fea67486c71abce53bd255b8efed47dc742585aa7f7"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/response-transport/REPORT.md",
+        "sha256": "8bbc851ae2d8fd7cf49092378c9881cd8809c8dc31a366260d5767ceb7042420"
+      },
       "git_commit": "808773b9c16b28dd7788f57876f96c9be87c43c9",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/transport-mlp-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/transport-mlp-s01-result:v0",
@@ -6090,7 +6094,8 @@
         "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "808773b9c16b28dd7788f57876f96c9be87c43c9"
     },
     "transport-no-ntc-s01": {
       "experiment_id": "response-transport",
@@ -6109,11 +6114,12 @@
         "masked-response-shared-s01"
       ],
       "requires_evidence": [
-        "E-SHARED-QC"
+        "E-MECHANISM-PORTFOLIO"
       ],
       "evidence_conditions": {
-        "E-SHARED-QC": [
-          "not_supported"
+        "E-MECHANISM-PORTFOLIO": [
+          "signal",
+          "supported"
         ]
       },
       "config_ref": null,
@@ -6144,7 +6150,7 @@
         ]
       },
       "blockers": [
-        "按用户搜索优先指示暂缓；仅在相应机制整包值得追加资源后实例化匹配消融。"
+        "当前迁移整包未获signal；停止本配置的局部消融预算。新的独立整包机制不受此归因分支的前置限制。"
       ]
     },
     "composition-lfc-s01": {
@@ -6420,7 +6426,10 @@
         "path": "experiments/composition-response/outputs/composition-lfc-s01/metrics.json",
         "sha256": "dd513dd9a9d98319827386d239362d068dd061debf939202374e715698b40a2d"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/composition-response/REPORT.md",
+        "sha256": "f70d3c86e66f09d23099596e1e2bd14ac0607594f32d09060aaa749f756523c3"
+      },
       "git_commit": "3307835975cb466d84ce9f2e6bf27ab1a7ac64aa",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/composition-lfc-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/composition-lfc-s01-result:v0",
@@ -6444,7 +6453,8 @@
         "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "3307835975cb466d84ce9f2e6bf27ab1a7ac64aa"
     },
     "distribution-nb-s01": {
       "experiment_id": "distribution-response",
@@ -6453,7 +6463,7 @@
       "legacy": false,
       "method_id": "M-DISTRIBUTION-NB",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-MECHANISM-PORTFOLIO",
       "controls": [
         "masked-response-shared-s01"
@@ -6719,11 +6729,17 @@
           "sha256": "ca2452dd50c93f6f7ed6c3f4a473977d82e978b8008ea1f0b03cf122f163608e"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/distribution-response/outputs/distribution-nb-s01/metrics.json",
+        "sha256": "074901b9ac9c671eadd5d11de9d1744f8595cf0f88d9b08a79bf0478cc1678d4"
+      },
+      "report_ref": {
+        "path": "experiments/distribution-response/REPORT.md",
+        "sha256": "f8eae6ccf3601dfdc60f3b36f0e9e9e4cf682d250a4d423315efebbec9a97925"
+      },
+      "git_commit": "48be8ff01e5481c436b6d7a4e7a473887be89ced",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/distribution-nb-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/distribution-nb-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -6743,7 +6759,133 @@
         "allocation": "三机制各一个预先冻结完整配置，顺序训练及两面板评分；全部完成后才分配下一轮。",
         "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "code_snapshot_commit": "48be8ff01e5481c436b6d7a4e7a473887be89ced"
+    },
+    "gene-decoder-s01": {
+      "experiment_id": "gene-conditioned-response",
+      "directory": "experiments/gene-conditioned-response",
+      "run_id": "gene-decoder-s01",
+      "legacy": false,
+      "method_id": "M-GENE-DECODER-PACKAGE",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-GENE-DECODER-PACKAGE",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01",
+        "composition-lfc-s01"
+      ],
+      "requires_evidence": [
+        "E-MECHANISM-PORTFOLIO"
+      ],
+      "evidence_conditions": {
+        "E-MECHANISM-PORTFOLIO": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？",
+        "source_usage": "相同允许数据与独立shared控制；可复用完成run的固定输入/矩统计，ready前逐项登记哈希；不借用当前阴性模型权重。",
+        "allocation": "下一轮两个机制探索槽之一；各一个冻结完整拟合和两个正式面板，两个方案在首个结果前共同冻结；第三槽留给达标方案的新背景确认，均失败则转其他机制。",
+        "unresolved": [
+          "冻结功能来源/基因映射/覆盖及NTC适配边界；不把扩大覆盖本身当收益。",
+          "确定条件解码结构、响应/残差空间、联合目标、计数生成和完整预算；不沿用只有sourceΔ的零锚点标量网络。",
+          "冻结完整配置、代码/独立环境、正式控制来源与结束判据；本节点尚未训练。"
+        ],
+        "end_condition": "预定完整训练、全轴预测、两个正式官方面板、模型artifact、配对报告和关闭本比较；不以smoke结束。"
+      },
+      "blockers": [
+        "冻结功能来源/基因映射/覆盖及NTC适配边界；不把扩大覆盖本身当收益。",
+        "确定条件解码结构、响应/残差空间、联合目标、计数生成和完整预算；不沿用只有sourceΔ的零锚点标量网络。",
+        "冻结完整配置、代码/独立环境、正式控制来源与结束判据；本节点尚未训练。"
+      ]
+    },
+    "cell-cvae-s01": {
+      "experiment_id": "conditional-cell-response",
+      "directory": "experiments/conditional-cell-response",
+      "run_id": "cell-cvae-s01",
+      "legacy": false,
+      "method_id": "M-CELL-VAE-PACKAGE",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-CELL-VAE-PACKAGE",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01",
+        "composition-lfc-s01"
+      ],
+      "requires_evidence": [
+        "E-MECHANISM-PORTFOLIO"
+      ],
+      "evidence_conditions": {
+        "E-MECHANISM-PORTFOLIO": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
+        "source_usage": "相同允许数据与独立shared控制；可复用完成run的固定输入/矩统计，ready前逐项登记哈希；不借用当前阴性模型权重。",
+        "allocation": "下一轮两个机制探索槽之一；各一个冻结完整拟合和两个正式面板，两个方案在首个结果前共同冻结；第三槽留给达标方案的新背景确认，均失败则转其他机制。",
+        "unresolved": [
+          "冻结仅NTC条件编码、训练posterior与推断prior的边界；禁止H1扰动标签进入预测。",
+          "固定背景/靶点采样、count observation model、KL/响应辅助目标权重、完整训练及恢复状态；选择只在训练边界。",
+          "冻结全官方轴/测量掩码、未测输出及未见靶点回退、完整配置/代码/环境与预算；本节点尚未训练。"
+        ],
+        "end_condition": "预定完整训练、全轴预测、两个正式官方面板、模型artifact、配对报告和关闭本比较；不以smoke结束。"
+      },
+      "blockers": [
+        "冻结仅NTC条件编码、训练posterior与推断prior的边界；禁止H1扰动标签进入预测。",
+        "固定背景/靶点采样、count observation model、KL/响应辅助目标权重、完整训练及恢复状态；选择只在训练边界。",
+        "冻结全官方轴/测量掩码、未测输出及未见靶点回退、完整配置/代码/环境与预算；本节点尚未训练。"
+      ]
     }
   },
   "comparisons": {
@@ -7669,6 +7811,76 @@
       },
       "evidence_id": "E-SHARED-QC-OFFICIAL",
       "attribution_plan": "No model changes; simultaneous evaluation population/protocol changes prohibit single-factor causal attribution."
+    },
+    "C-GENE-DECODER-PACKAGE": {
+      "status": "draft",
+      "purpose": "integrate",
+      "hypothesis": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "candidates": [
+        "gene-decoder-s01"
+      ],
+      "changed_axes": [
+        "T",
+        "D",
+        "R",
+        "A",
+        "L",
+        "I",
+        "G"
+      ],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1；280主面板/25官方重叠，H1开发证据。",
+        "on_support": "作为整包signal，优先分配第三槽的新背景确认及必要归因；不要求此前线性头证明。",
+        "on_against": "停止当前配置，不自动转H1参数网格；两个探索槽均失败则第三槽转另一个机制。",
+        "on_inconclusive": "恢复完整训练或修正可比条件；未完成不能成为阴性证据。",
+        "threshold_policy": "主面板至少+0.02且官方重叠至少−0.02为开发signal；单seed不确认泛化。"
+      },
+      "attribution_plan": "完整方案可联动T/A/L/I等轴，全部实际变化在ready前冻结；先判断整体价值，再对有价值方案安排匹配归因。",
+      "cost": "high",
+      "priority_basis": "用户要求扩大搜索范围与按价值配置资源；不再为失败小步方案追加局部问题。",
+      "evidence_id": "E-GENE-DECODER-PACKAGE"
+    },
+    "C-CELL-VAE-PACKAGE": {
+      "status": "draft",
+      "purpose": "integrate",
+      "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "candidates": [
+        "cell-cvae-s01"
+      ],
+      "changed_axes": [
+        "T",
+        "D",
+        "R",
+        "A",
+        "L",
+        "I",
+        "G"
+      ],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1；280主面板/25官方重叠，H1开发证据。",
+        "on_support": "作为整包signal，优先分配第三槽的新背景确认及必要归因；不要求此前线性头证明。",
+        "on_against": "停止当前配置，不自动转H1参数网格；两个探索槽均失败则第三槽转另一个机制。",
+        "on_inconclusive": "恢复完整训练或修正可比条件；未完成不能成为阴性证据。",
+        "threshold_policy": "主面板至少+0.02且官方重叠至少−0.02为开发signal；单seed不确认泛化。"
+      },
+      "attribution_plan": "完整方案可联动T/A/L/I等轴，全部实际变化在ready前冻结；先判断整体价值，再对有价值方案安排匹配归因。",
+      "cost": "high",
+      "priority_basis": "用户要求扩大搜索范围与按价值配置资源；不再为失败小步方案追加局部问题。",
+      "evidence_id": "E-CELL-VAE-PACKAGE"
     }
   },
   "continuation_rules": {

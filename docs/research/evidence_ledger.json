@@ -1207,7 +1207,7 @@
     },
     "E-MECHANISM-PORTFOLIO": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-MECHANISM-PORTFOLIO",
       "node_ids": [
         "masked-response-shared-s01",
@@ -1216,11 +1216,344 @@
         "distribution-nb-s01"
       ],
       "hypothesis": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
-      "claim": "未执行，不能据旧条件ridge或补全阴性推断本方法效果。",
-      "limitations": "仅四训练背景/两研究；episode和基因样本不是新增独立背景。",
-      "source_refs": [],
-      "next_action": "先完成三个机制整包的正式训练/评分，再统一判断价值与资源分配。",
-      "reopen_when": "三机制完成首次整包比较后按证据分配下一轮；线性和局部消融不是前置。"
+      "claim": "三个完整机制均完成正式训练和两个官方面板，均未达到预设晋级门槛。主面板/重叠Overall：shared .21086563/.20483818；神经迁移 .08993207/.05863552；组成logFC .19219554/.20313764；均值/离散度NB −.12232922/−.01787518。保留官方负分；没有候选优于shared。结论限当前整包配置，不向单个轴或整个神经/生成模型类别归因。",
+      "limitations": "H1/context-seen单一已选择开发背景、单seed；四训练背景仅两来源研究。靶点SD不是跨背景不确定性；训练和生成seed方差未估计。多个轴联动；两种解析拟合不代表神经NB最大似然。当前H1留出中7292实测基因无四来源测量，官方28/300靶无来源响应，不能声明解决全局未见靶点或最终五背景合训泛化。",
+      "source_refs": [
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+          "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/raw.parquet",
+          "sha256": "4d383608cf807688f570231db1ee609d0b05326f367a90e11e6a5d6f6183a88b"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/aggregate.csv",
+          "sha256": "f9747cc930ee128a1603156bc011e14f68862e9bd1055b277ea6e5b537ee2398"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/scores.csv",
+          "sha256": "5039c8912dde17ae9482df082cad3dad07f01c3578a2acaec0edcef08032280f"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/run_meta.json",
+          "sha256": "845a28656698b534d14fdb2dae55a324d9c06e5e1c80d3dc2a6f4ce6a415686b"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-all-linear/result.json",
+          "sha256": "38044972e87d9bb1f23b9a498d9f42aa7c40cd6417fd521080d4a4778e13d7d2"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/raw.parquet",
+          "sha256": "5b5be7a2a9d582cd05ec3ef701766b739bfd2b524e495db695a4ed858077d62d"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/aggregate.csv",
+          "sha256": "e01b64adb2f3e8774cc5e2f3106836cb5fca96592fa808cdacb3ee2b4162b8e1"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/scores.csv",
+          "sha256": "72ce878543fc774a4588aaf0120e22548d98646eed29789dd22e88a55fe85302"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/run_meta.json",
+          "sha256": "c5c7cd9e4aed203777e79dd3d6a8831b5d20ea1fc2ab094b597cd659132f41cf"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-shared-s01/cache/score-official_overlap-linear/result.json",
+          "sha256": "eaebf79f80f3fb10f64a4b70453b70ae6507524889881c508057fdb121680a88"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/metrics.json",
+          "sha256": "504a78f79a3fc080fbdb1fea67486c71abce53bd255b8efed47dc742585aa7f7"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-all-linear/raw.parquet",
+          "sha256": "a5cc2f3b3d1e4470e8449eaa89918094fe24fc18426df7c57024499864ac03be"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-all-linear/aggregate.csv",
+          "sha256": "47dafc332cf119889ecaf0b52f3017104af61889c7ecf503eda4a7673b481db9"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-all-linear/scores.csv",
+          "sha256": "58a9d75bfc2b86de1d34f12310d69ba0475bbc52b9ca0168d6cdcf2581a9c166"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-all-linear/run_meta.json",
+          "sha256": "141a95578b0711992ed7d96cbfe05982d725118e2d9b2ba4c6488a3cc06c74cc"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-all-linear/result.json",
+          "sha256": "df4c7677316428fbaed6d0229d8c7a7d14a863032e4324347529088f94a84b85"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-official_overlap-linear/raw.parquet",
+          "sha256": "ef3b2fab395e8c2a54db799f44b8fc6e79fdefc97badcecb7133162e88979e1e"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-official_overlap-linear/aggregate.csv",
+          "sha256": "2ab49c7e243ffa65d73339779493f8a20412931544330a182e02fc4b5e757311"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-official_overlap-linear/scores.csv",
+          "sha256": "d6f7e853c4d4b84c6044e68ef519f06d78d8be497d8c7375344f40817da56f9c"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-official_overlap-linear/run_meta.json",
+          "sha256": "c9c2b50b73a95ed019321eef50e65377cf1d457974d72305f4fdf439a71a0572"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/score-official_overlap-linear/result.json",
+          "sha256": "848ef31c50f6373688ec2595f0ae903ad1fdf34eed238135feb165cac3aba3c7"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/metrics.json",
+          "sha256": "dd513dd9a9d98319827386d239362d068dd061debf939202374e715698b40a2d"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-all-linear/raw.parquet",
+          "sha256": "0714dc67c9c5f3fbaed603bd9009ec4f464eb77877c1d762b44613e450f1167c"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-all-linear/aggregate.csv",
+          "sha256": "a641b6ca0724b27e98bde1fedca1ed38ebf4918aac1bd8fc543789de8db47317"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-all-linear/scores.csv",
+          "sha256": "b487727fb10792e652055d5532055e42e9e7e10e51555e4e2b485a3667d04270"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-all-linear/run_meta.json",
+          "sha256": "6616d3d136dff7ec5b46ae800f788ede2a543cbf145e3d628ff9c57e18ef57c9"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-all-linear/result.json",
+          "sha256": "1ec515acb49ae57c787eec972d2cc4a4d1035c09e667e7b57421b0c39664a6a8"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-official_overlap-linear/raw.parquet",
+          "sha256": "dd577d6c602a533e959b18488eeeda71f620a424f93ccbf6b1770f354b5ccd81"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-official_overlap-linear/aggregate.csv",
+          "sha256": "2f3b8ec250e60249838220866c9ddba4903d9b8ab5f55687b92e428afb02dbdd"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-official_overlap-linear/scores.csv",
+          "sha256": "39668047e1d4f91e648ebf03569aed66e9225462da43bb71baf7d70be78351c9"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-official_overlap-linear/run_meta.json",
+          "sha256": "8eeea9e238bf3bd3d83cd6cc0a4e3b8f6ad750570e95bf52ee7ae62053b76e14"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/score-official_overlap-linear/result.json",
+          "sha256": "9b0a37d4e5b67987a658813b4c0e118891a559fa3fdb93c114eea1e946248e7b"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/metrics.json",
+          "sha256": "074901b9ac9c671eadd5d11de9d1744f8595cf0f88d9b08a79bf0478cc1678d4"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-all-linear/raw.parquet",
+          "sha256": "aca89ac69d61cfce5ab485c72637c5b583a2fdc93c73c99ac975c26e47a1ce77"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-all-linear/aggregate.csv",
+          "sha256": "c7bc75fbe9b506f4f1ac69d2e78c99ccb55ce5baeaf461b17d7f499ef4518ab1"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-all-linear/scores.csv",
+          "sha256": "9df46e28fca4e8ab78e5b6603140e40a15097be5812200047f93241762c056e9"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-all-linear/run_meta.json",
+          "sha256": "f9c932a28644d0b8509ae9bfe90a940652b61c9fa492b0dd29a4f148560e1c6e"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-all-linear/result.json",
+          "sha256": "d41c73c6c3065403a4878b11af6a884bc405f6651fb834bdc45635dbdf06fa49"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-official_overlap-linear/raw.parquet",
+          "sha256": "c33c25d939f99568790261204d8ceb0fc7a344cd4fa8090b3dfe6fbbe64f05c2"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-official_overlap-linear/aggregate.csv",
+          "sha256": "1126956b9514d2937405731a5818a98d96185030a7b0375dc488bd31d4522880"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-official_overlap-linear/scores.csv",
+          "sha256": "0fdaa13913010ccd3f9810da4d3ac942a61955777c020c54f35a8b2d55cf5242"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-official_overlap-linear/run_meta.json",
+          "sha256": "1229cb7fd48ccc19d1eac044168f76338c3c8a25726be7e3338658dd98029a83"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/score-official_overlap-linear/result.json",
+          "sha256": "5c499c516892993daaaa7dd2eb7356e85f31798a4cfbf4e1a87f3f99bff6bfaa"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/fit.json",
+          "sha256": "bef355d9fbb032c14a6cd109b28b064bcb0ee6f3b074b95e70d6d96851eca5c4"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/ntc-diagnostics.json",
+          "sha256": "1666b1abf1bc6f4368689931074b188fa627e886d731fcd6a2891f0816d80e29"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/control-provenance.json",
+          "sha256": "0e13489976d08c8e0730ee425fd2119a951d4a8aef2c3f357fdb126ab6fd884d"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/tracking-verification.json",
+          "sha256": "8f38fb6a014a124d433e5d0144941bd06a19eafe93737d60af04cecc9e00e0ae"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/fit.json",
+          "sha256": "bedf3c542e34f8736ed9e765b126d6975c5ba7934e6e348feef094dd884f9a20"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/ntc-diagnostics.json",
+          "sha256": "77c7c2353162fd33932d0e1760d482cfdf5d857445cb0131b760079c0e6e4945"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/control-provenance.json",
+          "sha256": "0e13489976d08c8e0730ee425fd2119a951d4a8aef2c3f357fdb126ab6fd884d"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/tracking-verification.json",
+          "sha256": "be5f3764ee2debc0069b30c6272f5dde269e6e94a5f40a2a9f3e98f053282ae8"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/predictions/generation-diagnostics.csv",
+          "sha256": "823b2f4bed13b72cedcad1bb67d638066d5e1b9fb46defe79ad3cae8785b9373"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/fit.json",
+          "sha256": "5c64223b3ba1c6f682e96bda0adcf87c814c446b064c9c4dcc7476091452c210"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/ntc-diagnostics.json",
+          "sha256": "acbde0649b36cded472b0eda9ce75fee5b955ff9e4066b8a7d2e14f7f3b54cbd"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/control-provenance.json",
+          "sha256": "0e13489976d08c8e0730ee425fd2119a951d4a8aef2c3f357fdb126ab6fd884d"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/tracking-verification.json",
+          "sha256": "908eca46d3b339cc0efa6fd2f7f0fb41830a014024ce20888fff5d24c1e1be50"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/predictions/generation-diagnostics.csv",
+          "sha256": "b07c96b970df1a47ff4d76a4581e9c0413ce19caac370588a71f7da6c8a18966"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/K562.json",
+          "sha256": "61e96facfa449c0778b51bfa0f14bce513219a3bc8fd6648252674641e37e4ae"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/moments/K562.json",
+          "sha256": "5ded730a18cc51986dc44a3cf534a508d342e42678e2280967b60db9e384745b"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/RPE1.json",
+          "sha256": "3f1279f2f86f435c09f10b152827f8625290f460579fedb85cb0978538dd0ad2"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/moments/RPE1.json",
+          "sha256": "85e1f7b4a418fb064cdb94411311ab15f598212f21c3cc2204d4392ea7ec319b"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/HepG2.json",
+          "sha256": "8b0b0747fcd15c77f165cc6700edb54ff93d5d4a708b1e42563011d1921ee6b1"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/moments/HepG2.json",
+          "sha256": "e20b1296d8440cf11fd7319af578a3d10cbb83c458f6246b3ae8b921ebec6b29"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/Jurkat.json",
+          "sha256": "792038cb6e66849747a5efab57e2f10f256482aeea06fb67a5afbe365cd486d1"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/moments/Jurkat.json",
+          "sha256": "b84e1c4cb6d09f2c96ea4996b099c14a99f377920784a58cbe4a628f650b68bc"
+        },
+        {
+          "path": "experiments/composition-response/outputs/composition-lfc-s01/cache/moments/H1.json",
+          "sha256": "254850eb8cd611f737464ef2dd632048b5f89e8b0b918878d608fc82bb5a1bf4"
+        },
+        {
+          "path": "experiments/distribution-response/outputs/distribution-nb-s01/cache/moments/H1.json",
+          "sha256": "6606ea635988038b81b8c0b59ef2b9708b11df7b6eab7137398c3da55f599c49"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/portfolio-comparison.json",
+          "sha256": "36586f97f68bcd9d91fde512c4d86b8cf2c394f6ffb8471a85ec45f3467611aa"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/portfolio-all-transport-paired.csv",
+          "sha256": "96c2c8a4ed5290bde3a8d79237d4ab569d308e623f7e3f7ad21a197154bb6305"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/portfolio-all-composition-paired.csv",
+          "sha256": "f9ab87b8498c3ad9ee118ef4c0c04e4912bfb82b1cce6644c6711180fa60d39c"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/portfolio-all-distribution-paired.csv",
+          "sha256": "eac6f0926ecdb6ed29d91e8e986efc987e7aa5d19d765769ea539905c22fe008"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/portfolio-official_overlap-transport-paired.csv",
+          "sha256": "c1e41310bf2e0b04216728a80b023d5b4c05125e3da148afd7612b07c924f799"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/portfolio-official_overlap-composition-paired.csv",
+          "sha256": "3275b973bd2cb3b0c8f51a4a467e1c1bc04a3e5945fc59440c306a823164cd5c"
+        },
+        {
+          "path": "experiments/response-transport/outputs/transport-mlp-s01/cache/portfolio-official_overlap-distribution-paired.csv",
+          "sha256": "9c519adcdc1dcc8e388add4798bb54ca22b6bb7071031ba7405791edfc5ec81f"
+        },
+        {
+          "path": "experiments/response-transport/REPORT.md",
+          "sha256": "8bbc851ae2d8fd7cf49092378c9881cd8809c8dc31a366260d5767ceb7042420"
+        },
+        {
+          "path": "experiments/composition-response/REPORT.md",
+          "sha256": "f70d3c86e66f09d23099596e1e2bd14ac0607594f32d09060aaa749f756523c3"
+        },
+        {
+          "path": "experiments/distribution-response/REPORT.md",
+          "sha256": "f8eae6ccf3601dfdc60f3b36f0e9e9e4cf682d250a4d423315efebbec9a97925"
+        }
+      ],
+      "next_action": "停止三个具体配置的局部调参/消融/额外seed；保留shared控制。下一轮优先跨基因条件解码器和NTC条件细胞VAE两个整包，各一个冻结完整配置；第三槽优先达标方案的新背景确认，均失败时改投新机制。无需线性头或全部先验消融作为入口。",
+      "reopen_when": "新背景或独立实现提供与当前相反的整包信号，或出现明确科学修复/新机制；不因H1小涨分自动重开参数网格。",
+      "overall_effects": {
+        "transport": {
+          "all": -0.1209335653738777,
+          "official_overlap": -0.1462026617357281
+        },
+        "composition": {
+          "all": -0.018670090223241093,
+          "official_overlap": -0.001700541079113882
+        },
+        "distribution": {
+          "all": -0.3331948544227128,
+          "official_overlap": -0.22271335796162708
+        }
+      },
+      "signal_by_package": {
+        "transport": false,
+        "composition": false,
+        "distribution": false
+      },
+      "decision": "stop_current_configurations_and_reallocate_mechanism_search"
     },
     "E-SHARED-QC-OFFICIAL": {
       "kind": "experiment",
@@ -1282,18 +1615,72 @@
       "execution_status": "blocked_daily_submission_allowance",
       "retry_at_utc": "2026-09-29T00:01:00Z",
       "limitations": "只有导出/校验完成；官方每日额度阻塞，尚无entry或官方评分。"
+    },
+    "E-GENE-DECODER-PACKAGE": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-GENE-DECODER-PACKAGE",
+      "node_ids": [
+        "masked-response-shared-s01",
+        "gene-decoder-s01"
+      ],
+      "hypothesis": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？",
+      "claim": "仅登记下一轮机制问题和资源槽位，未训练、无本地有效性证据。",
+      "limitations": "单H1开发问题；具体结构/目标/采样和完整预算需ready前冻结。文献依据不等于本地方法支持。",
+      "source_refs": [],
+      "next_action": "补齐节点unresolved并与另一新机制共同冻结配置，完成一个完整拟合和两个官方面板；不追加前置线性/全消融要求。",
+      "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
+    },
+    "E-CELL-VAE-PACKAGE": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-CELL-VAE-PACKAGE",
+      "node_ids": [
+        "masked-response-shared-s01",
+        "cell-cvae-s01"
+      ],
+      "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
+      "claim": "仅登记下一轮机制问题和资源槽位，未训练、无本地有效性证据。",
+      "limitations": "单H1开发问题；具体结构/目标/采样和完整预算需ready前冻结。文献依据不等于本地方法支持。",
+      "source_refs": [],
+      "next_action": "补齐节点unresolved并与另一新机制共同冻结配置，完成一个完整拟合和两个官方面板；不追加前置线性/全消融要求。",
+      "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
     }
   },
   "queue": [
     {
-      "id": "Q-MECHANISM-SEARCH",
+      "id": "Q-GENE-DECODER-PACKAGE",
       "priority": 1,
-      "comparison_id": "C-MECHANISM-PORTFOLIO",
-      "question": "跨背景神经迁移、组成型logFC+均值校准计数生成、均值/离散度联合计数生成，哪个完整机制值得追加资源？",
-      "action": "三个整包各分配一个完整拟合与两个匹配官方面板评分；全部结果出来后统一分配确认/归因预算。线性/去NTC和GO S3路线保留draft，不作为本轮启动前置。",
+      "comparison_id": "C-GENE-DECODER-PACKAGE",
+      "question": "能否在匹配数据与官方评估下，通过基因间参数共享的完整方案提高预测，并使缺直接监督的target×gene坐标获得可检验的输出？",
+      "action": "优先跨基因条件解码整包，覆盖不局限于当前直接监督坐标；与细胞VAE方案一起在首个结果前冻结，每条一个完整配置。第三槽优先达标方案新背景确认，无信号则换机制。",
       "requires_evidence": [
-        "E-SHARED-QC"
+        "E-MECHANISM-PORTFOLIO"
+      ]
+    },
+    {
+      "id": "Q-CELL-VAE-PACKAGE",
+      "priority": 2,
+      "comparison_id": "C-CELL-VAE-PACKAGE",
+      "question": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
+      "action": "给NTC条件逐细胞生成+联合响应目标一个完整探索槽；不等线性头或完整先验消融，亦不按第一条成绩改本条方案。",
+      "requires_evidence": [
+        "E-MECHANISM-PORTFOLIO"
       ]
     }
-  ]
+  ],
+  "resource_allocation": {
+    "after_evidence": "E-MECHANISM-PORTFOLIO",
+    "unit": "one_predeclared_complete_fit_and_two_matched_official_panels",
+    "exploration_slots": [
+      "C-GENE-DECODER-PACKAGE",
+      "C-CELL-VAE-PACKAGE"
+    ],
+    "third_slot": "unallocated_until_two_new_packages_finish; qualifying package gets new-context confirmation, otherwise a different mechanism",
+    "stopped_local_branches": [
+      "transport-linear-s01",
+      "transport-no-ntc-s01"
+    ],
+    "no_automatic_local_grid": true
+  }
 }
