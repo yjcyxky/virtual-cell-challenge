@@ -121,6 +121,12 @@ frozen_config["research"] = research_metadata
 
 未登记的实验源码、配置和入口变更会被提交检查拦截。历史恢复从其记录的代码版本进行；初始化不修改旧训练源码、输出或 W&B 记录。
 
+### 评估接口修复
+
+完整训练和预测已保存、评估因接口故障未完成时，可沿用原 run 修复适配代码。先保存 `status=failed/interrupted`、`evaluation_completed=false` 的失败快照；在节点登记 `evaluation_repair`：`kind=evaluation_only`、原因、原提交的 `original_code_refs`、准确的 `changed_paths`、快照 `failure_ref`，以及模型、预测清单、每个预测文件和已完成参考 bundle 的 `preserved_refs`。更新当前 `code_refs`，清除已解决 blocker，通过校验并提交后执行 `--resume`。
+
+门禁校验原科学登记、配置、环境和入口不变，逐项核对保留产物哈希。训练的 `research` 仍绑定原提交；修复入口把 `execution_metadata(root, node_id)` 写入最终 metrics 的 `execution` 及本地/W&B config 的执行历史，回收时核验修复在该实际提交上已登记。模型与扰动预测不重算，评分器、reference、anchors、阈值保持冻结。代码审查仍须确认改动确属接口修复；该机制不自动证明算法等价，也不适用于更换评分公式或改写已有有效结果。
+
 ## 关闭证据并决定下一步
 
 自动回收使用 `record` 的同一核验路径；已有符合新结果格式的执行也可手动导入：

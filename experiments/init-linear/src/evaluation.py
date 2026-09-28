@@ -10,6 +10,18 @@ from challenge import build_reference_bundle, score_prediction, scorer_contract
 from model import predict
 
 
+def with_input_controls(prediction, input_controls):
+    """Meet the official pair schema; control_source=real still governs scoring.
+
+    Only input NTC is appended. Perturbed predictions and real reference stay fixed.
+    """
+    if not prediction.var_names.equals(input_controls.var_names):
+        raise ValueError('input control gene axis mismatch')
+    if not input_controls.obs.target_gene.eq(NTC).all() or prediction.obs.target_gene.eq(NTC).any():
+        raise ValueError('control adapter expects target predictions and input NTC only')
+    return ad.concat([input_controls, prediction], join='inner', merge='same')
+
+
 def generate_counts(ntc, delta, seed, n_cells, target_sum):
     rng = np.random.default_rng(seed)
     rows = rng.integers(0, ntc.shape[0], n_cells)
@@ -75,6 +87,7 @@ def evaluate(output, split, config, run):
     if actual != expected:
         raise ValueError('installed cell-eval2 differs from the frozen scorer recipe')
     real_all = ad.read_h5ad(output/'cache/H1-reference.h5ad')
+    input_controls = ad.read_h5ad(output/'cache/H1-input.h5ad')
     measured = np.load(output/'cache/H1-statistics.npz')['positions']
     results = {}
     runtime = config['evaluation']['runtime']
@@ -101,6 +114,7 @@ def evaluate(output, split, config, run):
                     attempt = directory.with_name(directory.name+f'-attempt{suffix}')
                 prediction = ad.read_h5ad(output/'predictions'/f'{arm}.h5ad')
                 prediction = prediction[prediction.obs.target_gene.isin(targets), measured].copy()
+                prediction = with_input_controls(prediction, input_controls)
                 print(f'Official evaluation: {panel}/{arm}', flush=True)
                 result = score_prediction(prediction, real, bundle, attempt, **runtime)
                 aggregate = pd.read_csv(attempt/'aggregate.csv')

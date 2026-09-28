@@ -16,7 +16,7 @@ from model import fit
 from evaluation import generate, evaluate
 
 sys.path.insert(0, str(ROOT/'scripts'))
-from research import bind, digest
+from research import bind, digest, execution_metadata
 
 
 class Tee:
@@ -44,15 +44,22 @@ def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)s %(message)s')
     frozen = dict(config, research=research, lock_ref=ref(output.parents[1]/'uv.lock'),
                   runtime_versions={p: importlib.metadata.version(p) for p in ['numpy','scipy','torch','gpudge','cell-eval2','wandb']})
+    history = []
     if resume:
         previous = yaml.safe_load((output/'config.yaml').read_text())
+        history = previous.pop('execution_history', [])
         if frozen != previous:
             raise ValueError('resume runtime/configuration mismatch')
-    else:
-        (output/'config.yaml').write_text(yaml.safe_dump(frozen, sort_keys=False, allow_unicode=True))
+    execution = execution_metadata(ROOT, config['run_id'])
+    if not history:
+        history.append({'git_commit': research['git_commit'], 'scope': 'original bound training'})
+    if execution not in history:
+        history.append(execution)
+    frozen['execution_history'] = history
+    (output/'config.yaml').write_text(yaml.safe_dump(frozen, sort_keys=False, allow_unicode=True))
     run = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=config['experiment_id'],
                      id=config['run_id'], name=config['run_id'], config=frozen, dir=str(output),
-                     resume='allow' if resume else 'never', mode=config['tracking']['mode'],
+                     resume='allow' if resume else 'never', mode=config['tracking']['mode'], allow_val_change=True,
                      settings=wandb.Settings(init_timeout=120))
     started = time.monotonic()
     try:
@@ -78,7 +85,7 @@ def main():
         generate(output, model, axis, split, config)
         del model
         result = evaluate(output, split, config, run)
-        metrics = {'status': 'completed', 'research': research, 'evaluation_completed': True,
+        metrics = {'status': 'completed', 'research': research, 'execution': execution, 'evaluation_completed': True,
                    'S2': {'Overall': result['all']['linear']['Overall']}, 'evaluation': result,
                    'checkpoint_ref': ref(checkpoint), 'predictions_ref': ref(output/'predictions/manifest.json'),
                    'wandb_url': f'https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{config["run_id"]}',

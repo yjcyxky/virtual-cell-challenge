@@ -102,8 +102,22 @@ def ref_error(root, ref, staged=False):
                 return "reference git_commit must be a full commit hash"
             raw = git(root, "show", f"{ref['git_commit']}:{ref['path']}").stdout
         else:
-            raw = read_bytes(root, ref["path"], staged)
-        actual = hashlib.sha256(raw).hexdigest()
+            # Preserved checkpoints/predictions may be many GiB. Hash ignored
+            # local artifacts in bounded chunks, including during staged checks.
+            if not staged or git(root, "ls-files", "--error-unmatch", "--", ref["path"], check=False).returncode:
+                path = local_path(root, ref["path"])
+                digestor = hashlib.sha256()
+                try:
+                    with path.open('rb') as stream:
+                        while block := stream.read(16 << 20):
+                            digestor.update(block)
+                except OSError as exc:
+                    raise ResearchError(f"cannot read {ref['path']}: {exc}") from exc
+                actual = digestor.hexdigest()
+            else:
+                actual = hashlib.sha256(read_bytes(root, ref['path'], staged)).hexdigest()
+        if "git_commit" in ref:
+            actual = hashlib.sha256(raw).hexdigest()
     except ResearchError as exc:
         return str(exc)
     if actual != ref["sha256"]:
@@ -319,6 +333,36 @@ def validate(root, objects, staged=False):
             if node.get(field):
                 refs(f"node {nid} {field}", [node[field]])
         refs(f"node {nid} code_refs", node.get("code_refs", []))
+        if repair := node.get("evaluation_repair"):
+            try:
+                origin = json.loads(git(root, "show", f"{node['git_commit']}:{FILES['experiment_dag']}").stdout)["nodes"][nid]
+                if repair.get("kind") != "evaluation_only" or not repair.get("reason"):
+                    errors.append(f"node {nid}: evaluation repair requires a reason and evaluation_only kind")
+                if repair.get("original_code_refs") != origin["code_refs"]:
+                    errors.append(f"node {nid}: repair must retain the original committed code references")
+                old = {r['path']: r for r in origin['code_refs']}
+                new = {r['path']: r for r in node['code_refs']}
+                changed = {p for p in old.keys() | new.keys() if old.get(p) != new.get(p)}
+                if changed != set(repair.get('changed_paths', [])) or not changed:
+                    errors.append(f"node {nid}: repair changed_paths must match actual code-reference changes")
+                if any(not (p.startswith(node['directory']+'/src/') and p.endswith('.py') or p == 'scripts/research.py') for p in changed):
+                    errors.append(f"node {nid}: evaluation repair cannot change configuration, environment, or launch contracts")
+                original_spec = {k: origin.get(k) for k in SPEC_FIELDS if k != 'code_refs'}
+                current_spec = {k: node.get(k) for k in SPEC_FIELDS if k != 'code_refs'}
+                if original_spec != current_spec or origin.get('run_id') != node.get('run_id'):
+                    errors.append(f"node {nid}: evaluation repair cannot change the original scientific registration")
+                preserved = repair.get('preserved_refs', [])
+                refs(f"node {nid} preserved evaluation inputs", preserved)
+                refs(f"node {nid} failed evaluation record", [repair.get('failure_ref')])
+                prior = json.loads(read_bytes(root, repair['failure_ref']['path'], staged))
+                if prior.get('status') not in {'failed', 'interrupted'} or prior.get('evaluation_completed') is not False:
+                    errors.append(f"node {nid}: evaluation repair requires an incomplete failed evaluation")
+                if prior.get('research') != metadata(root, objects, nid, node['git_commit']):
+                    errors.append(f"node {nid}: failed evaluation must retain its original research binding")
+                if any(not prior.get(k) or prior[k] not in preserved for k in ('checkpoint_ref','predictions_ref')):
+                    errors.append(f"node {nid}: evaluation repair must preserve the completed checkpoint and predictions")
+            except (ResearchError, ValueError, KeyError, TypeError) as exc:
+                errors.append(f"node {nid}: invalid evaluation repair: {exc}")
         if not node.get("legacy"):
             if node.get("run_id") and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", str(node["run_id"])):
                 errors.append(f"node {nid}: run_id must be a safe path component")
@@ -543,6 +587,10 @@ def metadata(root, objects, nid, commit=None):
     comparison = {key: value for key, value in dag["comparisons"][node["comparison_id"]].items()
                   if key != "status"}
     spec = {field: node.get(field) for field in SPEC_FIELDS}
+    if repair := node.get("evaluation_repair"):
+        # Training identity stays bound to its original code. The new evaluator
+        # has a separate, mandatory execution identity in config and metrics.
+        spec['code_refs'] = repair['original_code_refs']
     if node.get("run_id"):
         spec["run_id"] = node["run_id"]
     return {"node_id": nid, "experiment_id": node["experiment_id"], "method_id": node["method_id"],
@@ -550,6 +598,14 @@ def metadata(root, objects, nid, commit=None):
             "protocol_sha256": digest(protocol), "effective_config_sha256": digest(node["expected_config"]),
             "registration_sha256": digest({"node": spec, "method": method, "protocol": protocol, "comparison": comparison}),
             "git_commit": commit or git(root, "rev-parse", "HEAD").stdout.decode().strip()}
+
+
+def execution_metadata(root, node_id, commit=None):
+    root = Path(root).resolve()
+    node = load(root)['experiment_dag']['nodes'][node_id]
+    return {'git_commit': commit or git(root, 'rev-parse', 'HEAD').stdout.decode().strip(),
+            'code_refs': node['code_refs'],
+            'evaluation_repair_sha256': digest(node['evaluation_repair']) if node.get('evaluation_repair') else None}
 
 
 def gate(root, node_id, *, resume=False, config_path=None):
@@ -593,7 +649,8 @@ def gate(root, node_id, *, resume=False, config_path=None):
         raise ResearchError("\n".join(problems))
     if node.get("git_commit") and node["git_commit"] != git(root, "rev-parse", "HEAD").stdout.decode().strip():
         # Unrelated commits are allowed: only registered files must match.
-        committed(root, paths[3:], node["git_commit"])
+        repaired = set(node.get('evaluation_repair', {}).get('changed_paths', []))
+        committed(root, [p for p in paths[3:] if p not in repaired], node["git_commit"])
     if resume:
         directory = local_path(root, output_directory(node))
         if not any((directory / name).is_file() for name in ("config.yaml", "cache/research-binding.json")) or not node.get("metrics_ref"):
@@ -718,6 +775,18 @@ def _record(root, node_id, metrics_path):
             problem = ref_error(root, result.get(field))
             if problem:
                 raise ResearchError(f"{field}: {problem}")
+        if node.get('evaluation_repair'):
+            execution = result.get('execution', {})
+            revision = execution.get('git_commit')
+            if not isinstance(revision, str) or not re.fullmatch(r'[0-9a-f]{40,64}', revision):
+                raise ResearchError('repaired evaluation requires its actual execution Git commit')
+            if execution != execution_metadata(root, node_id, revision):
+                raise ResearchError('repaired evaluation execution identity mismatch')
+            recorded_node = json.loads(git(root, 'show', f'{revision}:{FILES["experiment_dag"]}').stdout)['nodes'][node_id]
+            if (recorded_node.get('evaluation_repair') != node['evaluation_repair'] or
+                    recorded_node['code_refs'] != node['code_refs']):
+                raise ResearchError('evaluation repair was not registered at its execution commit')
+            committed(root, [r['path'] for r in node['code_refs']], revision)
     wandb_url = result.get("wandb_url")
     if wandb_url and wandb_url != f"https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/{node.get('run_id', node['experiment_id'])}":
         raise ResearchError("metrics.wandb_url does not match the Experiment identity")
@@ -768,7 +837,8 @@ def execute(root, node_id, command, *, resume=False):
             registered = objects["experiment_dag"]["nodes"][node_id]
             registered["status"] = failure_status
             registered["blockers"] = list(dict.fromkeys(registered.get("blockers", []) + [failure]))
-            registered["last_attempt"] = {"status": failure_status, "research": launch_identity, "error": failure}
+            registered["last_attempt"] = {"status": failure_status, "research": launch_identity,
+                                          "execution": execution_metadata(root, node_id), "error": failure}
             if not (directory / "metrics.json").exists() and (directory / "cache/research-binding.json").exists():
                 (directory / "metrics.json").write_text(json.dumps({
                     "status": failure_status, "research": launch_identity,

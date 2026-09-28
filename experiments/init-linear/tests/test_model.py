@@ -7,6 +7,24 @@ from model import solve_ridge, fit
 from evaluation import generate_counts
 
 
+def test_evaluator_adds_input_controls_without_changing_target_predictions():
+    import anndata as ad
+    import pandas as pd
+    import pytest
+    from cell_eval2.io import validate_pair
+    import evaluation
+    genes = pd.DataFrame(index=['G0','G1'])
+    pred = ad.AnnData(sparse.csr_matrix([[1.,2.],[3.,4.]]), obs=pd.DataFrame({'target_gene':['G0','G1']}, index=['p0','p1']), var=genes)
+    control = ad.AnnData(sparse.csr_matrix([[5.,6.]]), obs=pd.DataFrame({'target_gene':['non-targeting']}, index=['input-control']), var=genes)
+    real = ad.concat([control,pred])
+    with pytest.raises(ValueError, match='perturbation sets differ'):
+        validate_pair(pred,real,pert_col='target_gene',control='non-targeting')
+    adapted = evaluation.with_input_controls(pred, control)
+    validate_pair(adapted,real,pert_col='target_gene',control='non-targeting')
+    np.testing.assert_array_equal(adapted[pred.obs_names].X.toarray(),pred.X.toarray())
+    np.testing.assert_array_equal(adapted[control.obs_names].X.toarray(),control.X.toarray())
+
+
 def test_schur_ridge_matches_dense_normal_equations():
     rng = np.random.default_rng(5)
     target = np.array([0, 1, 2, 0, 2, 1, 3])

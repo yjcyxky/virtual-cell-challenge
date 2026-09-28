@@ -926,6 +926,71 @@ class ResearchControlsTests(unittest.TestCase):
         ledger = json.loads((self.root / REGISTRY_DIR / "evidence_ledger.json").read_text())
         self.assertNotIn("E-qc", ledger["evidence"])
 
+    def register_evaluation_repair(self):
+        self.execute("fail", ok=False)
+        self.dag = json.loads((self.root/REGISTRY_DIR/"experiment_dag.json").read_text())
+        node = self.dag["nodes"]["baseline"]
+        metrics = json.loads((self.root/"experiments/baseline/metrics.json").read_text())
+        metrics.update(status="failed", evaluation_completed=False)
+        self.write_json("experiments/baseline/metrics.json", metrics)
+        self.cli("record", "baseline", "--metrics", "experiments/baseline/metrics.json")
+        self.dag = json.loads((self.root/REGISTRY_DIR/"experiment_dag.json").read_text())
+        node = self.dag["nodes"]["baseline"]
+        self.write_json("experiments/baseline/failed-evaluation.json", metrics)
+        original = copy.deepcopy(node["code_refs"])
+        path = self.root/"experiments/baseline/src/main.py"
+        code = path.read_text().replace(
+            "'Overall': 0.5}",
+            "'Overall': 0.5, 'execution': runpy.run_path(sys.argv[1])['execution_metadata'](root,node_id)}")
+        path.write_text(code)
+        node["code_refs"] = [self.file_ref(r["path"]) for r in original]
+        node["blockers"] = []
+        node["evaluation_repair"] = {
+            "kind": "evaluation_only", "reason": "Record the actual repaired evaluator version; unchanged fixture model/predictions.",
+            "original_code_refs": original,
+            "changed_paths": ["experiments/baseline/src/main.py"],
+            "failure_ref": self.file_ref("experiments/baseline/failed-evaluation.json"),
+            "preserved_refs": [metrics["checkpoint_ref"],metrics["predictions_ref"]],
+        }
+        self.write_registries()
+        self.commit()
+        return metrics["research"]
+
+    def test_evaluation_repair_preserves_training_identity_and_records_new_execution(self):
+        original = self.register_evaluation_repair()
+        self.cli("gate", "baseline", "--resume")
+        self.execute("complete", resume=True)
+        metrics = json.loads((self.root/"experiments/baseline/metrics.json").read_text())
+        self.assertEqual(metrics["research"], original)
+        self.assertNotEqual(metrics["execution"]["git_commit"], original["git_commit"])
+        self.assertEqual(self.result_state(), "completed")
+
+    def test_evaluation_repair_rejects_scientific_configuration_changes(self):
+        self.register_evaluation_repair()
+        node = self.dag["nodes"]["baseline"]
+        node["expected_config"]["seed"] = 99
+        self.write_json(node["config_ref"]["path"],node["expected_config"])
+        node["config_ref"] = self.file_ref(node["config_ref"]["path"])
+        self.write_registries();self.commit()
+        self.assertIn("original scientific registration",self.cli("gate","baseline","--resume",ok=False))
+
+    def test_evaluation_repair_rejects_changed_checkpoint(self):
+        self.register_evaluation_repair()
+        self.write("experiments/baseline/checkpoint.bin","changed model")
+        self.assertIn("reference hash changed",self.cli("gate","baseline","--resume",ok=False))
+
+    def test_evaluation_repair_requires_actual_execution_identity(self):
+        self.register_evaluation_repair()
+        self.execute("complete",resume=True)
+        path="experiments/baseline/metrics.json"
+        metrics=json.loads((self.root/path).read_text());metrics.pop("execution")
+        self.write_json(path,metrics)
+        self.dag=json.loads((self.root/REGISTRY_DIR/"experiment_dag.json").read_text())
+        self.dag["nodes"]["baseline"]["status"]="failed"
+        self.dag["nodes"]["baseline"]["metrics_ref"]=self.file_ref(path)
+        self.write_registries();self.commit()
+        self.assertIn("actual execution Git commit",self.cli("record","baseline","--metrics",path,ok=False))
+
     def test_resume_replaces_failed_metrics_after_unrelated_evidence_commit(self):
         self.add_node("unrelated", "base", "unrelated-comparison")
         self.write_registries()

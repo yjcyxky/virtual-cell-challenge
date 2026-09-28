@@ -206,7 +206,7 @@
       "legacy": false,
       "method_id": "M-BASE",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "interrupted",
+      "status": "failed",
       "comparison_id": "C-BASE",
       "controls": [],
       "sources": [],
@@ -293,11 +293,11 @@
       "code_refs": [
         {
           "path": "experiments/init-linear/src/train.py",
-          "sha256": "a90c47e6d3449af39367651992b1b616b3a3993dbdd0f17fcd55780f173696e3"
+          "sha256": "dee03e2b518c7a26b76555cb6856fc6dc23ef94344cbcd52b35a2215edd8fbc5"
         },
         {
           "path": "experiments/init-linear/src/evaluation.py",
-          "sha256": "ab326dd453f473fda1445c82b8a8f0e8380c73514512fc39c615610da3a15f21"
+          "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
         },
         {
           "path": "experiments/init-linear/src/data.py",
@@ -321,7 +321,7 @@
         },
         {
           "path": "scripts/research.py",
-          "sha256": "cdd9e779d95eb25841f8e2a59c958ba38171d0dafef33ed800624d6c0ee94ed1"
+          "sha256": "3f63ba0061aa9dac3728eb05af0c1b248fddda2d28450d026194de2ba1d61d43"
         },
         {
           "path": "scripts/dossier/challenge.py",
@@ -334,7 +334,7 @@
       ],
       "metrics_ref": {
         "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
-        "sha256": "8640c4cc57046fc0282e216dbcd08f9d8f922c1f4e0a2f01b1336f1085607582"
+        "sha256": "0610ac606db2b7cd6588252986e411293c38e3b0fbd733b7bb45dea128e408b7"
       },
       "report_ref": null,
       "git_commit": "26a03062011fe902ee4a2c41cbdc287858ce3561",
@@ -365,7 +365,131 @@
         ]
       },
       "blockers": [],
-      "run_id": "init-linear-s01"
+      "run_id": "init-linear-s01",
+      "last_attempt": {
+        "status": "failed",
+        "research": {
+          "node_id": "init-linear-s01",
+          "experiment_id": "init-linear",
+          "method_id": "M-BASE",
+          "comparison_id": "C-BASE",
+          "protocol_id": "PSEUDO-VCC-INIT",
+          "protocol_sha256": "b1f97adfd8eb350e9c791feac80aa7ede8559e29259ff1d1edffa8deadc175ae",
+          "effective_config_sha256": "4c58f43e74961a669da6b016ed609b279ace5bc2d23cdd6c2d772f5f9fe9c582",
+          "registration_sha256": "ec4c8d4fdb12812a09d0227773273bb37fac436befaaa14058bbbdb76be83f94",
+          "git_commit": "26a03062011fe902ee4a2c41cbdc287858ce3561"
+        },
+        "error": "execution exited 1; completed status rejected"
+      },
+      "evaluation_repair": {
+        "kind": "evaluation_only",
+        "reason": "Official validate_pair requires NTC on both sides. Append existing input NTC in the adapter; retain control_source=real, original model, perturbed predictions, reference and official bundle. No arm score completed before this fix. Track original training and actual evaluation execution separately.",
+        "original_code_refs": [
+          {
+            "path": "experiments/init-linear/src/train.py",
+            "sha256": "a90c47e6d3449af39367651992b1b616b3a3993dbdd0f17fcd55780f173696e3"
+          },
+          {
+            "path": "experiments/init-linear/src/evaluation.py",
+            "sha256": "ab326dd453f473fda1445c82b8a8f0e8380c73514512fc39c615610da3a15f21"
+          },
+          {
+            "path": "experiments/init-linear/src/data.py",
+            "sha256": "4b7637996c89baed3ba5fea3b381a03b17acb0ed6631757aea4c46aa49aaef68"
+          },
+          {
+            "path": "experiments/init-linear/src/model.py",
+            "sha256": "c7796c8ea00c6887f455edc810b33173e46f5cfc14b62904229a320403d29bfe"
+          },
+          {
+            "path": "experiments/init-linear/reproduce.sh",
+            "sha256": "f56010ec6d2825ca90480f7e525353ece3e9cdd87cfd22f6adc570b0ae24c4ef"
+          },
+          {
+            "path": "experiments/init-linear/pyproject.toml",
+            "sha256": "57c109791bae59a7593e7272332e56aa1afc297b63616d5def40cf309ae2457f"
+          },
+          {
+            "path": "experiments/init-linear/uv.lock",
+            "sha256": "aa1d9d73a98203d0acb820f8d7193c9862967b42b0f42fd72a2ce578d2758446"
+          },
+          {
+            "path": "scripts/research.py",
+            "sha256": "cdd9e779d95eb25841f8e2a59c958ba38171d0dafef33ed800624d6c0ee94ed1"
+          },
+          {
+            "path": "scripts/dossier/challenge.py",
+            "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+          },
+          {
+            "path": "scripts/dossier/rna.py",
+            "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+          }
+        ],
+        "changed_paths": [
+          "experiments/init-linear/src/train.py",
+          "experiments/init-linear/src/evaluation.py",
+          "scripts/research.py"
+        ],
+        "failure_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/evaluation-schema-failure.json",
+          "sha256": "0610ac606db2b7cd6588252986e411293c38e3b0fbd733b7bb45dea128e408b7"
+        },
+        "preserved_refs": [
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/checkpoints/ridge.npz",
+            "sha256": "bfb5af829a6ade289dc4a1d2901f56dae20f0353ec5bf0c1dd4393cc9e871e71"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/predictions/manifest.json",
+            "sha256": "cc48f5cfc836cbece8583b2c01496f203fdd53c7ca545e66ba808a179b4cab1e"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/predictions/zero.h5ad",
+            "sha256": "2f3a51e38bba68486e7880aef7ed3f8f3156c0cc9abddebeaecffa653dd7b383"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/predictions/shared.h5ad",
+            "sha256": "5f0fa0e03a03ab3e925e3b62534545e2fc263a2e16120783ae76ffcee951b000"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/predictions/source.h5ad",
+            "sha256": "bacc4a91addbf1c5b92c247249b45c37063b0a33ff452fb417f34530a02eae6c"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/predictions/linear.h5ad",
+            "sha256": "350b5b0d5261dccb271c16a972001d5fee374bb952af96c1db4428b02979eb26"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_agg.parquet",
+            "sha256": "68e6352e986aac89356ef777e569cf678466357ff6c399f52b5cc9989b3f6d53"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_meta.json",
+            "sha256": "e895465045e1866214259755d7d055532d140cb05a95d312fbb7f8619374a5e2"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_splits.parquet",
+            "sha256": "3ff53971f2a29451973c0bd4ac55d0488ea927d065eaa0645419dd89ca52d774"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/baseline_agg.csv",
+            "sha256": "396e964c9f25c48d3729606c7adffc1a7257f94989a2165fd3336b5546f24991"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/baseline_meta.json",
+            "sha256": "f11ffe6ecf2f21a857a18b69c91639f8208589c91645d4405431f1ce9d8494f5"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/manifest.json",
+            "sha256": "0421c9358d81a9e89f0858b45482ca76bc12775e3326bdddebff694d67e2842e"
+          }
+        ]
+      }
     },
     "init-absolute-s01": {
       "experiment_id": "init-absolute-s01",

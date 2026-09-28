@@ -19,7 +19,7 @@
 3. **启动**：新 `reproduce.sh` 通过 `scripts/research.py execute <node_id> -- <训练命令>` 启动，在环境同步/训练前检查登记、冻结引用、已提交代码及前置证据。训练模块解析全部配置后、创建输出/W&B 前调用 `bind(root, node_id, actual_config)`，把返回的 `research` 同时写入实际 config 和 W&B config；CLI 覆盖和默认值不得偏离登记。
 4. **回收**：`execute` 自动核验并登记对应 `outputs/<run_id>/metrics.json` 的状态与结果引用。完整训练结果须包含 `research`、有效主指标、`evaluation_completed`、`checkpoint_ref` 和 `predictions_ref`。训练失败与未完成不能成为方法阴性证据；绑定前失败用 `retry` 检查同条件重试，绑定后用 `--resume` 恢复完整训练状态，管理命令不能代替 checkpoint 恢复。
 5. **结论与决策**：REPORT 给出比较、配对效应、波动与限制，再用 `scripts/research.py close --file <证据JSON>` 将证据和采用/确认/补对照/搁置决定入账。账本包含下一步与重开条件；`status` 将未关闭比较列为待办。工作区或W&B有分数但未入账，不算研究闭环完成。
-6. **提交**：执行 `check --staged`；仓库 pre-commit 同样检查暂存区三对象和新增训练入口。校验失败须修正对象/入口，不能绕过 hook 交付。历史训练代码保持冻结，恢复从其记录的 Git 版本进行。
+6. **提交**：执行 `check --staged`；仓库 pre-commit 同样检查暂存区三对象和新增训练入口。校验失败须修正对象/入口，不能绕过 hook 交付。历史训练代码保持冻结，恢复从其记录的 Git 版本进行；未完成评估的接口修复按 [评估修复登记](docs/RESEARCH.md#评估接口修复) 保留原训练绑定、模型和预测哈希，另记实际执行版本。改变科学条件或使已有有效结果失效仍须新 run。
 
 上述约束覆盖标准启动和提交路径，不能替代科学判断，也不声称能阻止故意绕过入口执行任意代码。维护协议或管理工具时同步更新必要行为测试。
 
