@@ -20,7 +20,7 @@
 1. **登记**：先选可证伪问题。在 Method Space 定义方法，在 DAG 建立比较与实验节点；写清对照、全部实际变化、评估协议、完整生效配置、代码/配置引用、种子、结束条件和结果判据。草案 `design` 不能代替 `expected_config`；按外层划分×靶点分区×seed 为每次独立拟合登记唯一 `run_id`，冻结一致的 `fit_scope`；同一研究路线共用 Experiment 代码和环境。PLAN 引用 `comparison_id`；初始 draft 不创建训练目录或 W&B run。
 2. **校验**：执行 `scripts/research.py check`。单因素比较必须同时通过方法坐标和实际配置差异检查；评估协议不同只作协议诊断。对照关系不等于数据/权重来源，也不自动成为执行前置；需要先有结论时显式声明 `requires_evidence`。
 3. **启动**：新 `reproduce.sh` 通过 `scripts/research.py execute <node_id> -- <训练命令>` 启动，在环境同步/训练前检查登记、冻结引用、已提交代码及前置证据。训练模块解析全部配置后、创建输出/W&B 前调用 `bind(root, node_id, actual_config)`，把返回的 `research` 同时写入实际 config 和 W&B config；CLI 覆盖和默认值不得偏离登记。
-4. **回收**：`execute` 自动核验并登记对应 `outputs/<run_id>/metrics.json` 的状态与结果引用。完整训练结果须包含 `research`、有效主指标、`evaluation_completed`、`checkpoint_ref` 和 `predictions_ref`。训练失败与未完成不能成为方法阴性证据；绑定前失败用 `retry` 检查同条件重试，绑定后用 `--resume` 恢复完整训练状态，管理命令不能代替 checkpoint 恢复。
+4. **回收**：`execute` 自动核验并登记对应 `outputs/<run_id>/metrics.json` 的状态与结果引用。完整训练结果须包含 `research`、有效主指标、`evaluation_completed`、`checkpoint_ref` 和 `predictions_ref`。训练失败与未完成不能成为方法阴性证据；绑定前失败用 `retry` 检查同条件重试，绑定后用 `--resume` 恢复完整训练状态，管理命令不能代替 checkpoint 恢复。**放弃失败条件并改用新 run 时**，按[失败执行归档](docs/RESEARCH.md#失败执行归档)保留原绑定/失败记录、固定代码快照并登记同 Experiment 的替代 run；旧身份禁止重启，仍不是方法证据。
 5. **结论与决策**：REPORT 给出比较、配对效应、波动与限制，再用 `scripts/research.py close --file <证据JSON>` 将证据和采用/确认/补对照/搁置决定入账。账本包含下一步与重开条件；`status` 将未关闭比较列为待办。工作区或W&B有分数但未入账，不算研究闭环完成。
 6. **提交**：执行 `check --staged`；仓库 pre-commit 同样检查暂存区三对象和新增训练入口。校验失败须修正对象/入口，不能绕过 hook 交付。历史训练代码保持冻结，恢复从其记录的 Git 版本进行；未完成评估的接口修复按 [评估修复登记](docs/RESEARCH.md#评估接口修复) 保留原训练绑定、模型和预测哈希，另记实际执行版本。改变科学条件或使已有有效结果失效仍须新 run。
 

@@ -1671,8 +1671,8 @@
         "cell-cvae-s01"
       ],
       "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
-      "claim": "两个机制的代码、完整配置、独立环境和结束条件共同冻结；尚未训练，无本地有效性结论。",
-      "limitations": "单H1开发比较；整包联动只能整体归因，单seed不能确认泛化。训练/生成随机性不增加生物独立性。",
+      "claim": "cell-cvae-s01在训练前因80个训练共有基因未被H1测量而失败，0梯度步、无checkpoint；保留失败身份，不形成方法结论。",
+      "limitations": "输入接口不满足可用测量边界；未完成实验不能记阴性。",
       "source_refs": [
         {
           "path": "experiments/conditional-cell-response/configs/cell-cvae-s01.json",
@@ -1680,10 +1680,43 @@
         },
         {
           "path": "experiments/conditional-cell-response/PLAN.md",
-          "sha256": "e1b37384a21d660284e585caa78c9f1018ea82cc9237d6bd60b9957454b84f03"
+          "sha256": "e1b37384a21d660284e585caa78c9f1018ea82cc9237d6bd60b9957454b84f03",
+          "git_commit": "73809ec8aad342ca7800467415c956d8992a74fe"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-s01/metrics.json",
+          "sha256": "ecb8a1b54fcd323b2ec35d0b43d01e5a5cb2ad7fa0ef855201fb3a2e990dfe62"
+        },
+        {
+          "path": "experiments/conditional-cell-response/outputs/cell-cvae-s01/cache/failure-diagnosis.json",
+          "sha256": "1666ce3b1a4ecd2b4a2d6f603d87ca2a510ef2f93011e374e9464134c574cebc"
         }
       ],
-      "next_action": "按冻结预算完成8192步、全官方轴预测和两个官方面板；两条均完成后按预定门槛统一分配下一轮资源。",
+      "next_action": "旧身份固定代码快照并禁止重启；继续同路线新run cell-cvae-aligned-s01 和独立比较 C-CELL-VAE-ALIGNED-PACKAGE。",
+      "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
+    },
+    "E-CELL-VAE-ALIGNED-PACKAGE": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-CELL-VAE-ALIGNED-PACKAGE",
+      "node_ids": [
+        "masked-response-shared-s01",
+        "cell-cvae-aligned-s01"
+      ],
+      "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
+      "claim": "修复NTC输入可测边界后的完整VAE整包，尚未训练，无本地效力结论。",
+      "limitations": "修复版在解码器评分后重新冻结，不能称全部配置共同冻结；唯一方法条件修正是encoder输入可测轴，预算和其他超参数保持原方案。",
+      "source_refs": [
+        {
+          "path": "experiments/conditional-cell-response/configs/cell-cvae-aligned-s01.json",
+          "sha256": "70401db4d4062a0730990063c8aeaafc6d358febf2b5d99b6479f9a723076923"
+        },
+        {
+          "path": "experiments/conditional-cell-response/PLAN.md",
+          "sha256": "181002d8a03ef8705431f625ce2bc71095f7f6076be260fb7331fc379350a9a8"
+        }
+      ],
+      "next_action": "完成8192步及两个正式面板；保留原失败记录，之后与解码器结果共同分配下一机制预算。",
       "reopen_when": "完整比较完成后按原判据决定扩展、归因或停止。"
     }
   },
@@ -1691,9 +1724,9 @@
     {
       "id": "Q-CELL-VAE-PACKAGE",
       "priority": 1,
-      "comparison_id": "C-CELL-VAE-PACKAGE",
+      "comparison_id": "C-CELL-VAE-ALIGNED-PACKAGE",
       "question": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
-      "action": "给NTC条件逐细胞生成+联合响应目标一个完整探索槽；不等线性头或完整先验消融，亦不按第一条成绩改本条方案。",
+      "action": "训练前NTC测量接口失败已保留；执行cell-cvae-aligned-s01完整8192步，保持原模型/目标/预算，正式两面板后统一决策。",
       "requires_evidence": [
         "E-MECHANISM-PORTFOLIO"
       ]

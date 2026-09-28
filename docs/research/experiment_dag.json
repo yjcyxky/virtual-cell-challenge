@@ -1430,7 +1430,8 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0",
+      "code_snapshot_commit": "73f0c85891ded1f6c372252b65bfb4cc5d767a38"
     },
     "init-program-s01": {
       "experiment_id": "init-linear",
@@ -1717,7 +1718,8 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0",
+      "code_snapshot_commit": "884db94b171386964a5038bbb19fa41c4f0bed62"
     },
     "init-random-program-s01": {
       "experiment_id": "init-linear",
@@ -2004,7 +2006,8 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0",
+      "code_snapshot_commit": "cfb6d7aa4f9024f11b0e05fe3027a920364d33a1"
     },
     "init-pretrained-s01": {
       "experiment_id": "init-pretrained-s01",
@@ -3647,7 +3650,8 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0",
+      "code_snapshot_commit": "e9403c324d8de8c0b97cd5282a1688e5b9e5d6be"
     },
     "masked-response-shared-s01": {
       "experiment_id": "masked-response",
@@ -7135,7 +7139,7 @@
       "legacy": false,
       "method_id": "M-CELL-VAE-PACKAGE",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "failed",
       "comparison_id": "C-CELL-VAE-PACKAGE",
       "controls": [
         "masked-response-shared-s01"
@@ -7467,7 +7471,10 @@
           "sha256": "efd4948398850d2d616ee92c2f3fe3b2aca3980559062bfd55dffa336f44a593"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/conditional-cell-response/outputs/cell-cvae-s01/metrics.json",
+        "sha256": "ecb8a1b54fcd323b2ec35d0b43d01e5a5cb2ad7fa0ef855201fb3a2e990dfe62"
+      },
       "report_ref": null,
       "git_commit": null,
       "wandb_url": null,
@@ -7492,7 +7499,726 @@
         "end_condition": "预定完整训练、全轴预测、两个正式官方面板、模型artifact、配对报告和关闭本比较；不以smoke结束。",
         "freeze_group": "two-learned-packages-before-first-new-result"
       },
-      "blockers": []
+      "blockers": [
+        "execution exited 1; completed status rejected"
+      ],
+      "last_attempt": {
+        "status": "failed",
+        "research": {
+          "node_id": "cell-cvae-s01",
+          "experiment_id": "conditional-cell-response",
+          "method_id": "M-CELL-VAE-PACKAGE",
+          "comparison_id": "C-CELL-VAE-PACKAGE",
+          "protocol_id": "PSEUDO-VCC-INIT",
+          "protocol_sha256": "b1f97adfd8eb350e9c791feac80aa7ede8559e29259ff1d1edffa8deadc175ae",
+          "effective_config_sha256": "3eeac5fb6e77ce1e0ed25293a07250d7ee2cb78fc903dab7ae9c68f6971c1a7e",
+          "registration_sha256": "2dff6168ec48d11645647ef79db59437af72e31af3fcd7849e47154aeb8d7b3f",
+          "git_commit": "73809ec8aad342ca7800467415c956d8992a74fe"
+        },
+        "execution": {
+          "git_commit": "73809ec8aad342ca7800467415c956d8992a74fe",
+          "code_refs": [
+            {
+              "path": "experiments/conditional-cell-response/PLAN.md",
+              "sha256": "e1b37384a21d660284e585caa78c9f1018ea82cc9237d6bd60b9957454b84f03"
+            },
+            {
+              "path": "experiments/conditional-cell-response/configs/cell-cvae-s01.json",
+              "sha256": "a1798d72580a60db7f78471887a35248623cbd13d66cc53b6a5a5586b4b72429"
+            },
+            {
+              "path": "experiments/conditional-cell-response/configs/moment-reuse.json",
+              "sha256": "8766b48e1595bda8b0804ee81ddc20147b60ec260e2b3779bb849e52dc31969b"
+            },
+            {
+              "path": "experiments/conditional-cell-response/pyproject.toml",
+              "sha256": "42ccbc9699f1f8433136afcf1af90f1a8a09d6d0bfe9d749058db77e58248ca4"
+            },
+            {
+              "path": "experiments/conditional-cell-response/reproduce.sh",
+              "sha256": "88d00eac2cd4927ec5178f230793559f0e4425d8539a48de0cea78805e09d4ca"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/model.py",
+              "sha256": "df90c48e0fe2dfe73d0171465901d6da511be473c45a9c0192b48feb61ca38c7"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/runtime.py",
+              "sha256": "995fc30b4b7854182733a10145bef5aadef035092ac5dfd50d1cbb60bcf46389"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/test_contracts.py",
+              "sha256": "7af88515be1d5a0437bc60541a7e38fc7f171e6c9a98d179f3d60252fb603e3b"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/train.py",
+              "sha256": "f82e4f2b59b00b029e6435fcb2f34aa073df46e73a00c0f6d662cc39b8eafcdd"
+            },
+            {
+              "path": "experiments/conditional-cell-response/uv.lock",
+              "sha256": "5b065230383ec1fc4651cc6cae618af2230d47e25477ba2c46be94f9227d091b"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+              "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+              "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+              "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+              "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+              "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+            },
+            {
+              "path": "experiments/gene-conditioned-response/PLAN.md",
+              "sha256": "2b873d28a408227da8963847015ee3b717eea29f2ca688762ccc40db2d2abc30"
+            },
+            {
+              "path": "experiments/init-linear/configs/reuse-reference-results-s2-h1.json",
+              "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
+            },
+            {
+              "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+              "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+            },
+            {
+              "path": "experiments/init-linear/src/data.py",
+              "sha256": "c24ea917769f9236859a07b1983756a19022fcfbb85106c818c41c58dec3fb43"
+            },
+            {
+              "path": "experiments/init-linear/src/evaluation.py",
+              "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
+            },
+            {
+              "path": "experiments/init-linear/src/representation.py",
+              "sha256": "070b69dc8d7eb8ca14c0071bd3163b388db2e70105bf93ac45383e89ddb09cc0"
+            },
+            {
+              "path": "experiments/masked-response/configs/shared-control-scores.json",
+              "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+            },
+            {
+              "path": "scripts/dossier/challenge.py",
+              "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+            },
+            {
+              "path": "scripts/dossier/heterogeneity.py",
+              "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+            },
+            {
+              "path": "scripts/dossier/profile_responses.py",
+              "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+            },
+            {
+              "path": "scripts/dossier/render.py",
+              "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+            },
+            {
+              "path": "scripts/dossier/response.py",
+              "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+            },
+            {
+              "path": "scripts/dossier/rna.py",
+              "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+            },
+            {
+              "path": "scripts/research.py",
+              "sha256": "2301a133b7a602ea02e886dc47732ca63d7851c69222ff790f9499598d2f6681"
+            },
+            {
+              "path": "src/vcc_mechanism/__init__.py",
+              "sha256": "8b86146f8effae4b23b80f5ef1fa49ba45d4e5f570e7e113705eb6fa447422ab"
+            },
+            {
+              "path": "src/vcc_mechanism/cell_inputs.py",
+              "sha256": "7b2888cb0373027356eb9e534c784aae3805cd3e1fea6c3dec3e2caa7e8d2452"
+            },
+            {
+              "path": "src/vcc_mechanism/diagnostics.py",
+              "sha256": "0c10a4753209abb763369c079d6624780bf956ccdcbd743237120812a8c2664c"
+            },
+            {
+              "path": "src/vcc_mechanism/inputs.py",
+              "sha256": "df91489e26feb29424ac13e787d66f0089ae29f814fefca9e0e2c7468f6c1706"
+            },
+            {
+              "path": "src/vcc_mechanism/learning.py",
+              "sha256": "902b02433a8c3c2bc118afe09dfd7690f89d20eb42451b08f166c7e535b79c3b"
+            },
+            {
+              "path": "src/vcc_mechanism/population.py",
+              "sha256": "bb6513f03b2950dd19f901c21f9aebcb1c77f812200a6a7128d1a93d506fb353"
+            },
+            {
+              "path": "src/vcc_mechanism/runner.py",
+              "sha256": "efd4948398850d2d616ee92c2f3fe3b2aca3980559062bfd55dffa336f44a593"
+            }
+          ],
+          "evaluation_repair_sha256": null
+        },
+        "error": "execution exited 1; completed status rejected"
+      },
+      "code_snapshot_commit": "73809ec8aad342ca7800467415c956d8992a74fe",
+      "superseded_by": "cell-cvae-aligned-s01",
+      "superseded_reason": "Input encoder support assertion rejected 80 unmeasured H1 genes before fitting; new run explicitly freezes the 6123-gene NTC input support while retaining full output/likelihood axes."
+    },
+    "cell-cvae-aligned-s01": {
+      "experiment_id": "conditional-cell-response",
+      "directory": "experiments/conditional-cell-response",
+      "run_id": "cell-cvae-aligned-s01",
+      "legacy": false,
+      "method_id": "M-CELL-VAE-PACKAGE",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "ready",
+      "comparison_id": "C-CELL-VAE-ALIGNED-PACKAGE",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01",
+        "masked-response-shared-s01",
+        "composition-lfc-s01"
+      ],
+      "requires_evidence": [
+        "E-MECHANISM-PORTFOLIO"
+      ],
+      "evidence_conditions": {
+        "E-MECHANISM-PORTFOLIO": [
+          "not_supported"
+        ]
+      },
+      "config_ref": {
+        "path": "experiments/conditional-cell-response/configs/cell-cvae-aligned-s01.json",
+        "sha256": "70401db4d4062a0730990063c8aeaafc6d358febf2b5d99b6479f9a723076923"
+      },
+      "expected_config": {
+        "seed": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          }
+        },
+        "data": {
+          "chunk_rows": 2048,
+          "target_sum": 10000,
+          "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+          "qc": "frozen_correctness_only"
+        },
+        "generation": {
+          "kind": "standard_normal_latent_NTC_library_learned_Gamma_Poisson",
+          "cells_per_target": 400,
+          "paired_rng": "seed_plus_frozen_target_index",
+          "missing_input": "zero_baseline_and_zero_delta_with_mask",
+          "missing_training_output": "zero_learned_adjustment; NTC_dispersion_only",
+          "unseen_target": "zero_delta_NTC_resample"
+        },
+        "evaluation": {
+          "arms": [
+            "linear"
+          ],
+          "single_source": "K562",
+          "panels": [
+            "all",
+            "official_overlap"
+          ],
+          "runtime": {
+            "device": "cuda",
+            "num_threads": 8,
+            "pert_chunk": 16
+          }
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "reuse": {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        "experiment_id": "conditional-cell-response",
+        "run_id": "cell-cvae-aligned-s01",
+        "control_refs": {
+          "metrics": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/metrics.json",
+            "sha256": "efd38d8f84edbdc6b88b21a09ca5bf6bdaec3e93f2a24ac8d7b900f7e08d0f43"
+          },
+          "config": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/config.yaml",
+            "sha256": "79ed320c70b420926a78ff126ace98fc64b2e40aa265f2a7a62e0ae6fb3505d8"
+          },
+          "checkpoint": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/checkpoints/response.npz",
+            "sha256": "6f8ace646c36990c392f3752e74026c23ecb215fb08477efef2d11426659bd03"
+          },
+          "predictions": {
+            "path": "experiments/masked-response/outputs/masked-response-shared-s01/predictions/manifest.json",
+            "sha256": "2accba8fa623fb2b3ffc56ea0040e4e76f997cfce7e8e1734a3b0e7afc72439c"
+          },
+          "scores": {
+            "path": "experiments/masked-response/configs/shared-control-scores.json",
+            "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+          }
+        },
+        "diagnostics": {
+          "seed": 400001,
+          "alpha": 0.05,
+          "kind": "disjoint_ntc_Welch_BH_logCPM_secondary_only"
+        },
+        "identities": {
+          "path": "data/raw/networks/hgnc_complete_set.txt",
+          "sha256": "9e07bb49393c12aca8bc931a4349010404c24994a8a58745c14676b8c2b74492"
+        },
+        "moment_reuse": {
+          "path": "experiments/conditional-cell-response/configs/moment-reuse.json",
+          "sha256": "8766b48e1595bda8b0804ee81ddc20147b60ec260e2b3779bb849e52dc31969b"
+        },
+        "model": {
+          "kind": "NTC_conditioned_count_CVAE_with_source_response_offset",
+          "end_condition": "8192_fixed_steps_last_checkpoint_both_official_panels"
+        },
+        "cvae": {
+          "device": "cuda",
+          "steps": 8192,
+          "learning_rate": 0.001,
+          "weight_decay": 0.0001,
+          "gradient_clip": 1.0,
+          "checkpoint_every": 256,
+          "hidden": 128,
+          "rank": 64,
+          "response_scale": 0.5,
+          "ntc_scale": 5.0,
+          "magnitude_weight": 4.0,
+          "direction_threshold": 0.05,
+          "direction_weight": 0.02,
+          "checkpoint_selection": "fixed_last",
+          "activation": "SiLU",
+          "precision": "float32",
+          "deterministic_algorithms": true,
+          "batch_cells": 128,
+          "latent": 16,
+          "target_dimensions": 32,
+          "ntc_dimensions": 64,
+          "kl_weight": 0.01,
+          "kl_warmup_steps": 1024,
+          "auxiliary_weight": 0.1,
+          "pseudocount": 0.1,
+          "dispersion_min": 0.0001,
+          "dispersion_max": 20.0,
+          "dispersion_log_min": -5.0,
+          "dispersion_log_max": 3.0,
+          "posterior_logvar_min": -8.0,
+          "posterior_logvar_max": 6.0,
+          "log_shift_clip": 8.0,
+          "pool_seed": 2718,
+          "cells_per_condition": 64,
+          "ntc_pool_cells": 4096,
+          "ntc_fraction": 0.1,
+          "sampling": "uniform_background_then_uniform_target_then_uniform_frozen_cell_pool; NTC_probability_0.1",
+          "pool_selection": "uniform_without_replacement_max64_per_perturbation; auxiliary_uses_all_allowed_cells",
+          "ntc_encoder": "two_layer_MLP_of_mean_logCPM_on_training_common_measured_genes",
+          "posterior": "two_layer_MLP_of_cell_logCPM_minus_NTC_mean_and_condition; training_only",
+          "prior": "standard_normal_16_dimensions",
+          "decoder": "NTC_arithmetic_profile+cell_count_weighted_shared_LFC+condition_mean_lowrank+centered_latent_lowrank; softmax_with_actual_library",
+          "output_initial_std": 0.01,
+          "mean_coefficient_initialization": "zero_last_layer",
+          "likelihood": "mean_gene_NB_NLL_with_learned_global_log_dispersion_offset_from_context_NTC_moment_prior",
+          "auxiliary": "full_population_arithmetic_LFC_magnitude_weighted_scaled_MSE_plus_active_direction_softplus",
+          "loss": "NB_NLL+0.1*auxiliary+warmup_0.01*sum_dimension_KL",
+          "unmeasured_training_genes": "no_likelihood_or_auxiliary; zero_learned_coefficients_at_generation",
+          "unseen_target": "no_ID_inference; zero_delta_resampled_NTC",
+          "optimizer_betas": [
+            0.9,
+            0.999
+          ],
+          "optimizer_epsilon": 1e-08,
+          "other_linear_initialization": "torch_2.14_Linear_reset_parameters",
+          "embedding_initialization": "normal_0_1_padding_zero",
+          "ntc_encoder_support": "training_common_intersect_heldout_input_measured_mask_6123; likelihood_and_output_axes_unchanged"
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/conditional-cell-response/PLAN.md",
+          "sha256": "181002d8a03ef8705431f625ce2bc71095f7f6076be260fb7331fc379350a9a8"
+        },
+        {
+          "path": "experiments/conditional-cell-response/configs/cell-cvae-aligned-s01.json",
+          "sha256": "70401db4d4062a0730990063c8aeaafc6d358febf2b5d99b6479f9a723076923"
+        },
+        {
+          "path": "experiments/conditional-cell-response/configs/cell-cvae-s01.json",
+          "sha256": "a1798d72580a60db7f78471887a35248623cbd13d66cc53b6a5a5586b4b72429"
+        },
+        {
+          "path": "experiments/conditional-cell-response/configs/moment-reuse.json",
+          "sha256": "8766b48e1595bda8b0804ee81ddc20147b60ec260e2b3779bb849e52dc31969b"
+        },
+        {
+          "path": "experiments/conditional-cell-response/pyproject.toml",
+          "sha256": "42ccbc9699f1f8433136afcf1af90f1a8a09d6d0bfe9d749058db77e58248ca4"
+        },
+        {
+          "path": "experiments/conditional-cell-response/reproduce.sh",
+          "sha256": "ddf721a6415c959aa71c646855e86c12ae4e4a50b1c1ca588a49d9a14845148d"
+        },
+        {
+          "path": "experiments/conditional-cell-response/src/model.py",
+          "sha256": "a79bb7263b606a09e06c672cd0fee022394296a4dfd20024fff3f35a8651887f"
+        },
+        {
+          "path": "experiments/conditional-cell-response/src/runtime.py",
+          "sha256": "995fc30b4b7854182733a10145bef5aadef035092ac5dfd50d1cbb60bcf46389"
+        },
+        {
+          "path": "experiments/conditional-cell-response/src/test_contracts.py",
+          "sha256": "6cc8c85a1fbc6004fa9e58712bf4cb66097ef04400327529f005b1343899a247"
+        },
+        {
+          "path": "experiments/conditional-cell-response/src/train.py",
+          "sha256": "f82e4f2b59b00b029e6435fcb2f34aa073df46e73a00c0f6d662cc39b8eafcdd"
+        },
+        {
+          "path": "experiments/conditional-cell-response/uv.lock",
+          "sha256": "5b065230383ec1fc4651cc6cae618af2230d47e25477ba2c46be94f9227d091b"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+          "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+          "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+          "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+          "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+          "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+        },
+        {
+          "path": "experiments/gene-conditioned-response/PLAN.md",
+          "sha256": "2b873d28a408227da8963847015ee3b717eea29f2ca688762ccc40db2d2abc30"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-reference-results-s2-h1.json",
+          "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        {
+          "path": "experiments/init-linear/src/data.py",
+          "sha256": "c24ea917769f9236859a07b1983756a19022fcfbb85106c818c41c58dec3fb43"
+        },
+        {
+          "path": "experiments/init-linear/src/evaluation.py",
+          "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
+        },
+        {
+          "path": "experiments/init-linear/src/representation.py",
+          "sha256": "070b69dc8d7eb8ca14c0071bd3163b388db2e70105bf93ac45383e89ddb09cc0"
+        },
+        {
+          "path": "experiments/masked-response/configs/shared-control-scores.json",
+          "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/heterogeneity.py",
+          "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+        },
+        {
+          "path": "scripts/dossier/profile_responses.py",
+          "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+        },
+        {
+          "path": "scripts/dossier/render.py",
+          "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+        },
+        {
+          "path": "scripts/dossier/response.py",
+          "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+        },
+        {
+          "path": "scripts/tests/test_research.py",
+          "sha256": "a607abd0c3140fbb0e8dd725ed9529fdb23895d72711b5ac4981dbd13a44dc8f"
+        },
+        {
+          "path": "src/vcc_mechanism/__init__.py",
+          "sha256": "8b86146f8effae4b23b80f5ef1fa49ba45d4e5f570e7e113705eb6fa447422ab"
+        },
+        {
+          "path": "src/vcc_mechanism/cell_inputs.py",
+          "sha256": "7b2888cb0373027356eb9e534c784aae3805cd3e1fea6c3dec3e2caa7e8d2452"
+        },
+        {
+          "path": "src/vcc_mechanism/diagnostics.py",
+          "sha256": "0c10a4753209abb763369c079d6624780bf956ccdcbd743237120812a8c2664c"
+        },
+        {
+          "path": "src/vcc_mechanism/inputs.py",
+          "sha256": "df91489e26feb29424ac13e787d66f0089ae29f814fefca9e0e2c7468f6c1706"
+        },
+        {
+          "path": "src/vcc_mechanism/learning.py",
+          "sha256": "902b02433a8c3c2bc118afe09dfd7690f89d20eb42451b08f166c7e535b79c3b"
+        },
+        {
+          "path": "src/vcc_mechanism/population.py",
+          "sha256": "bb6513f03b2950dd19f901c21f9aebcb1c77f812200a6a7128d1a93d506fb353"
+        },
+        {
+          "path": "src/vcc_mechanism/runner.py",
+          "sha256": "efd4948398850d2d616ee92c2f3fe3b2aca3980559062bfd55dffa336f44a593"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
+        "source_usage": "固定35个输入/bundle与独立shared控制；CVAE额外复用固定composition矩，仅输入不复用阴性权重。",
+        "allocation": "下一轮两个机制探索槽之一；各一个冻结完整拟合和两个正式面板，两个方案在首个结果前共同冻结；第三槽留给达标方案的新背景确认，均失败则转其他机制。",
+        "unresolved": [],
+        "end_condition": "预定完整训练、全轴预测、两个正式官方面板、模型artifact、配对报告和关闭本比较；不以smoke结束。",
+        "freeze_group": "original-package-c180c39; corrected-NTC-input-support-after-gene-result-no-hyperparameter-selection",
+        "input_correction": {
+          "failed_run": "cell-cvae-s01",
+          "reason": "80 of 6203 training-common genes unmeasured in H1; encoder support=6123 allowed-NTC intersection only",
+          "failure_ref": {
+            "path": "experiments/conditional-cell-response/outputs/cell-cvae-s01/cache/failure-diagnosis.json",
+            "sha256": "1666ce3b1a4ecd2b4a2d6f603d87ca2a510ef2f93011e374e9464134c574cebc"
+          },
+          "preserved": "full output/likelihood axes, scorer, data populations, loss, budget, sampling and all hyperparameters"
+        }
+      },
+      "blockers": [],
+      "last_attempt": {
+        "status": "failed",
+        "research": {
+          "node_id": "cell-cvae-s01",
+          "experiment_id": "conditional-cell-response",
+          "method_id": "M-CELL-VAE-PACKAGE",
+          "comparison_id": "C-CELL-VAE-PACKAGE",
+          "protocol_id": "PSEUDO-VCC-INIT",
+          "protocol_sha256": "b1f97adfd8eb350e9c791feac80aa7ede8559e29259ff1d1edffa8deadc175ae",
+          "effective_config_sha256": "3eeac5fb6e77ce1e0ed25293a07250d7ee2cb78fc903dab7ae9c68f6971c1a7e",
+          "registration_sha256": "2dff6168ec48d11645647ef79db59437af72e31af3fcd7849e47154aeb8d7b3f",
+          "git_commit": "73809ec8aad342ca7800467415c956d8992a74fe"
+        },
+        "execution": {
+          "git_commit": "73809ec8aad342ca7800467415c956d8992a74fe",
+          "code_refs": [
+            {
+              "path": "experiments/conditional-cell-response/PLAN.md",
+              "sha256": "e1b37384a21d660284e585caa78c9f1018ea82cc9237d6bd60b9957454b84f03"
+            },
+            {
+              "path": "experiments/conditional-cell-response/configs/cell-cvae-s01.json",
+              "sha256": "a1798d72580a60db7f78471887a35248623cbd13d66cc53b6a5a5586b4b72429"
+            },
+            {
+              "path": "experiments/conditional-cell-response/configs/moment-reuse.json",
+              "sha256": "8766b48e1595bda8b0804ee81ddc20147b60ec260e2b3779bb849e52dc31969b"
+            },
+            {
+              "path": "experiments/conditional-cell-response/pyproject.toml",
+              "sha256": "42ccbc9699f1f8433136afcf1af90f1a8a09d6d0bfe9d749058db77e58248ca4"
+            },
+            {
+              "path": "experiments/conditional-cell-response/reproduce.sh",
+              "sha256": "88d00eac2cd4927ec5178f230793559f0e4425d8539a48de0cea78805e09d4ca"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/model.py",
+              "sha256": "df90c48e0fe2dfe73d0171465901d6da511be473c45a9c0192b48feb61ca38c7"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/runtime.py",
+              "sha256": "995fc30b4b7854182733a10145bef5aadef035092ac5dfd50d1cbb60bcf46389"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/test_contracts.py",
+              "sha256": "7af88515be1d5a0437bc60541a7e38fc7f171e6c9a98d179f3d60252fb603e3b"
+            },
+            {
+              "path": "experiments/conditional-cell-response/src/train.py",
+              "sha256": "f82e4f2b59b00b029e6435fcb2f34aa073df46e73a00c0f6d662cc39b8eafcdd"
+            },
+            {
+              "path": "experiments/conditional-cell-response/uv.lock",
+              "sha256": "5b065230383ec1fc4651cc6cae618af2230d47e25477ba2c46be94f9227d091b"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+              "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+              "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+              "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+              "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+            },
+            {
+              "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+              "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+            },
+            {
+              "path": "experiments/gene-conditioned-response/PLAN.md",
+              "sha256": "2b873d28a408227da8963847015ee3b717eea29f2ca688762ccc40db2d2abc30"
+            },
+            {
+              "path": "experiments/init-linear/configs/reuse-reference-results-s2-h1.json",
+              "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
+            },
+            {
+              "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+              "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+            },
+            {
+              "path": "experiments/init-linear/src/data.py",
+              "sha256": "c24ea917769f9236859a07b1983756a19022fcfbb85106c818c41c58dec3fb43"
+            },
+            {
+              "path": "experiments/init-linear/src/evaluation.py",
+              "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
+            },
+            {
+              "path": "experiments/init-linear/src/representation.py",
+              "sha256": "070b69dc8d7eb8ca14c0071bd3163b388db2e70105bf93ac45383e89ddb09cc0"
+            },
+            {
+              "path": "experiments/masked-response/configs/shared-control-scores.json",
+              "sha256": "4613810dc6f644faed4740681a7bc810fa426e65dc68f4c4512d5bc8af3b2113"
+            },
+            {
+              "path": "scripts/dossier/challenge.py",
+              "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+            },
+            {
+              "path": "scripts/dossier/heterogeneity.py",
+              "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+            },
+            {
+              "path": "scripts/dossier/profile_responses.py",
+              "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+            },
+            {
+              "path": "scripts/dossier/render.py",
+              "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+            },
+            {
+              "path": "scripts/dossier/response.py",
+              "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+            },
+            {
+              "path": "scripts/dossier/rna.py",
+              "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+            },
+            {
+              "path": "scripts/research.py",
+              "sha256": "2301a133b7a602ea02e886dc47732ca63d7851c69222ff790f9499598d2f6681"
+            },
+            {
+              "path": "src/vcc_mechanism/__init__.py",
+              "sha256": "8b86146f8effae4b23b80f5ef1fa49ba45d4e5f570e7e113705eb6fa447422ab"
+            },
+            {
+              "path": "src/vcc_mechanism/cell_inputs.py",
+              "sha256": "7b2888cb0373027356eb9e534c784aae3805cd3e1fea6c3dec3e2caa7e8d2452"
+            },
+            {
+              "path": "src/vcc_mechanism/diagnostics.py",
+              "sha256": "0c10a4753209abb763369c079d6624780bf956ccdcbd743237120812a8c2664c"
+            },
+            {
+              "path": "src/vcc_mechanism/inputs.py",
+              "sha256": "df91489e26feb29424ac13e787d66f0089ae29f814fefca9e0e2c7468f6c1706"
+            },
+            {
+              "path": "src/vcc_mechanism/learning.py",
+              "sha256": "902b02433a8c3c2bc118afe09dfd7690f89d20eb42451b08f166c7e535b79c3b"
+            },
+            {
+              "path": "src/vcc_mechanism/population.py",
+              "sha256": "bb6513f03b2950dd19f901c21f9aebcb1c77f812200a6a7128d1a93d506fb353"
+            },
+            {
+              "path": "src/vcc_mechanism/runner.py",
+              "sha256": "efd4948398850d2d616ee92c2f3fe3b2aca3980559062bfd55dffa336f44a593"
+            }
+          ],
+          "evaluation_repair_sha256": null
+        },
+        "error": "execution exited 1; completed status rejected"
+      }
     }
   },
   "comparisons": {
@@ -8522,6 +9248,60 @@
       "cost": "high",
       "priority_basis": "用户要求扩大搜索范围与按价值配置资源；不再为失败小步方案追加局部问题。",
       "evidence_id": "E-CELL-VAE-PACKAGE"
+    },
+    "C-CELL-VAE-ALIGNED-PACKAGE": {
+      "status": "ready",
+      "purpose": "integrate",
+      "hypothesis": "能否用NTC条件逐细胞生成及联合响应目标的完整方案，改善单一MSE/解析矩方案在表达误差和DE表现之间的取舍？",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "candidates": [
+        "cell-cvae-aligned-s01"
+      ],
+      "changed_axes": [
+        "T",
+        "D",
+        "R",
+        "A",
+        "L",
+        "I",
+        "G"
+      ],
+      "changed_fields": [
+        "control_refs",
+        "cvae",
+        "diagnostics",
+        "generation.kind",
+        "generation.missing_training_output",
+        "generation.unseen_target",
+        "identities",
+        "model.clamp",
+        "model.completion_alpha",
+        "model.end_condition",
+        "model.gene_chunk",
+        "model.kind",
+        "model.missing_output",
+        "model.reconstruction_weights",
+        "model.weight_cell_unit",
+        "moment_reuse",
+        "reference_reuse",
+        "representation"
+      ],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1；280主面板/25官方重叠，H1开发证据。",
+        "on_support": "作为整包signal，优先分配第三槽的新背景确认及必要归因；不要求此前线性头证明。",
+        "on_against": "停止当前配置，不自动转H1参数网格；两个探索槽均失败则第三槽转另一个机制。",
+        "on_inconclusive": "恢复完整训练或修正可比条件；未完成不能成为阴性证据。",
+        "threshold_policy": "主面板至少+0.02且官方重叠至少−0.02为开发signal；单seed不确认泛化。"
+      },
+      "attribution_plan": "完整方案可联动T/A/L/I等轴，全部实际变化在ready前冻结；先判断整体价值，再对有价值方案安排匹配归因。",
+      "cost": "high",
+      "priority_basis": "用户要求扩大搜索范围与按价值配置资源；不再为失败小步方案追加局部问题。",
+      "evidence_id": "E-CELL-VAE-ALIGNED-PACKAGE"
     }
   },
   "continuation_rules": {

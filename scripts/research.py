@@ -333,15 +333,33 @@ def validate(root, objects, staged=False):
             if node.get(field):
                 refs(f"node {nid} {field}", [node[field]])
         code_refs = node.get("code_refs", [])
+        if node.get('superseded_by') and not node.get('code_snapshot_commit'):
+            errors.append(f"node {nid}: superseded execution requires an immutable code snapshot")
         if snapshot := node.get("code_snapshot_commit"):
-            # Completed runs retain their original registration byte-for-byte.
-            # Resolve code at the recorded execution, while newer runs evolve
-            # the same Experiment. This never permits resuming archived code.
+            # Completed or explicitly abandoned failed runs retain their binding.
+            # A superseded failure remains a failure and can never be resumed.
             try:
                 result = json.loads(read_bytes(root, node['metrics_ref']['path'], staged))
                 execution = result.get('execution', result.get('research', {}))
-                if node.get('status') != 'completed' or result.get('status') != 'completed':
-                    raise ResearchError('code snapshot requires a completed run')
+                completed = node.get('status') == result.get('status') == 'completed'
+                failed = (node.get('status') == result.get('status') and result.get('status') in {'failed', 'interrupted'}
+                          and result.get('evaluation_completed') is False)
+                replacement = dag['nodes'].get(node.get('superseded_by'), {})
+                superseded = (failed and node.get('superseded_reason') and node.get('superseded_by') != nid
+                              and replacement.get('experiment_id') == node.get('experiment_id')
+                              and not replacement.get('legacy', False))
+                if not completed and not superseded:
+                    raise ResearchError('code snapshot requires a completed run or an explicitly superseded failed run in the same Experiment')
+                if completed and node.get('superseded_by'):
+                    raise ResearchError('supersession is only for failed/interrupted executions')
+                seen_replacements = {nid}
+                cursor = node
+                while cursor.get('superseded_by'):
+                    successor = cursor['superseded_by']
+                    if successor in seen_replacements:
+                        raise ResearchError('supersession cycle')
+                    seen_replacements.add(successor)
+                    cursor = dag['nodes'].get(successor, {})
                 if snapshot != execution.get('git_commit'):
                     raise ResearchError('code snapshot must equal the recorded execution commit')
                 recorded = {name: json.loads(git(root, 'show', f'{snapshot}:{path}').stdout)
@@ -643,6 +661,8 @@ def gate(root, node_id, *, resume=False, config_path=None):
         raise ResearchError(f"unknown node {node_id}")
     if node.get("legacy"):
         raise ResearchError(f"{node_id}: legacy results are read-only; create a new Experiment")
+    if node.get('superseded_by'):
+        raise ResearchError(f"{node_id}: superseded by {node['superseded_by']}; cannot resume or restart this archived execution")
     allowed = {"failed", "interrupted"} if resume else {"ready"}
     if node.get("status") not in allowed:
         raise ResearchError(f"{node_id}: status {node.get('status')} cannot {'resume' if resume else 'start'}")

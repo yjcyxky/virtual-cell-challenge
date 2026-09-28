@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 BASE_PYTHON=/home/jy001/micromamba/envs/virtual-cell/bin/python
-RUN_ID=cell-cvae-s01
+RUN_ID=cell-cvae-aligned-s01
 RESUME=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -12,7 +12,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 case "$RUN_ID" in
-  cell-cvae-s01)
+  cell-cvae-s01|cell-cvae-aligned-s01)
     CONFIG="configs/$RUN_ID.json" ;;
   *) echo "Unknown run: $RUN_ID" >&2; exit 2 ;;
 esac

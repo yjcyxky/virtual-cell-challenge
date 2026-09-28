@@ -4,12 +4,22 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+import pytest
 from scipy import sparse
 import model
 from vcc_mechanism.cell_inputs import choose_cells
 from vcc_mechanism.learning import save_state,restore_state,optimizer_for
 
-SPEC=json.loads((Path(__file__).resolve().parents[1]/'configs/cell-cvae-s01.json').read_text())['cvae']
+SPEC=json.loads((Path(__file__).resolve().parents[1]/'configs/cell-cvae-aligned-s01.json').read_text())['cvae']
+
+
+def test_ntc_encoder_handles_missing_heldout_input_without_shrinking_output():
+    training=[{'positions':np.array([0,1,2]),'labels':['non-targeting','T']}] * 4
+    heldout={'positions':np.array([1,2,3]),'labels':['non-targeting']}
+    np.testing.assert_array_equal(model.encoder_positions(training+[heldout]),[1,2])
+    np.testing.assert_array_equal(heldout['positions'],[1,2,3])
+    with pytest.raises(ValueError,match='only input NTC'):
+        model.encoder_positions(training+[dict(heldout,labels=['non-targeting','forbidden'])])
 
 
 def network():

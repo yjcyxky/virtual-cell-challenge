@@ -66,14 +66,22 @@ class CellVAE(nn.Module):
         return expected,phi,response
 
 
+def encoder_positions(statistics):
+    """NTC input support only; does not shrink the likelihood or output gene axes."""
+    if list(statistics[-1]['labels']) != [NTC]:
+        raise ValueError('Heldout context representation may contain only input NTC')
+    common=np.array(sorted(set.intersection(*(set(s['positions']) for s in statistics))),dtype=np.int64)
+    if not len(common): raise ValueError('Empty common NTC encoder support')
+    return common
+
+
 def build(output,genes,split,config):
     spec=config['cvae']; contexts=split['training_contexts']+['H1']; n=len(genes)
     statistics=[dict(np.load(output/f'cache/{c}-statistics.npz')) for c in contexts]
     moments=load_moments(config,contexts,statistics)
     targets=[NTC]+sorted(set.union(*(set(s['labels'][1:]) for s in statistics[:-1])))
     target_index={t:i for i,t in enumerate(targets)}
-    common=np.array(sorted(set.intersection(*(set(s['positions']) for s in statistics[:-1]))))
-    if not set(common)<=set(statistics[-1]['positions']): raise ValueError('Frozen common encoder genes absent from H1')
+    common=encoder_positions(statistics)
     base=np.zeros((len(contexts),n),dtype=np.float32); phi=np.zeros_like(base)
     ntc_log=np.zeros((len(contexts),len(common)),dtype=np.float32)
     shared=np.zeros((len(targets),n),dtype=np.float32); mass=np.zeros_like(shared)

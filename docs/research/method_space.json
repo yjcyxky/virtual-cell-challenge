@@ -1735,7 +1735,8 @@
       "evidence_ids": [
         "L09",
         "L10",
-        "E-CELL-VAE-PACKAGE"
+        "E-CELL-VAE-PACKAGE",
+        "E-CELL-VAE-ALIGNED-PACKAGE"
       ],
       "selection_basis": "三机制整包未达到门槛后扩大搜索范围；这是下一轮资源选择，不是方法有效证据。无需先在线性头或完整消融上获胜。"
     }

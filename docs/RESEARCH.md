@@ -141,7 +141,13 @@ frozen_config["research"] = research_metadata
 
 未登记的实验源码、配置和入口变更会被提交检查拦截。历史恢复从其记录的代码版本进行；初始化不修改旧训练源码、输出或 W&B 记录。
 
-同一 Experiment 增加新 run、演进共用源码时，已完成节点可设置 `code_snapshot_commit` 为其 metrics 中的实际 execution commit（未记录 execution 时用 research commit）。校验在该提交读取旧 `code_refs`，并核对已执行登记与原 research 绑定；不修改旧引用、metrics 或科学条件。未完成节点不能使用快照，标准入口也不恢复已完成节点。历史推断/评估需检出各阶段记录的代码提交；新 run 仍须绑定当前源码、配置并通过全部启动门禁。
+同一 Experiment 增加新 run、演进共用源码时，已完成节点可设置 `code_snapshot_commit` 为其 metrics 中的实际 execution commit（未记录 execution 时用 research commit）。校验在该提交读取旧 `code_refs`，并核对已执行登记与原 research 绑定；不修改旧引用、metrics 或科学条件。尚需恢复的未完成节点不能使用快照；放弃条件并换独立 run 的失败执行按下一节归档。标准入口不恢复已完成节点。历史推断/评估需检出各阶段记录的代码提交；新 run 仍须绑定当前源码、配置并通过全部启动门禁。
+
+### 失败执行归档
+
+修正科学条件需新 run，而同一路线仍共用 Experiment 源码/环境。保留失败节点的状态、metrics、原配置、code_refs 和 research 绑定；登记 `superseded_by`（同 Experiment 的不同新 run）、具体 `superseded_reason`，并以失败记录的实际 execution/research commit 设置 `code_snapshot_commit`。新 run 使用独立比较和完整配置；原比较及待检验账本问题保留失败原因与替代入口，不关闭为方法阴性。方法本身可不变，但变更的输入边界和预算必须重新冻结；不能声称修复版与旧版同时冻结。
+
+校验只接受有完整原绑定且 `evaluation_completed=false` 的 failed/interrupted 记录，核对同路线替代节点、原提交引用和无替代环；门禁拒绝旧身份的 restart/resume。普通未完成 run 没有替代登记仍须恢复完整 checkpoint。这个机制用于保存失败历史并推进新条件，不把失败改成完成，也不允许在修复登记中改写旧科学条件。
 
 ### 评估接口修复
 

@@ -1021,6 +1021,57 @@ class ResearchControlsTests(unittest.TestCase):
         self.write_registries()
         self.assertIn('executed code references', self.cli('check', ok=False))
 
+    def superseded_failure_fixture(self):
+        self.execute('no-result', ok=False)
+        self.dag = json.loads((self.root/REGISTRY_DIR/'experiment_dag.json').read_text())
+        node = self.dag['nodes']['baseline']
+        metrics = json.loads((self.root/'experiments/baseline/metrics.json').read_text())
+        successor = copy.deepcopy(node)
+        successor.update(run_id='baseline-02', status='draft', metrics_ref=None, git_commit=None,
+                         comparison_id='replacement-comparison', blockers=[])
+        successor['expected_config']['run_id'] = 'baseline-02'
+        path = 'experiments/baseline/configs/baseline-02.json'
+        self.write_json(path, successor['expected_config']); successor['config_ref'] = self.file_ref(path)
+        self.write('experiments/baseline/src/main.py', '# Evolved implementation for a new run\n')
+        successor['code_refs'] = [self.file_ref(r['path']) for r in successor['code_refs']]
+        self.dag['nodes']['baseline-02'] = successor
+        comparison = copy.deepcopy(self.dag['comparisons']['baseline-comparison'])
+        comparison.update(status='draft', candidates=['baseline-02'])
+        self.dag['comparisons']['replacement-comparison'] = comparison
+        node.update(code_snapshot_commit=metrics['research']['git_commit'], superseded_by='baseline-02',
+                    superseded_reason='Input support changes; retain the failed execution and fit a new run')
+        self.write_registries()
+        return node
+
+    def test_superseded_failure_can_archive_code_but_cannot_resume_or_be_evidence(self):
+        self.superseded_failure_fixture()
+        self.cli('check')
+        self.assertIn('superseded', self.cli('gate', 'baseline', '--resume', ok=False))
+        self.assertIn('superseded', self.cli('gate', 'baseline', ok=False))
+        self.write('experiments/baseline/REPORT.md', '# Retained failed execution\n')
+        self.write_json('proposed-evidence.json', self.completed_evidence())
+        self.assertIn('unfinished execution is not method evidence',
+                      self.cli('close', '--file', 'proposed-evidence.json', ok=False))
+
+    def test_failed_archive_requires_reason_same_experiment_and_no_cycle(self):
+        node = self.superseded_failure_fixture()
+        node['superseded_reason'] = ''
+        self.write_registries(); self.cli('check', ok=False)
+        node['superseded_reason'] = 'New input support'
+        self.add_node('other', 'base', 'other-comparison')
+        node['superseded_by'] = 'other'
+        self.write_registries(); self.cli('check', ok=False)
+        node['superseded_by'] = 'baseline-02'
+        self.dag['nodes']['baseline-02']['superseded_by'] = 'baseline'
+        self.write_registries()
+        self.assertIn('supersession cycle', self.cli('check', ok=False))
+
+    def test_failed_archive_preserves_original_binding(self):
+        node = self.superseded_failure_fixture()
+        node['expected_config']['seed'] = 99
+        self.write_registries()
+        self.assertIn('cannot change the research binding', self.cli('check', ok=False))
+
     def test_evaluation_repair_rejects_changed_checkpoint(self):
         self.register_evaluation_repair()
         self.write("experiments/baseline/checkpoint.bin","changed model")
