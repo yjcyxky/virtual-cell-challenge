@@ -1283,7 +1283,8 @@
         "L03",
         "E-MASKED-RESPONSE"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
     },
     "M-RESPONSE-PCA": {
       "description": "训练内响应低秩表示补全",
@@ -1299,7 +1300,7 @@
         "G": "G0"
       },
       "signature": "T1-D1-R6-A0-L1-O0-V5-I6-G0",
-      "prior": "只在允许训练响应与测量掩码内拟合低秩基因表示；不读取H1扰动标签。",
+      "prior": "在通路匹配的训练测量并集轴上，完整监督训练靶点的共享响应作未中心化rank32 SVD，掩码ridge只填缺测；不读取H1标签。",
       "local_status": "UNTESTED",
       "execution_role": "candidate",
       "cost": "medium",
@@ -1308,7 +1309,8 @@
         "E-MASKED-RESPONSE",
         "L05"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
     },
     "M-RESPONSE-PROGRAM": {
       "description": "功能程序响应表示补全",
@@ -1333,7 +1335,8 @@
         "E-MASKED-RESPONSE",
         "L05"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
     },
     "M-RESPONSE-RANDOM": {
       "description": "匹配随机程序响应补全",
@@ -1358,7 +1361,8 @@
         "E-MASKED-RESPONSE",
         "L05"
       ],
-      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。",
+      "implementation_scope": "C-MASKED-RESPONSE；6832覆盖基因；除shared外rank32；监督坐标钳制，重构alpha0.1，固定生成器。"
     }
   }
 }

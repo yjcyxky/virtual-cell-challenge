@@ -1,0 +1,121 @@
+{
+  "experiment_id": "masked-response",
+  "run_id": "masked-response-random-s01",
+  "seed": 1,
+  "fit_scope": {
+    "outer_split": "S2-H1",
+    "target_partition": "context-seen"
+  },
+  "benchmark": {
+    "data_audit": {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    "scorer": {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    "artifacts": {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    "split_manifest": {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    "gene_axis": {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    }
+  },
+  "data": {
+    "chunk_rows": 2048,
+    "target_sum": 10000,
+    "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+    "qc": "frozen_correctness_only"
+  },
+  "model": {
+    "kind": "cell_weighted_shared_plus_masked_basis_completion",
+    "weight_cell_unit": 100.0,
+    "gene_chunk": 256,
+    "completion_alpha": 0.1,
+    "reconstruction_weights": "equal_observed_gene",
+    "missing_output": "zero_delta_outside_training_union_and_matched_program_coverage",
+    "clamp": "all_directly_supervised_target_gene_coordinates",
+    "end_condition": "full_shared_recompute_fixed_budget_basis_then_exact_masked_ridge"
+  },
+  "generation": {
+    "kind": "fixed_NTC_log_shift_library_preserving_stochastic_round",
+    "cells_per_target": 400,
+    "paired_rng": "seed_plus_frozen_target_index",
+    "missing_input": "zero_baseline_and_zero_delta_with_mask"
+  },
+  "evaluation": {
+    "arms": [
+      "linear"
+    ],
+    "single_source": "K562",
+    "panels": [
+      "all",
+      "official_overlap"
+    ],
+    "runtime": {
+      "device": "cuda",
+      "num_threads": 8,
+      "pert_chunk": 16
+    }
+  },
+  "tracking": {
+    "mode": "online"
+  },
+  "reuse": {
+    "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+    "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+  },
+  "reference_reuse": {
+    "metrics": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+      "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+    },
+    "config": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/config.yaml",
+      "sha256": "079517be25ff37f160c438656a2869d16c006fd15deb19a90635b3c75fc32a84"
+    },
+    "checkpoint": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/checkpoints/ridge.npz",
+      "sha256": "bfb5af829a6ade289dc4a1d2901f56dae20f0353ec5bf0c1dd4393cc9e871e71"
+    },
+    "predictions": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/predictions/manifest.json",
+      "sha256": "cc48f5cfc836cbece8583b2c01496f203fdd53c7ca545e66ba808a179b4cab1e"
+    },
+    "score_manifest": {
+      "path": "experiments/init-linear/configs/reuse-reference-results-s2-h1.json",
+      "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
+    }
+  },
+  "representation": {
+    "kind": "random_program",
+    "dimensions": 32,
+    "pathways": {
+      "path": "data/raw/networks/ReactomePathways.gmt.zip",
+      "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4"
+    },
+    "identities": {
+      "path": "data/raw/networks/hgnc_complete_set.txt",
+      "sha256": "9e07bb49393c12aca8bc931a4349010404c24994a8a58745c14676b8c2b74492"
+    },
+    "min_module_size": 10,
+    "max_module_size": 500,
+    "mapping": "frozen_ChallengeIdentity_training_measured_union_only",
+    "deduplication": "sorted_stable_ID_first_per_member_set",
+    "program_projection": "D_gene^-1/2_incidence_D_module^-1/2_Gaussian_sketch_QR",
+    "pca_population": "shared_targets_fully_observed_on_covered_axis_equal_target_weight",
+    "pca_oversample": 16,
+    "pca_power_iterations": 2,
+    "swaps_per_edge": 10,
+    "fit_seed": 1729,
+    "center": "none_zero_response_origin_uncentered_SVD",
+    "scale": "orthonormal_gene_basis_same_masked_ridge_alpha"
+  }
+}

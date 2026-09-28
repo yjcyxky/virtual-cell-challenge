@@ -37,10 +37,10 @@ flowchart TD
   n30["init-linear-nocontext-s01 | completed"]
   n31["init-linear-nocontext-a01-s01 | completed"]
   n32["init-program-raw-s01 | completed"]
-  n33["masked-response-shared-s01 | draft"]
-  n34["masked-response-pca-s01 | draft"]
-  n35["masked-response-program-s01 | draft"]
-  n36["masked-response-random-s01 | draft"]
+  n33["masked-response-shared-s01 | ready"]
+  n34["masked-response-pca-s01 | ready"]
+  n35["masked-response-program-s01 | ready"]
+  n36["masked-response-random-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
