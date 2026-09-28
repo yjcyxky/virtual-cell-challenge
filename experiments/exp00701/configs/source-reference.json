@@ -1,5 +1,5 @@
 {
-  "source_run": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17",
+  "source_run": "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17",
   "files": {
     "config.yaml": {
       "sha256": "0c072ee016082c01c3373087801f8c565a4dcba605950423780c8377455c76b2",
@@ -288,7 +288,7 @@
   },
   "de_sources": {
     "K562": {
-      "path": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp006/experiments/exp006/outputs/20260927-exp006-dispersed-s17/cache/official/K562/real-cache/de_wilcoxon_table-163d7987f0516fa7.parquet",
+      "path": "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp006/outputs/20260927-exp006-dispersed-s17/cache/official/K562/real-cache/de_wilcoxon_table-163d7987f0516fa7.parquet",
       "sha256": "ab01bdd030636bdb384e1a9f5ad50070e4316548e5f1bd969cb4d92e9c76884c",
       "params": {
         "allow_discrete": false,
@@ -317,7 +317,7 @@
       }
     },
     "HepG2": {
-      "path": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp005/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/HepG2/real-cache/de_wilcoxon_table-5c04d6c6ccde5717.parquet",
+      "path": "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/HepG2/real-cache/de_wilcoxon_table-5c04d6c6ccde5717.parquet",
       "sha256": "b7dcd574bd3eb725798fbc37d9b625f87bf154f835e46873b43b3d7b0abc811a",
       "params": {
         "allow_discrete": false,
@@ -346,7 +346,7 @@
       }
     },
     "Jurkat": {
-      "path": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp005/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/Jurkat/real-cache/de_wilcoxon_table-a9e8fb0247922634.parquet",
+      "path": "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/Jurkat/real-cache/de_wilcoxon_table-a9e8fb0247922634.parquet",
       "sha256": "f9c53703f52e6d6145e33b46b1f9449ddc8375f9a565bf512e0ba8039ad729c6",
       "params": {
         "allow_discrete": false,
