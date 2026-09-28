@@ -4214,7 +4214,7 @@
       "legacy": false,
       "method_id": "M-RESPONSE-PROGRAM",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-MASKED-RESPONSE",
       "controls": [
         "masked-response-shared-s01"
@@ -4457,11 +4457,14 @@
           "sha256": "82bd6f04af3a88089de7ab3c680b21abab57ba9c0a61fdb3b3cd38acd2979f62"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/masked-response/outputs/masked-response-program-s01/metrics.json",
+        "sha256": "d944f11c79be202e28fdfd5249f25b064301dae924065c91e7ec76a3a9470ffb"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "git_commit": "9c2335120c8eab35a2ac7df34fbf2571ff7261f8",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-program-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/masked-response-program-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -4481,7 +4484,8 @@
         "source_usage": "复制冻结预处理/NTC/reference bundles；重新计算shared且逐值核验原来源，仅zero/shared/source历史参照分数经审计复用；四新预测重新评分。",
         "end_condition": "解析拟合、完整预测、两个面板官方六指标有效、Artifacts；四臂配对分析并关闭E-MASKED-RESPONSE。"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online"
     },
     "masked-response-random-s01": {
       "experiment_id": "masked-response",
