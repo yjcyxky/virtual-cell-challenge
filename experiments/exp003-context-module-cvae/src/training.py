@@ -12,7 +12,7 @@ from data import BalancedSampler, reserved, write_json, hash_file
 from evaluation import evaluate_context, shared_responses, summarize, task_seed
 from model import ModuleCVAE
 from objectives import TaskObjective, COMPONENTS, LOSS_TERMS
-from priors import degree_matched_random, fold_evidence
+from priors import degree_matched_random, fold_evidence, representation_config
 from state import FoldView
 from stopping import assess_stopping, validation_due
 from official import OfficialValidation
@@ -61,6 +61,7 @@ def load_checkpoint(path, model, optimizer, scheduler, sampler, device):
 
 
 def construct_model(data, view, contexts, config, prior_directory, folder):
+    representation = representation_config(config)
     archive = np.load(prior_directory / 'modules.npz')
     modules = json.loads((prior_directory / 'modules.json').read_text())
     families = [v['family'] for v in modules]
@@ -76,6 +77,10 @@ def construct_model(data, view, contexts, config, prior_directory, folder):
         strength = fold_evidence(data, contexts, membership, null, config, folder)
     if config['variant'] == 'no_prior':
         strength = np.ones_like(strength)
+    if representation['method'] == 'restart_diffusion':
+        # Evidence retains the original binary semantic modules and nulls. The
+        # weighted representation only replaces the model's fixed prior buffers.
+        membership = archive['representation']
     seen = np.zeros(len(data.genes), bool)
     for c, target in data.tasks:
         if c in contexts and not reserved(target, config['unseen_target_percent']):

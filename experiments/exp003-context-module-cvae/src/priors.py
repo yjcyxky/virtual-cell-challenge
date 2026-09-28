@@ -46,11 +46,96 @@ def degree_matched_random(membership, families, seed):
     return result.astype(np.float32)
 
 
+def representation_config(config):
+    """Keep the historical binary representation as the default."""
+    method = config.get('prior_representation', 'binary')
+    if method == 'binary':
+        return {'method': method}
+    if method != 'restart_diffusion':
+        raise ValueError('unknown_prior_representation')
+    # A randomized seed set on the real graph still contains biological knowledge.
+    # Do not silently label that construction a matched random-prior control.
+    if config['variant'] != 'true_prior':
+        raise ValueError('diffusion_requires_true_prior')
+    alpha = config['prior_diffusion_propagation']
+    steps = config['prior_diffusion_steps']
+    minimum = config['prior_diffusion_minimum']
+    if not 0 <= alpha < 1 or not isinstance(steps, int) or steps < 1 or not 0 <= minimum < 1:
+        raise ValueError('invalid_prior_diffusion_configuration')
+    return {'method': method, 'propagation': alpha, 'steps': steps, 'minimum': minimum}
+
+
+def annotation_incidence(candidates, genes):
+    """All mapped positive terms with at least two genes; no response filtering."""
+    rows, columns = [], []
+    terms = 0
+    for _, members in sorted(candidates):
+        if len(members) >= 2:
+            members = sorted(set(members))
+            rows.extend(members); columns.extend([terms] * len(members))
+            terms += 1
+    return sparse.csr_matrix((np.ones(len(rows), np.float32), (rows, columns)), shape=(genes, terms))
+
+
+def diffuse_membership(membership, relation, settings, annotation=False):
+    """Restart diffusion to named landmarks, preserving their exact membership.
+
+    For annotations, each gene chooses one of its terms uniformly and then a
+    different member uniformly. This avoids dense gene-by-gene matrices and
+    prevents a large term contributing quadratically more edge mass.
+    """
+    seeds = np.asarray(membership, np.float32)
+    relation = sparse.csr_matrix(relation, dtype=np.float32)
+    if relation.shape[0] != len(seeds) or not np.isfinite(relation.data).all() or np.any(relation.data < 0):
+        raise ValueError('invalid_prior_relation')
+    if annotation:
+        sizes = np.asarray(relation.sum(0)).ravel()
+        if np.any(sizes < 2) or np.any(relation.data != 1):
+            raise ValueError('annotation_requires_binary_terms_with_two_genes')
+        inverse_size = 1 / (sizes - 1)
+        diagonal = np.asarray(relation @ inverse_size).ravel()
+        degree = np.asarray(relation.sum(1)).ravel()
+        def neighbors(values):
+            return relation @ ((relation.T @ values) * inverse_size[:, None]) - diagonal[:, None] * values
+    else:
+        if relation.shape[1] != len(seeds) or np.any(relation.diagonal() != 0):
+            raise ValueError('network_requires_square_without_self_edges')
+        degree = np.asarray(relation.sum(1)).ravel()
+        def neighbors(values):
+            return relation @ values
+    inverse_degree = np.divide(1., degree, out=np.zeros_like(degree), where=degree > 0)
+    values = seeds.copy()
+    alpha = settings['propagation']
+    for _ in range(settings['steps']):
+        transported = np.maximum(neighbors(values), 0) * inverse_degree[:, None]
+        values = (1 - alpha) * seeds + alpha * transported
+    # Original curated membership remains 1; inferred proximity is a soft feature,
+    # never promoted to a new curated member or evidence of causal direction.
+    values = np.maximum(seeds, np.clip(values, 0, 1))
+    values[values < settings['minimum']] = 0
+    if not np.isfinite(values).all():
+        raise ValueError('nonfinite_prior_representation')
+    return values.astype(np.float32)
+
+
+def diffusion_representation(membership, families, candidates, directory, settings):
+    result = membership.copy()
+    for family in ['functional', 'physical', 'reactome', 'go']:
+        columns = np.flatnonzero(np.asarray(families) == family)
+        relation = (sparse.load_npz(directory / f'{family}.npz') if family in ['functional', 'physical']
+                    else annotation_incidence(candidates[family], len(membership)))
+        result[:, columns] = diffuse_membership(membership[:, columns], relation, settings,
+                                                annotation=family in ['reactome', 'go'])
+    return result
+
+
 def prepare_priors(config, genes, output):
+    settings = representation_config(config)
     directory = output / 'cache' / 'priors'; directory.mkdir(parents=True, exist_ok=True)
     done = directory / 'complete.json'
     if done.exists():
         report = json.loads(done.read_text())
+        assert report.get('representation', {'method': 'binary'}) == settings, 'prior_representation_changed'
         for name, digest in report['artifacts'].items():
             assert hash_file(directory / name) == digest
         return directory
@@ -105,10 +190,20 @@ def prepare_priors(config, genes, output):
         rows.append({'module': j, 'name': name, 'family': family, 'size': len(members),
                      'members': [genes[i] for i in members], 'go_evidence_counts': dict(evidence.get(name, {}))})
     random = degree_matched_random(membership, families, config['data_seed'])
-    np.savez_compressed(directory / 'modules.npz', true=membership, random=random)
+    arrays = {'true': membership, 'random': random}
+    if settings['method'] == 'restart_diffusion':
+        arrays['representation'] = diffusion_representation(membership, families, candidates, directory, settings)
+    np.savez_compressed(directory / 'modules.npz', **arrays)
     write_json(directory / 'modules.json', rows)
     artifacts = {str(p.relative_to(directory)): hash_file(p) for p in directory.iterdir() if p.is_file()}
+    represented = arrays.get('representation', membership)
     write_json(done, {'source': source, 'artifacts': artifacts, 'ignored_NOT_annotations': ignored_not,
+                     'representation': settings,
+                     'representation_genes_covered': int((represented.sum(1) > 0).sum()),
+                     'representation_by_family': {family: {
+                         'binary_genes': int((membership[:, np.asarray(families) == family].sum(1) > 0).sum()),
+                         'represented_genes': int((represented[:, np.asarray(families) == family].sum(1) > 0).sum())}
+                         for family in sorted(set(families))},
                      'genes_covered': int((membership.sum(1) > 0).sum()), 'modules': len(modules),
                      'random_membership_overlap': float((membership * random).sum() / membership.sum()),
                      'module_semantics': 'unsigned membership, learned signed effects; not directed causal edges'})

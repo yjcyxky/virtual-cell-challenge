@@ -12,10 +12,18 @@ base_run=("$experiment_python" src/runtime.py --base-run)
 # Runs share a read lock for their entire lifetime. Only an exclusive holder may
 # synchronize the environment, so concurrent trials cannot reinstall each other's
 # libraries. The fingerprint is recorded only after a successful locked sync.
-environment_key=$(pwd | sha256sum | cut -d ' ' -f 1)
+environment_owner=$(pwd)
+if [[ -L .venv ]]; then
+  environment_owner=$(dirname "$(realpath .venv)")
+fi
+environment_key=$(printf '%s\n' "$environment_owner" | sha256sum | cut -d ' ' -f 1)
 exec 9>"${TMPDIR:-/tmp}/vcc-environment-${environment_key}.lock"
 flock -s 9
 if ! { test -x .venv/bin/python && "${base_run[@]}" uv run --locked --no-sync --python "$experiment_python" --no-python-downloads python src/runtime.py; }; then
+  if [[ -L .venv ]]; then
+    echo 'Shared experiment environment failed verification; synchronize only from its owning worktree when idle.' >&2
+    exit 1
+  fi
   flock -u 9
   flock -x 9
   "${base_run[@]}" uv sync --locked --python "$experiment_python" --no-python-downloads

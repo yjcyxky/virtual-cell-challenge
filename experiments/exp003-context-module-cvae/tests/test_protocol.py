@@ -15,7 +15,8 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from data import BalancedSampler, CountData, balanced_selection, reserved
 from model import ModuleCVAE, log_nb
-from priors import degree_matched_random
+from priors import degree_matched_random, diffuse_membership
+from scipy import sparse
 from state import FoldView
 from training import save_checkpoint, load_checkpoint, train_step
 from objectives import TaskObjective, COMPONENTS, LOSS_TERMS
@@ -87,13 +88,16 @@ def configuration():
                 monitor_layers_per_target=4, validation_interval_cycles=3)
 
 
-def setup_model(variant='true_prior', genes=24):
+def setup_model(variant='true_prior', genes=24, soft_prior=False):
     torch.manual_seed(19)
     rng = np.random.default_rng(99)
     config = configuration(); config['variant'] = variant
     members = np.zeros((genes, 4), np.float32)
     for j in range(4):
         members[j*4:(j+1)*4, j] = 1
+    if soft_prior:
+        graph = sparse.diags([np.ones(genes - 1), np.ones(genes - 1)], [-1, 1], shape=(genes, genes))
+        members = diffuse_membership(members, graph, {'propagation': .5, 'steps': 8, 'minimum': .01})
     projection = rng.normal(size=(genes, 3)).astype(np.float32) / np.sqrt(genes)
     common = np.ones(genes, bool); common[-1] = False; projection[-1] = 0
     model = ModuleCVAE(genes, members, np.ones(4), projection, np.zeros(3, np.float32), common,
@@ -333,7 +337,8 @@ def test_state_construction_cannot_read_held_perturbations(tmp_path):
 
 
 @pytest.mark.parametrize('device_name', ['cpu', 'cuda'])
-def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_name):
+@pytest.mark.parametrize('soft_prior', [False, True])
+def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_name, soft_prior):
     torch.set_num_threads(2)
     if device_name == 'cuda' and not torch.cuda.is_available():
         pytest.skip('native CUDA required for GPU resume check')
@@ -341,7 +346,7 @@ def test_complete_resume_matches_uninterrupted_optimization(tmp_path, device_nam
     device = torch.device(device_name)
     data = SmallData(); config = configuration()
     view = FoldView(data, ['A', 'B', 'C'], config, tmp_path)
-    model, _ = setup_model()
+    model, _ = setup_model(soft_prior=soft_prior)
     model.projection.copy_(torch.tensor(view.projection)); model.origin.copy_(torch.tensor(view.origin)); model.common.fill_(1)
     model.to(device)
     objective = TaskObjective(data, view, ['A', 'B', 'C'], config, tmp_path)
