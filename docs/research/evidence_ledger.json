@@ -1187,8 +1187,9 @@
       "claim": "未执行，不能据旧条件ridge或补全阴性推断本方法效果。",
       "limitations": "仅四训练背景/两研究；episode和基因样本不是新增独立背景。",
       "source_refs": [],
-      "next_action": "冻结匹配输入与预算、门槛、完整配置后执行三臂训练和官方评分。",
-      "reopen_when": "完成首次归因比较。"
+      "next_action": "整包未达晋级门槛，当前不给该局部归因分支执行预算。问题保持未检验；优先执行当前队列的其他机制，不能自动启动旧三臂消融。",
+      "reopen_when": "新的独立整包信号或明确路线变更重新证明该归因问题值得预算；当前E-MECHANISM-PORTFOLIO阴性不能放行。",
+      "resource_disposition": "deferred_after_package_not_supported"
     },
     "E-TRANSPORT-CAPACITY": {
       "kind": "experiment",
@@ -1202,8 +1203,9 @@
       "claim": "未执行，不能据旧条件ridge或补全阴性推断本方法效果。",
       "limitations": "仅四训练背景/两研究；episode和基因样本不是新增独立背景。",
       "source_refs": [],
-      "next_action": "冻结匹配输入与预算、门槛、完整配置后执行三臂训练和官方评分。",
-      "reopen_when": "完成首次归因比较。"
+      "next_action": "整包未达晋级门槛，当前不给该局部归因分支执行预算。问题保持未检验；优先执行当前队列的其他机制，不能自动启动旧三臂消融。",
+      "reopen_when": "新的独立整包信号或明确路线变更重新证明该归因问题值得预算；当前E-MECHANISM-PORTFOLIO阴性不能放行。",
+      "resource_disposition": "deferred_after_package_not_supported"
     },
     "E-MECHANISM-PORTFOLIO": {
       "kind": "experiment",
