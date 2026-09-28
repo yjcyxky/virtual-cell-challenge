@@ -494,14 +494,16 @@
       },
       "signature": "T1-D1-R0-A0-L1-O0-V5-I6-G1",
       "prior": "P-DECOMPOSE",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
         "L03",
-        "L04"
+        "L04",
+        "E-BASE"
       ],
-      "selection_basis": "待检验假设；没有引用既有实验效果"
+      "selection_basis": "待检验假设；没有引用既有实验效果",
+      "local_status_scope": "仅否定init-linear-s01当前实现在S2-H1/context-seen/seed1上优于最佳参照的主张；有效基线保留，不否定线性方法族。"
     },
     "M-ZERO": {
       "description": "零响应：只使用目标NTC分布",
@@ -1164,6 +1166,29 @@
         "L10"
       ],
       "selection_basis": "待检验假设；没有引用既有实验效果"
+    },
+    "M-RIDGE-NO-CONTEXT": {
+      "description": "匹配正则与任务权重的target-ID岭回归，禁用全部NTC条件项",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R0",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R0-A0-L1-O0-V5-I6-G0",
+      "prior": "无额外背景调制；同一alpha=1与截距正则。输入NTC仍用于固定生成器，响应头只用target ID和截距。失效条件：去掉条件项未改善预注册判据。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "low",
+      "evidence_ids": [
+        "E-CONDITION-ABLATION"
+      ],
+      "selection_basis": "由本轮E-BASE的归因缺口提出；不是把E-BASE当作本方法效果。"
     }
   }
 }

@@ -4,7 +4,7 @@ Generated from the Git registry. Solid edges distinguish controls and reused sou
 
 ```mermaid
 flowchart TD
-  n0["init-linear-s01 | draft"]
+  n0["init-linear-s01 | completed"]
   n1["init-absolute-s01 | draft"]
   n2["init-logfc-s01 | draft"]
   n3["init-qc-s01 | draft"]
@@ -34,6 +34,7 @@ flowchart TD
   n27["confirm-random-s02 | draft"]
   n28["confirm-qc-s03 | draft"]
   n29["confirm-random-s03 | draft"]
+  n30["init-linear-nocontext-s01 | draft"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -123,4 +124,7 @@ flowchart TD
   n0 -.->|"evidence: E-QC"| n29
   n3 -.->|"evidence: E-QC"| n29
   n4 -.->|"evidence: E-QC"| n29
+  n0 -->|control| n30
+  n0 -->|source| n30
+  n0 -.->|"evidence: E-BASE"| n30
 ```

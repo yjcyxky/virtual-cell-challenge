@@ -330,15 +330,55 @@
     },
     "E-BASE": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-BASE",
-      "node_ids": [],
-      "hypothesis": "建立有效简单对照，分辨共享响应、拟合能力与perturbation-specific误差",
-      "claim": "待检验：建立有效简单对照，分辨共享响应、拟合能力与perturbation-specific误差",
-      "limitations": "没有本地执行或效应；一seed筛选不能证明跨背景普遍有效",
-      "source_refs": [],
-      "next_action": "使用已冻结PSEUDO-VCC-INIT的binding实例化独立fit；落实训练判据，实际构建官方reference/anchors，再完整训练、评估及入账。",
-      "reopen_when": "当前为待检验问题；关闭后按同一scope的反证/新数据重新提出比较"
+      "node_ids": [
+        "init-linear-s01"
+      ],
+      "claim": "已完成S2-H1/context-seen/seed1的有效四臂基线；不支持当前条件线性实现优于最佳shared参照。280靶Overall为linear 0.161135 vs shared 0.210866（差-0.049731）；25官方重叠靶为0.131714 vs 0.204838（差-0.073124），未达到预注册+0.02与不降超过0.02的联合判据。",
+      "limitations": "仅1个留出背景/1次解析式拟合；H1已是开发证据，生成随机性未重复。280靶中181仅K562支持，99四背景支持；官方25靶均仅K562。H1评分轴18074/官方18533，其中7292基因无训练响应监督。完整六分项有限不等于逐靶点全定义；NMAE有效247/280、官方重叠25/25，保留官方NaN和截断。未正则shared与条件ridge联动了正则收缩、条件项和参数耦合，不能归因于背景信息本身。无全局未见靶点或完整2026官方提交结论。",
+      "source_refs": [
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+          "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+        },
+        {
+          "path": "experiments/init-linear/REPORT.md",
+          "sha256": "8e6e274f33b055c0c94f1a43dd93b8d47ba1f06db2abde23bb9c49895f3d2e2e"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/report-analysis.json",
+          "sha256": "60c5f22752217d36820285f432cabdba49583886b120b524650bf977c1b19a32"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/paired-all-linear-vs-shared.csv",
+          "sha256": "7a25f7c6a06dac762b12c2edb022f0b6094701db65f98c5964bafae29580d3d6"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/paired-official_overlap-linear-vs-shared.csv",
+          "sha256": "fc02b0e8936e54caabf8f3f3858ac2886a3ff7a853e93a156e2c3fb63c33c705"
+        }
+      ],
+      "decision": "保留有效shared/source/zero及已完成linear作为固定对照；搁置该实现优越性，下一轮优先补匹配正则与权重的NTC条件项消融，不升级容量。",
+      "next_action": "C-CONDITION-ABLATION：登记init-linear-nocontext-s01，同一init-linear路线、S2-H1/context-seen/seed1、alpha=1与细胞权重；仅禁用全部NTC条件项，保持训练边界、生成器、官方scorer/reference/anchors不变，与当前linear配对。先完成配置/代码/锁定来源与门禁再运行；有信号补其他背景，无信号转正则/响应空间与生成映射诊断。QC和GO先验问题继续保留，不能由本轮分数替代其归因对照。",
+      "reopen_when": "新的匹配消融或其他背景证据与本结论冲突；或官方协议/输入映射/测量覆盖发生变化时新建比较与对照，保留本记录。",
+      "metrics": {
+        "all": {
+          "zero": -0.0643065535629482,
+          "shared": 0.21086563407223338,
+          "source": 0.20514553200149385,
+          "linear": 0.1611350117284143
+        },
+        "official_overlap": {
+          "zero": -0.07903649943532463,
+          "shared": 0.2048381778356335,
+          "source": 0.20483817783563363,
+          "linear": 0.13171375296826507
+        }
+      },
+      "artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-result:v0",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01",
+      "hypothesis": "建立有效简单对照，分辨共享响应、拟合能力与perturbation-specific误差"
     },
     "E-TASK": {
       "kind": "experiment",
@@ -604,19 +644,29 @@
       ],
       "next_action": "训练配置绑定协议binding；各Experiment记录实际reference/anchors及backend身份，官方退化拒绝则保留失败。",
       "reopen_when": "官方规则或固定评分器版本变更时重新建对照和协议，不静默更换。"
+    },
+    "E-CONDITION-ABLATION": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-CONDITION-ABLATION",
+      "node_ids": [],
+      "hypothesis": "匹配正则与权重后，移除NTC条件项能否改善H1迁移，解释当前linear劣于未正则shared的归因缺口",
+      "claim": "待检验：在匹配正则、权重和生成器后，仅移除NTC条件项是否改善H1迁移。",
+      "limitations": "尚无候选执行结果；不把E-BASE结果移作本方法有效证据。",
+      "source_refs": [],
+      "next_action": "落实init-linear-nocontext-s01的完整配置、来源哈希和条件开关，通过门禁后独立拟合并配对评分。",
+      "reopen_when": "关闭后按新背景或匹配反证重新登记比较。"
     }
   },
   "queue": [
     {
-      "id": "Q-PROTOCOL-BASE",
+      "id": "Q-CONDITION-ABLATION",
       "priority": 1,
-      "comparison_id": "C-BASE",
-      "question": "五背景/三研究组能形成哪些无泄漏、可评分的S0–S4任务，简单基线解释了什么？",
-      "action": "数据正确性、官方轴映射、物理NTC、15个划分和官方scorer配方已冻结。下一步实例化C-BASE独立拟合，配置绑定benchmark；先在其正式流程中生成reference/anchors并核验六指标，再完成基线训练评估和E-BASE。",
-      "requires_evidence": [],
-      "completed_prerequisites": [
-        "DATA-CHALLENGE-20260928",
-        "PROTOCOL-CHALLENGE-2026"
+      "comparison_id": "C-CONDITION-ABLATION",
+      "question": "匹配正则和权重后，当前线性模型的损失能否归因于NTC条件项？",
+      "action": "落实已登记init-linear-nocontext-s01；仅禁用NTC条件项、其余固定。新run仍归init-linear，共享环境；保留历史代码版本及原research绑定。完整训练/评分后关闭E-CONDITION-ABLATION，按预设分支决定是否跨背景复验。",
+      "requires_evidence": [
+        "E-BASE"
       ]
     },
     {
@@ -624,7 +674,7 @@
       "priority": 2,
       "comparison_id": "C-QC",
       "question": "额外QC改变的是可靠性，还是数量、target覆盖与弱响应人群？",
-      "action": "基线有效后设计基础/QC/匹配随机三臂；保持评价对象固定，事先写效应与判据。",
+      "action": "条件项归因后落实基础/QC/匹配随机三臂，保持评估群体及官方轴；单列181仅K562与99四背景支持靶的保留率，不能把响应强度/覆盖变化当作质量收益。",
       "requires_evidence": [
         "E-BASE"
       ]

@@ -206,7 +206,7 @@
       "legacy": false,
       "method_id": "M-BASE",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "failed",
+      "status": "completed",
       "comparison_id": "C-BASE",
       "controls": [],
       "sources": [],
@@ -334,12 +334,15 @@
       ],
       "metrics_ref": {
         "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
-        "sha256": "0610ac606db2b7cd6588252986e411293c38e3b0fbd733b7bb45dea128e408b7"
+        "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/init-linear/REPORT.md",
+        "sha256": "8e6e274f33b055c0c94f1a43dd93b8d47ba1f06db2abde23bb9c49895f3d2e2e"
+      },
       "git_commit": "26a03062011fe902ee4a2c41cbdc287858ce3561",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01",
-      "artifact": null,
+      "artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "dataset_ids": [
@@ -489,7 +492,9 @@
             "sha256": "0421c9358d81a9e89f0858b45482ca76bc12775e3326bdddebff694d67e2842e"
           }
         ]
-      }
+      },
+      "wandb_sync": "online",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-evidence:v0"
     },
     "init-absolute-s01": {
       "experiment_id": "init-absolute-s01",
@@ -531,7 +536,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -582,7 +587,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -633,7 +638,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -684,7 +689,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -736,7 +741,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -787,7 +792,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -838,7 +843,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -889,7 +894,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -940,7 +945,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -991,7 +996,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1042,7 +1047,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1093,7 +1098,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1144,7 +1149,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1195,7 +1200,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1246,7 +1251,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1297,7 +1302,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1348,7 +1353,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1399,7 +1404,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1450,7 +1455,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1501,7 +1506,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1552,7 +1557,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1603,7 +1608,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1654,7 +1659,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1706,7 +1711,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "high",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1758,7 +1763,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "high",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1814,7 +1819,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1868,7 +1873,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1924,7 +1929,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1978,7 +1983,7 @@
         },
         "local_status": "UNTESTED",
         "budget_class": "medium",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立Experiment及配对控制；同一节点不能训练多折",
+        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
         "unresolved": [
           "具体outer_split/target_partition/seed、完整配置和结束条件",
           "实际reference/anchors与六指标有效性须执行核验",
@@ -1987,6 +1992,64 @@
       },
       "blockers": [
         "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
+      ]
+    },
+    "init-linear-nocontext-s01": {
+      "experiment_id": "init-linear",
+      "run_id": "init-linear-nocontext-s01",
+      "directory": "experiments/init-linear",
+      "legacy": false,
+      "method_id": "M-RIDGE-NO-CONTEXT",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-CONDITION-ABLATION",
+      "controls": [
+        "init-linear-s01"
+      ],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-BASE"
+      ],
+      "evidence_conditions": {
+        "E-BASE": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "comparison": "仅禁用全部NTC条件预测项，保留target-ID及同一截距、alpha=1、细胞权重、目标函数、测量掩码、训练边界、生成器和官方评估。输入特征的可用性不变，改变G条件化方式。",
+        "source_usage": "仅复用init-linear-s01已哈希的预处理统计、NTC/真实参考和两个官方bundle；新建本run的完整解析拟合，不复用训练权重。ready前必须逐项登记固定来源和哈希。",
+        "end_condition": "独立解析拟合完成、完整轴预测、两面板四臂六指标全部有效；REPORT给出candidate−linear及shared/source参照。",
+        "allocation": "一次独立run；沿用init-linear源码与环境，不创建另一套Experiment。",
+        "unresolved": [
+          "冻结完整expected_config与实际变化字段；新增可选条件项开关及回归验证",
+          "历史run的代码/配置引用必须固定原提交，后续源码更新不得改写其research身份",
+          "来源产物哈希、PLAN版本、代码/锁文件提交与正式启动门禁"
+        ]
+      },
+      "blockers": [
+        "候选尚未实现；需完整配置、来源绑定、历史版本保护与启动门禁"
       ]
     }
   },
@@ -2525,6 +2588,35 @@
       "cost": "medium",
       "priority_basis": "信息价值与可识别性；不使用既有模型表现",
       "evidence_id": "E-QC-CONFIRM"
+    },
+    "C-CONDITION-ABLATION": {
+      "status": "draft",
+      "purpose": "screen",
+      "hypothesis": "匹配正则与权重后，移除NTC条件项能否改善H1迁移，解释当前linear劣于未正则shared的归因缺口",
+      "controls": [
+        "init-linear-s01"
+      ],
+      "candidates": [
+        "init-linear-nocontext-s01"
+      ],
+      "changed_axes": [
+        "G"
+      ],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1，原280靶及25官方重叠面板；开发证据。",
+        "on_support": "仅记录移除条件项的本地筛选线索；先在另一背景用配对控制复验，不能否定所有背景表示。",
+        "on_against": "不支持禁用条件项；保留对照，转向正则、响应空间及生成映射的分离诊断，不直接增大模型。",
+        "on_inconclusive": "按分项、有效数与生成随机性补诊断；实际评分失败先修复执行。",
+        "threshold_policy": "候选相对原linear主面板Overall提高至少0.02，且官方重叠相对同一control下降不超过0.02。固定在候选执行前。"
+      },
+      "attribution_plan": "同target-ID岭回归与截距正则、alpha、细胞权重、监督、测量掩码及生成器；唯一变化是全部NTC条件系数禁用。未正则shared不能充当此单因素控制。实际配置差异在ready前逐字段审核。",
+      "cost": "low",
+      "priority_basis": "E-BASE显示linear与shared的比较同时涉及条件项与正则耦合，先补最小匹配对照。",
+      "evidence_id": "E-CONDITION-ABLATION"
     }
   },
   "continuation_rules": {
