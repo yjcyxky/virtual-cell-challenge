@@ -17,6 +17,16 @@
 
 set -o pipefail
 
+# Research objects and new training entrypoints must be valid in the index,
+# including when the worktree contains additional unstaged corrections.
+research_root=$(git rev-parse --show-toplevel) || exit 1
+research_python=/home/jy001/micromamba/envs/virtual-cell/bin/python
+if [[ ! -x "$research_python" ]]; then
+    echo 'Research checks require the existing virtual-cell Python.' >&2
+    exit 1
+fi
+git show :scripts/research.py | "$research_python" - --root "$research_root" check --staged || exit 1
+
 LIMIT=$((10 * 1024 * 1024))
 converted=()
 

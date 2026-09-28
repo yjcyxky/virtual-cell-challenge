@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "description": "每条证据绑定范围、反例、精确来源和下一步；历史比较为事后回填，未完成执行不计方法阴性。",
+  "evidence": {
+    "E01": {
+      "comparison_id": "CMP-V-REEVALUATION",
+      "node_ids": [
+        "20260927-exp007-h1-log2fc-s17",
+        "20260927-exp00701-continuous-s17",
+        "20260927-exp00701-deg-s17",
+        "20260927-exp00701-modules-s17",
+        "20260927-exp00701-exp004-continuous-s17",
+        "20260927-exp00701-exp004-deg-s17",
+        "20260927-exp00701-exp004-modules-s17"
+      ],
+      "state": "inconclusive",
+      "claim": "旧H1输入/评分NTC全重合；固定三个旧最优模型改用exp004协议后Overall均为负，排序仍continuous>deg>modules。",
+      "limitations": "重评同时换输入、reference、轴、生成数和anchors；不能将差额全归因NTC。3生成seed非训练重复。新协议尚缺exp007/zero/shared对照。",
+      "source_refs": [
+        {
+          "path": "docs/exp007-official-scoring-protocol-audit.md",
+          "sha256": "afc781a233d08ccb28fc812e1f78894aa73add71621306308b2d043d8404c6e9",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        },
+        {
+          "path": "experiments/exp00701/REPORT.md",
+          "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-continuous-s17/metrics.json",
+          "sha256": "514ef6e2004b439b3ee2c7fb80e4fd97904b36048e7fd944d0aea95ac20d47a7"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-deg-s17/metrics.json",
+          "sha256": "984f5e8742794360a5fbe873c6df86fde781929c415acbe4c1b4e818b249e710"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-modules-s17/metrics.json",
+          "sha256": "d491f4eb5c22d3b690de7490db0890e6430e40daf4d98be2ee8555f03b513c7c"
+        }
+      ],
+      "next_action": "先补同一有效协议中的基准对照。",
+      "reopen_when": "同协议对照和物理身份、raw/normalized六指标齐全后重新判断方法收益。",
+      "registration": "retrospective",
+      "results": {
+        "reevaluation": {
+          "continuous": {
+            "components": {
+              "de_wilcoxon_direction_fidelity_yield_raw": -0.9993229009287585,
+              "de_wilcoxon_direction_reach_raw": 0.011427792999452596,
+              "de_wilcoxon_lfc_nmae": -0.03139028459130359,
+              "de_wilcoxon_sig_jaccard": -0.09257926128851947,
+              "expr_mse_unbiased_capped_norm": 0.014104689352363827,
+              "pds_cosine": 0.49772232745260697
+            },
+            "mean_score": -0.10000627283402634,
+            "protocol": "exp004-h1-fixed-reference-separated-ntc-tiled-v1",
+            "round": 128,
+            "scope": "exp004 local H1 reference; not leaderboard-equivalent",
+            "score_sd": 0.001169559972932446,
+            "selection": "Original best fixed before reevaluation; no new checkpoint selection"
+          },
+          "deg": {
+            "components": {
+              "de_wilcoxon_direction_fidelity_yield_raw": -1.0649378495887003,
+              "de_wilcoxon_direction_reach_raw": 0.004493396561261923,
+              "de_wilcoxon_lfc_nmae": -0.030709543078547414,
+              "de_wilcoxon_sig_jaccard": -0.1073533276011983,
+              "expr_mse_unbiased_capped_norm": 0.0017570027384029203,
+              "pds_cosine": 0.48124203162477447
+            },
+            "mean_score": -0.11925138155733449,
+            "protocol": "exp004-h1-fixed-reference-separated-ntc-tiled-v1",
+            "round": 128,
+            "scope": "exp004 local H1 reference; not leaderboard-equivalent",
+            "score_sd": 0.0018924220623802944,
+            "selection": "Original best fixed before reevaluation; no new checkpoint selection"
+          },
+          "modules": {
+            "components": {
+              "de_wilcoxon_direction_fidelity_yield_raw": -1.4194652221492376,
+              "de_wilcoxon_direction_reach_raw": 0.008197637483754251,
+              "de_wilcoxon_lfc_nmae": -0.03181940564623864,
+              "de_wilcoxon_sig_jaccard": -0.06970869016031918,
+              "expr_mse_unbiased_capped_norm": 0.020799814816234535,
+              "pds_cosine": 0.5042709621535878
+            },
+            "mean_score": -0.16462081725036978,
+            "protocol": "exp004-h1-fixed-reference-separated-ntc-tiled-v1",
+            "round": 128,
+            "scope": "exp004 local H1 reference; not leaderboard-equivalent",
+            "score_sd": 0.001972669688974164,
+            "selection": "Original best fixed before reevaluation; no new checkpoint selection"
+          }
+        },
+        "training_seeds": [
+          17
+        ],
+        "generation_seeds": [
+          101,
+          202,
+          303
+        ],
+        "independent_validation_contexts": 1
+      }
+    },
+    "E02": {
+      "comparison_id": null,
+      "node_ids": [
+        "20260927-exp007-h1-log2fc-s17"
+      ],
+      "state": "signal",
+      "claim": "旧H1口径直接同靶点响应转移优于当前静态特征回归；应保留直接转移为强对照。",
+      "limitations": "H1反复用于开发，269/297靶点训练已见；同池NTC存在评估限制。不是独立背景确认，不能与官方A/B/C绝对分数换算。",
+      "source_refs": [
+        {
+          "path": "experiments/exp007/REPORT.md",
+          "sha256": "92ec96ecca5a59e93b55f51b0ff068677e9188a63ad381c142b361d8dad88808",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        },
+        {
+          "path": "experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/metrics.json",
+          "sha256": "375dbbfe8e6e7488b3c4eebeac5d63fa04fd7699b6193475400c1c99317d5b86"
+        }
+      ],
+      "next_action": "在冻结有效协议中比较共享响应、原模型与背景修正。",
+      "reopen_when": "统一新协议后仍有增益，并由适当独立支持检验。",
+      "registration": "retrospective",
+      "results": {
+        "overall": {
+          "xgboost_r512": 0.020419414867561134,
+          "shared_response": 0.1867720083567066,
+          "zero_response": -0.0626234515732597
+        },
+        "targets": 297,
+        "seen_targets": 269,
+        "unseen_targets": 28,
+        "independent_validation_contexts": 1,
+        "training_seeds": [
+          17
+        ]
+      }
+    },
+    "E03": {
+      "comparison_id": "CMP-R-CONTINUOUS",
+      "node_ids": [
+        "20260927-exp007-h1-log2fc-s17",
+        "20260927-exp00701-continuous-s17",
+        "20260927-exp00701-deg-s17",
+        "20260927-exp00701-modules-s17",
+        "20260927-exp00701-exp004-continuous-s17",
+        "20260927-exp00701-exp004-deg-s17",
+        "20260927-exp00701-exp004-modules-s17"
+      ],
+      "state": "signal",
+      "claim": "当前连续响应编码优于其DEG/模块扩展；旧协议相对原模型的收益是待新协议基准验证的线索。",
+      "limitations": "单训练seed/单开发背景；模块相对DEG在旧最佳/终点方向不同。modules同时添加静态readout坐标；不能否定所有DEG或模块先验。",
+      "source_refs": [
+        {
+          "path": "experiments/exp00701/REPORT.md",
+          "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-continuous-s17/metrics.json",
+          "sha256": "2f347c63203bc6ca356f715b0acd4b0867f40d5ae5d1b6374d683e9bd624da8b"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-deg-s17/metrics.json",
+          "sha256": "9c4d8d1aaeb0f34c4bd866d1ae7ca5bf1c9255742651ffbdda48f940200471ad"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-modules-s17/metrics.json",
+          "sha256": "1268321b81a50e8156e41a2e7c48bc6e10d00517d23f6ecba7d623848a62b4b5"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-continuous-s17/metrics.json",
+          "sha256": "514ef6e2004b439b3ee2c7fb80e4fd97904b36048e7fd944d0aea95ac20d47a7"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-deg-s17/metrics.json",
+          "sha256": "984f5e8742794360a5fbe873c6df86fde781929c415acbe4c1b4e818b249e710"
+        },
+        {
+          "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-modules-s17/metrics.json",
+          "sha256": "d491f4eb5c22d3b690de7490db0890e6430e40daf4d98be2ee8555f03b513c7c"
+        }
+      ],
+      "next_action": "保留continuous候选，搁置当前DEG扩展和模块整包的默认采用；先补统一对照。",
+      "reopen_when": "有效统一协议的配对结果、多背景或独立支持、拆分模块静态与响应贡献后重开。",
+      "registration": "retrospective",
+      "results": {
+        "old_protocol": {
+          "continuous": {
+            "best_round": 128,
+            "best_Overall": 0.12717390280666793,
+            "final_512_Overall": 0.12289802515894029
+          },
+          "deg": {
+            "best_round": 128,
+            "best_Overall": 0.11078367048338249,
+            "final_512_Overall": 0.10095430856444614
+          },
+          "modules": {
+            "best_round": 128,
+            "best_Overall": 0.10400584843233018,
+            "final_512_Overall": 0.10152945448261842
+          }
+        },
+        "related_comparisons": [
+          "CMP-R-CONTINUOUS",
+          "CMP-R-DEG",
+          "CMP-R-MODULES",
+          "CMP-V-REEVALUATION"
+        ],
+        "training_seeds": [
+          17
+        ],
+        "independent_validation_contexts": 1
+      }
+    },
+    "E04": {
+      "comparison_id": null,
+      "node_ids": [],
+      "state": "not_supported",
+      "claim": "exp003历史共同6114基因轴上的归一化响应MSE中，真实先验不及匹配随机/无先验，且各组差于NTC；不支持直接加码该实现。",
+      "limitations": "不是官方六项Overall，也不是exp003后续新目标训练的结果；有生成失配/训练暴露等混杂；不能否定生物先验总体。exp004未完成的矩阵不增添阴性方法证据。",
+      "source_refs": [
+        {
+          "path": "experiments/exp003-context-module-cvae/REPORT.md",
+          "sha256": "fd82874ca2e5c700d04e286908ffd841eb6b370a4ee2475aaf1bf743d17b6c43",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        }
+      ],
+      "next_action": "先修复实现瓶颈，再做真实/匹配随机/无先验控制。",
+      "reopen_when": "控制生成与训练瓶颈后在同协议完成新的先验消融。",
+      "registration": "retrospective"
+    },
+    "E05": {
+      "comparison_id": null,
+      "node_ids": [
+        "exp008"
+      ],
+      "state": "inconclusive",
+      "claim": "重复NTC、缺测和基因轴/归一化差异需修复；尚无额外QC带来预测收益的实验。",
+      "limitations": "exp008尚未实施；轴、QC、CPM分母、协议与训练轮数一起变化时只能归因整包；物理细胞/研究/背景支持不能由bag数替代。",
+      "source_refs": [
+        {
+          "path": "experiments/exp008/PLAN.md",
+          "sha256": "e45a2f2c7720142e619465fb01772aa3580990afdaa71ce3b3c2394d24360721",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        }
+      ],
+      "next_action": "先建立有效基线，再固定reference比较额外QC；保持已有用户边界。",
+      "reopen_when": "完成额外QC与基础处理的同协议配对训练、保留率/覆盖/强弱响应诊断。",
+      "registration": "retrospective"
+    },
+    "E06": {
+      "comparison_id": null,
+      "node_ids": [],
+      "state": "inconclusive",
+      "claim": "scBaseCount已审计候选10研究、56281 QC cells只能作为representation_only；并非新增CRISPRi或匹配NTC监督。",
+      "limitations": "数据规模不证明表示增益；审计的研究、物种、assay、重复和版本边界必须保留。",
+      "source_refs": [
+        {
+          "path": "docs/datasets/scbasecount-exp001-assessment-2026-09-19.md",
+          "sha256": "2174cc7e0c7b51545ace395750f5e4b9f5f47f1625a3b34f2e9cbe2bf53064c2",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        }
+      ],
+      "next_action": "仅在冻结表示实验中检验，与等维简单表示配对。",
+      "reopen_when": "已有合规固定模型/数据引用、训练侧拟合边界和下游比较后重开。",
+      "registration": "retrospective",
+      "results": {
+        "candidate_studies": 10,
+        "qc_cells": 56281,
+        "permitted_role": "representation_only"
+      }
+    },
+    "E07": {
+      "comparison_id": null,
+      "node_ids": [],
+      "state": "signal",
+      "claim": "静态网络两跳覆盖真实DEG的富集接近随机期望，不能把覆盖率当成预测增益。",
+      "limitations": "只覆盖五背景共同32靶点、5946受检readout；覆盖分析不是学习模型消融，不能否定所有知识图。",
+      "source_refs": [
+        {
+          "path": "docs/exp007-cross-context-de.md",
+          "sha256": "c8e37ef20c28b87121b4b4981a1e6ce971f3cd94beb3550f53514e103ebf1261",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        }
+      ],
+      "next_action": "以匹配规模/度分布随机图和无先验作对照，考虑实测响应证据。",
+      "reopen_when": "真实/随机/无先验的同预算预测实验显示可重复差异。",
+      "registration": "retrospective",
+      "results": {
+        "common_targets": 32,
+        "tested_readouts": 5946,
+        "enrichment_range": [
+          1.016,
+          1.071
+        ]
+      }
+    }
+  },
+  "queue": [
+    {
+      "id": "Q1",
+      "comparison_id": "CMP-V-BASELINES",
+      "priority": 1,
+      "question": "统一有效H1协议后，原模型、直接迁移与连续响应差异是否仍成立？",
+      "action": "先固定协议/参考/物理NTC身份并明确所有对照；未定配置不启动。",
+      "requires_evidence": [
+        "E01",
+        "E02",
+        "E03"
+      ]
+    },
+    {
+      "id": "Q2",
+      "comparison_id": "CMP-D-QC",
+      "priority": 2,
+      "question": "额外QC的收益来自质量还是数量/覆盖变化？",
+      "action": "在Q1冻结协议及已有exp008用户范围内设计基础处理与额外QC配对；对照范围待对齐。",
+      "requires_evidence": [
+        "E01",
+        "E05"
+      ]
+    },
+    {
+      "id": "Q3",
+      "comparison_id": "CMP-G-ADAPTATION",
+      "priority": 3,
+      "question": "共享响应当前更缺背景适配，还是有效的NTC/响应表示？",
+      "action": "先选来源背景加权/收缩或表示替换之一；冻结另一部分及生成器，不追加未经约定的训练范围。",
+      "requires_evidence": [
+        "E02",
+        "E03",
+        "E04",
+        "E07"
+      ]
+    }
+  ]
+}

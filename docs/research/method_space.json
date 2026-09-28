@@ -1,0 +1,447 @@
+{
+  "schema_version": 1,
+  "description": "方法空间描述候选机制；method不是实际配置的替代品。未登记并冻结具体比较的候选不可启动。",
+  "axes": {
+    "T": {
+      "name": "任务与监督量",
+      "variants": {
+        "latent_response": "共享响应的隐变量/计数分布建模，响应辅助空间由配置固定",
+        "cpm_residual": "背景基线加 CPM 均值残差",
+        "log2fc": "逐细胞 CPM 算术均值的 log2FC，epsilon=1e-9",
+        "shared_plus_residual": "候选：共享响应加背景修正，独立诊断均值与分布"
+      }
+    },
+    "D": {
+      "name": "数据质量与独立支持",
+      "variants": {
+        "legacy_exp004": "历史五背景任务集合、基因轴和拆分，来源固定",
+        "legacy_native": "历史五背景原生测量轴、missing mask与合格细胞集合",
+        "basic_official_axis": "候选/exp008基础：官方基因名直接交集、同名列求和、身份与counts正确性处理",
+        "extra_qc": "候选/exp008整包：基础正确性后仅训练非官方靶点采用同GEM NTC联合异常QC",
+        "matched_random_drop": "候选：匹配额外QC后数量与覆盖的随机删样对照",
+        "support_weighting": "候选：按独立背景/研究/guide支持调整权重并保留覆盖统计"
+      }
+    },
+    "R": {
+      "name": "表示与先验注入",
+      "variants": {
+        "shared_prior": "exp004固定知识先验、共享基因读出和NTC PCA",
+        "static_statistics": "exp007原70维靶点/readout知识与NTC统计",
+        "continuous_response": "原70维加7维排除接收背景的同靶点连续响应统计",
+        "deg_evidence": "连续响应再加10维DE方向/功效/支持信息",
+        "response_modules": "DE信息再加82维固定Reactome SVD模块、静态readout坐标和交互",
+        "statistics_only": "候选：仅NTC均值/方差等统计及必要身份",
+        "no_prior": "候选：无知识图或模块先验",
+        "matched_random_prior": "候选：匹配节点/边/度或等维模块的随机先验",
+        "frozen_encoder": "候选：固定来源版本的冻结预训练表示，与等维统计/随机表示配对"
+      }
+    },
+    "A": {
+      "name": "模型架构与容量",
+      "variants": {
+        "shared_cvae": "exp004共享读出的条件响应生成模型",
+        "xgboost": "共享标量XGBoost回归器，历史depth=6",
+        "direct_transfer": "候选/历史评估基线：同靶点响应直接转移",
+        "linear_lowrank": "候选：线性或低秩修正，检验可辨识自由度",
+        "small_mlp": "候选：预算匹配的小MLP",
+        "capacity_increase": "候选：仅在欠拟合证据支持下增加容量，并匹配调参/训练预算"
+      }
+    },
+    "L": {
+      "name": "目标函数",
+      "variants": {
+        "response_elbo": "exp004响应主目标及校准后的ELBO/NTC/深度辅助项",
+        "weighted_mse": "历史按context/target/readout和bag权重的平方误差",
+        "robust_regression": "候选：预先固定尺度的稳健回归",
+        "direction_amplitude": "候选：分离方向与幅度目标，记录量纲和权重",
+        "no_training": "直接迁移基线无参数训练"
+      }
+    },
+    "O": {
+      "name": "优化与预算",
+      "variants": {
+        "cycles_early_stop": "exp004既定周期及正常早停规则",
+        "rounds_512": "seed17，完整512轮，固定七个评估检查点",
+        "rounds_2048": "exp008草案：seed17完整2048轮，七旧检查点加终点",
+        "budget_matched": "候选：事先固定资源/调参机会，诊断收敛与正则化",
+        "fixed_weights": "固定既有权重，不追加优化/不重选检查点"
+      }
+    },
+    "V": {
+      "name": "冻结验证协议",
+      "variants": {
+        "legacy_exp004": "exp004历史独立输入/参考NTC、tiled baseline与固定anchors",
+        "legacy_tiled_native": "exp005/006历史原生轴tiled baseline；不进入修复后选模",
+        "legacy_shared_ntc": "exp007/00701历史H1同池NTC、dispersed baseline，不作独立测试",
+        "legacy_dispersed_loco": "exp006修复baseline后的五背景LOCO计划，尚未完成",
+        "draft_separated_h1": "候选/exp008：H1输入/评分物理细胞隔离，官方轴、dispersed和固定reference",
+        "independent_confirmation": "候选：预先冻结未用于选择的独立背景/研究确认；需另行确认范围"
+      }
+    },
+    "I": {
+      "name": "推理与分布生成",
+      "variants": {
+        "nb_generator": "exp004固定负二项生成器",
+        "cpm_ntc_template": "exp006 CPM残差加NTC模板生成",
+        "lfc_ntc_calibrated": "exp007/00701组成校准的LFC NTC模板整数生成",
+        "fixed_mean_generator_test": "候选：固定均值模型检验生成前后偏移、方差和NTC伪DE"
+      }
+    },
+    "G": {
+      "name": "跨背景迁移",
+      "variants": {
+        "conditional_prior": "exp004条件关系与共享响应先验",
+        "context_features": "原NTC context特征隐式迁移",
+        "source_response_features": "排除接收背景的来源响应作为特征；缺测带支持数",
+        "background_weighting": "候选：来源背景加权/收缩并设置无支持回退",
+        "shared_response": "候选/历史基线：同靶点共享响应均值",
+        "ntc_adaptation": "候选：预先声明仅留出NTC适配，禁止留出扰动标签"
+      }
+    }
+  },
+  "methods": {
+    "M-EXP004": {
+      "description": "共享读出与条件先验；矩阵未完成",
+      "axes": {
+        "T": "latent_response",
+        "D": "legacy_exp004",
+        "R": "shared_prior",
+        "A": "shared_cvae",
+        "L": "response_elbo",
+        "O": "cycles_early_stop",
+        "V": "legacy_exp004",
+        "I": "nb_generator",
+        "G": "conditional_prior"
+      },
+      "prior": "共享读出与条件先验；固定版本及消融矩阵见exp004 PLAN；矩阵中未执行的臂不构成证据",
+      "evidence_ids": [
+        "E04"
+      ],
+      "status": "historical"
+    },
+    "M-CPM-TILED": {
+      "description": "历史CPM残差XGBoost和tiled评分",
+      "axes": {
+        "T": "cpm_residual",
+        "D": "legacy_native",
+        "R": "static_statistics",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "rounds_512",
+        "V": "legacy_tiled_native",
+        "I": "cpm_ntc_template",
+        "G": "context_features"
+      },
+      "prior": "历史静态STRING/Reactome/CollecTRI特征；未获得可用完整归因结果",
+      "evidence_ids": [],
+      "status": "historical"
+    },
+    "M-CPM-DISPERSED": {
+      "description": "修复baseline的CPM残差LOCO试验",
+      "axes": {
+        "T": "cpm_residual",
+        "D": "legacy_native",
+        "R": "static_statistics",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "rounds_512",
+        "V": "legacy_dispersed_loco",
+        "I": "cpm_ntc_template",
+        "G": "context_features"
+      },
+      "prior": "静态先验沿用；仅方法/代码继承exp005，无权重继承",
+      "evidence_ids": [],
+      "status": "historical"
+    },
+    "M-LFC-STATIC": {
+      "description": "历史70维特征log2FC XGBoost",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "static_statistics",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "rounds_512",
+        "V": "legacy_shared_ntc",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "STRING/Reactome/CollecTRI静态信息；无真实/随机/无先验单独比较",
+      "evidence_ids": [
+        "E02",
+        "E07"
+      ],
+      "status": "historical"
+    },
+    "M-LFC-CONTINUOUS": {
+      "description": "跨背景continuous特征XGBoost",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "continuous_response",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "rounds_512",
+        "V": "legacy_shared_ntc",
+        "I": "lfc_ntc_calibrated",
+        "G": "source_response_features"
+      },
+      "prior": "来源响应排除接收背景和H1；modules固定Reactome坐标并同时加入静态readout信息，不能拆分归因",
+      "evidence_ids": [
+        "E03"
+      ],
+      "status": "historical"
+    },
+    "M-LFC-CONTINUOUS-REEVAL": {
+      "description": "固定continuous原128轮权重按exp004协议重评",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "continuous_response",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "fixed_weights",
+        "V": "legacy_exp004",
+        "I": "lfc_ntc_calibrated",
+        "G": "source_response_features"
+      },
+      "prior": "原训练先验/响应来源固定；只有输入与评分条件改变，非重新训练",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ],
+      "status": "historical"
+    },
+    "M-LFC-DEG": {
+      "description": "跨背景deg特征XGBoost",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "deg_evidence",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "rounds_512",
+        "V": "legacy_shared_ntc",
+        "I": "lfc_ntc_calibrated",
+        "G": "source_response_features"
+      },
+      "prior": "来源响应排除接收背景和H1；modules固定Reactome坐标并同时加入静态readout信息，不能拆分归因",
+      "evidence_ids": [
+        "E03"
+      ],
+      "status": "historical"
+    },
+    "M-LFC-DEG-REEVAL": {
+      "description": "固定deg原128轮权重按exp004协议重评",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "deg_evidence",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "fixed_weights",
+        "V": "legacy_exp004",
+        "I": "lfc_ntc_calibrated",
+        "G": "source_response_features"
+      },
+      "prior": "原训练先验/响应来源固定；只有输入与评分条件改变，非重新训练",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ],
+      "status": "historical"
+    },
+    "M-LFC-MODULES": {
+      "description": "跨背景modules特征XGBoost",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "response_modules",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "rounds_512",
+        "V": "legacy_shared_ntc",
+        "I": "lfc_ntc_calibrated",
+        "G": "source_response_features"
+      },
+      "prior": "来源响应排除接收背景和H1；modules固定Reactome坐标并同时加入静态readout信息，不能拆分归因",
+      "evidence_ids": [
+        "E03"
+      ],
+      "status": "historical"
+    },
+    "M-LFC-MODULES-REEVAL": {
+      "description": "固定modules原128轮权重按exp004协议重评",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "response_modules",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "fixed_weights",
+        "V": "legacy_exp004",
+        "I": "lfc_ntc_calibrated",
+        "G": "source_response_features"
+      },
+      "prior": "原训练先验/响应来源固定；只有输入与评分条件改变，非重新训练",
+      "evidence_ids": [
+        "E01",
+        "E03"
+      ],
+      "status": "historical"
+    },
+    "M-EXP008-DRAFT": {
+      "description": "官方轴、有效性修复、强化QC、隔离NTC和2048轮的草案整包",
+      "axes": {
+        "T": "log2fc",
+        "D": "extra_qc",
+        "R": "static_statistics",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "rounds_2048",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "沿用exp007先验，但官方轴导致特征重算；不能把整包收益统称QC收益",
+      "evidence_ids": [
+        "E05"
+      ],
+      "status": "candidate"
+    },
+    "M-QC-CONTROL": {
+      "description": "候选：同轴同协议的基础有效性对照",
+      "axes": {
+        "T": "log2fc",
+        "D": "basic_official_axis",
+        "R": "static_statistics",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "budget_matched",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "保持模型及真实先验固定，只评价额外QC增量",
+      "evidence_ids": [
+        "E05"
+      ],
+      "status": "candidate"
+    },
+    "M-QC-RANDOM": {
+      "description": "候选：等量/覆盖匹配的随机删样",
+      "axes": {
+        "T": "log2fc",
+        "D": "matched_random_drop",
+        "R": "static_statistics",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "budget_matched",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "QC质量与样本数量分开；随机删样seed和训练seed分别固定",
+      "evidence_ids": [
+        "E05"
+      ],
+      "status": "candidate"
+    },
+    "M-PRIOR-NONE": {
+      "description": "候选：无知识先验对照",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "no_prior",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "budget_matched",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "无先验；匹配下游容量和数据支持",
+      "evidence_ids": [
+        "E04",
+        "E07"
+      ],
+      "status": "candidate"
+    },
+    "M-PRIOR-RANDOM": {
+      "description": "候选：匹配随机先验对照",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "matched_random_prior",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "budget_matched",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "真实图来源固定；随机对照匹配节点/边数/度分布；随机模块匹配维数",
+      "evidence_ids": [
+        "E04",
+        "E07"
+      ],
+      "status": "candidate"
+    },
+    "M-FROZEN-ENCODER": {
+      "description": "候选：冻结编码器替换状态表示",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "frozen_encoder",
+        "A": "xgboost",
+        "L": "weighted_mse",
+        "O": "budget_matched",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "尚未选定/下载编码器；须冻结模型来源、映射、预训练重叠和拟合边界",
+      "evidence_ids": [
+        "E06"
+      ],
+      "status": "candidate"
+    },
+    "M-WEIGHTED-TRANSFER": {
+      "description": "候选：共享响应加来源背景加权/收缩",
+      "axes": {
+        "T": "shared_plus_residual",
+        "D": "legacy_native",
+        "R": "continuous_response",
+        "A": "linear_lowrank",
+        "L": "weighted_mse",
+        "O": "budget_matched",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "background_weighting"
+      },
+      "prior": "共享部分可迁移是待验证假设；与直接迁移和无背景修正配对",
+      "evidence_ids": [
+        "E02",
+        "E03"
+      ],
+      "status": "candidate"
+    },
+    "M-SMALL-MLP": {
+      "description": "候选：同信息同预算小MLP容量检查",
+      "axes": {
+        "T": "log2fc",
+        "D": "legacy_native",
+        "R": "static_statistics",
+        "A": "small_mlp",
+        "L": "weighted_mse",
+        "O": "budget_matched",
+        "V": "draft_separated_h1",
+        "I": "lfc_ntc_calibrated",
+        "G": "context_features"
+      },
+      "prior": "不通过模型规模替代数据支持；需已有欠拟合/容量瓶颈证据",
+      "evidence_ids": [],
+      "status": "candidate"
+    }
+  }
+}

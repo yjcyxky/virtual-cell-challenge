@@ -1,0 +1,980 @@
+{
+  "schema_version": 1,
+  "description": "每个新Experiment对应一个训练结果单元；legacy节点按原W&B执行身份回填，评估-only明确标记。控制与来源边分开；所有历史登记为事后恢复。",
+  "protocols": {
+    "V-EXP004-H1": {
+      "description": "原exp004固定H1参考、独立NTC、tiled baseline；不等同线上r4",
+      "scope": "H1开发；输入/评分NTC各3072且不重合；40756参考细胞、18005基因、297靶点；重评生成101/202/303",
+      "status": "historical",
+      "source_refs": [
+        {
+          "path": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/config.yaml",
+          "sha256": "2db6952e851a46a6e7a6cf4fa4a8e4ad6795247778d9e89cf483d24c6a6a34b8"
+        },
+        {
+          "path": "experiments/exp00701/configs/exp004-reference.json",
+          "sha256": "360c7c20b5ed5db6800d9ecc7db17a8b6da9fd09b625d9cceee0e5e3cf627c13",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        }
+      ],
+      "ntc_disjoint": true,
+      "leaderboard_equivalent": false
+    },
+    "V-NATIVE-TILED": {
+      "description": "历史原生轴tiled baseline，禁用于修复后模型选择",
+      "scope": "exp005嵌套方案和exp006旧LOCO；未完成预定训练，不建立两者方法归因",
+      "status": "historical",
+      "source_refs": [
+        {
+          "path": "experiments/exp005/outputs/20260926-exp005-nested-residual-s17/config.yaml",
+          "sha256": "c091388d2ae77d102554cd7e4632d18dd0ea664da2d815f7bbbe983989c4508f"
+        },
+        {
+          "path": "experiments/exp006/outputs/20260926-exp006-loco-residual-s17/config.yaml",
+          "sha256": "b9d2fe12f7515f9e20732b978f9fd893d94f0b115b981e7657df63a996cc0565"
+        }
+      ],
+      "ntc_disjoint": false,
+      "leaderboard_equivalent": false
+    },
+    "V-DISPERSED-LOCO": {
+      "description": "exp006 dispersed/exclude-target修复后的五背景留一计划",
+      "scope": "历史未完成；metrics没有完整验证结果",
+      "status": "historical",
+      "source_refs": [
+        {
+          "path": "experiments/exp006/outputs/20260927-exp006-dispersed-s17/config.yaml",
+          "sha256": "1075805f5faa2dca4a59191abdfdca2c5ad667efec251d7955955c36d93d9995"
+        }
+      ],
+      "ntc_disjoint": false,
+      "leaderboard_equivalent": false
+    },
+    "V-H1-SHARED-NTC": {
+      "description": "exp007/00701旧H1：输入与评分NTC完全重叠，原生基因轴，dispersed baseline/exclude_target",
+      "scope": "H1用于七检查点选模；四训练背景、297靶点(269已见/28未见)；旧分数只在同口径解释",
+      "status": "historical",
+      "source_refs": [
+        {
+          "path": "experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/config.yaml",
+          "sha256": "0c072ee016082c01c3373087801f8c565a4dcba605950423780c8377455c76b2"
+        },
+        {
+          "path": "experiments/exp00701/configs/source-reference.json",
+          "sha256": "49e7c0fcc3530bb4a85fd7775267ea4569c4dc67c59ccfe96c0748a3a274e143",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        },
+        {
+          "path": "docs/exp007-official-scoring-protocol-audit.md",
+          "sha256": "afc781a233d08ccb28fc812e1f78894aa73add71621306308b2d043d8404c6e9",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        }
+      ],
+      "ntc_disjoint": false,
+      "leaderboard_equivalent": false
+    },
+    "V-EXP008-DRAFT": {
+      "description": "尚未实施：官方基因名单直接匹配、H1按batch固定1:1隔离NTC、新reference和anchors、dispersed/exclude_target",
+      "scope": "四训H1开发；每靶点最多400真实参考、400预测；生成seed101；最终版本待实际配置和身份固定",
+      "status": "draft",
+      "source_refs": [
+        {
+          "path": "experiments/exp008/PLAN.md",
+          "sha256": "e45a2f2c7720142e619465fb01772aa3580990afdaa71ce3b3c2394d24360721",
+          "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+        }
+      ],
+      "ntc_disjoint": true,
+      "leaderboard_equivalent": false
+    }
+  },
+  "nodes": {
+    "20260925-exp004-conditional-s17": {
+      "experiment_id": "20260925-exp004-conditional-s17",
+      "directory": "experiments/exp004-shared-response",
+      "legacy": true,
+      "method_id": "M-EXP004",
+      "protocol_id": "V-EXP004-H1",
+      "status": "interrupted",
+      "comparison_id": null,
+      "controls": [],
+      "sources": [],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/config.yaml",
+        "sha256": "2db6952e851a46a6e7a6cf4fa4a8e4ad6795247778d9e89cf483d24c6a6a34b8"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/predictions/holdout-H1/best-official.json",
+        "sha256": "b5d36c4165b01858e7e075c383509f4ded0f6ab508ea1bd193b2312298f73200"
+      },
+      "report_ref": {
+        "path": "experiments/exp004-shared-response/REPORT.md",
+        "sha256": "572447e7e5fe96a8d9d02323e70a5a73ff844dab6cd3f139e95ff472c046165a",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260925-exp004-conditional-s17",
+      "artifact": null,
+      "git_commit": "be92538b80b67745d92878002966afa7b2157875",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [
+        "矩阵与五折未完成；cache/user-stop.json明确用户停训，不视为方法阴性。"
+      ],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260925-exp004-conditional-s17",
+      "legacy_experiment_id": "exp004-shared-response",
+      "output_directory": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17",
+      "observed_status": "stopped_by_user",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "kind": "data_source",
+          "description": "exp003固定data cache与exp002 collection；未在此登记为科学对照",
+          "ref": {
+            "path": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/data-reference.json",
+            "sha256": "99058e95dbb9995fbb54ca7da38eb781c25e7e1d96930026ad0a8cdde9668e6e"
+          }
+        }
+      ],
+      "status_ref": {
+        "path": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/user-stop.json",
+        "sha256": "e0ba4b20ad7ccfdfed25fe882c0fcc1e386d2896681ae6d082c82cdcaf9abc21"
+      },
+      "metrics_scope": "H1 cycle11子结果；不是完整训练metrics"
+    },
+    "20260926-exp005-nested-residual-s17": {
+      "experiment_id": "20260926-exp005-nested-residual-s17",
+      "directory": "experiments/exp005",
+      "legacy": true,
+      "method_id": "M-CPM-TILED",
+      "protocol_id": "V-NATIVE-TILED",
+      "status": "failed",
+      "comparison_id": null,
+      "controls": [],
+      "sources": [],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp005/outputs/20260926-exp005-nested-residual-s17/config.yaml",
+        "sha256": "c091388d2ae77d102554cd7e4632d18dd0ea664da2d815f7bbbe983989c4508f"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp005/outputs/20260926-exp005-nested-residual-s17/metrics.json",
+        "sha256": "dd7160f04603ef868e6b8735b1b001823b7c2798c487e13cc3ce7453947b2c0d"
+      },
+      "report_ref": {
+        "path": "experiments/exp005/REPORT.md",
+        "sha256": "90f599bd70e8278a7b4a77fc1233dc5610982f38b9e3cd3bfaf3ad6d1e579db3",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260926-exp005-nested-residual-s17",
+      "artifact": null,
+      "git_commit": "a49416c795e9607813c8acf4057cbb0ca5696f93",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [
+        "历史执行failed；可引用已固定DE缓存，不能据失败判定方法无效。"
+      ],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260926-exp005-nested-residual-s17",
+      "legacy_experiment_id": "exp005",
+      "output_directory": "experiments/exp005/outputs/20260926-exp005-nested-residual-s17",
+      "observed_status": "failed",
+      "registration": "retrospective",
+      "source_details": []
+    },
+    "20260926-exp006-loco-residual-s17": {
+      "experiment_id": "20260926-exp006-loco-residual-s17",
+      "directory": "experiments/exp006",
+      "legacy": true,
+      "method_id": "M-CPM-TILED",
+      "protocol_id": "V-NATIVE-TILED",
+      "status": "interrupted",
+      "comparison_id": null,
+      "controls": [],
+      "sources": [
+        "20260926-exp005-nested-residual-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp006/outputs/20260926-exp006-loco-residual-s17/config.yaml",
+        "sha256": "b9d2fe12f7515f9e20732b978f9fd893d94f0b115b981e7657df63a996cc0565"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp006/outputs/20260926-exp006-loco-residual-s17/metrics.json",
+        "sha256": "a52369db7573e2fdb8d9feb512b47a0dbf889924d590ea27e4239bd5f6db0280"
+      },
+      "report_ref": {
+        "path": "experiments/exp006/REPORT.md",
+        "sha256": "7b5fb49ed771d8f9c534259b80d5eef3b0b935cf1785b2c1ec09992ff32627b8",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260926-exp006-loco-residual-s17",
+      "artifact": null,
+      "git_commit": "7eb742f59957ebbeb774ccddeba66dbe25487a7e",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [
+        "用户停止；tiled且未排除靶基因的历史评分不能用于修复后选模。"
+      ],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260926-exp006-loco-residual-s17",
+      "legacy_experiment_id": "exp006",
+      "output_directory": "experiments/exp006/outputs/20260926-exp006-loco-residual-s17",
+      "observed_status": "stopped",
+      "registration": "retrospective",
+      "source_details": []
+    },
+    "20260927-exp006-dispersed-s17": {
+      "experiment_id": "20260927-exp006-dispersed-s17",
+      "directory": "experiments/exp006",
+      "legacy": true,
+      "method_id": "M-CPM-DISPERSED",
+      "protocol_id": "V-DISPERSED-LOCO",
+      "status": "interrupted",
+      "comparison_id": null,
+      "controls": [],
+      "sources": [
+        "20260926-exp005-nested-residual-s17",
+        "20260926-exp006-loco-residual-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp006/outputs/20260927-exp006-dispersed-s17/config.yaml",
+        "sha256": "1075805f5faa2dca4a59191abdfdca2c5ad667efec251d7955955c36d93d9995"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp006/outputs/20260927-exp006-dispersed-s17/metrics.json",
+        "sha256": "ff181a68213e9cfb15639186cf2427c66396925b7aba059b99d81f73022b2092"
+      },
+      "report_ref": {
+        "path": "experiments/exp006/REPORT.md",
+        "sha256": "7b5fb49ed771d8f9c534259b80d5eef3b0b935cf1785b2c1ec09992ff32627b8",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp006-dispersed-s17",
+      "artifact": null,
+      "git_commit": "3a702ef68a8805cead109bc23e9a0e51fccf27ec",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [
+        "metrics仍为cross_validation、validation为空；只读进程核查未发现活动训练，未证明既定训练完成。"
+      ],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260927-exp006-dispersed-s17",
+      "legacy_experiment_id": "exp006",
+      "output_directory": "experiments/exp006/outputs/20260927-exp006-dispersed-s17",
+      "observed_status": "cross_validation",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260926-exp005-nested-residual-s17",
+          "kind": "code_lineage",
+          "description": "仅方法/代码继承；不复用权重或run cache"
+        },
+        {
+          "node_id": "20260926-exp006-loco-residual-s17",
+          "kind": "protocol_replacement",
+          "description": "修复评分基线后新建历史run，不构成模型单因素对照"
+        }
+      ]
+    },
+    "20260927-exp007-h1-log2fc-s17": {
+      "experiment_id": "20260927-exp007-h1-log2fc-s17",
+      "directory": "experiments/exp007",
+      "legacy": true,
+      "method_id": "M-LFC-STATIC",
+      "protocol_id": "V-H1-SHARED-NTC",
+      "status": "completed",
+      "comparison_id": null,
+      "controls": [],
+      "sources": [
+        "20260927-exp006-dispersed-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/config.yaml",
+        "sha256": "0c072ee016082c01c3373087801f8c565a4dcba605950423780c8377455c76b2"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/metrics.json",
+        "sha256": "375dbbfe8e6e7488b3c4eebeac5d63fa04fd7699b6193475400c1c99317d5b86"
+      },
+      "report_ref": {
+        "path": "experiments/exp007/REPORT.md",
+        "sha256": "92ec96ecca5a59e93b55f51b0ff068677e9188a63ad381c142b361d8dad88808",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp007-h1-log2fc-s17",
+      "artifact": "yjcyxky/virtual-cell-challenge/exp007-20260927-exp007-h1-log2fc-s17:v0",
+      "git_commit": "49e2faf2aef2dd9552968c080366d9717c682efb",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260927-exp007-h1-log2fc-s17",
+      "legacy_experiment_id": "exp007",
+      "output_directory": "experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17",
+      "observed_status": "completed",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260927-exp006-dispersed-s17",
+          "kind": "code_lineage",
+          "description": "只继承方法/代码，标签、生成器及五折改H1同时改变；不是标签单因素对照"
+        }
+      ]
+    },
+    "20260927-exp00701-continuous-s17": {
+      "experiment_id": "20260927-exp00701-continuous-s17",
+      "directory": "experiments/exp00701",
+      "legacy": true,
+      "method_id": "M-LFC-CONTINUOUS",
+      "protocol_id": "V-H1-SHARED-NTC",
+      "status": "completed",
+      "comparison_id": "CMP-R-CONTINUOUS",
+      "controls": [
+        "20260927-exp007-h1-log2fc-s17"
+      ],
+      "sources": [
+        "20260927-exp007-h1-log2fc-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-continuous-s17/config.yaml",
+        "sha256": "42cf9ce43ec4d35151900bf1afa0906eb77ac5f2642dc9745c3846724bb9c22d"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-continuous-s17/metrics.json",
+        "sha256": "2f347c63203bc6ca356f715b0acd4b0867f40d5ae5d1b6374d683e9bd624da8b"
+      },
+      "report_ref": {
+        "path": "experiments/exp00701/REPORT.md",
+        "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-continuous-s17",
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-continuous-s17:v0",
+      "git_commit": "322aeabf0e4841ec4887f4ed983774775cac664a",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260927-exp00701-continuous-s17",
+      "legacy_experiment_id": "exp00701",
+      "output_directory": "experiments/exp00701/outputs/20260927-exp00701-continuous-s17",
+      "observed_status": "completed",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260927-exp007-h1-log2fc-s17",
+          "kind": "data_reference_source",
+          "description": "固定data/priors/H1 reference/anchors和历史基线；新模型从头训练",
+          "ref": {
+            "path": "experiments/exp00701/configs/source-reference.json",
+            "sha256": "49e7c0fcc3530bb4a85fd7775267ea4569c4dc67c59ccfe96c0748a3a274e143",
+            "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+          }
+        }
+      ]
+    },
+    "20260927-exp00701-exp004-continuous-s17": {
+      "experiment_id": "20260927-exp00701-exp004-continuous-s17",
+      "directory": "experiments/exp00701",
+      "legacy": true,
+      "method_id": "M-LFC-CONTINUOUS-REEVAL",
+      "protocol_id": "V-EXP004-H1",
+      "status": "completed",
+      "comparison_id": "CMP-V-REEVALUATION",
+      "controls": [],
+      "sources": [
+        "20260927-exp00701-continuous-s17",
+        "20260925-exp004-conditional-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-continuous-s17/config.yaml",
+        "sha256": "a19fc6e9d4f64046266cddd7ed1939daf909c837b86d0f544c1f9756bc404c81"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-continuous-s17/metrics.json",
+        "sha256": "514ef6e2004b439b3ee2c7fb80e4fd97904b36048e7fd944d0aea95ac20d47a7"
+      },
+      "report_ref": {
+        "path": "experiments/exp00701/REPORT.md",
+        "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-continuous-s17",
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-exp004-continuous-s17:v0",
+      "git_commit": "e6e81281799a9b4eb217fdd0fa07ccf9eda3cb2b",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [],
+      "execution_kind": "evaluation_only",
+      "legacy_execution_id": "20260927-exp00701-exp004-continuous-s17",
+      "legacy_experiment_id": "exp00701",
+      "output_directory": "experiments/exp00701/outputs/20260927-exp00701-exp004-continuous-s17",
+      "observed_status": "completed",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260927-exp00701-continuous-s17",
+          "kind": "checkpoint_source",
+          "description": "固定原协议选出的128轮checkpoint；未追加训练/选轮数"
+        },
+        {
+          "node_id": "20260925-exp004-conditional-s17",
+          "kind": "protocol_source",
+          "description": "固定reference与anchors；不是模型对照",
+          "ref": {
+            "path": "experiments/exp00701/configs/exp004-reference.json",
+            "sha256": "360c7c20b5ed5db6800d9ecc7db17a8b6da9fd09b625d9cceee0e5e3cf627c13",
+            "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+          }
+        }
+      ]
+    },
+    "20260927-exp00701-deg-s17": {
+      "experiment_id": "20260927-exp00701-deg-s17",
+      "directory": "experiments/exp00701",
+      "legacy": true,
+      "method_id": "M-LFC-DEG",
+      "protocol_id": "V-H1-SHARED-NTC",
+      "status": "completed",
+      "comparison_id": "CMP-R-DEG",
+      "controls": [
+        "20260927-exp00701-continuous-s17"
+      ],
+      "sources": [
+        "20260927-exp007-h1-log2fc-s17",
+        "20260927-exp006-dispersed-s17",
+        "20260926-exp005-nested-residual-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-deg-s17/config.yaml",
+        "sha256": "833d5de04428a2c84c4ec01d203f21d77f7c1c777774d24231e0b2b925ce20bf"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-deg-s17/metrics.json",
+        "sha256": "9c4d8d1aaeb0f34c4bd866d1ae7ca5bf1c9255742651ffbdda48f940200471ad"
+      },
+      "report_ref": {
+        "path": "experiments/exp00701/REPORT.md",
+        "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-deg-s17",
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-deg-s17:v0",
+      "git_commit": "322aeabf0e4841ec4887f4ed983774775cac664a",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260927-exp00701-deg-s17",
+      "legacy_experiment_id": "exp00701",
+      "output_directory": "experiments/exp00701/outputs/20260927-exp00701-deg-s17",
+      "observed_status": "completed",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260927-exp007-h1-log2fc-s17",
+          "kind": "data_reference_source",
+          "description": "固定data/priors/H1 reference/anchors和历史基线；新模型从头训练",
+          "ref": {
+            "path": "experiments/exp00701/configs/source-reference.json",
+            "sha256": "49e7c0fcc3530bb4a85fd7775267ea4569c4dc67c59ccfe96c0748a3a274e143",
+            "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+          }
+        },
+        {
+          "node_id": "20260927-exp006-dispersed-s17",
+          "kind": "artifact_source",
+          "description": "固定K562 DE缓存；非模型权重/科学对照"
+        },
+        {
+          "node_id": "20260926-exp005-nested-residual-s17",
+          "kind": "artifact_source",
+          "description": "固定HepG2/Jurkat DE缓存；RPE1在本次run内计算"
+        }
+      ]
+    },
+    "20260927-exp00701-exp004-deg-s17": {
+      "experiment_id": "20260927-exp00701-exp004-deg-s17",
+      "directory": "experiments/exp00701",
+      "legacy": true,
+      "method_id": "M-LFC-DEG-REEVAL",
+      "protocol_id": "V-EXP004-H1",
+      "status": "completed",
+      "comparison_id": "CMP-V-REEVALUATION",
+      "controls": [],
+      "sources": [
+        "20260927-exp00701-deg-s17",
+        "20260925-exp004-conditional-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-deg-s17/config.yaml",
+        "sha256": "131ca77ce64968eb203ba9cde4941bdb2836b13a5f06759522bf1507fa929ae1"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-deg-s17/metrics.json",
+        "sha256": "984f5e8742794360a5fbe873c6df86fde781929c415acbe4c1b4e818b249e710"
+      },
+      "report_ref": {
+        "path": "experiments/exp00701/REPORT.md",
+        "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-deg-s17",
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-exp004-deg-s17:v0",
+      "git_commit": "e6e81281799a9b4eb217fdd0fa07ccf9eda3cb2b",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [],
+      "execution_kind": "evaluation_only",
+      "legacy_execution_id": "20260927-exp00701-exp004-deg-s17",
+      "legacy_experiment_id": "exp00701",
+      "output_directory": "experiments/exp00701/outputs/20260927-exp00701-exp004-deg-s17",
+      "observed_status": "completed",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260927-exp00701-deg-s17",
+          "kind": "checkpoint_source",
+          "description": "固定原协议选出的128轮checkpoint；未追加训练/选轮数"
+        },
+        {
+          "node_id": "20260925-exp004-conditional-s17",
+          "kind": "protocol_source",
+          "description": "固定reference与anchors；不是模型对照",
+          "ref": {
+            "path": "experiments/exp00701/configs/exp004-reference.json",
+            "sha256": "360c7c20b5ed5db6800d9ecc7db17a8b6da9fd09b625d9cceee0e5e3cf627c13",
+            "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+          }
+        }
+      ]
+    },
+    "20260927-exp00701-modules-s17": {
+      "experiment_id": "20260927-exp00701-modules-s17",
+      "directory": "experiments/exp00701",
+      "legacy": true,
+      "method_id": "M-LFC-MODULES",
+      "protocol_id": "V-H1-SHARED-NTC",
+      "status": "completed",
+      "comparison_id": "CMP-R-MODULES",
+      "controls": [
+        "20260927-exp00701-deg-s17"
+      ],
+      "sources": [
+        "20260927-exp007-h1-log2fc-s17",
+        "20260927-exp006-dispersed-s17",
+        "20260926-exp005-nested-residual-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-modules-s17/config.yaml",
+        "sha256": "c35efb2189931fdbfcf4e1c1910f0a235ed713dc321f4ab236dd97e7bbe03df6"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-modules-s17/metrics.json",
+        "sha256": "1268321b81a50e8156e41a2e7c48bc6e10d00517d23f6ecba7d623848a62b4b5"
+      },
+      "report_ref": {
+        "path": "experiments/exp00701/REPORT.md",
+        "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-modules-s17",
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-modules-s17:v0",
+      "git_commit": "322aeabf0e4841ec4887f4ed983774775cac664a",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [],
+      "execution_kind": "training",
+      "legacy_execution_id": "20260927-exp00701-modules-s17",
+      "legacy_experiment_id": "exp00701",
+      "output_directory": "experiments/exp00701/outputs/20260927-exp00701-modules-s17",
+      "observed_status": "completed",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260927-exp007-h1-log2fc-s17",
+          "kind": "data_reference_source",
+          "description": "固定data/priors/H1 reference/anchors和历史基线；新模型从头训练",
+          "ref": {
+            "path": "experiments/exp00701/configs/source-reference.json",
+            "sha256": "49e7c0fcc3530bb4a85fd7775267ea4569c4dc67c59ccfe96c0748a3a274e143",
+            "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+          }
+        },
+        {
+          "node_id": "20260927-exp006-dispersed-s17",
+          "kind": "artifact_source",
+          "description": "固定K562 DE缓存；非模型权重/科学对照"
+        },
+        {
+          "node_id": "20260926-exp005-nested-residual-s17",
+          "kind": "artifact_source",
+          "description": "固定HepG2/Jurkat DE缓存；RPE1在本次run内计算"
+        }
+      ]
+    },
+    "20260927-exp00701-exp004-modules-s17": {
+      "experiment_id": "20260927-exp00701-exp004-modules-s17",
+      "directory": "experiments/exp00701",
+      "legacy": true,
+      "method_id": "M-LFC-MODULES-REEVAL",
+      "protocol_id": "V-EXP004-H1",
+      "status": "completed",
+      "comparison_id": "CMP-V-REEVALUATION",
+      "controls": [],
+      "sources": [
+        "20260927-exp00701-modules-s17",
+        "20260925-exp004-conditional-s17"
+      ],
+      "requires_evidence": [],
+      "config_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-modules-s17/config.yaml",
+        "sha256": "13800c939374353a018812030d4264a1b2c94887d0f889fac02b11c0d30ccb01"
+      },
+      "metrics_ref": {
+        "path": "experiments/exp00701/outputs/20260927-exp00701-exp004-modules-s17/metrics.json",
+        "sha256": "d491f4eb5c22d3b690de7490db0890e6430e40daf4d98be2ee8555f03b513c7c"
+      },
+      "report_ref": {
+        "path": "experiments/exp00701/REPORT.md",
+        "sha256": "77fd3488cbf22ef7fea621753e7bf57c4900d9339825d8f54faa8137d8ec56b1",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260927-exp00701-exp004-modules-s17",
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-exp004-modules-s17:v0",
+      "git_commit": "e6e81281799a9b4eb217fdd0fa07ccf9eda3cb2b",
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [],
+      "execution_kind": "evaluation_only",
+      "legacy_execution_id": "20260927-exp00701-exp004-modules-s17",
+      "legacy_experiment_id": "exp00701",
+      "output_directory": "experiments/exp00701/outputs/20260927-exp00701-exp004-modules-s17",
+      "observed_status": "completed",
+      "registration": "retrospective",
+      "source_details": [
+        {
+          "node_id": "20260927-exp00701-modules-s17",
+          "kind": "checkpoint_source",
+          "description": "固定原协议选出的128轮checkpoint；未追加训练/选轮数"
+        },
+        {
+          "node_id": "20260925-exp004-conditional-s17",
+          "kind": "protocol_source",
+          "description": "固定reference与anchors；不是模型对照",
+          "ref": {
+            "path": "experiments/exp00701/configs/exp004-reference.json",
+            "sha256": "360c7c20b5ed5db6800d9ecc7db17a8b6da9fd09b625d9cceee0e5e3cf627c13",
+            "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+          }
+        }
+      ]
+    },
+    "exp008": {
+      "experiment_id": "exp008",
+      "directory": "experiments/exp008",
+      "legacy": false,
+      "method_id": "M-EXP008-DRAFT",
+      "protocol_id": "V-EXP008-DRAFT",
+      "status": "draft",
+      "comparison_id": "CMP-D-EXP008-INTEGRATION",
+      "controls": [],
+      "sources": [
+        "20260927-exp007-h1-log2fc-s17",
+        "20260925-exp004-conditional-s17"
+      ],
+      "requires_evidence": [
+        "E01",
+        "E05"
+      ],
+      "config_ref": null,
+      "metrics_ref": null,
+      "report_ref": null,
+      "wandb_url": null,
+      "artifact": null,
+      "git_commit": null,
+      "expected_config": null,
+      "code_refs": [],
+      "blockers": [
+        "PLAN明确尚未对齐具体比较方案或开始实现；额外对照训练是否纳入待确认。",
+        "官方推断/提交范围未对齐；不得由登记机制擅自扩大。",
+        "没有实际配置、固定输入/划分/评分身份、独立uv环境、锁文件或实现。",
+        "PLAN记录micromamba JSON parse_error；实施前须重新核验并恢复合规启动路径。",
+        "现计划同时改变基因轴、QC、CPM分母、NTC/reference与训练2048轮，只能作为整包；QC归因须另定同口径对照。"
+      ],
+      "execution_kind": "planned_training",
+      "registration": "draft",
+      "plan_ref": {
+        "path": "experiments/exp008/PLAN.md",
+        "sha256": "e45a2f2c7720142e619465fb01772aa3580990afdaa71ce3b3c2394d24360721",
+        "git_commit": "87bb1889ba189bba569c0cb710fd6cb6a41c8e06"
+      },
+      "source_details": [
+        {
+          "node_id": "20260927-exp007-h1-log2fc-s17",
+          "kind": "design_lineage",
+          "description": "模型、采样、加权目标来源；重新计算特征与标签，不复用旧数值"
+        },
+        {
+          "node_id": "20260925-exp004-conditional-s17",
+          "kind": "protocol_design_lineage",
+          "description": "借鉴NTC物理隔离；不是直接复用exp004 tiled anchors"
+        }
+      ]
+    }
+  },
+  "comparisons": {
+    "CMP-R-CONTINUOUS": {
+      "purpose": "screen",
+      "status": "historical",
+      "hypothesis": "来源背景同靶点连续响应是否增加当前静态特征的预测信息？",
+      "controls": [
+        "20260927-exp007-h1-log2fc-s17"
+      ],
+      "candidates": [
+        "20260927-exp00701-continuous-s17"
+      ],
+      "changed_axes": [
+        "R",
+        "G"
+      ],
+      "changed_fields": [
+        "feature_mode:static_statistics->continuous",
+        "feature_dimensions:70->77"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "seed17；四训练背景/H1开发；相同512轮预算与七检查点；旧同池NTC协议。单背景单训练种子，非确认性结论。",
+        "on_support": "保留连续响应为后续候选，补隔离NTC协议的原模型/直接迁移对照。",
+        "on_against": "不采用该编码；分析来源支持和冲突。",
+        "on_inconclusive": "先修复/统一评估；不宣布新靶点泛化提升。"
+      },
+      "registration": "retrospective",
+      "preregistered": false,
+      "decision_rule_note": "历史结果后回填描述性解释，不伪造预注册门槛。"
+    },
+    "CMP-R-DEG": {
+      "purpose": "screen",
+      "status": "historical",
+      "hypothesis": "连续响应基础上再加入DE方向/功效证据能否改善留出？",
+      "controls": [
+        "20260927-exp00701-continuous-s17"
+      ],
+      "candidates": [
+        "20260927-exp00701-deg-s17"
+      ],
+      "changed_axes": [
+        "R"
+      ],
+      "changed_fields": [
+        "feature_mode:continuous->deg",
+        "feature_dimensions:77->87"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "seed17；四训练背景/H1开发；相同512轮预算与七检查点；旧同池NTC协议。单背景单训练种子，非确认性结论。",
+        "on_support": "仅在多指标同口径增益时保留该具体编码。",
+        "on_against": "搁置该DE汇总实现；不否定所有DE信息。",
+        "on_inconclusive": "补来源功效/方向冲突诊断或有效独立验证。"
+      },
+      "registration": "retrospective",
+      "preregistered": false,
+      "decision_rule_note": "历史结果后回填描述性解释，不伪造预注册门槛。"
+    },
+    "CMP-R-MODULES": {
+      "purpose": "screen",
+      "status": "historical",
+      "hypothesis": "DEG基础上增加固定模块及readout坐标整包能否改善留出？",
+      "controls": [
+        "20260927-exp00701-deg-s17"
+      ],
+      "candidates": [
+        "20260927-exp00701-modules-s17"
+      ],
+      "changed_axes": [
+        "R"
+      ],
+      "changed_fields": [
+        "feature_mode:deg->modules",
+        "feature_dimensions:87->169",
+        "fixed_Reactome_SVD_plus_static_readout_coordinates_and_interactions"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "seed17；四训练背景/H1开发；相同512轮预算与七检查点；旧同池NTC协议。单背景单训练种子，非确认性结论。 最佳与固定512轮方向不完全一致。",
+        "on_support": "保留整包线索，再拆静态readout和响应模块贡献。",
+        "on_against": "不将本模块实现升为默认。",
+        "on_inconclusive": "旧最佳差异与固定终点不同；不能宣称稳定变差或稳定提升。"
+      },
+      "registration": "retrospective",
+      "preregistered": false,
+      "decision_rule_note": "历史结果后回填描述性解释，不伪造预注册门槛。"
+    },
+    "CMP-V-REEVALUATION": {
+      "purpose": "protocol_audit",
+      "status": "historical",
+      "hypothesis": "固定原最优权重在exp004原reference/anchors与独立NTC下，分数/排序如何变化？",
+      "controls": [
+        "20260927-exp00701-continuous-s17",
+        "20260927-exp00701-deg-s17",
+        "20260927-exp00701-modules-s17"
+      ],
+      "candidates": [
+        "20260927-exp00701-exp004-continuous-s17",
+        "20260927-exp00701-exp004-deg-s17",
+        "20260927-exp00701-exp004-modules-s17"
+      ],
+      "changed_axes": [
+        "V",
+        "I",
+        "R"
+      ],
+      "changed_fields": [
+        "input_ntc:38176->3072",
+        "reference_ntc_overlap:38176->0",
+        "reference_cells:156976->40756",
+        "gene_axis:18008->18005",
+        "baseline:dispersed_exclude_target->original_tiled",
+        "reference_anchors_and_per_target_generated_counts",
+        "input_ntc_features_recomputed_weights_fixed"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "固定r128；三个生成seed，只刻画采样；协议整包敏感性，禁止跨协议分差归因NTC或方法。",
+        "on_support": "限定到本口径的相对排序；补同协议zero/shared/exp007对照。",
+        "on_against": "回收旧口径总体性能声明，不判定训练失败。",
+        "on_inconclusive": "当前缺原模型及shared对照，不能判断连续响应绝对增益。"
+      },
+      "registration": "retrospective",
+      "preregistered": false,
+      "decision_rule_note": "历史结果后回填描述性解释，不伪造预注册门槛。"
+    },
+    "CMP-D-EXP008-INTEGRATION": {
+      "purpose": "integrate",
+      "status": "draft",
+      "hypothesis": "官方轴/有效性/QC/隔离NTC/训练预算整包能否在新协议形成有效基线？",
+      "controls": [],
+      "candidates": [
+        "exp008"
+      ],
+      "changed_axes": [
+        "D",
+        "R",
+        "O",
+        "V"
+      ],
+      "changed_fields": [
+        "gene_axis_and_name_merging",
+        "CPM_denominator",
+        "basic_and_extra_QC",
+        "input_reference_NTC_split",
+        "reference_and_anchors",
+        "rounds:512->2048"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "沿用已约定四训H1开发；额外对照及官方提交范围待对齐。",
+        "on_support": "只接受整包结果；不归因QC。",
+        "on_against": "记录完整有效负结果，回到瓶颈证据。",
+        "on_inconclusive": "先冻结新协议及对照；不启动草案。"
+      },
+      "registration": "draft",
+      "preregistered": false,
+      "decision_rule_note": "阈值、训练/调参预算、控制配置尚未冻结；不得启动。"
+    },
+    "CMP-V-BASELINES": {
+      "purpose": "baseline",
+      "status": "draft",
+      "hypothesis": "在物理隔离NTC的新冻结协议下，原回归/直接转移/连续响应的差异是否仍存在？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [
+        "V"
+      ],
+      "changed_fields": [
+        "待选择同一reference/anchors并在所有对照上重算输入和预测"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "优先冻结一个H1开发协议；沿用用户范围，不扩为五折；没有获批执行节点。",
+        "on_support": "以新口径统一基准支撑下一项归因。",
+        "on_against": "若旧排序消失，撤回跨协议推断。",
+        "on_inconclusive": "缺任一对照或身份不明则不推进方法确认。"
+      },
+      "registration": "draft",
+      "preregistered": false,
+      "decision_rule_note": "阈值、训练/调参预算、控制配置尚未冻结；不得启动。"
+    },
+    "CMP-D-QC": {
+      "purpose": "screen",
+      "status": "draft",
+      "hypothesis": "同轴、同基线、同模型预算下额外联合异常QC是否优于仅基础正确性处理？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [
+        "D"
+      ],
+      "changed_fields": [
+        "training_extra_QC_only；同量随机删样是否纳入另定"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "固定评分reference和NTC；报告训练保留率、背景/靶点/guide覆盖与效应强弱；不得保留已知错误作为对照。",
+        "on_support": "采用具体QC并在独立支持下确认。",
+        "on_against": "保留基础正确性处理，搁置额外筛选。",
+        "on_inconclusive": "区分样本量/覆盖变化和QC质量，必要时补同量对照。"
+      },
+      "registration": "draft",
+      "preregistered": false,
+      "decision_rule_note": "阈值、训练/调参预算、控制配置尚未冻结；不得启动。"
+    },
+    "CMP-G-ADAPTATION": {
+      "purpose": "screen",
+      "status": "draft",
+      "hypothesis": "共享响应的瓶颈是背景适配还是NTC表示不足？先选一个因素检验。",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [
+        "G"
+      ],
+      "changed_fields": [
+        "候选来源权重/收缩或NTC表示二选一，禁止同时更改"
+      ],
+      "decision_rule": {
+        "primary_metric": "Overall及原始/归一化六指标",
+        "direction": "higher_is_better_for_Overall",
+        "min_effect": null,
+        "scope": "依赖统一基准，固定响应源、下游容量/预算、生成器；按已见/未见靶点和来源支持分层。",
+        "on_support": "保留有支持条件下的适配分支。",
+        "on_against": "回到直接迁移对照或检验表示。",
+        "on_inconclusive": "先排查来源支持/方向冲突，再决定真实/随机/无先验比较。"
+      },
+      "registration": "draft",
+      "preregistered": false,
+      "decision_rule_note": "阈值、训练/调参预算、控制配置尚未冻结；不得启动。"
+    }
+  }
+}
