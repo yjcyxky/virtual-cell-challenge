@@ -150,6 +150,10 @@
         "R13": {
           "description": "与 scFoundation 同结构的随机初始化冻结表示",
           "local_status": "UNTESTED"
+        },
+        "R14": {
+          "description": "原始基因坐标的逐靶点共享响应及监督掩码；无监督坐标零Δ回退",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -808,7 +812,7 @@
       },
       "signature": "T1-D1-R6-A0-L1-O0-V5-I6-G1",
       "prior": "低秩",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
@@ -817,7 +821,7 @@
       ],
       "selection_basis": "待检验假设；没有引用既有实验效果",
       "implementation_scope": "四训练背景输入NTC细胞、等背景权重的32维随机化PCA；不使用扰动标签或留出NTC拟合。",
-      "local_status_scope": "首轮仅S2-H1/context-seen/seed1上的NTC表示；不代表响应输出表示或全局未见靶点先验。"
+      "local_status_scope": "仅S2-H1/context-seen/seed1、当前4129基因NTC输入表示；已有匹配控制/候选的开发结果；未达到相对max(raw,shared)的0.02采用门槛，不外推跨背景或其他注入位置。"
     },
     "M-PROGRAM": {
       "description": "真实基因程序表示",
@@ -834,7 +838,7 @@
       },
       "signature": "T1-D1-R4-A0-L1-O0-V5-I6-G1",
       "prior": "P-PROGRAM",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
@@ -844,7 +848,7 @@
       ],
       "selection_basis": "待检验假设；没有引用既有实验效果",
       "implementation_scope": "固定Reactome成员矩阵归一化后Gaussian sketch/QR的32维NTC表示；不是GEARS复现。",
-      "local_status_scope": "首轮仅S2-H1/context-seen/seed1上的NTC表示；不代表响应输出表示或全局未见靶点先验。"
+      "local_status_scope": "仅S2-H1/context-seen/seed1、当前4129基因NTC输入表示；未支持此真实程序实现达到预注册优势，不否定响应输出程序、靶点先验或其他背景。"
     },
     "M-RANDOM-PROGRAM": {
       "description": "等维/覆盖/模块大小匹配的随机程序",
@@ -861,7 +865,7 @@
       },
       "signature": "T1-D1-R7-A0-L1-O0-V5-I6-G1",
       "prior": "匹配随机先验对照",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
@@ -871,7 +875,7 @@
       ],
       "selection_basis": "待检验假设；没有引用既有实验效果",
       "implementation_scope": "对同一成员矩阵做逐基因/逐模块度数守恒的随机化，再用同一32维sketch/QR；单个预定图seed。",
-      "local_status_scope": "首轮仅S2-H1/context-seen/seed1上的NTC表示；不代表响应输出表示或全局未见靶点先验。"
+      "local_status_scope": "仅S2-H1/context-seen/seed1、当前4129基因NTC输入表示；已有匹配控制/候选的开发结果；未达到相对max(raw,shared)的0.02采用门槛，不外推跨背景或其他注入位置。"
     },
     "M-PRETRAIN": {
       "description": "冻结scGPT表示",
@@ -1247,14 +1251,114 @@
       },
       "signature": "T1-D1-R0-A0-L1-O0-V5-I6-G1",
       "prior": "无功能结构先验；仅匹配Reactome覆盖与训练内总尺度，保留原始可拟合NTC均值信息。",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "control",
       "cost": "low",
       "evidence_ids": [
         "E-PROGRAM",
         "DS-REACTOME-SNAPSHOT"
       ],
-      "selection_basis": "为C-PROGRAM隔离输入覆盖和特征尺度与表示结构的效应。"
+      "selection_basis": "为C-PROGRAM隔离输入覆盖和特征尺度与表示结构的效应。",
+      "local_status_scope": "仅S2-H1/context-seen/seed1、当前4129基因NTC输入表示；已有匹配控制/候选的开发结果；未达到相对max(raw,shared)的0.02采用门槛，不外推跨背景或其他注入位置。"
+    },
+    "M-RESPONSE-SHARED": {
+      "description": "共享响应与零缺测回退控制",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R14",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R14-A0-L1-O0-V5-I6-G0",
+      "prior": "同一数据/权重的逐靶点共享Δ；不把未测零填充作为监督。",
+      "local_status": "UNTESTED",
+      "execution_role": "control",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "E-MASKED-RESPONSE"
+      ],
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
+    },
+    "M-RESPONSE-PCA": {
+      "description": "训练内响应低秩表示补全",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R6",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R6-A0-L1-O0-V5-I6-G0",
+      "prior": "只在允许训练响应与测量掩码内拟合低秩基因表示；不读取H1扰动标签。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "E-MASKED-RESPONSE",
+        "L05"
+      ],
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
+    },
+    "M-RESPONSE-PROGRAM": {
+      "description": "功能程序响应表示补全",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R4",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R4-A0-L1-O0-V5-I6-G0",
+      "prior": "真实基因模块约束输出响应的低秩结构；仅补全规定缺失位置，保留已监督shared Δ。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "E-MASKED-RESPONSE",
+        "L05"
+      ],
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
+    },
+    "M-RESPONSE-RANDOM": {
+      "description": "匹配随机程序响应补全",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R7",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G0"
+      },
+      "signature": "T1-D1-R7-A0-L1-O0-V5-I6-G0",
+      "prior": "与真实模块逐基因度数、模块大小、维数、覆盖和重构/正则完全匹配的随机结构。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "E-MASKED-RESPONSE",
+        "L05"
+      ],
+      "selection_basis": "已关闭的NTC表示路线转向响应空间；基于强shared控制检验缺失响应补全，尚无本地效果。"
     }
   }
 }

@@ -455,15 +455,49 @@
     },
     "E-PROGRAM": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-PROGRAM",
-      "node_ids": [],
+      "node_ids": [
+        "init-program-raw-s01",
+        "init-pca-s01",
+        "init-program-s01",
+        "init-random-program-s01"
+      ],
       "hypothesis": "相同基因覆盖、特征总尺度、线性响应头和生成器下，32维真实功能程序NTC表示是否优于原始表示、训练内PCA、匹配随机程序并超过shared",
-      "claim": "待检验：真实功能程序NTC表示是否超过匹配PCA、随机模块、raw和shared。",
-      "limitations": "四run已冻结尚未执行；只有一个H1背景与一个生成/随机图seed，不能外推跨背景或其他表示注入位置。",
-      "source_refs": [],
-      "next_action": "依次完整执行匹配raw、PCA、真实程序、匹配随机程序四run；按预注册规则关闭证据，不在过程中改候选。",
-      "reopen_when": "当前为待检验问题；关闭后按同一scope的反证/新数据重新提出比较"
+      "claim": "在S2-H1/context-seen/seed1的四臂NTC表示比较中，真实程序Overall=0.140997276，匹配raw=0.165857673，PCA32=0.165859574，度数匹配随机程序=0.174792751，shared=0.210865634。真实程序相对主面板最强参照shared差-0.069868358、官方重叠25靶差-0.087778651，未达到预注册>=0.02主面板改善要求；三候选均未通过预注册次级采用筛选。",
+      "limitations": "仅H1开发背景、单生成seed和单个表示/随机图seed；有效背景秩3，32维不增加背景独立性。该模块sketch实现不是GEARS复现，阴性只限NTC注入位置与当前线性头。逐靶SD、表示外推坐标和响应平方差分层是描述性诊断，不是跨背景置信区间或因果评分归因。参照复用已核验，未新增官方提交。",
+      "source_refs": [
+        {
+          "path": "experiments/init-linear/outputs/init-program-raw-s01/metrics.json",
+          "sha256": "c81ae5c39f48bddfcaff30a4b42005d0f9c4fb32cafe79413f928428afdd679f"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-pca-s01/metrics.json",
+          "sha256": "35f309ba2da951b802454b047c753b2139e3869fed6c1c9474f72402fe84b98e"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-program-s01/metrics.json",
+          "sha256": "39f49f214c74c72dff52364a528543602300da16a1ab85349a551a1f84f331a1"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-random-program-s01/metrics.json",
+          "sha256": "71d37137d11f7b693a1ccd4f59f20e52af6ceae2aece6c38d0acb0e2c8599da5"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+          "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-program-s01/cache/program-comparison.json",
+          "sha256": "f4a44d74c38d77aadde1e561fb6b90e405e2e61bdd0938272bf84e402c1e7883"
+        },
+        {
+          "path": "experiments/init-linear/REPORT.md",
+          "sha256": "9ee07960eb488561449ea5fa26104fda90284ad6e9a8840985344b36f0b61ed2"
+        }
+      ],
+      "next_action": "结束本轮NTC投影/维数局部搜索，保留shared强参照，推进C-MASKED-RESPONSE：保持训练中有直接target×gene监督位置的shared Δ，固定生成器，比较缺失响应位置的零回退、训练内低秩/PCA、真实程序与度数匹配随机程序补全。先只检验训练至少测过的基因，全训练缺测基因仍为零Δ预测并报告覆盖；完整官方输出与H1实测评分轴不缩小。NTC程序阴性不否定响应输出表示或其他先验注入位置。",
+      "reopen_when": "新背景、输入表示先验/来源或注入位置改变时另登记；不追加本轮维数、图seed或alpha网格覆盖已关闭结论。"
     },
     "E-PRETRAIN": {
       "kind": "experiment",
@@ -995,18 +1029,29 @@
       ],
       "next_action": "固定内容版本与映射，在相同覆盖/维数下比较真实和随机模块。",
       "reopen_when": "来源内容、映射或适用基因轴改变时另行审计。"
+    },
+    "E-MASKED-RESPONSE": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-MASKED-RESPONSE",
+      "node_ids": [],
+      "hypothesis": "保持已监督shared响应时，掩码约束的缺失响应补全能否超过零回退，真实程序能否超过匹配随机/训练内低秩表示？",
+      "claim": "待检验：响应补全能否超过强shared，NTC表示结果不能替代这个实验。",
+      "limitations": "尚未实现/冻结完整配置或执行；H1已是开发背景，全训练缺测基因的外推另作范围明确的比较。",
+      "source_refs": [],
+      "next_action": "落实上述四臂的响应掩码、表示和重构；完成配置/来源/数值判据登记，通过门禁后执行。",
+      "reopen_when": "关闭后新增训练监督、输出表示来源或外推范围改变时另建比较。"
     }
   },
   "queue": [
     {
-      "id": "Q-PROGRAM",
+      "id": "Q-MASKED-RESPONSE",
       "priority": 1,
-      "comparison_id": "C-PROGRAM",
-      "question": "功能程序表示是否提供超出PCA、随机模块和共享响应的迁移信息？",
-      "action": "依次完整执行匹配raw、PCA、真实程序、匹配随机程序四run；按预注册规则关闭证据，不在过程中改候选。",
+      "comparison_id": "C-MASKED-RESPONSE",
+      "question": "以shared为强基线，响应空间表示能否补全训练中缺少target×gene监督的位置并改善官方指标？",
+      "action": "结束本轮NTC投影/维数局部搜索，保留shared强参照，推进C-MASKED-RESPONSE：保持训练中有直接target×gene监督位置的shared Δ，固定生成器，比较缺失响应位置的零回退、训练内低秩/PCA、真实程序与度数匹配随机程序补全。先只检验训练至少测过的基因，全训练缺测基因仍为零Δ预测并报告覆盖；完整官方输出与H1实测评分轴不缩小。NTC程序阴性不否定响应输出表示或其他先验注入位置。",
       "requires_evidence": [
-        "E-BASE",
-        "E-CONDITION-ABLATION",
+        "E-PROGRAM",
         "E-RIDGE-STRENGTH"
       ]
     },

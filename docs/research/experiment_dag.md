@@ -16,7 +16,7 @@ flowchart TD
   n9["init-set-s01 | draft"]
   n10["init-pca-s01 | completed"]
   n11["init-program-s01 | completed"]
-  n12["init-random-program-s01 | ready"]
+  n12["init-random-program-s01 | completed"]
   n13["init-pretrained-s01 | draft"]
   n14["init-random-encoder-s01 | draft"]
   n15["init-scfoundation-s01 | draft"]
@@ -37,6 +37,10 @@ flowchart TD
   n30["init-linear-nocontext-s01 | completed"]
   n31["init-linear-nocontext-a01-s01 | completed"]
   n32["init-program-raw-s01 | completed"]
+  n33["masked-response-shared-s01 | draft"]
+  n34["masked-response-pca-s01 | draft"]
+  n35["masked-response-program-s01 | draft"]
+  n36["masked-response-random-s01 | draft"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -155,4 +159,35 @@ flowchart TD
   n30 -.->|"evidence: E-CONDITION-ABLATION"| n32
   n30 -.->|"evidence: E-RIDGE-STRENGTH"| n32
   n31 -.->|"evidence: E-RIDGE-STRENGTH"| n32
+  n0 -->|source| n33
+  n32 -.->|"evidence: E-PROGRAM"| n33
+  n10 -.->|"evidence: E-PROGRAM"| n33
+  n11 -.->|"evidence: E-PROGRAM"| n33
+  n12 -.->|"evidence: E-PROGRAM"| n33
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n33
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n33
+  n33 -->|control| n34
+  n0 -->|source| n34
+  n32 -.->|"evidence: E-PROGRAM"| n34
+  n10 -.->|"evidence: E-PROGRAM"| n34
+  n11 -.->|"evidence: E-PROGRAM"| n34
+  n12 -.->|"evidence: E-PROGRAM"| n34
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n34
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n34
+  n33 -->|control| n35
+  n0 -->|source| n35
+  n32 -.->|"evidence: E-PROGRAM"| n35
+  n10 -.->|"evidence: E-PROGRAM"| n35
+  n11 -.->|"evidence: E-PROGRAM"| n35
+  n12 -.->|"evidence: E-PROGRAM"| n35
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n35
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n35
+  n33 -->|control| n36
+  n0 -->|source| n36
+  n32 -.->|"evidence: E-PROGRAM"| n36
+  n10 -.->|"evidence: E-PROGRAM"| n36
+  n11 -.->|"evidence: E-PROGRAM"| n36
+  n12 -.->|"evidence: E-PROGRAM"| n36
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n36
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n36
 ```

@@ -1402,7 +1402,10 @@
         "path": "experiments/init-linear/outputs/init-pca-s01/metrics.json",
         "sha256": "35f309ba2da951b802454b047c753b2139e3869fed6c1c9474f72402fe84b98e"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/init-linear/REPORT.md",
+        "sha256": "9ee07960eb488561449ea5fa26104fda90284ad6e9a8840985344b36f0b61ed2"
+      },
       "git_commit": "73f0c85891ded1f6c372252b65bfb4cc5d767a38",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-pca-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/init-pca-s01-result:v0",
@@ -1426,7 +1429,8 @@
         "unresolved": []
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
     },
     "init-program-s01": {
       "experiment_id": "init-linear",
@@ -1685,7 +1689,10 @@
         "path": "experiments/init-linear/outputs/init-program-s01/metrics.json",
         "sha256": "39f49f214c74c72dff52364a528543602300da16a1ab85349a551a1f84f331a1"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/init-linear/REPORT.md",
+        "sha256": "9ee07960eb488561449ea5fa26104fda90284ad6e9a8840985344b36f0b61ed2"
+      },
       "git_commit": "884db94b171386964a5038bbb19fa41c4f0bed62",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-program-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/init-program-s01-result:v0",
@@ -1709,7 +1716,8 @@
         "unresolved": []
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
     },
     "init-random-program-s01": {
       "experiment_id": "init-linear",
@@ -1718,7 +1726,7 @@
       "legacy": false,
       "method_id": "M-RANDOM-PROGRAM",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-PROGRAM",
       "controls": [
         "init-program-raw-s01"
@@ -1964,11 +1972,17 @@
           "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/init-linear/outputs/init-random-program-s01/metrics.json",
+        "sha256": "71d37137d11f7b693a1ccd4f59f20e52af6ceae2aece6c38d0acb0e2c8599da5"
+      },
+      "report_ref": {
+        "path": "experiments/init-linear/REPORT.md",
+        "sha256": "9ee07960eb488561449ea5fa26104fda90284ad6e9a8840985344b36f0b61ed2"
+      },
+      "git_commit": "cfb6d7aa4f9024f11b0e05fe3027a920364d33a1",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-random-program-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/init-random-program-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -1988,7 +2002,9 @@
         "end_condition": "完整解析拟合、全轴模型预测、两个面板官方六分项/Overall有效、保存Artifact；四臂完成后配对分析并关闭E-PROGRAM。",
         "unresolved": []
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
     },
     "init-pretrained-s01": {
       "experiment_id": "init-pretrained-s01",
@@ -3603,7 +3619,10 @@
         "path": "experiments/init-linear/outputs/init-program-raw-s01/metrics.json",
         "sha256": "c81ae5c39f48bddfcaff30a4b42005d0f9c4fb32cafe79413f928428afdd679f"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/init-linear/REPORT.md",
+        "sha256": "9ee07960eb488561449ea5fa26104fda90284ad6e9a8840985344b36f0b61ed2"
+      },
       "git_commit": "e9403c324d8de8c0b97cd5282a1688e5b9e5d6be",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-program-raw-s01",
       "artifact": "yjcyxky/virtual-cell-challenge/init-program-raw-s01-result:v0",
@@ -3627,7 +3646,250 @@
         "unresolved": []
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-C-PROGRAM-evidence:v0"
+    },
+    "masked-response-shared-s01": {
+      "experiment_id": "masked-response",
+      "directory": "experiments/masked-response",
+      "run_id": "masked-response-shared-s01",
+      "legacy": false,
+      "method_id": "M-RESPONSE-SHARED",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-MASKED-RESPONSE",
+      "controls": [],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-PROGRAM",
+        "E-RIDGE-STRENGTH"
+      ],
+      "evidence_conditions": {
+        "E-PROGRAM": [
+          "not_supported"
+        ],
+        "E-RIDGE-STRENGTH": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "固定已监督共享响应和生成器，缺失响应的表示/重构是否超过零回退；真实结构相对匹配随机结构有无价值。",
+        "allocation": "新的响应补全路线共用一个Experiment；每run一次完整拟合，draft不建目录/环境/W&B。",
+        "unresolved": [
+          "冻结可补全的target×gene掩码、模块覆盖及全训练缺测回退；不得将缺测补零作为PCA拟合真值",
+          "冻结表示秩、真实/随机/训练内低秩表示的覆盖/尺度/求解/正则与停止条件；联动无法分离时登记整包归因",
+          "原始共享控制须重算并复现，已监督Δ逐坐标保持；固定文库恢复生成器后计数仍可能变化，须明确核验",
+          "完整配置、代码/锁文件、来源版本和资源预算，以及主/重叠面板数值判据；不使用H1响应拟合表示或校准"
+        ]
+      },
+      "blockers": [
+        "待落实响应表示/掩码重构方案和匹配控制；尚无执行或方法效果证据"
+      ]
+    },
+    "masked-response-pca-s01": {
+      "experiment_id": "masked-response",
+      "directory": "experiments/masked-response",
+      "run_id": "masked-response-pca-s01",
+      "legacy": false,
+      "method_id": "M-RESPONSE-PCA",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-MASKED-RESPONSE",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-PROGRAM",
+        "E-RIDGE-STRENGTH"
+      ],
+      "evidence_conditions": {
+        "E-PROGRAM": [
+          "not_supported"
+        ],
+        "E-RIDGE-STRENGTH": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "固定已监督共享响应和生成器，缺失响应的表示/重构是否超过零回退；真实结构相对匹配随机结构有无价值。",
+        "allocation": "新的响应补全路线共用一个Experiment；每run一次完整拟合，draft不建目录/环境/W&B。",
+        "unresolved": [
+          "冻结可补全的target×gene掩码、模块覆盖及全训练缺测回退；不得将缺测补零作为PCA拟合真值",
+          "冻结表示秩、真实/随机/训练内低秩表示的覆盖/尺度/求解/正则与停止条件；联动无法分离时登记整包归因",
+          "原始共享控制须重算并复现，已监督Δ逐坐标保持；固定文库恢复生成器后计数仍可能变化，须明确核验",
+          "完整配置、代码/锁文件、来源版本和资源预算，以及主/重叠面板数值判据；不使用H1响应拟合表示或校准"
+        ]
+      },
+      "blockers": [
+        "待落实响应表示/掩码重构方案和匹配控制；尚无执行或方法效果证据"
+      ]
+    },
+    "masked-response-program-s01": {
+      "experiment_id": "masked-response",
+      "directory": "experiments/masked-response",
+      "run_id": "masked-response-program-s01",
+      "legacy": false,
+      "method_id": "M-RESPONSE-PROGRAM",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-MASKED-RESPONSE",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-PROGRAM",
+        "E-RIDGE-STRENGTH"
+      ],
+      "evidence_conditions": {
+        "E-PROGRAM": [
+          "not_supported"
+        ],
+        "E-RIDGE-STRENGTH": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "固定已监督共享响应和生成器，缺失响应的表示/重构是否超过零回退；真实结构相对匹配随机结构有无价值。",
+        "allocation": "新的响应补全路线共用一个Experiment；每run一次完整拟合，draft不建目录/环境/W&B。",
+        "unresolved": [
+          "冻结可补全的target×gene掩码、模块覆盖及全训练缺测回退；不得将缺测补零作为PCA拟合真值",
+          "冻结表示秩、真实/随机/训练内低秩表示的覆盖/尺度/求解/正则与停止条件；联动无法分离时登记整包归因",
+          "原始共享控制须重算并复现，已监督Δ逐坐标保持；固定文库恢复生成器后计数仍可能变化，须明确核验",
+          "完整配置、代码/锁文件、来源版本和资源预算，以及主/重叠面板数值判据；不使用H1响应拟合表示或校准"
+        ]
+      },
+      "blockers": [
+        "待落实响应表示/掩码重构方案和匹配控制；尚无执行或方法效果证据"
+      ]
+    },
+    "masked-response-random-s01": {
+      "experiment_id": "masked-response",
+      "directory": "experiments/masked-response",
+      "run_id": "masked-response-random-s01",
+      "legacy": false,
+      "method_id": "M-RESPONSE-RANDOM",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-MASKED-RESPONSE",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-PROGRAM",
+        "E-RIDGE-STRENGTH"
+      ],
+      "evidence_conditions": {
+        "E-PROGRAM": [
+          "not_supported"
+        ],
+        "E-RIDGE-STRENGTH": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "comparison": "固定已监督共享响应和生成器，缺失响应的表示/重构是否超过零回退；真实结构相对匹配随机结构有无价值。",
+        "allocation": "新的响应补全路线共用一个Experiment；每run一次完整拟合，draft不建目录/环境/W&B。",
+        "unresolved": [
+          "冻结可补全的target×gene掩码、模块覆盖及全训练缺测回退；不得将缺测补零作为PCA拟合真值",
+          "冻结表示秩、真实/随机/训练内低秩表示的覆盖/尺度/求解/正则与停止条件；联动无法分离时登记整包归因",
+          "原始共享控制须重算并复现，已监督Δ逐坐标保持；固定文库恢复生成器后计数仍可能变化，须明确核验",
+          "完整配置、代码/锁文件、来源版本和资源预算，以及主/重叠面板数值判据；不使用H1响应拟合表示或校准"
+        ]
+      },
+      "blockers": [
+        "待落实响应表示/掩码重构方案和匹配控制；尚无执行或方法效果证据"
+      ]
     }
   },
   "comparisons": {
@@ -4305,6 +4567,36 @@
       "cost": "low",
       "priority_basis": "E-CONDITION-ABLATION反对分支：先归因剩余正则/参数耦合差距；服务强模型选择。",
       "evidence_id": "E-RIDGE-STRENGTH"
+    },
+    "C-MASKED-RESPONSE": {
+      "status": "draft",
+      "purpose": "screen",
+      "hypothesis": "保持已监督shared响应时，掩码约束的缺失响应补全能否超过零回退，真实程序能否超过匹配随机/训练内低秩表示？",
+      "controls": [
+        "masked-response-shared-s01"
+      ],
+      "candidates": [
+        "masked-response-pca-s01",
+        "masked-response-program-s01",
+        "masked-response-random-s01"
+      ],
+      "changed_axes": [
+        "R"
+      ],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": null,
+        "scope": "首轮S2-H1/context-seen/seed1；全280靶和25官方重叠靶、完整官方输出及实测评分轴；H1开发证据。",
+        "on_support": "将超过强shared且满足匹配先验对照的候选在新背景或官方面板确认；不以单背景小涨分宣称SOTA。",
+        "on_against": "保留shared零回退，按响应强度/测量覆盖分层定位失败，再转数据质量或任务表示。",
+        "on_inconclusive": "核验表示拟合边界、缺测掩码及分项/有效数；数值判据未冻结前保持draft。"
+      },
+      "attribution_plan": "raw零回退+训练内低秩+真实程序+匹配随机程序；保持有监督shared坐标、预测头/求解正则和生成器，区分表示/重构整包与生物结构贡献。",
+      "cost": "medium",
+      "priority_basis": "NTC程序/PCA初筛未超过shared；转向直接改善响应及其监督覆盖的模型问题。",
+      "evidence_id": "E-MASKED-RESPONSE"
     }
   },
   "continuation_rules": {
