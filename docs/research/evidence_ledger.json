@@ -344,7 +344,8 @@
         },
         {
           "path": "experiments/init-linear/REPORT.md",
-          "sha256": "8e6e274f33b055c0c94f1a43dd93b8d47ba1f06db2abde23bb9c49895f3d2e2e"
+          "sha256": "8e6e274f33b055c0c94f1a43dd93b8d47ba1f06db2abde23bb9c49895f3d2e2e",
+          "git_commit": "73fdd82280ee6946a205b0f6c30d5c682e42631e"
         },
         {
           "path": "experiments/init-linear/outputs/init-linear-s01/cache/report-analysis.json",
@@ -659,30 +660,148 @@
     },
     "E-BASE-OFFICIAL": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-BASE-OFFICIAL",
-      "node_ids": [],
-      "claim": "本轮固定模型在官方A/B/C的Overall是否接近本地H1，以及linear/shared排序是否一致？",
-      "limitations": "官方A/B/C真值不公开；本地H1不是同一评价群体。",
+      "node_ids": [
+        "init-linear-s01"
+      ],
+      "hypothesis": "本轮固定模型在官方A/B/C的Overall是否接近本地H1，以及linear/shared排序是否一致？",
+      "claim": "两臂官方A/B/C均已published，不支持本地与榜单Overall接近（预定绝对差<=0.02）。linear官方0.033804 vs H1全靶0.161135/重叠0.131714；shared官方0.048975 vs 0.210866/0.204838。shared>linear排序保留，优势从本地0.049731/0.073124缩为官方0.015170。",
+      "limitations": "H1 280/25 targets versus A/B/C 300 targets; different measured axes, reference and anchors. Raw and scaled aggregate comparisons are descriptive, not paired across backgrounds. Official per-context/per-target scores, valid counts, and exact anchor values are not supplied in status. A/B/C feedback is development evidence. 同一checkpoint、一次生成seed；官方三背景仅返回汇总，未取得逐背景结果、有效数或r4构建配置。不能由排名一致确认稳定优势；Fidelity归一化跌幅不是同幅raw退化，也不能据差距确认某一baseline参数错误。",
       "source_refs": [
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+          "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+        },
+        {
+          "path": "experiments/init-linear/REPORT.md",
+          "sha256": "c8f63973a2d6ede6087b077c51476ad779bf199cd3326238f3220f37526b2c72"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/comparison.json",
+          "sha256": "fcf427a841ce298550b964e9c088fc39cc1037b91bea2ffb1cb7917a7c26b095"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/export-identity.json",
+          "sha256": "26392e3e068a6cb277802d1fe6a9489dccf213ed31aa0014c9bab35c4b0e6075"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/export-replay.json",
+          "sha256": "c4c76c8480e81108027cf7fcbd457c9492f1215edff97b1307a408f2a776f6f6"
+        },
         {
           "path": "experiments/init-linear/configs/official-s01.json",
           "sha256": "89f9297f70e870b17ea2ce26f48571a6144d23672a5b3b177f7f5b0e12a3f3d0"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/official-status.json",
+          "sha256": "f4656ae92fda3bfc45949b148083d6d81215c8ff17be29632794ecf6474c0be6"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/official-summary.json",
+          "sha256": "01c5538101e9bffe40d17f3935c26d90a6f88d689459c543a7ae0d969a7bc809"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/submission-entry.json",
+          "sha256": "82aa014152f34c462d125ceb6f2f5d24e8db20aaf850fcee95f5d20cb448d700"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/submission-file.json",
+          "sha256": "7d13187443f7cec73ead511919540e11bea932be263b202ad7718d87bf44fa87"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/artifact.json",
+          "sha256": "e7e4f2abe83a558718f66d6b72954711a0f8b3ebd8ae1645062b1100f31bcf3f"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/official-status.json",
+          "sha256": "024dac1a0d29efbf20adf0395b771bebf7fa8fd14c095db7b2bcfa73b6fa2c2e"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/official-summary.json",
+          "sha256": "a1496c49fa0c615546fd97aaecf96c6ffb7194aaaaeab9265b906a0e7a6485d0"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/submission-entry.json",
+          "sha256": "183c4bcfd83f0622f4ba1c1cfaec675e7489fc707e331d102b4141e07d983ff8"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/submission-file.json",
+          "sha256": "63a9d85d4fe0206dd95e9a59ace027463ee5f4d9e8d8550ba224c11514573a20"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/artifact.json",
+          "sha256": "83a30a0f08ea789f2c14ef6a67bb0443a8e5dcdc428506e4794665f081f4b645"
         }
       ],
-      "next_action": "导出两臂完整官方面板VCC，验证后按同一run提交并等待官方回执；比较六项和Overall，保存panel/anchors身份。",
-      "reopen_when": "官方发布两臂分数或评分终止后更新状态；输入/模型变化必须另登记。"
+      "decision": "保留原H1方法结论和两份官方结果；本地绝对Overall不能作为榜单成绩预测，单次排序仅为开发线索。优先核查分数标尺和评价群体，再做已登记的匹配条件项消融；不通过替换anchors使分数靠近榜单，不增加模型容量。",
+      "next_action": "C-ANCHOR-AUDIT：先核查公开r4构建信息，登记固定H1真实群体与两臂预测的baseline emission×exclude_target_gene协议诊断。保留原raw/normalized和全部对照，明确未知线上条件。其后C-CONDITION-ABLATION及跨背景复验；QC继续保留。",
+      "reopen_when": "取得官方逐背景/逐靶点结果或r4构建证据；新的匹配背景、生成seed或协议诊断改变本判断。任何科学条件变更另登记并保留本记录。",
+      "metrics": {
+        "local_Overall": {
+          "all": {
+            "linear": 0.1611350117284143,
+            "shared": 0.21086563407223338
+          },
+          "official_overlap": {
+            "linear": 0.13171375296826507,
+            "shared": 0.2048381778356335
+          }
+        },
+        "official_Overall": {
+          "linear": 0.03380435482721896,
+          "shared": 0.04897479831660533
+        },
+        "official_minus_local_Overall": {
+          "linear": {
+            "all": -0.12733065690119533,
+            "official_overlap": -0.0979093981410461
+          },
+          "shared": {
+            "all": -0.16189083575562804,
+            "official_overlap": -0.15586337951902815
+          }
+        },
+        "linear_minus_shared": {
+          "official": -0.01517044348938637,
+          "all": -0.049730622343819086,
+          "official_overlap": -0.07312442486736842
+        },
+        "ranking_preserved": true
+      },
+      "official_entries": {
+        "linear": "BpAGRy6zY8YFxKlLvmua",
+        "shared": "vWd1Z4K9tJ2tjfns2gSj"
+      },
+      "panel_id": "vcc2026-val-1",
+      "anchor_version": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+      "artifacts": {
+        "linear": "yjcyxky/virtual-cell-challenge/init-linear-s01-official-linear:v0",
+        "shared": "yjcyxky/virtual-cell-challenge/init-linear-s01-official-shared:v0"
+      },
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01"
+    },
+    "E-ANCHOR-AUDIT": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-ANCHOR-AUDIT",
+      "node_ids": [],
+      "claim": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
+      "limitations": "官方隐藏真实群体及逐背景r4锚点未公开，本地协议诊断不证明端到端复现线上。",
+      "source_refs": [],
+      "next_action": "核查公开r4构建信息，并登记固定reference与预测的2×2baseline协议诊断；未取得线上构建证据时保持未知，不以本地/榜单距离调anchors。",
+      "reopen_when": "具体诊断配置与来源冻结且可执行，或官方发布新构建证据。"
     }
   },
   "queue": [
     {
-      "id": "Q-BASE-OFFICIAL",
+      "id": "Q-ANCHOR-AUDIT",
       "priority": 1,
-      "comparison_id": "C-BASE-OFFICIAL",
-      "question": "本轮固定模型在官方A/B/C的Overall是否接近本地H1，以及linear/shared排序是否一致？",
-      "action": "用户已授权正式提交；保持checkpoint与生成器，先完成两臂官方核查再恢复条件项消融。",
+      "comparison_id": "C-ANCHOR-AUDIT",
+      "question": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
+      "action": "先核实线上构建信息；固定本地reference和现有两臂预测，登记baseline emission×排除自身靶基因的协议诊断。保持原结果，明确尺度与背景泛化的边界，不先加模型容量。",
       "requires_evidence": [
-        "E-BASE"
+        "E-BASE-OFFICIAL"
       ]
     },
     {

@@ -338,7 +338,7 @@
       },
       "report_ref": {
         "path": "experiments/init-linear/REPORT.md",
-        "sha256": "8e6e274f33b055c0c94f1a43dd93b8d47ba1f06db2abde23bb9c49895f3d2e2e"
+        "sha256": "c8f63973a2d6ede6087b077c51476ad779bf199cd3326238f3220f37526b2c72"
       },
       "git_commit": "26a03062011fe902ee4a2c41cbdc287858ce3561",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01",
@@ -497,7 +497,7 @@
       "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-evidence:v0",
       "official_evaluation": {
         "comparison_id": "C-BASE-OFFICIAL",
-        "status": "registered",
+        "status": "completed",
         "config_ref": {
           "path": "experiments/init-linear/configs/official-s01.json",
           "sha256": "89f9297f70e870b17ea2ce26f48571a6144d23672a5b3b177f7f5b0e12a3f3d0"
@@ -548,7 +548,56 @@
             "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
           }
         ],
-        "scope": "Same completed fit and W&B identity; official A/B/C inference and remote validation, no additional fitting. Helpers from exp002 are file IO/audit only; model and generator from init-linear."
+        "scope": "Same completed fit and W&B identity; official A/B/C inference and remote validation, no additional fitting. Helpers from exp002 are file IO/audit only; model and generator from init-linear.",
+        "result_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/comparison.json",
+          "sha256": "fcf427a841ce298550b964e9c088fc39cc1037b91bea2ffb1cb7917a7c26b095"
+        },
+        "replay_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/export-replay.json",
+          "sha256": "c4c76c8480e81108027cf7fcbd457c9492f1215edff97b1307a408f2a776f6f6"
+        },
+        "identity_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/export-identity.json",
+          "sha256": "26392e3e068a6cb277802d1fe6a9489dccf213ed31aa0014c9bab35c4b0e6075"
+        },
+        "results": {
+          "linear": {
+            "entry_id": "BpAGRy6zY8YFxKlLvmua",
+            "Overall": 0.03380435482721896,
+            "summary_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/official-summary.json",
+              "sha256": "01c5538101e9bffe40d17f3935c26d90a6f88d689459c543a7ae0d969a7bc809"
+            },
+            "status_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/official-status.json",
+              "sha256": "f4656ae92fda3bfc45949b148083d6d81215c8ff17be29632794ecf6474c0be6"
+            },
+            "submission_file_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/submission-file.json",
+              "sha256": "7d13187443f7cec73ead511919540e11bea932be263b202ad7718d87bf44fa87"
+            },
+            "artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-official-linear:v0"
+          },
+          "shared": {
+            "entry_id": "vWd1Z4K9tJ2tjfns2gSj",
+            "Overall": 0.04897479831660533,
+            "summary_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/official-summary.json",
+              "sha256": "a1496c49fa0c615546fd97aaecf96c6ffb7194aaaaeab9265b906a0e7a6485d0"
+            },
+            "status_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/official-status.json",
+              "sha256": "024dac1a0d29efbf20adf0395b771bebf7fa8fd14c095db7b2bcfa73b6fa2c2e"
+            },
+            "submission_file_ref": {
+              "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/submission-file.json",
+              "sha256": "63a9d85d4fe0206dd95e9a59ace027463ee5f4d9e8d8550ba224c11514573a20"
+            },
+            "artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-official-shared:v0"
+          }
+        },
+        "comparison_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-official-comparison:v0"
       }
     },
     "init-absolute-s01": {
@@ -2674,7 +2723,7 @@
       "evidence_id": "E-CONDITION-ABLATION"
     },
     "C-BASE-OFFICIAL": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "protocol_audit",
       "hypothesis": "本轮固定模型在官方A/B/C的Overall是否接近本地H1，以及linear/shared排序是否一致？",
       "controls": [],
@@ -2703,6 +2752,32 @@
       },
       "evidence_id": "E-BASE-OFFICIAL",
       "attribution_plan": "No model changes; simultaneous evaluation population/protocol changes prohibit single-factor causal attribution."
+    },
+    "C-ANCHOR-AUDIT": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [
+        "V"
+      ],
+      "changed_fields": [],
+      "evidence_id": "E-ANCHOR-AUDIT",
+      "attribution_plan": "先核对可取得的官方r4构建配置/manifest；在固定H1 reference、NTC、gene/target panel、模型预测和raw指标下，登记baseline emission与exclude_target_gene的2×2协议诊断，匹配重建baseline/anchors，保留原PSEUDO-VCC结果。不得按与榜单更近选择配方。",
+      "design": {
+        "source_run": "init-linear-s01",
+        "requires_evidence": [
+          "E-BASE-OFFICIAL"
+        ],
+        "scope": "评价协议诊断，不拟合模型，不将H1模拟差异等同A/B/C真实因果贡献。",
+        "unresolved": [
+          "官方回执未提供r4构建配置、逐背景anchors和有效数；公开来源能否核实仍未知。",
+          "诊断配置、候选协议绑定和阶段入口尚未登记完成；当前不能执行。"
+        ],
+        "completion": "给出官方构建信息的已验证/未知清单，以及固定真实群体下raw不变、scaled受哪些设置影响的可复核比较；任何新默认协议需来源证据和同步重评全部对照。"
+      },
+      "priority_basis": "两份真实官方回执均与H1绝对分数明显不接近；先解决分数解释和跨群体适用范围，再按单因素改模型。"
     }
   },
   "continuation_rules": {

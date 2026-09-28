@@ -40,6 +40,14 @@ Set Encoder 初筛同时引入可训练表示与非线性容量，只能归因�
 
 官方输出始终以完整基因轴和当前面板为目标。本地公开真值不全时，使用该背景真实测量的官方子轴并报告覆盖；其归一化分数只具有本地参考尺度。实际评分使用固定版本 cell-eval2 的六指标、baseline 和 anchor 接口；阈值不随模型成绩调节。参考和 anchors 在对应 Experiment 内按冻结配方生成并保存哈希；数据审计完成不代替实际评分或模型结论。
 
+## 已完成模型的官方核查
+
+已完成拟合的 A/B/C 推断与远端评分属于原 run 的评估阶段。保留原 metrics、研究绑定和已关闭证据；在节点的 `official_evaluation` 中登记独立阶段配置、代码引用、checkpoint 来源和 `protocol_audit` 比较，账本先登记 pending 问题。阶段入口在写产物和连接 W&B 前核验来源哈希、Git 已提交内容、环境和生成规则；这不是另一次拟合，也不重新调用训练入口。
+
+当前实现为 `cd experiments/init-linear && ./submit.sh --submit`，配置由 `configs/official-s01.json` 和 DAG 绑定；不带 `--submit` 仅生成及校验。该入口复用原模型/生成函数、全文件审计和官方 CLI，沿用原 W&B run。两臂顺序执行，同一 VCC 的断点恢复查找既有 entry，不重复创建提交。只有官方发布有效六分项及 Overall 后才关闭核查证据；上传成功、launching 或评分失败均不能当作完成评分。完整回执与 VCC 保存为版本化 Artifact。
+
+本地 H1 与官方 A/B/C 的背景、靶点、测量轴、真实群体及 anchors 不同，核查输出同时报告六项 raw、normalized、Overall、分数差和排序。回执未提供的逐背景数据、有效数和精确 anchors 明确为未知。更新 REPORT 时将此前关闭证据的 REPORT 引用固定到旧 Git 版本，保留旧结论；官方反馈作为新的开发证据入账，不覆盖原本地结论。
+
 ## 先看当前决策
 
 在仓库根目录执行：

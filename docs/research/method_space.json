@@ -500,7 +500,8 @@
       "evidence_ids": [
         "L03",
         "L04",
-        "E-BASE"
+        "E-BASE",
+        "E-BASE-OFFICIAL"
       ],
       "selection_basis": "待检验假设；没有引用既有实验效果",
       "local_status_scope": "仅否定init-linear-s01当前实现在S2-H1/context-seen/seed1上优于最佳参照的主张；有效基线保留，不否定线性方法族。"

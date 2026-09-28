@@ -124,3 +124,77 @@ linear 与未正则 shared 同时存在条件项、正则收缩和参数耦合�
 - [W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01)，group=`init-linear`，id=`init-linear-s01`；模型/配置/结果/预测清单 Artifact：`yjcyxky/virtual-cell-challenge/init-linear-s01-result:v0`。
 - [完整 metrics](outputs/init-linear-s01/metrics.json)、[分析摘要](outputs/init-linear-s01/cache/report-analysis.json)、[主面板配对结果](outputs/init-linear-s01/cache/paired-all-linear-vs-shared.csv)、[官方重叠配对结果](outputs/init-linear-s01/cache/paired-official_overlap-linear-vs-shared.csv)。这些是本地忽略产物，模型/结果另有 W&B 版本。
 - raw.parquet、aggregate.csv、scores.csv、run_meta.json 位于各 `cache/score-*/`（主面板 zero 为 `score-all-zero-attempt1/`）；两个 `cache/bundle-*/` 保存各自 baseline、anchors 与 manifest。模型在 checkpoints/ridge.npz，四份完整轴预测在 predictions/，原始数据未上传。
+
+## 官方 A/B/C 核查：C-BASE-OFFICIAL
+
+固定同一 `init-linear-s01` checkpoint，linear 和 shared 均完成正式提交并取得 published 回执。官方 panel `vcc2026-val-1`，两臂 anchor_version 均为 `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4`。未重新训练，也未根据官方分数调整预测。
+
+| 模型 | 本地 H1 280 靶 | 本地 H1 官方重叠 25 靶 | 官方 A/B/C 300 靶 | 官方−本地 280 | 官方−本地 25 |
+|---|---:|---:|---:|---:|---:|
+| linear | 0.161135012 | 0.131713753 | 0.033804355 | -0.127330657 | -0.097909398 |
+| shared | 0.210865634 | 0.204838178 | 0.048974798 | -0.161890836 | -0.155863380 |
+
+事前描述性阈值为绝对差值 ≤0.02。两臂相对两个本地面板的差值均超过阈值；模型排序保持一致。linear−shared 为官方 -0.015170443、本地全靶 -0.049730622、本地重叠 -0.073124425。这不替代独立背景重复或统计等价检验。
+
+### 六项 normalized 分数（均越高越好）
+
+| 指标 | linear H1 280 | linear H1 25 | linear 官方 | shared H1 280 | shared H1 25 | shared 官方 |
+|---|---:|---:|---:|---:|---:|---:|
+| PDS | 0.358462224 | 0.316111489 | 0.173766965 | 0.683671086 | 0.774983005 | 0.371244827 |
+| Expression error | 0.000000000 | 0.000000000 | 0.000000000 | 0.000000000 | 0.000000000 | 0.000000000 |
+| LFC-NMAE | -0.056981668 | -0.138976528 | 0.052721482 | -0.143798673 | -0.228931124 | 0.046465682 |
+| Direction fidelity | 0.438445295 | 0.444589360 | -0.061196779 | 0.466853911 | 0.461827256 | -0.194497781 |
+| Direction reach | 0.006505383 | -0.049316030 | 0.067634982 | 0.009602085 | -0.009855095 | 0.101549126 |
+| DE Jaccard | 0.220378836 | 0.217874226 | -0.030100522 | 0.248865395 | 0.231005025 | -0.030913064 |
+
+### 六项 raw 汇总
+
+| 指标 | linear H1 280 | linear H1 25 | linear 官方 | shared H1 280 | shared H1 25 | shared 官方 |
+|---|---:|---:|---:|---:|---:|---:|
+| PDS ↑ | 0.671697389 | 0.663333333 | 0.580074322 | 0.828558628 | 0.888333333 | 0.669056113 |
+| Expression error ↓ | 1.726617945 | 1.935096528 | 4.096191449 | 2.417836074 | 2.545512039 | 4.531899649 |
+| LFC-NMAE ↓ | 0.974345571 | 0.982082468 | 0.966879842 | 1.025896406 | 1.032178710 | 0.970947883 |
+| Direction fidelity ↑ | 0.482698454 | 0.489942485 | 0.494575320 | 0.502582405 | 0.502550364 | 0.454853286 |
+| Direction reach ↑ | 0.096273138 | 0.034311726 | 0.139180049 | 0.099050006 | 0.070522499 | 0.168870927 |
+| DE Jaccard ↑ | 0.100711864 | 0.102639878 | 0.019378495 | 0.112465051 | 0.107495850 | 0.019047397 |
+
+官方六项 raw 来自回执原字段；其汇总不可视为与 H1 同靶点、同背景的配对效应。官方回执未给出逐背景/逐靶点 raw、有效数和精确 anchors，不能反解三背景各自锚点或虚构显著性。两个本地面板的有效数及 anchor 波动见前文。
+
+### 推断与提交可追溯性
+
+每臂为 A/B/C ×300 靶×400 细胞，共 360,000 细胞，完整官方 18,533 基因顺序；官方三背景输入分别为 18,400 个 NTC。272 靶在训练中出现，28 靶全局未见；训练响应覆盖 10,916 基因，7,617 输出基因固定 zero-Δ，保留真实官方 NTC 基线。未知靶 linear 仅使用固定条件项，shared zero-Δ。未使用隐藏真值或 H1 扰动响应补训练。
+
+两臂直接复用本轮 `model.predict` 和 `evaluation.generate_counts`，种子为 1+官方 CSV 靶点序号，跨臂一致，每个背景重用该规则。已有 exp002 工具仅复用来源核验、CSR 写入和全文件审计，没有加载旧模型。训练环境与锁文件不变；官方外部 CLI 0.2.1 执行 prep/submit/status。导出代码提交、checkpoint 哈希、完整配置和官方输入哈希见 export-identity.json。
+
+| 臂 | entry_id | VCC SHA-256 | 文件字节 | W&B Artifact |
+|---|---|---|---:|---|
+| linear | `BpAGRy6zY8YFxKlLvmua` | `8f48739def592bf40b4eab413de48f50a9d7cedf5f1651143b03085e77d2eff3` | 3360604160 | `yjcyxky/virtual-cell-challenge/init-linear-s01-official-linear:v0` |
+| shared | `vWd1Z4K9tJ2tjfns2gSj` | `f66290b97485ad6342f4367cfba03f5dd9b3946ddbfb0fbfe18174aa1bb6f2ec` | 3328727040 | `yjcyxky/virtual-cell-challenge/init-linear-s01-official-shared:v0` |
+
+产物位于原 run 的 `predictions/official-abc/{linear,shared}/`：predictions.vcc、prep.json、全文件 audit、generation.json、提交 entry 和完整 official-status.json。两臂沿用同一 W&B run，指标前缀 official/linear 与 official/shared；VCC 和回执已上传各自版本化 Artifact。比较的机器可读对象为 [comparison.json](outputs/init-linear-s01/predictions/official-abc/comparison.json)。原 metrics.json、模型和本地预测不变；E-BASE 的旧 REPORT 引用固定在原 Git 版本。
+
+H1→A/B/C 同时改变背景、靶点面板、测量轴、真实群体和 anchors，本次不能分配各因素的因果贡献，也不能证明官方实现完全等价。本次 A/B/C 已用于研发决策，只作为开发证据；是否在最终未见背景成立仍未知。
+
+### 判断与下一步
+
+**两臂的本地 Overall 均不接近官方，shared > linear 的排序在这次提交中保留。** 官方两臂差值仅 0.015170，低于本轮使用的 0.02 实用差异尺度；没有生成种子重复或逐背景分数，不能把一次排序当稳定优势，也不能用本地涨分幅度预测榜单收益。
+
+将六项 normalized 的“官方−本地”差分别除以六，只作 Overall 差值的算术分解：
+
+| 分项对 Overall 差的贡献 | linear | shared |
+|---|---:|---:|
+| PDS | -0.030783 | -0.052071 |
+| Expression error | 0.000000 | 0.000000 |
+| LFC-NMAE | +0.018284 | +0.031711 |
+| Direction fidelity | -0.083274 | -0.110225 |
+| Direction reach | +0.010188 | +0.015325 |
+| DE Jaccard | -0.041747 | -0.046630 |
+| 合计 | -0.127331 | -0.161891 |
+
+这是分数的算术分解，不是对背景、模型或评分实现的因果贡献估计。Fidelity 的标尺变化尤其需要核查：linear raw 从 H1 0.482698 到官方 0.494575，并未下降，但 normalized 从 0.438445 到 -0.061197；shared raw 从 0.502582 到 0.454853，normalized 从 0.466854 到 -0.194498。本地全靶 Fidelity baseline=0.175818846、replicate=0.875745636；官方回执只给 r4 标识，不能据三背景汇总反解每背景精确 anchors，也不能断言线上用了 tiled 或 dispersed。
+
+PDS、Jaccard 的 raw 在两臂也都下降，表达误差 raw 上升；Expression error 分数同为零是下界截断，不能解释成误差未变。官方 shared 的 PDS 高于 linear，但 Fidelity 低于 linear；总排名一致不表示各分项关系一致。
+
+导出验证：10 项模型/生成/导出行为测试通过；两臂全文件审计和官方 prep 均通过（counts-preserved、reordered_genes=false，360,000 细胞完整保留）。按固定的 CSV 第 0/150/299 项抽查 A/B/C 与两臂，共 18 个块、7,200 个细胞，从原 checkpoint 与官方 NTC 回放得到的 counts 与 H5AD **逐值完全一致**；记录见 [export-replay.json](outputs/init-linear-s01/predictions/official-abc/export-replay.json)。抽查不是穷举逐值回放，不能排除所有潜在实现问题。原训练、checkpoint 和本地 metrics 未修改。
+
+关闭 `E-BASE-OFFICIAL` 为 `not_supported`，仅针对“本地与官方分数接近”的主张；保留 `E-BASE` 的原 H1 结论。下一优先问题 `C-ANCHOR-AUDIT`/`E-ANCHOR-AUDIT` 已登记为 draft/pending：核查公开 r4 构建信息，先冻结相同 H1 reference、模型预测及 raw，再设计 baseline emission×exclude_target_gene 的 2×2 协议诊断，记录真实匹配的 anchors。尚未执行此诊断，不按靠近榜单的程度挑选本地配方；无法核实线上条件时保持未知。随后再做匹配正则/权重的条件项消融与跨背景复验，QC 问题保留，当前不扩模型容量。
