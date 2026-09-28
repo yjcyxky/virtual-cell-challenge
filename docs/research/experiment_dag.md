@@ -48,7 +48,7 @@ flowchart TD
   n41["target-response-go-s01 | draft"]
   n42["target-response-random-go-s01 | draft"]
   n43["transport-linear-s01 | draft"]
-  n44["transport-mlp-s01 | ready"]
+  n44["transport-mlp-s01 | completed"]
   n45["transport-no-ntc-s01 | draft"]
   n46["composition-lfc-s01 | ready"]
   n47["distribution-nb-s01 | ready"]

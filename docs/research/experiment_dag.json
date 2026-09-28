@@ -5697,7 +5697,7 @@
       "legacy": false,
       "method_id": "M-TRANSPORT-MLP",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-MECHANISM-PORTFOLIO",
       "controls": [
         "masked-response-shared-s01"
@@ -5966,11 +5966,14 @@
           "sha256": "ca2452dd50c93f6f7ed6c3f4a473977d82e978b8008ea1f0b03cf122f163608e"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/response-transport/outputs/transport-mlp-s01/metrics.json",
+        "sha256": "504a78f79a3fc080fbdb1fea67486c71abce53bd255b8efed47dc742585aa7f7"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "git_commit": "808773b9c16b28dd7788f57876f96c9be87c43c9",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/transport-mlp-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/transport-mlp-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -5990,7 +5993,8 @@
         "allocation": "三机制各一个预先冻结完整配置，顺序训练及两面板评分；全部完成后才分配下一轮。",
         "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online"
     },
     "transport-no-ntc-s01": {
       "experiment_id": "response-transport",
