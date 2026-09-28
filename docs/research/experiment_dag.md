@@ -35,7 +35,7 @@ flowchart TD
   n28["confirm-qc-s03 | draft"]
   n29["confirm-random-s03 | draft"]
   n30["init-linear-nocontext-s01 | completed"]
-  n31["init-linear-nocontext-a01-s01 | ready"]
+  n31["init-linear-nocontext-a01-s01 | completed"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -60,10 +60,16 @@ flowchart TD
   n8 -.->|"evidence: E-MOMENTS"| n9
   n0 -->|control| n10
   n0 -.->|"evidence: E-BASE"| n10
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n10
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n10
   n0 -->|control| n11
   n0 -.->|"evidence: E-BASE"| n11
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n11
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n11
   n0 -->|control| n12
   n0 -.->|"evidence: E-BASE"| n12
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n12
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n12
   n10 -->|control| n13
   n0 -.->|"evidence: E-PROGRAM"| n13
   n10 -.->|"evidence: E-PROGRAM"| n13

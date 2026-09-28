@@ -1212,13 +1212,14 @@
       },
       "signature": "T1-D1-R0-A0-L7-O0-V5-I6-G0",
       "prior": "假设现有L2收缩限制扰动特异响应；仅改变所有系数共同alpha，保持细胞权重和截距。未正则shared只是强参照，不能代替匹配控制。",
-      "local_status": "UNTESTED",
+      "local_status": "REJECTED",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
         "E-RIDGE-STRENGTH"
       ],
-      "selection_basis": "条件项消融增益未达到阈值且仍低于shared；正则强度是待分离的机制，不先宣称其为原因。"
+      "selection_basis": "条件项消融增益未达到阈值且仍低于shared；正则强度是待分离的机制，不先宣称其为原因。",
+      "local_status_scope": "仅未支持alpha=0.1相对alpha=1在S2-H1/context-seen/seed1上提升Overall至少0.02的主张；观察到+0.017448正向效应，仍低于shared。不是否定所有弱正则方法或跨背景结论。"
     }
   }
 }

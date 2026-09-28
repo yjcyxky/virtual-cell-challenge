@@ -359,3 +359,86 @@ PDS raw 平均提升 0.038697，其中仅 K562 支持靶提升 0.053744、四背
 - [新 run 的 W&B](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-nocontext-s01)，模型 Artifact：`yjcyxky/virtual-cell-challenge/init-linear-nocontext-s01-result:v0`。
 - [完整 metrics](outputs/init-linear-nocontext-s01/metrics.json)、[分析与分层](outputs/init-linear-nocontext-s01/cache/condition-analysis.json)、[280 靶配对差](outputs/init-linear-nocontext-s01/cache/paired-all-nocontext-vs-original.csv)、[25 靶配对差](outputs/init-linear-nocontext-s01/cache/paired-official_overlap-nocontext-vs-original.csv)。
 - checkpoint、四份全轴预测、逐靶 raw 与官方评分文件保存在新 run 输出目录；没有上传原始数据。
+
+## 正则强度归因：C-RIDGE-STRENGTH
+
+run `init-linear-nocontext-a01-s01` 已完成完整解析训练、四臂预测和两面板官方评分。Git `668bd1ce23b89f31d8e906815e6880df6bd92075`；与 `init-linear-nocontext-s01` 的唯一生效配置差异是 `model.alpha: 1 → 0.1`。无条件target-ID+截距、权重、测量掩码、数据/划分、生成器、cell-eval2及匹配bundles保持不变；参数独立拟合。旧模型和历史证据保留。
+
+| H1 面板 | α=1 | α=0.1 | 配对 Overall 差 | shared | α=0.1−shared | source | zero |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 280 靶 | 0.168646 | 0.186094 | 0.017448 | 0.210866 | -0.024772 | 0.205146 | -0.064307 |
+| 官方重叠 25 靶 | 0.136627 | 0.169091 | 0.032464 | 0.204838 | -0.035748 | 0.204838 | -0.079036 |
+
+预注册判据（主面板提升≥0.02、重叠面板不下降超过0.02）：**未满足，记 not_supported**。这只检验共同L2强度的作用，不能把不同参数化的shared当作唯一正则对照。
+
+### 六指标、有效数与配对波动
+
+raw 使用官方聚合，normalized 使用冻结官方标尺。表达误差 raw 是群体比值，有效数指 capped-MSE 底层分量。
+
+| 面板 | 指标 | α=1 raw | α=0.1 raw / 有效靶数 | α=1 normalized | α=0.1 normalized |
+|---|---|---:|---:|---:|---:|
+| 280 | PDS ↑ | 0.710394 | 0.749603 / 280 | 0.438690 | 0.519979 |
+| 280 | 表达误差 ↓ | 1.652757 | 2.337726 / 280 | 0.000000 | 0.000000 |
+| 280 | LFC-NMAE ↓ | 0.970319 | 1.015008 / 247 | -0.050200 | -0.125462 |
+| 280 | Direction fidelity ↑ | 0.467911 | 0.503708 / 280 | 0.417319 | 0.468462 |
+| 280 | Direction reach ↑ | 0.093209 | 0.091532 / 279 | 0.003088 | 0.001218 |
+| 280 | DE Jaccard ↑ | 0.093534 | 0.113909 / 280 | 0.202981 | 0.252366 |
+| 25 | PDS ↑ | 0.706667 | 0.778333 / 25 | 0.404487 | 0.550646 |
+| 25 | 表达误差 ↓ | 1.822173 | 2.701621 / 25 | 0.000000 | 0.000000 |
+| 25 | LFC-NMAE ↓ | 0.978666 | 1.024093 / 25 | -0.132841 | -0.214411 |
+| 25 | Direction fidelity ↑ | 0.465432 | 0.510411 / 25 | 0.411078 | 0.472575 |
+| 25 | Direction reach ↑ | 0.031317 | 0.034973 / 25 | -0.052580 | -0.048596 |
+| 25 | DE Jaccard ↑ | 0.092190 | 0.116122 / 25 | 0.189617 | 0.254330 |
+
+zero/shared/source 在两个面板均于 1e-8 内复现 raw、normalized 和 Overall，NaN 位置相同；checkpoint 的 shared 响应矩阵逐元素相同。所有8组六项 normalized 有限，保留官方 gate、NaN 和表达分项下界截断。
+
+逐靶差为 α=0.1−α=1；SD 是靶点间异质性，不是跨背景置信区间。表达项这里使用可配对的 capped-MSE 底层分量。
+
+| 面板 | raw 指标 | 配对数 | 均值差 | 中位数差 | SD | α=0.1较好比例 |
+|---|---|---:|---:|---:|---:|---:|
+| 280 | PDS ↑ | 280 | +0.039209 | +0.014337 | 0.066564 | 67.9% |
+| 280 | capped MSE ↓ | 280 | +0.002275 | +0.001671 | 0.001985 | 0.0% |
+| 280 | LFC-NMAE ↓ | 247 | +0.044689 | +0.022659 | 0.178789 | 19.4% |
+| 280 | Direction fidelity ↑ | 280 | +0.035797 | +0.002296 | 0.067756 | 54.6% |
+| 280 | Direction reach ↑ | 279 | -0.001677 | +0.000000 | 0.049562 | 23.3% |
+| 280 | DE Jaccard ↑ | 280 | +0.020376 | +0.004025 | 0.032295 | 65.0% |
+| 25 | PDS ↑ | 25 | +0.071667 | +0.041667 | 0.087995 | 56.0% |
+| 25 | capped MSE ↓ | 25 | +0.002159 | +0.001612 | 0.001983 | 0.0% |
+| 25 | LFC-NMAE ↓ | 25 | +0.045427 | +0.028364 | 0.075695 | 20.0% |
+| 25 | Direction fidelity ↑ | 25 | +0.044979 | +0.002284 | 0.076823 | 56.0% |
+| 25 | Direction reach ↑ | 25 | +0.003656 | +0.000000 | 0.020054 | 44.0% |
+| 25 | DE Jaccard ↑ | 25 | +0.023932 | +0.010991 | 0.033756 | 76.0% |
+
+| 主面板支持来源 | 靶数 | PDS差（α0.1−α1） | PDS差（α0.1−shared） | NMAE差（α0.1−α1） |
+|---|---:|---:|---:|---:|
+| K562_only | 181 | +0.054536 | -0.121725 | +0.030319 |
+| four_contexts | 99 | +0.011187 | -0.000760 | +0.066912 |
+
+### 拟合与剩余差距诊断
+
+训练MSE从 0.00136416 降至 0.00114518，全部NTC条件系数严格为零。17,040个背景×靶点训练任务，四个训练背景来自两项研究；H1是唯一评价背景。seed仅决定配对生成采样，未估计跨生成seed波动；解析拟合无优化随机性，不能增加生物独立样本数。
+
+对当前无条件模型，在该target×gene有监督时，解析预测可写成 `q×sharedΔ + (1−q)×b_gene`，其中 `q=训练细胞数/(训练细胞数+100×alpha)`；截距b也随alpha重新估计。这说明该干预改变了向共同截距收缩的强度，但不把细胞数当成独立生物背景数。
+
+额外的描述性诊断在H1实测18,074基因的响应坐标上，将 `(预测Δ−sharedΔ)^2` 按该target×gene是否存在训练监督拆分。它不是新的评价指标或干预实验，也不能代替分数归因。全训练缺测的基因，两模型均为零Δ，对该平方差无贡献。
+
+| α | Δ相对shared平方差总和 | 有直接监督的平方差 | 无该target×gene监督的平方差 | 后者占比 |
+|---|---:|---:|---:|---:|
+| 1 | 2348.545358 | 1898.409141 | 450.136217 | 19.2% |
+| 0.1 | 799.831654 | 276.619516 | 523.212138 | 65.4% |
+
+减弱正则后，有直接监督位置的平方差下降，但无该target×gene监督位置的平方差从450.14增加到523.21，占剩余平方差的65.4%。同时，主面板PDS相对shared的差距在K562单来源靶为−0.121725、四背景支持靶为−0.000760。这些覆盖相关现象提示下一轮应冻结并审查回退规则；它们尚不能证明缺测回退导致了Overall差距。PDS、fidelity和Jaccard的改善也未伴随误差全面下降：两面板每个靶的capped-MSE都变差，但表达normalized分项均停留在官方下界0。
+
+输入缺测、输出缺测和缺少特定target×gene监督是不同问题。当前ridge对全训练缺测基因输出零Δ；对训练测过但该靶没有监督的基因，target效应为零，保留学到的截距。shared在后者位置输出零Δ。因此减小alpha并不必然让完整响应等同shared；该结构差异及与数据覆盖的关联仍需要独立实验。
+
+### 决策、限制与产物
+
+在S2-H1/context-seen/seed1的匹配单因素比较中，仅将无条件ridge的共同alpha从1降到0.1，Overall从0.168646252变为0.186093940（差+0.017447688）；25官方重叠靶差+0.032463636，未达到预注册阈值。相对shared的主面板差仍为-0.024771694。 结束本轮alpha局部试验，推进C-PROGRAM：固定头、正则和生成器，比较真实功能程序、等维训练内PCA与匹配随机模块；完整报告相对shared的成绩。表示注入位置与缺测/无target×gene监督位置的回退必须先冻结，并跨臂保持一致。 shared继续作为当前强参照；相对较弱控制涨分不等于找到更强或SOTA方法。
+
+H1及过去的官方A/B/C反馈属于开发证据。本轮未增加背景、未评价全局未见靶点、未提交新官方榜单；不能宣称SOTA。训练响应监督覆盖10,916基因，H1可评分轴仍有7,292基因缺少训练响应监督，完整官方输出保留18,533基因及测量掩码。
+
+本次完整执行 1321.3 秒，峰值主机RSS 57.23 GiB。7项现有模型/数据测试、配置单字段差异检查、研究门禁和正式8组官方评分通过；训练源码未改动。
+
+- [W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-nocontext-a01-s01)；模型Artifact：`yjcyxky/virtual-cell-challenge/init-linear-nocontext-a01-s01-result:v0`。
+- [完整metrics](outputs/init-linear-nocontext-a01-s01/metrics.json)、[分析与分层](outputs/init-linear-nocontext-a01-s01/cache/ridge-analysis.json)、[280靶配对差](outputs/init-linear-nocontext-a01-s01/cache/paired-all-a01-vs-a1.csv)、[25靶配对差](outputs/init-linear-nocontext-a01-s01/cache/paired-official_overlap-a01-vs-a1.csv)。
+- checkpoint、完整轴预测、各臂raw.parquet/aggregate.csv/scores.csv/run_meta.json和匹配bundles保存在本run输出目录；原始数据不上传。

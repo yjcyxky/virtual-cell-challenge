@@ -462,7 +462,7 @@
       "claim": "待检验：生物程序是否优于等维PCA与匹配随机模块",
       "limitations": "没有本地执行或效应；一seed筛选不能证明跨背景普遍有效",
       "source_refs": [],
-      "next_action": "落实此比较的冻结条件，再按预定方案运行和分析",
+      "next_action": "在已冻结H1开发协议下落实等维真实功能程序/PCA/匹配随机表示；先确定注入位置、共同头/alpha、覆盖和数值判据，必要时新建匹配raw控制。不得把原始NTC条件项的结果当作所有表示的结论。",
       "reopen_when": "当前为待检验问题；关闭后按同一scope的反证/新数据重新提出比较"
     },
     "E-PRETRAIN": {
@@ -942,42 +942,53 @@
     },
     "E-RIDGE-STRENGTH": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-RIDGE-STRENGTH",
-      "node_ids": [],
+      "node_ids": [
+        "init-linear-nocontext-s01",
+        "init-linear-nocontext-a01-s01"
+      ],
       "hypothesis": "固定无NTC条件头与生成器，减弱L2正则能否恢复扰动特异性并缩小shared差距",
-      "claim": "待检验：降低正则强度能否改善迁移，不能由shared较好直接推断正则有害。",
-      "limitations": "尚无alpha=0.1执行；保留单H1/seed和参数耦合限制。",
-      "source_refs": [],
-      "next_action": "冻结并执行一个alpha=0.1候选，与当前alpha=1匹配比较；不做额外在线网格搜索。",
-      "reopen_when": "关闭后出现其他背景或正则结构反证时另建比较。"
+      "claim": "在S2-H1/context-seen/seed1的匹配单因素比较中，仅将无条件ridge的共同alpha从1降到0.1，Overall从0.168646252变为0.186093940（差+0.017447688）；25官方重叠靶差+0.032463636，未达到预注册阈值。相对shared的主面板差仍为-0.024771694。",
+      "limitations": "仅H1开发背景、一次解析拟合与一个配对生成seed；没有新官方提交、跨背景或未见靶点验证。共同alpha改变全部正则系数及其耦合；不代表独立拆分了target和截距收缩。响应坐标差距按监督覆盖分解只是描述性诊断，不能等同因果评分归因。",
+      "source_refs": [
+        {
+          "path": "experiments/init-linear/outputs/init-linear-nocontext-s01/metrics.json",
+          "sha256": "963c2321e5c5d0f05c416fb1f8668fb808a00c30edf2e340d31889451b36b34f"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-nocontext-a01-s01/metrics.json",
+          "sha256": "9dfd87dcc2eb5fe545b84921bd01e06aa9cb460314fdb5f34b9908ae13c5e4e9"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-nocontext-a01-s01/cache/ridge-analysis.json",
+          "sha256": "68a69f948bb6e54830961323e63bc44ad7ffe568bf002e9fc608673a7de7ff8e"
+        },
+        {
+          "path": "experiments/init-linear/REPORT.md",
+          "sha256": "54c326518c284dcee26d90c971d0205fd7fa49127c7f9e5fe45d57ce6a789503"
+        }
+      ],
+      "next_action": "结束本轮alpha局部试验，推进C-PROGRAM：固定头、正则和生成器，比较真实功能程序、等维训练内PCA与匹配随机模块；完整报告相对shared的成绩。表示注入位置与缺测/无target×gene监督位置的回退必须先冻结，并跨臂保持一致。 shared继续作为当前强参照；相对较弱控制涨分不等于找到更强或SOTA方法。",
+      "reopen_when": "新背景或官方评分出现反证、目标/权重/正则结构或缺测回退改变时另建比较；不覆盖本H1开发结论。"
     }
   },
   "queue": [
     {
-      "id": "Q-RIDGE-STRENGTH",
-      "priority": 1,
-      "comparison_id": "C-RIDGE-STRENGTH",
-      "question": "余下的shared差距是否部分来自正则收缩，而非缺少更大模型？",
-      "action": "按反对分支先执行C-RIDGE-STRENGTH：固定无条件响应头，仅将alpha从1降到0.1，区分正则强度与NTC条件项；继续以shared为强参照。随后推进C-PROGRAM的等维真实程序/PCA/随机模块表示探索，不把局部alpha优化当作SOTA终点。",
-      "requires_evidence": [
-        "E-CONDITION-ABLATION"
-      ]
-    },
-    {
       "id": "Q-PROGRAM",
-      "priority": 2,
+      "priority": 1,
       "comparison_id": "C-PROGRAM",
       "question": "功能程序表示是否提供超出PCA、随机模块和共享响应的迁移信息？",
-      "action": "按文献卡片和训练边界落实真实程序/PCA/匹配随机三臂；冻结维数、覆盖、头、正则及比较范围。无论当前NTC消融阴阳性，都不能替代该表示实验。",
+      "action": "结束本轮alpha局部试验，推进C-PROGRAM：固定头、正则和生成器，比较真实功能程序、等维训练内PCA与匹配随机模块；完整报告相对shared的成绩。表示注入位置与缺测/无target×gene监督位置的回退必须先冻结，并跨臂保持一致。 shared继续作为当前强参照；相对较弱控制涨分不等于找到更强或SOTA方法。",
       "requires_evidence": [
         "E-BASE",
-        "E-CONDITION-ABLATION"
+        "E-CONDITION-ABLATION",
+        "E-RIDGE-STRENGTH"
       ]
     },
     {
       "id": "Q-QUALITY",
-      "priority": 3,
+      "priority": 2,
       "comparison_id": "C-QC",
       "question": "额外QC改变的是可靠性，还是数量、target覆盖与弱响应人群？",
       "action": "条件项归因后落实基础/QC/匹配随机三臂，保持评估群体及官方轴；单列181仅K562与99四背景支持靶的保留率，不能把响应强度/覆盖变化当作质量收益。",

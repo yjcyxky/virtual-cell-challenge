@@ -1146,8 +1146,8 @@
       ]
     },
     "init-pca-s01": {
-      "experiment_id": "init-pca-s01",
-      "directory": "experiments/init-pca-s01",
+      "experiment_id": "init-linear",
+      "directory": "experiments/init-linear",
       "legacy": false,
       "method_id": "M-PCA",
       "protocol_id": "PSEUDO-VCC-INIT",
@@ -1158,9 +1158,16 @@
       ],
       "sources": [],
       "requires_evidence": [
-        "E-BASE"
+        "E-BASE",
+        "E-RIDGE-STRENGTH"
       ],
-      "evidence_conditions": {},
+      "evidence_conditions": {
+        "E-RIDGE-STRENGTH": [
+          "signal",
+          "supported",
+          "not_supported"
+        ]
+      },
       "config_ref": null,
       "expected_config": null,
       "code_refs": [],
@@ -1180,25 +1187,27 @@
         ],
         "comparison": "生物程序是否优于等维PCA与匹配随机模块",
         "fit_scope": {
-          "outer_split": null,
-          "target_partition": null
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
+        "allocation": "首轮仅S2-H1/context-seen/seed1；每候选独立run；A0线性预测头不变，沿用init-linear源码和环境，不为draft创建目录。其他背景/未见靶另建比较，不混入一个run。",
         "unresolved": [
-          "具体outer_split/target_partition/seed、完整配置和结束条件",
-          "实际reference/anchors与六指标有效性须执行核验",
-          "实现、锁文件及已提交引用、比较数值判据"
+          "冻结表示的注入位置、外部模块版本与覆盖，训练内PCA拟合边界；真实/随机/PCA维数及覆盖匹配",
+          "冻结所有臂共同的预测头、alpha、生成和缺测回退；若区别于既有控制则新建匹配控制，不能只在候选侧采用新alpha",
+          "明确本H1开发筛选的数值判据、shared强参照及生物先验相对随机/PCA的判据",
+          "逐run完整配置、来源哈希、共享init-linear实现/锁文件和磁盘/内存预算；提交并通过门禁后才可启动"
         ]
       },
       "blockers": [
-        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
-      ]
+        "待落实表示匹配、完整配置与共享Experiment入口；没有实际拟合或表示效果证据"
+      ],
+      "run_id": "init-pca-s01"
     },
     "init-program-s01": {
-      "experiment_id": "init-program-s01",
-      "directory": "experiments/init-program-s01",
+      "experiment_id": "init-linear",
+      "directory": "experiments/init-linear",
       "legacy": false,
       "method_id": "M-PROGRAM",
       "protocol_id": "PSEUDO-VCC-INIT",
@@ -1209,9 +1218,16 @@
       ],
       "sources": [],
       "requires_evidence": [
-        "E-BASE"
+        "E-BASE",
+        "E-RIDGE-STRENGTH"
       ],
-      "evidence_conditions": {},
+      "evidence_conditions": {
+        "E-RIDGE-STRENGTH": [
+          "signal",
+          "supported",
+          "not_supported"
+        ]
+      },
       "config_ref": null,
       "expected_config": null,
       "code_refs": [],
@@ -1231,25 +1247,27 @@
         ],
         "comparison": "生物程序是否优于等维PCA与匹配随机模块",
         "fit_scope": {
-          "outer_split": null,
-          "target_partition": null
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
+        "allocation": "首轮仅S2-H1/context-seen/seed1；每候选独立run；A0线性预测头不变，沿用init-linear源码和环境，不为draft创建目录。其他背景/未见靶另建比较，不混入一个run。",
         "unresolved": [
-          "具体outer_split/target_partition/seed、完整配置和结束条件",
-          "实际reference/anchors与六指标有效性须执行核验",
-          "实现、锁文件及已提交引用、比较数值判据"
+          "冻结表示的注入位置、外部模块版本与覆盖，训练内PCA拟合边界；真实/随机/PCA维数及覆盖匹配",
+          "冻结所有臂共同的预测头、alpha、生成和缺测回退；若区别于既有控制则新建匹配控制，不能只在候选侧采用新alpha",
+          "明确本H1开发筛选的数值判据、shared强参照及生物先验相对随机/PCA的判据",
+          "逐run完整配置、来源哈希、共享init-linear实现/锁文件和磁盘/内存预算；提交并通过门禁后才可启动"
         ]
       },
       "blockers": [
-        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
-      ]
+        "待落实表示匹配、完整配置与共享Experiment入口；没有实际拟合或表示效果证据"
+      ],
+      "run_id": "init-program-s01"
     },
     "init-random-program-s01": {
-      "experiment_id": "init-random-program-s01",
-      "directory": "experiments/init-random-program-s01",
+      "experiment_id": "init-linear",
+      "directory": "experiments/init-linear",
       "legacy": false,
       "method_id": "M-RANDOM-PROGRAM",
       "protocol_id": "PSEUDO-VCC-INIT",
@@ -1260,9 +1278,16 @@
       ],
       "sources": [],
       "requires_evidence": [
-        "E-BASE"
+        "E-BASE",
+        "E-RIDGE-STRENGTH"
       ],
-      "evidence_conditions": {},
+      "evidence_conditions": {
+        "E-RIDGE-STRENGTH": [
+          "signal",
+          "supported",
+          "not_supported"
+        ]
+      },
       "config_ref": null,
       "expected_config": null,
       "code_refs": [],
@@ -1282,21 +1307,23 @@
         ],
         "comparison": "生物程序是否优于等维PCA与匹配随机模块",
         "fit_scope": {
-          "outer_split": null,
-          "target_partition": null
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
         },
         "local_status": "UNTESTED",
         "budget_class": "low",
-        "allocation": "当前是待实例化槽位；ready前按outer_split×target_partition×seed生成独立run及配对控制；同一研究路线共用Experiment；同一节点不能训练多折",
+        "allocation": "首轮仅S2-H1/context-seen/seed1；每候选独立run；A0线性预测头不变，沿用init-linear源码和环境，不为draft创建目录。其他背景/未见靶另建比较，不混入一个run。",
         "unresolved": [
-          "具体outer_split/target_partition/seed、完整配置和结束条件",
-          "实际reference/anchors与六指标有效性须执行核验",
-          "实现、锁文件及已提交引用、比较数值判据"
+          "冻结表示的注入位置、外部模块版本与覆盖，训练内PCA拟合边界；真实/随机/PCA维数及覆盖匹配",
+          "冻结所有臂共同的预测头、alpha、生成和缺测回退；若区别于既有控制则新建匹配控制，不能只在候选侧采用新alpha",
+          "明确本H1开发筛选的数值判据、shared强参照及生物先验相对随机/PCA的判据",
+          "逐run完整配置、来源哈希、共享init-linear实现/锁文件和磁盘/内存预算；提交并通过门禁后才可启动"
         ]
       },
       "blockers": [
-        "数据/划分/官方评分配方已冻结；待实例化独立拟合、配置、实现及比较判据"
-      ]
+        "待落实表示匹配、完整配置与共享Experiment入口；没有实际拟合或表示效果证据"
+      ],
+      "run_id": "init-random-program-s01"
     },
     "init-pretrained-s01": {
       "experiment_id": "init-pretrained-s01",
@@ -2427,7 +2454,7 @@
       "legacy": false,
       "method_id": "M-RIDGE-WEAKREG",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-RIDGE-STRENGTH",
       "controls": [
         "init-linear-nocontext-s01"
@@ -2620,11 +2647,17 @@
           "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/init-linear/outputs/init-linear-nocontext-a01-s01/metrics.json",
+        "sha256": "9dfd87dcc2eb5fe545b84921bd01e06aa9cb460314fdb5f34b9908ae13c5e4e9"
+      },
+      "report_ref": {
+        "path": "experiments/init-linear/REPORT.md",
+        "sha256": "54c326518c284dcee26d90c971d0205fd7fa49127c7f9e5fe45d57ce6a789503"
+      },
+      "git_commit": "668bd1ce23b89f31d8e906815e6880df6bd92075",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-nocontext-a01-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/init-linear-nocontext-a01-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "dataset_ids": [
@@ -2644,7 +2677,9 @@
         "end_condition": "全量拟合、全轴预测、两个面板官方六指标有效，报告相对alpha=1及shared差距后关闭证据。",
         "unresolved": []
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-nocontext-a01-s01-evidence:v0"
     }
   },
   "comparisons": {
@@ -2870,7 +2905,7 @@
         "primary_metric": "S2.Overall",
         "direction": "maximize",
         "min_effect": null,
-        "scope": "同一PSEUDO-VCC-INIT、同一组别/面板；分别报告五背景与全局未见靶点",
+        "scope": "首轮S2-H1/context-seen/seed1，280靶和25官方重叠靶；仅开发筛选。其他背景/全局未见靶另登记独立run与比较。",
         "on_support": "保留为signal；按配对多seed确认规则扩展，未确认不称通用有效",
         "on_against": "保留基线，搁置此实现；只在数据/范围变化时重开",
         "on_inconclusive": "按噪声来源补配对重复或修复覆盖；不得改评分群体追涨分",
@@ -2878,7 +2913,7 @@
       },
       "attribution_plan": "原始表示参照+PCA+真实程序+随机程序；维数、覆盖、预测头和预算匹配。真实对随机估计结构信息，PCA对基线诊断降维",
       "cost": "low",
-      "priority_basis": "信息价值与可识别性；不使用既有模型表现",
+      "priority_basis": "由已完成E-BASE、E-CONDITION-ABLATION和E-RIDGE-STRENGTH推进表示/先验探索；不追加alpha网格。",
       "evidence_id": "E-PROGRAM"
     },
     "C-PRETRAIN": {
