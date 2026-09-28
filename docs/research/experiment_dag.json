@@ -5072,7 +5072,8 @@
       },
       "report_ref": {
         "path": "experiments/masked-response/REPORT.md",
-        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514"
+        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514",
+        "git_commit": "ae01dd9d7af47a3f7672967e4b17f5a5c949406b"
       },
       "git_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-qc-s01",
@@ -5099,7 +5100,101 @@
       "blockers": [],
       "wandb_sync": "online",
       "code_snapshot_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645",
-      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-SHARED-QC-evidence:v0"
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-SHARED-QC-evidence:v0",
+      "official_evaluation": {
+        "comparison_id": "C-SHARED-QC-OFFICIAL",
+        "status": "blocked_daily_submission_allowance",
+        "config_ref": {
+          "path": "experiments/masked-response/configs/official-qc-s01.json",
+          "sha256": "3ed8bf208895f1df2b507cb1bdece5591d66cb9a05c07279167e3ad93a5692f2"
+        },
+        "code_refs": [
+          {
+            "path": "experiments/masked-response/src/submission.py",
+            "sha256": "7d979f30b7e649e0e13ee1c90122b5c9d5cbda10561692eeeb6a705b3d9f894e"
+          },
+          {
+            "path": "experiments/masked-response/submit.sh",
+            "sha256": "845ae16f6ad804fd0c5131f9d17c56704fc5a8f3b0382abf7074b34c476540ff"
+          },
+          {
+            "path": "experiments/masked-response/OFFICIAL-PLAN.md",
+            "sha256": "e3c6a0478672e25c1a199e6e04a69f7bd92dc9e0f8aea775d40983b9375b11bf"
+          },
+          {
+            "path": "experiments/init-linear/src/submission.py",
+            "sha256": "b748d432b615399c42ed5a64ecdf892db4046b8feeaa015593d7add8b913262d"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+            "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+          },
+          {
+            "path": "scripts/dossier/response.py",
+            "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+          },
+          {
+            "path": "scripts/dossier/render.py",
+            "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+          },
+          {
+            "path": "scripts/dossier/profile_responses.py",
+            "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+            "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+            "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+          },
+          {
+            "path": "scripts/dossier/heterogeneity.py",
+            "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+            "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+            "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+          }
+        ],
+        "scope": "Original completed shared + low-depth QC checkpoint and W&B run; fixed generator, complete official A/B/C NTC; no fitting. Internal arm linear denotes the masked predictor interface only.",
+        "identity_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity.json",
+          "sha256": "465e22fb4d5876c2fb694cfd0ae3cf7fdc9dea4432703b14988640cc99f97112"
+        },
+        "generation_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/generation.json",
+          "sha256": "d1bc0890cf45e57670d75137090b0cd9da357ab21ea73d342d7f49d8e6034c24"
+        },
+        "replay_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/export-replay.json",
+          "sha256": "51a560081b8bf243f2132d4c74bbba26d1e398235eec30af6d33f1cadb1dff0d"
+        },
+        "submission_file_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-file.json",
+          "sha256": "0c9621189292a45d038e9fd16a34acb6f46bf74abb7c0a5216842541602d5647"
+        },
+        "blocker_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-blocked.json",
+          "sha256": "766df7fe4b848787397b8a3a232380548b5177a58dc28622d59157252fd99b77"
+        },
+        "report_ref": {
+          "path": "experiments/masked-response/REPORT.md",
+          "sha256": "128a3ead93d822a5eb03f8d18b94628fc9b00dc0a424b117da34ab7429dc9062"
+        },
+        "prepared_artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-prepared:v0",
+        "retry_at_utc": "2026-09-29T00:01:00Z",
+        "next_action": "Retry the sealed VCC after official quota reset; only published scores permit evidence closure.",
+        "retry_schedule_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/retry-schedule.json",
+          "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
+        }
+      }
     },
     "masked-response-random-thin-s01": {
       "experiment_id": "masked-response",
@@ -5382,7 +5477,8 @@
       },
       "report_ref": {
         "path": "experiments/masked-response/REPORT.md",
-        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514"
+        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514",
+        "git_commit": "ae01dd9d7af47a3f7672967e4b17f5a5c949406b"
       },
       "git_commit": "caa7dffbdd735f99fb6c006dce3b6f70301cb0f6",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-random-thin-s01",
@@ -7538,6 +7634,37 @@
       "cost": "medium",
       "priority_basis": "用户明确要求扩大机制搜索范围、先比较整包价值再拆解；不要求先过线性头。",
       "evidence_id": "E-MECHANISM-PORTFOLIO"
+    },
+    "C-SHARED-QC-OFFICIAL": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
+      "controls": [],
+      "candidates": [
+        "masked-response-qc-s01"
+      ],
+      "changed_axes": [
+        "V"
+      ],
+      "changed_fields": [
+        "evaluation.backgrounds",
+        "evaluation.target_panel",
+        "evaluation.measured_gene_axis",
+        "evaluation.reference_and_anchors",
+        "evaluation.execution_service"
+      ],
+      "decision_rule": {
+        "primary_metric": "official.score_avg_minus_local.Overall",
+        "direction": "minimize_absolute_difference",
+        "min_effect": 0.02,
+        "scope": "Fixed shared + low-depth QC checkpoint; A/B/C 300 targets versus H1 280/25. Descriptive development evidence only.",
+        "on_support": "两个本地面板绝对差均<=0.02仅记录接近线索；不外推协议等价。",
+        "on_against": "任一绝对差>0.02则不支持本地Overall预测榜单；同时报告raw与normalized、群体差异。",
+        "on_inconclusive": "评分失败/未发布则保留问题；不作模型阴性结论。",
+        "threshold_policy": "Before scores: abs Overall difference <=0.02 is descriptive closeness. Existing official shared is a descriptive comparator only, not a matched random-QC control."
+      },
+      "evidence_id": "E-SHARED-QC-OFFICIAL",
+      "attribution_plan": "No model changes; simultaneous evaluation population/protocol changes prohibit single-factor causal attribution."
     }
   },
   "continuation_rules": {
