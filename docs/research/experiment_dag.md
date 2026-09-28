@@ -38,7 +38,7 @@ flowchart TD
   n31["init-linear-nocontext-a01-s01 | completed"]
   n32["init-program-raw-s01 | completed"]
   n33["masked-response-shared-s01 | completed"]
-  n34["masked-response-pca-s01 | ready"]
+  n34["masked-response-pca-s01 | completed"]
   n35["masked-response-program-s01 | ready"]
   n36["masked-response-random-s01 | ready"]
   n0 -->|control| n1
