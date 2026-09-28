@@ -1435,7 +1435,7 @@
       "legacy": false,
       "method_id": "M-PROGRAM",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-PROGRAM",
       "controls": [
         "init-program-raw-s01"
@@ -1681,11 +1681,14 @@
           "sha256": "30589a2b8170e1b56a2e6b5c442ca10e65eb4ef2fe3d14bc6fc941cf662ce474"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/init-linear/outputs/init-program-s01/metrics.json",
+        "sha256": "39f49f214c74c72dff52364a528543602300da16a1ab85349a551a1f84f331a1"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "git_commit": "884db94b171386964a5038bbb19fa41c4f0bed62",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-program-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/init-program-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -1705,7 +1708,8 @@
         "end_condition": "完整解析拟合、全轴模型预测、两个面板官方六分项/Overall有效、保存Artifact；四臂完成后配对分析并关闭E-PROGRAM。",
         "unresolved": []
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online"
     },
     "init-random-program-s01": {
       "experiment_id": "init-linear",
