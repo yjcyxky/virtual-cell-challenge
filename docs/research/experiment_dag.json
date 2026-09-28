@@ -5072,7 +5072,8 @@
       },
       "report_ref": {
         "path": "experiments/masked-response/REPORT.md",
-        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514"
+        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514",
+        "git_commit": "ae01dd9d7af47a3f7672967e4b17f5a5c949406b"
       },
       "git_commit": "9de9157b4b6fb75571b897c86b5e61e9cc3bf645",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-qc-s01",
@@ -5102,7 +5103,7 @@
       "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-SHARED-QC-evidence:v0",
       "official_evaluation": {
         "comparison_id": "C-SHARED-QC-OFFICIAL",
-        "status": "ready",
+        "status": "blocked_daily_submission_allowance",
         "config_ref": {
           "path": "experiments/masked-response/configs/official-qc-s01.json",
           "sha256": "3ed8bf208895f1df2b507cb1bdece5591d66cb9a05c07279167e3ad93a5692f2"
@@ -5161,7 +5162,38 @@
             "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
           }
         ],
-        "scope": "Original completed shared + low-depth QC checkpoint and W&B run; fixed generator, complete official A/B/C NTC; no fitting. Internal arm linear denotes the masked predictor interface only."
+        "scope": "Original completed shared + low-depth QC checkpoint and W&B run; fixed generator, complete official A/B/C NTC; no fitting. Internal arm linear denotes the masked predictor interface only.",
+        "identity_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity.json",
+          "sha256": "465e22fb4d5876c2fb694cfd0ae3cf7fdc9dea4432703b14988640cc99f97112"
+        },
+        "generation_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/generation.json",
+          "sha256": "d1bc0890cf45e57670d75137090b0cd9da357ab21ea73d342d7f49d8e6034c24"
+        },
+        "replay_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/export-replay.json",
+          "sha256": "51a560081b8bf243f2132d4c74bbba26d1e398235eec30af6d33f1cadb1dff0d"
+        },
+        "submission_file_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-file.json",
+          "sha256": "0c9621189292a45d038e9fd16a34acb6f46bf74abb7c0a5216842541602d5647"
+        },
+        "blocker_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-blocked.json",
+          "sha256": "766df7fe4b848787397b8a3a232380548b5177a58dc28622d59157252fd99b77"
+        },
+        "report_ref": {
+          "path": "experiments/masked-response/REPORT.md",
+          "sha256": "128a3ead93d822a5eb03f8d18b94628fc9b00dc0a424b117da34ab7429dc9062"
+        },
+        "prepared_artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-prepared:v0",
+        "retry_at_utc": "2026-09-29T00:01:00Z",
+        "next_action": "Retry the sealed VCC after official quota reset; only published scores permit evidence closure.",
+        "retry_schedule_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/retry-schedule.json",
+          "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
+        }
       }
     },
     "masked-response-random-thin-s01": {
@@ -5445,7 +5477,8 @@
       },
       "report_ref": {
         "path": "experiments/masked-response/REPORT.md",
-        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514"
+        "sha256": "b785caf21c726ef8c0fbcfae6036625460c33aa42fb9219790539758225d5514",
+        "git_commit": "ae01dd9d7af47a3f7672967e4b17f5a5c949406b"
       },
       "git_commit": "caa7dffbdd735f99fb6c006dce3b6f70301cb0f6",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-random-thin-s01",

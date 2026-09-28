@@ -272,3 +272,18 @@ PDS的QC−随机差在181个K562-only靶上为负，在99个四背景支持靶�
 下一问题切换为未见靶点的GO先验：已有直接监督坐标保留shared，先验只支持需要外推的靶点；在冻结S3-H1全局靶点留出上，用同划分重新拟合的零Δ、无靶点信息的训练响应均值、真实GO和覆盖/度数/维数匹配随机GO作对照。所有来源响应必须排除全局留出靶点，不能拿现有S2控制分数冒充S3结果。新路线先保持draft，冻结GO版本/映射、匹配消融、表示拟合边界、完整配置和数值门槛后启动，不宣称未执行的方法有效。
 
 验证：11项行为测试通过；正式execute/bind门禁、完整两次拟合/生成和四次官方评分完成；逐组合匹配、输入NTC及测量掩码核验通过。结果与模型已上传W&B。无原始细胞数据上传，本轮没有新增临时脚本。
+
+
+## C-SHARED-QC-OFFICIAL：VCC已完成，官方每日额度阻塞
+
+2026-09-28 按用户要求，使用原 `masked-response-qc-s01` checkpoint 导出 shared＋低深度 QC，没有重新拟合。原训练、本地指标及已关闭 QC/随机比较保持原结论。候选接口/输出子目录 `linear` 只是历史命名，实际预测器为 masked-response 的 shared。
+
+VCC已生成并通过官方 `vcc prep`：360,000细胞、18,533基因、A/B/C各300扰动×400细胞，计数保留，无丢弃或重排基因。三个背景各使用完整18,400输入NTC；272已见和28未见靶点，7,617个训练未测得输出基因。未知靶点与未测得位置使用原模型零Δ。完整文件审计通过，9个context×target块（包含未知靶点）与原模型/生成器逐值回放一致；三项导出测试通过。
+
+官方CLI明确拒绝提交：团队今日提交额度已用完，00:00 UTC重置，Nothing was uploaded。**尚未上传、没有entry_id、没有官方分数**；不得将这次额度阻塞解释为方法阴性。`C-SHARED-QC-OFFICIAL`仍为draft，`E-SHARED-QC-OFFICIAL`仍为pending。原H1主/重叠Overall为0.212761175/0.209636919，仅为本地开发证据。
+
+VCC大小 3,330,877,440 字节，SHA-256 `97c68d18b5c5386e4447afcefc5b529400dde901c7d07a3609dcb87addf8c745`。文件、prep、全量审计、回放、拒绝日志及哈希存于 `outputs/masked-response-qc-s01/predictions/official-abc/linear/`；准备产物已上传原W&B的版本化Artifact `yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-prepared:v0`，不包含原始NTC。
+
+安排在2026-09-29 00:01 UTC（纽约2026-09-28 20:01 EDT）调用原入口 `./submit.sh --submit`。同一VCC恢复时校验全部来源、文件哈希与原导出身份，已完成生成/打包由封存文件恢复；如果已有entry则恢复该entry。重试使用用户systemd定时器 `vcc-shared-qc-official-retry.timer`，详细登记见同目录 `retry-schedule.json`，运行日志为 `official-retry.log`。后台入口等待published并保存完整回执、六分项raw/normalized、Overall和版本化提交Artifact。
+
+待published后，对比本地H1两个面板与既有官方shared（entry `vWd1Z4K9tJ2tjfns2gSj`）的raw、normalized、Overall、panel和anchors，再补REPORT并关闭账本；目前不能报告该模型官方成绩。官方A/B/C与本地H1的背景、目标面板、测量轴、参考群体与anchors不同，单次得分属于开发证据。

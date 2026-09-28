@@ -1184,9 +1184,57 @@
       ],
       "hypothesis": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
       "claim": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
-      "source_refs": [],
-      "next_action": "校验已提交官方阶段，导出完整VCC，沿用原run提交评分；published后报告raw/normalized/Overall及群体差异。",
-      "reopen_when": "只有published有效六分项与Overall并归档完整回执后关闭；失败按同一VCC/entry恢复。"
+      "source_refs": [
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/metrics.json",
+          "sha256": "78220ee60c40744f309ad1e68ee96acdb49d63c1a933b421f915307bd145068b"
+        },
+        {
+          "path": "experiments/masked-response/REPORT.md",
+          "sha256": "128a3ead93d822a5eb03f8d18b94628fc9b00dc0a424b117da34ab7429dc9062"
+        },
+        {
+          "path": "experiments/masked-response/configs/official-qc-s01.json",
+          "sha256": "3ed8bf208895f1df2b507cb1bdece5591d66cb9a05c07279167e3ad93a5692f2"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity.json",
+          "sha256": "465e22fb4d5876c2fb694cfd0ae3cf7fdc9dea4432703b14988640cc99f97112"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-file.json",
+          "sha256": "0c9621189292a45d038e9fd16a34acb6f46bf74abb7c0a5216842541602d5647"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-blocked.json",
+          "sha256": "766df7fe4b848787397b8a3a232380548b5177a58dc28622d59157252fd99b77"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/export-replay.json",
+          "sha256": "51a560081b8bf243f2132d4c74bbba26d1e398235eec30af6d33f1cadb1dff0d"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/prediction-audit.json",
+          "sha256": "552c20060d78e24336131449d6db9b08b121e6171ac29ac729c1617eee41757f"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/prep.json",
+          "sha256": "3c5aafd98c29d94aaccf54f947139d0fde3dc3f5dc322a1e92bc4b3637c1a006"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/prepared-artifact.json",
+          "sha256": "fa948c666dda6a8dc9f6cb4eebd11927d94bb3b9d83719e789cb99f54f995ebb"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/retry-schedule.json",
+          "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
+        }
+      ],
+      "next_action": "2026-09-29 00:01 UTC定时重试同一VCC，等待published；之后比较六项raw/normalized、Overall和群体差异并关闭证据。",
+      "reopen_when": "只有published有效六分项与Overall并归档完整回执后关闭；失败按同一VCC/entry恢复。",
+      "execution_status": "blocked_daily_submission_allowance",
+      "retry_at_utc": "2026-09-29T00:01:00Z",
+      "limitations": "只有导出/校验完成；官方每日额度阻塞，尚无entry或官方评分。"
     }
   },
   "queue": [
