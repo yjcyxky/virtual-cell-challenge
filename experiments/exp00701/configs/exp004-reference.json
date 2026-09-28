@@ -1,0 +1,286 @@
+{
+  "files": {
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/eval-config.yaml": {
+      "bytes": 1119,
+      "sha256": "62cbf3dad461db870c26084febd5653280f4ae420ac8be02cd8d729fa33a8ec3"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/real-metric-cache/de_wilcoxon_rank-c229c1fa7a9e325f.parquet": {
+      "bytes": 1639142,
+      "sha256": "b33637e6a8da3ed3bc8ffba93076af27b55b78e73b8524a46ca01e9a0fdbfd3c"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/real-metric-cache/de_wilcoxon_table-421f64448716e7a4.parquet": {
+      "bytes": 118020523,
+      "sha256": "a75d3ce93ae69fc5bbe90765c2edcfa796af60e6eddab5c55c3970eebd3143e1"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/real-metric-cache/manifest.json": {
+      "bytes": 4491,
+      "sha256": "096cabb07a89cde528d7095bd7afb78337210e08ba5fe1c203e65134fa35bc59"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/real-metric-cache/pseudobulk_moments_bulk_lognorm-03717c11b534931c.moments.npz": {
+      "bytes": 21485836,
+      "sha256": "495241e65784cd5b9f3522b4e901838f4ba7dbcf127cc2ae5e240259c29ddc89"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/real-metric-cache/replicate_anchor-3f4d054df5af83c0.json": {
+      "bytes": 11529,
+      "sha256": "7e3f149af4016a2561c907c4d6f97b2251b666a280c2661f48f5a5925933dee1"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/anchor_agg.parquet": {
+      "bytes": 3714,
+      "sha256": "46ea8eb8bd3260217ebe9f6f18d2fc0a46cf12b410fa8a24ad5c8721dc8eafcc"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/anchor_meta.json": {
+      "bytes": 2281,
+      "sha256": "88ecd10c9dd7b3edf6c93070e82beb335de782d817fd7fb16c565928e06e0d93"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/anchor_splits.parquet": {
+      "bytes": 2732,
+      "sha256": "d0ef6f59dbb6f2cd5b7fb12f223e1dfa992e00e6f2b428930da39155a5774006"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/baseline_agg.csv": {
+      "bytes": 1227,
+      "sha256": "d9a2a3fd7abd383b042e4f2bfe1045a5615e2c518b6709701bce6ebffd9b1829"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/baseline_meta.json": {
+      "bytes": 2175,
+      "sha256": "d38f605a2463fc112e457dfbb8cb55162ec0a48706eacd5c0b3a1cbcde192af4"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/config.yaml": {
+      "bytes": 1119,
+      "sha256": "62cbf3dad461db870c26084febd5653280f4ae420ac8be02cd8d729fa33a8ec3"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/manifest.json": {
+      "bytes": 2442,
+      "sha256": "28e0cbc9f8fd070d7922c2e088b2b9eaa15e3558ddb937619dc7a7102116bb86"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-counts.npy": {
+      "bytes": 1467623688,
+      "sha256": "a0dbb4a3bf6d8ecbd9b9d7693b3fec87c4d58215eb8dee4794cd683571e38c96"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-observations.parquet": {
+      "bytes": 562513,
+      "sha256": "b7e6ea7216a772706615dc8f0da910e1d894a76f1b2b1c63ec14b9fe39c0e63f"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference.json": {
+      "bytes": 282574,
+      "sha256": "c5d2a7d7b34e4ea96b14470ee5b8f8cfa1df3139d97d7eac59f41d415cdd8502"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/HepG2/context-features.npy": {
+      "bytes": 1026668,
+      "sha256": "4df58652cbb22b7f7154248f4c887b576053ad6cf83fdb58edad85dbeb9ec3a9"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/HepG2/statistics.npz": {
+      "bytes": 201755244,
+      "sha256": "fcfd9e93240d4c184226b05bf5b9d65ceaff50491fe8b38290c86597f9d224fe"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/Jurkat/context-features.npy": {
+      "bytes": 945668,
+      "sha256": "f22e5bbd6177189af2ff263e963c5cdb7ecaa7e9597c170259bb7061e7e5c83d"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/Jurkat/statistics.npz": {
+      "bytes": 317613844,
+      "sha256": "5fcc3644b4fe233486a4432f2cc048a255f9ce9a85c8e8d02b3143d3c8f737e9"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/K562/context-features.npy": {
+      "bytes": 878708,
+      "sha256": "7d34b8f00144367d447adade7e06e0537c6936debb5aacfdd7b721c2e3d98e71"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/K562/statistics.npz": {
+      "bytes": 1517695488,
+      "sha256": "60be0c8add78bd7dd742a3dd8cae6bc60cca2bc55ea2f2206d7216fe6ceed579"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/RPE1/context-features.npy": {
+      "bytes": 938000,
+      "sha256": "01091d7c5984729cec6d3d3f9b89192c3888aae459e4fe4b1a6c7bbd0e0e3bbf"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/RPE1/statistics.npz": {
+      "bytes": 279761416,
+      "sha256": "3692f5eb47dc9a54321649c9582f10202f3d7624cde22566175f36876d2838ec"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data/complete.json": {
+      "bytes": 759982,
+      "sha256": "d58121bfcbd43acf94a34f3c84d5e2f7e4ea15543784237ad4fc7e3c06a8271e"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/activation.npz": {
+      "bytes": 74613,
+      "sha256": "8f702704150d74b7f928dcc3e3431bcf7190d60662fbe89353d9b31af3985c19"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/complete.json": {
+      "bytes": 385,
+      "sha256": "b8e716d2901f15d33d3b922a92b3fd761dee9ad5e7074b8f2a3c900162e7dd3f"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/embedding.npy": {
+      "bytes": 1235328,
+      "sha256": "9843b0b334bea9fbcf0e3c7a79b725511943d94f232dbb31178c0864e461b991"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/functional.npz": {
+      "bytes": 1546747,
+      "sha256": "656564c28a76ba94b520af08c6935a6dcd4559c576d363c967716784fe92bf8d"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/pathways.npz": {
+      "bytes": 151876,
+      "sha256": "f0ee235c974046267a35664d98ffb5664313d7c5aeb2cd747efe7d56cc6a4d60"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/physical.npz": {
+      "bytes": 460537,
+      "sha256": "8c1c9e9ea82ed55fde4a6ace665171802ff31fc1c8d44a528b43bacf1884db7f"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/prior-summary.json": {
+      "bytes": 662,
+      "sha256": "9ed8954d55b1f838b10a42011b65f4d02a86d5f93d00f546f6c84d064afa1318"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors/repression.npz": {
+      "bytes": 22424,
+      "sha256": "11c8207962e4576da79c40ba8efa2c142c6f53379cc1f7c9fd9aeb2871968ab4"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/data/raw/networks/hgnc_complete_set.txt": {
+      "bytes": 16913731,
+      "sha256": "9e07bb49393c12aca8bc931a4349010404c24994a8a58745c14676b8c2b74492"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-continuous-s17/cache/response-features.json": {
+      "bytes": 636,
+      "sha256": "13309036efea5262cfc26b04a9ac21980cf5169c6af9e6ed124147f4ad654d7e"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-continuous-s17/checkpoints/HepG2+Jurkat+K562+RPE1/round-0128.ubj": {
+      "bytes": 487651,
+      "sha256": "0a41f455c8b404e135966e54a45448441334f371720d5460684fa21e9f7dd9ac"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-continuous-s17/config.yaml": {
+      "bytes": 39790,
+      "sha256": "42cf9ce43ec4d35151900bf1afa0906eb77ac5f2642dc9745c3846724bb9c22d"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-continuous-s17/metrics.json": {
+      "bytes": 56347,
+      "sha256": "2f347c63203bc6ca356f715b0acd4b0867f40d5ae5d1b6374d683e9bd624da8b"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/cache/response-evidence/HepG2.npz": {
+      "bytes": 24790406,
+      "sha256": "56b94b8d207abb8374041cbc7ecc6a1e40ce1e0d0912125f0e6139940404a9c3"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/cache/response-evidence/Jurkat.npz": {
+      "bytes": 36027141,
+      "sha256": "f9da51075dcd1baddf853ba60d2464e4a6713d8defc522ae5a2f6d7941ee5aec"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/cache/response-evidence/K562.npz": {
+      "bytes": 112194266,
+      "sha256": "e7438dcc47706b77db0a39e64ac0b6b8d5edff3459404bf227f5e3b7d5dd9ff0"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/cache/response-evidence/RPE1.npz": {
+      "bytes": 35447013,
+      "sha256": "e6e19d33fac3f860e644fbae22690bf1fa25f881209d9a8fc1e2e050a300412f"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/cache/response-features.json": {
+      "bytes": 629,
+      "sha256": "98f86850f281de526a8ec3f01f9effe86600c6e91ce1e91b5583ad721cf314e7"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/checkpoints/HepG2+Jurkat+K562+RPE1/round-0128.ubj": {
+      "bytes": 500920,
+      "sha256": "72bb6491718455b161a4ddc3128bc4632c49f4d96a728d6d221fa84dd85809ae"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/config.yaml": {
+      "bytes": 39769,
+      "sha256": "833d5de04428a2c84c4ec01d203f21d77f7c1c777774d24231e0b2b925ce20bf"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/metrics.json": {
+      "bytes": 56289,
+      "sha256": "9c4d8d1aaeb0f34c4bd866d1ae7ca5bf1c9255742651ffbdda48f940200471ad"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/cache/module-basis.npy": {
+      "bytes": 1235328,
+      "sha256": "d6cf01ff3ece9cb4be51a10e0306ef44ece02b734e74c0a455c3204589babc08"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/cache/response-evidence/HepG2.npz": {
+      "bytes": 24790406,
+      "sha256": "56b94b8d207abb8374041cbc7ecc6a1e40ce1e0d0912125f0e6139940404a9c3"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/cache/response-evidence/Jurkat.npz": {
+      "bytes": 36027141,
+      "sha256": "f9da51075dcd1baddf853ba60d2464e4a6713d8defc522ae5a2f6d7941ee5aec"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/cache/response-evidence/K562.npz": {
+      "bytes": 112194266,
+      "sha256": "e7438dcc47706b77db0a39e64ac0b6b8d5edff3459404bf227f5e3b7d5dd9ff0"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/cache/response-evidence/RPE1.npz": {
+      "bytes": 35447013,
+      "sha256": "e6e19d33fac3f860e644fbae22690bf1fa25f881209d9a8fc1e2e050a300412f"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/cache/response-features.json": {
+      "bytes": 696,
+      "sha256": "ab6037609360d666b5c51863683789fb8e8add21a34b8268babebb68e2217d5f"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/checkpoints/HepG2+Jurkat+K562+RPE1/round-0128.ubj": {
+      "bytes": 521666,
+      "sha256": "5da6bbe249928f019dd70ef1c368e6342cdba9488b4f773aa630aa5b844a6ea0"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/config.yaml": {
+      "bytes": 39842,
+      "sha256": "c35efb2189931fdbfcf4e1c1910f0a235ed713dc321f4ab236dd97e7bbe03df6"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/metrics.json": {
+      "bytes": 56356,
+      "sha256": "1268321b81a50e8156e41a2e7c48bc6e10d00517d23f6ecba7d623848a62b4b5"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data/complete.json": {
+      "bytes": 16557,
+      "sha256": "b70b580e059ed6aec85b337f7e535293e23852e9178178200244717b859defe4"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data/genes.json": {
+      "bytes": 211952,
+      "sha256": "d087be75ca17f6066b160b2f4d3fe52eaff8682d82cee294ec3b04b673d506d6"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data/panel-0/cells.parquet": {
+      "bytes": 2525101,
+      "sha256": "79e14b37e0a233b51dd476c5f36c3ee32ea01cd4effdae4fca0362c22d3c39ac"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data/panel-0/counts.npy": {
+      "bytes": 892003838,
+      "sha256": "09afcc17f24246e283bbd3b47f03ca61de537a67306cdc9996f7eca603700745"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data/panel-0/genes.npy": {
+      "bytes": 144168,
+      "sha256": "bbc26ace6a395df73827179297870c4c597ae52b00885d81b889889fcd2ae12a"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data/panel-1/cells.parquet": {
+      "bytes": 658525,
+      "sha256": "f8e7de9ab693ac4badad6655e59bb7e4011511c5b773fa7fb1de896dfc5673b2"
+    },
+    "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data/panel-2/cells.parquet": {
+      "bytes": 1287148,
+      "sha256": "19fd4f51baf63fcf2debc50efdd30e1250cf053f8a20de1165043524a27dd23d"
+    }
+  },
+  "legacy_data": "/home/jy001/Downloads/virtual-cell-challenge/experiments/exp003-context-module-cvae/outputs/20260923-mcvae-true-s17/cache/data",
+  "legacy_reference": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004/experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official",
+  "legacy_run": "20260925-exp004-conditional-s17",
+  "model_data": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/data",
+  "model_priors": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/priors",
+  "models": {
+    "continuous": {
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-continuous-s17:v0",
+      "checkpoint": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-continuous-s17/checkpoints/HepG2+Jurkat+K562+RPE1/round-0128.ubj",
+      "round": 128,
+      "run": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-continuous-s17",
+      "training_git_commit": "322aeabf0e4841ec4887f4ed983774775cac664a"
+    },
+    "deg": {
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-deg-s17:v0",
+      "checkpoint": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17/checkpoints/HepG2+Jurkat+K562+RPE1/round-0128.ubj",
+      "round": 128,
+      "run": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-deg-s17",
+      "training_git_commit": "322aeabf0e4841ec4887f4ed983774775cac664a"
+    },
+    "modules": {
+      "artifact": "yjcyxky/virtual-cell-challenge/exp00701-20260927-exp00701-modules-s17:v0",
+      "checkpoint": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17/checkpoints/HepG2+Jurkat+K562+RPE1/round-0128.ubj",
+      "round": 128,
+      "run": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp00701/experiments/exp00701/outputs/20260927-exp00701-modules-s17",
+      "training_git_commit": "322aeabf0e4841ec4887f4ed983774775cac664a"
+    }
+  },
+  "prediction_seeds": [
+    101,
+    202,
+    303
+  ],
+  "rule_digest": "fb5aa56b74368a7bc5befc8ccca8ca02a2cf4c8c7ad59b156ab86c3ae0859762"
+}

@@ -1,0 +1,61 @@
+baseline_seed: 0
+cells_per_prediction: 400
+checkpoints:
+- 1
+- 16
+- 64
+- 128
+- 256
+- 384
+- 512
+collectri_sha256: 0c4afb99a5590313802beee251b071b332876bea393f03aba8fb822eee28d05c
+contexts:
+- K562
+- H1
+- RPE1
+- HepG2
+- Jurkat
+evaluation_protocol: cell-eval2-dispersed-exclude-target-v1
+experiment_id: exp00701
+graph_dimensions: 16
+lfc_epsilon: 1.0e-09
+minimum_target_cells: 50
+model:
+  base_score: 0.0
+  colsample_bytree: 1.0
+  device: cpu
+  eta: 0.05
+  eval_metric: rmse
+  lambda: 10.0
+  max_bin: 128
+  max_depth: 6
+  min_child_weight: 20
+  nthread: 6
+  objective: reg:squarederror
+  seed_per_iteration: true
+  subsample: 1.0
+  tree_method: hist
+network_minimum_score: 700
+ntc_augmentation_bags: 8
+ntc_bag_cells: 400
+official_de_backend: gpudge
+official_device: cuda
+prediction_seed: 101
+prediction_target: log2fc_cpm_mean
+reference_cells_per_target: 400
+replicate_seed: 0
+replicate_splits: 5
+seed: 17
+source_code_commit: 49e2faf2aef2dd9552968c080366d9717c682efb
+source_experiment: exp007
+source_run: 20260927-exp007-h1-log2fc-s17
+source_usage: Read-only exp007 data, priors, H1 reference/bundle, historical baseline;
+  no fitted XGBoost weights reused.
+threads: 6
+training_readouts_per_target: 512
+validation_context: H1
+source_reference: configs/source-reference.json
+module_dimensions: 16
+module_min_genes: 10
+module_max_genes: 300
+feature_mode: modules

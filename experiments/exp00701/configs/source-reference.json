@@ -1,0 +1,378 @@
+{
+  "source_run": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp007/experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17",
+  "files": {
+    "config.yaml": {
+      "sha256": "0c072ee016082c01c3373087801f8c565a4dcba605950423780c8377455c76b2",
+      "bytes": 38873
+    },
+    "metrics.json": {
+      "sha256": "375dbbfe8e6e7488b3c4eebeac5d63fa04fd7699b6193475400c1c99317d5b86",
+      "bytes": 56035
+    },
+    "cache/data/complete.json": {
+      "sha256": "d58121bfcbd43acf94a34f3c84d5e2f7e4ea15543784237ad4fc7e3c06a8271e",
+      "bytes": 759982
+    },
+    "cache/data/H1/cells.parquet": {
+      "sha256": "f25de283c55c6815b9e20088457485bfc20cd0ecca17bd762915cdfecd91535e",
+      "bytes": 7008857
+    },
+    "cache/data/H1/complete.json": {
+      "sha256": "b269bcda89146724a1951fb99d3d1d60bf0b26187c76f3dc6fffbcb75f1f6c60",
+      "bytes": 241523
+    },
+    "cache/data/H1/context-features.npy": {
+      "sha256": "e1243a35de0ce38e02eb54c10ab99cbbb7e351da59f33746d553b2f44d7d2612",
+      "bytes": 1944992
+    },
+    "cache/data/H1/counts.npy": {
+      "sha256": "b748e6c340c6a608a6ed381f38e3aab7a24407001373bc8bea92097b1820528c",
+      "bytes": 14905761968
+    },
+    "cache/data/H1/evaluation-rows.npy": {
+      "sha256": "0d31a82527b37392cec7c2069c53d3743d79b9b644b61363e9a0c8d46ce4af68",
+      "bytes": 1197240
+    },
+    "cache/data/H1/excluded-cells.parquet": {
+      "sha256": "dbfc5d099fd72c73576593440327c8eca5b9b5cdc46c8ff1381baa9d61fb6bd1",
+      "bytes": 21450
+    },
+    "cache/data/H1/gene-mapping-0.parquet": {
+      "sha256": "602e23a11eac7ef2bd16d86fd6ec4ff43caf7cebab7fbc180453bd9e7953ba09",
+      "bytes": 546389
+    },
+    "cache/data/H1/gene-mapping-1.parquet": {
+      "sha256": "04859c37d4029d9edc9dc6e91fdcd36d84f108854363c98604a944ab880a35a7",
+      "bytes": 549465
+    },
+    "cache/data/H1/gene-mapping-2.parquet": {
+      "sha256": "04859c37d4029d9edc9dc6e91fdcd36d84f108854363c98604a944ab880a35a7",
+      "bytes": 549465
+    },
+    "cache/data/H1/statistics.npz": {
+      "sha256": "c16bd024c6ab326017cb43122ffaa72f68ad4035253ea0c47bef5fa93887ba03",
+      "bytes": 107936572
+    },
+    "cache/data/HepG2/cells.parquet": {
+      "sha256": "cd4467d72d9f82613ad46179243600b0a87dfceb762f3640d29146ed567882ba",
+      "bytes": 2173988
+    },
+    "cache/data/HepG2/complete.json": {
+      "sha256": "5aca8257301d379334df4f4055d168ddc837d8def7ba4badc4f6b84d481a5caa",
+      "bytes": 127264
+    },
+    "cache/data/HepG2/context-features.npy": {
+      "sha256": "4df58652cbb22b7f7154248f4c887b576053ad6cf83fdb58edad85dbeb9ec3a9",
+      "bytes": 1026668
+    },
+    "cache/data/HepG2/counts.npy": {
+      "sha256": "ba7404576f131e50d2aa4503738845b69054a822044d2a864ccf6a31f4d0c5cc",
+      "bytes": 1980652028
+    },
+    "cache/data/HepG2/evaluation-rows.npy": {
+      "sha256": "629866627f9add06da2fba820bb4eed946bfbe8f52b235220ece9a530a7fb640",
+      "bytes": 818400
+    },
+    "cache/data/HepG2/excluded-cells.parquet": {
+      "sha256": "99b73267527752d7705191ea1ee8c7ce56328e557280d5ee3fd9537ae4c06315",
+      "bytes": 953028
+    },
+    "cache/data/HepG2/gene-mapping-0.parquet": {
+      "sha256": "573c59ec0c92aacfcf02bc01830f28fd51d181a1ae44b829da663fea3ac91115",
+      "bytes": 290977
+    },
+    "cache/data/HepG2/statistics.npz": {
+      "sha256": "fcfd9e93240d4c184226b05bf5b9d65ceaff50491fe8b38290c86597f9d224fe",
+      "bytes": 201755244
+    },
+    "cache/data/Jurkat/cells.parquet": {
+      "sha256": "10c7ff54e41504439d90b6b5b3567f236d56a13cef8cfddbc7fdf50d463014b3",
+      "bytes": 4669175
+    },
+    "cache/data/Jurkat/complete.json": {
+      "sha256": "cb164ebcfb7fa84c950e6239c50fb58a3ce2ee343b6467111f9182812e8ebe62",
+      "bytes": 117351
+    },
+    "cache/data/Jurkat/context-features.npy": {
+      "sha256": "f22e5bbd6177189af2ff263e963c5cdb7ecaa7e9597c170259bb7061e7e5c83d",
+      "bytes": 945668
+    },
+    "cache/data/Jurkat/counts.npy": {
+      "sha256": "3637ebe95b76477e5a29fbe5d46cc8da0ad17ea482ee34edc0704865d165b307",
+      "bytes": 4289617438
+    },
+    "cache/data/Jurkat/evaluation-rows.npy": {
+      "sha256": "c4b770f5da482b8c2cbc4a3d92f6c47596f2c5879fa6bafc3f1f072a9d46a552",
+      "bytes": 1845432
+    },
+    "cache/data/Jurkat/excluded-cells.parquet": {
+      "sha256": "0f564cac430e24e6969440cfeaba465d246623feec6be1225ae9091bd9aa6e4d",
+      "bytes": 414304
+    },
+    "cache/data/Jurkat/gene-mapping-0.parquet": {
+      "sha256": "8a217c79d6452542bf51c0044abb09b1a9d9aed0654a05b3b054dd7adcf2d83b",
+      "bytes": 268918
+    },
+    "cache/data/Jurkat/statistics.npz": {
+      "sha256": "5fcc3644b4fe233486a4432f2cc048a255f9ce9a85c8e8d02b3143d3c8f737e9",
+      "bytes": 317613844
+    },
+    "cache/data/K562/cells.parquet": {
+      "sha256": "ee00babe636649d34dcd3280dd12114a69123606473fe8edcbe4b2910bc403e4",
+      "bytes": 37892742
+    },
+    "cache/data/K562/complete.json": {
+      "sha256": "782c53c58a1741f9ca8bdaa2a28a3da3556b9b6c660867b2e6517b14386cf805",
+      "bytes": 108916
+    },
+    "cache/data/K562/context-features.npy": {
+      "sha256": "7d34b8f00144367d447adade7e06e0537c6936debb5aacfdd7b721c2e3d98e71",
+      "bytes": 878708
+    },
+    "cache/data/K562/counts.npy": {
+      "sha256": "9da3d573128910c61d95ef42b25ecb27f075dd096f795d9e31830b58dd4f0a90",
+      "bytes": 32062817298
+    },
+    "cache/data/K562/evaluation-rows.npy": {
+      "sha256": "a6434d04e4bc8a6a2549b23e26003c1881c7aa1cd3a628df94e6a5728445abad",
+      "bytes": 15321912
+    },
+    "cache/data/K562/excluded-cells.parquet": {
+      "sha256": "74db987b088fb19d5e6a4b1c181028266694923877e452448fec575bccb709a9",
+      "bytes": 464864
+    },
+    "cache/data/K562/gene-mapping-0.parquet": {
+      "sha256": "bd197d91d5e6583e53720fa2eb6ed932d2f2fc354d6b9bfeb41481aa7793717c",
+      "bytes": 248680
+    },
+    "cache/data/K562/statistics.npz": {
+      "sha256": "60be0c8add78bd7dd742a3dd8cae6bc60cca2bc55ea2f2206d7216fe6ceed579",
+      "bytes": 1517695488
+    },
+    "cache/data/RPE1/cells.parquet": {
+      "sha256": "4ef6e8509004cf64164ddaadf7606c1bc989f38502c46fb8d892ff2e7f970f40",
+      "bytes": 4290279
+    },
+    "cache/data/RPE1/complete.json": {
+      "sha256": "b893db4b97b480c3feeb28374e169f4ac1ba9e1623aed80e145b0bde3c936428",
+      "bytes": 116082
+    },
+    "cache/data/RPE1/context-features.npy": {
+      "sha256": "01091d7c5984729cec6d3d3f9b89192c3888aae459e4fe4b1a6c7bbd0e0e3bbf",
+      "bytes": 938000
+    },
+    "cache/data/RPE1/counts.npy": {
+      "sha256": "82a6d2cb62b074c8b5a0e205e71acf2beff37523dffba7c639b455f37b3269b0",
+      "bytes": 3898751400
+    },
+    "cache/data/RPE1/evaluation-rows.npy": {
+      "sha256": "499e08da2e99ac5ee0fed3539cb5b1d6680b05fcc511845c270d56f37710ab1c",
+      "bytes": 1650360
+    },
+    "cache/data/RPE1/excluded-cells.parquet": {
+      "sha256": "b4d532fa9803b782bc38531e0c5d7b323b5ed19f1e30b630886dbdaebfc0d5b1",
+      "bytes": 537322
+    },
+    "cache/data/RPE1/gene-mapping-0.parquet": {
+      "sha256": "4d4a389f1ff7585e991c2b2ca8a9b0a5c7544281b24bad8291bed1c2ceb29a15",
+      "bytes": 264950
+    },
+    "cache/data/RPE1/statistics.npz": {
+      "sha256": "3692f5eb47dc9a54321649c9582f10202f3d7624cde22566175f36876d2838ec",
+      "bytes": 279761416
+    },
+    "cache/priors/activation.npz": {
+      "sha256": "8f702704150d74b7f928dcc3e3431bcf7190d60662fbe89353d9b31af3985c19",
+      "bytes": 74613
+    },
+    "cache/priors/complete.json": {
+      "sha256": "b8e716d2901f15d33d3b922a92b3fd761dee9ad5e7074b8f2a3c900162e7dd3f",
+      "bytes": 385
+    },
+    "cache/priors/embedding.npy": {
+      "sha256": "9843b0b334bea9fbcf0e3c7a79b725511943d94f232dbb31178c0864e461b991",
+      "bytes": 1235328
+    },
+    "cache/priors/functional.npz": {
+      "sha256": "656564c28a76ba94b520af08c6935a6dcd4559c576d363c967716784fe92bf8d",
+      "bytes": 1546747
+    },
+    "cache/priors/pathways.npz": {
+      "sha256": "f0ee235c974046267a35664d98ffb5664313d7c5aeb2cd747efe7d56cc6a4d60",
+      "bytes": 151876
+    },
+    "cache/priors/physical.npz": {
+      "sha256": "8c1c9e9ea82ed55fde4a6ace665171802ff31fc1c8d44a528b43bacf1884db7f",
+      "bytes": 460537
+    },
+    "cache/priors/prior-summary.json": {
+      "sha256": "9ed8954d55b1f838b10a42011b65f4d02a86d5f93d00f546f6c84d064afa1318",
+      "bytes": 662
+    },
+    "cache/priors/repression.npz": {
+      "sha256": "11c8207962e4576da79c40ba8efa2c142c6f53379cc1f7c9fd9aeb2871968ab4",
+      "bytes": 22424
+    },
+    "cache/official/H1/baseline-protocol.json": {
+      "sha256": "6d87d9434d925040f7af950a8bee2b2986130620c6d397f9fcc24a9dcbf568f7",
+      "bytes": 138
+    },
+    "cache/official/H1/bundle/anchor_agg.parquet": {
+      "sha256": "bb280b8ce3be354ae56e3077e0c4779ee7a25479c5c54323c1ce41049b1f8090",
+      "bytes": 3711
+    },
+    "cache/official/H1/bundle/anchor_meta.json": {
+      "sha256": "9b4380bf8a24c6fa3abccf2e52e699b4f45fc85f523ab5c0f9f2adda7dbc5eaf",
+      "bytes": 2280
+    },
+    "cache/official/H1/bundle/anchor_splits.parquet": {
+      "sha256": "87b07563342f39d4dae68fb9e135bf3b7567ceababbff3bbfce3302c13238c18",
+      "bytes": 2708
+    },
+    "cache/official/H1/bundle/baseline_agg.csv": {
+      "sha256": "42db7b485275ee6134dfd26d2513fbec1be8e616946fff0444119483c49b510a",
+      "bytes": 1264
+    },
+    "cache/official/H1/bundle/baseline_meta.json": {
+      "sha256": "e96de088abfa4d672199a6fdbe5067ab1a4c61710fe05a2cdea845f496cb58c3",
+      "bytes": 2176
+    },
+    "cache/official/H1/bundle/config.yaml": {
+      "sha256": "c0c46549a080066df2b2254273905093b07adb0362bad914d1c0243409d46f27",
+      "bytes": 1085
+    },
+    "cache/official/H1/bundle/manifest.json": {
+      "sha256": "891b2523e04bcfc66a736ab11f3b1de64191ce807b23abe1164c8b7fb9496d71",
+      "bytes": 2443
+    },
+    "cache/official/H1/real-cache/de_wilcoxon_rank-c10d58972fe7bb88.parquet": {
+      "sha256": "b6ef156bf992165d9831dee1a5f329d20e6a695d8ddc31e50d3f1f1e0b0d0648",
+      "bytes": 2988607
+    },
+    "cache/official/H1/real-cache/de_wilcoxon_table-fe3ec454e8de1709.parquet": {
+      "sha256": "d2ac53601b1dee2392044857839b32cc83c90fa26f7a2ab9c0a7abe43bfe1300",
+      "bytes": 136747773
+    },
+    "cache/official/H1/real-cache/manifest.json": {
+      "sha256": "41080e90b11629365026083063c2a7627bf0489b713a51970e46105f69542397",
+      "bytes": 4490
+    },
+    "cache/official/H1/real-cache/pseudobulk_moments_bulk_lognorm-4f327341c21147c4.moments.npz": {
+      "sha256": "4877bec135525325e7806b6d3479a08fbc648c3188fa0503ab0c636701fafb75",
+      "bytes": 21489412
+    },
+    "cache/official/H1/real-cache/replicate_anchor-1e2679f443ff4714.json": {
+      "sha256": "ace9c8865c010e83ea23817410ceef01f7636df7092f2a459fb4801279af678f",
+      "bytes": 11538
+    },
+    "cache/official/H1/reference/data.bin": {
+      "sha256": "e3a038406347bb84a5d3a689fee17a02849870c5f8aad0f63e4b6a353db459fe",
+      "bytes": 2607517028
+    },
+    "cache/official/H1/reference/indices.bin": {
+      "sha256": "f3aadfeb5255b5434a76ad16fb2aae95c52a0ecc808439411380b45a1d3f5bcc",
+      "bytes": 10430068112
+    },
+    "cache/official/H1/reference/indptr.npy": {
+      "sha256": "ee247f9638e32709a57761b3a772df4891f30fd09b07c2c8efafd403708ce0d7",
+      "bytes": 1197248
+    },
+    "cache/official/H1/reference/matrix.json": {
+      "sha256": "01d406da8c5946bbdad58cf8516dce65c2acd28d5a5a8c220ca92594062f1792",
+      "bytes": 380
+    },
+    "cache/official/H1/reference.json": {
+      "sha256": "9c45cf55e0888f9a2d31c7b7fdcbfe246d0cc9a400658532d6fc5eccb363c654",
+      "bytes": 659
+    }
+  },
+  "de_sources": {
+    "K562": {
+      "path": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp006/experiments/exp006/outputs/20260927-exp006-dispersed-s17/cache/official/K562/real-cache/de_wilcoxon_table-163d7987f0516fa7.parquet",
+      "sha256": "ab01bdd030636bdb384e1a9f5ad50070e4316548e5f1bd969cb4d92e9c76884c",
+      "params": {
+        "allow_discrete": false,
+        "allow_fractional_counts": false,
+        "autodetect_input_type": false,
+        "backend": "gpudge",
+        "clip_value": null,
+        "control": "non-targeting",
+        "control_source": "real",
+        "epsilon": 1e-09,
+        "fdr_scope": "per_pert",
+        "filter_gene_min_cpm_cell": 5.0,
+        "input_type": "counts",
+        "max_counts_per_cell": 1000000.0,
+        "mean_calc": "arithmetic",
+        "method": "wilcoxon",
+        "pert_col": "target",
+        "target_sum": 1000000.0,
+        "validate_input": true,
+        "version": "v2"
+      },
+      "data_checks": {
+        "complete.json": "782c53c58a1741f9ca8bdaa2a28a3da3556b9b6c660867b2e6517b14386cf805",
+        "evaluation-rows.npy": "a6434d04e4bc8a6a2549b23e26003c1881c7aa1cd3a628df94e6a5728445abad",
+        "cells.parquet": "ee00babe636649d34dcd3280dd12114a69123606473fe8edcbe4b2910bc403e4"
+      }
+    },
+    "HepG2": {
+      "path": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp005/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/HepG2/real-cache/de_wilcoxon_table-5c04d6c6ccde5717.parquet",
+      "sha256": "b7dcd574bd3eb725798fbc37d9b625f87bf154f835e46873b43b3d7b0abc811a",
+      "params": {
+        "allow_discrete": false,
+        "allow_fractional_counts": false,
+        "autodetect_input_type": false,
+        "backend": "gpudge",
+        "clip_value": null,
+        "control": "non-targeting",
+        "control_source": "real",
+        "epsilon": 1e-09,
+        "fdr_scope": "per_pert",
+        "filter_gene_min_cpm_cell": 5.0,
+        "input_type": "counts",
+        "max_counts_per_cell": 1000000.0,
+        "mean_calc": "arithmetic",
+        "method": "wilcoxon",
+        "pert_col": "target",
+        "target_sum": 1000000.0,
+        "validate_input": true,
+        "version": "v2"
+      },
+      "data_checks": {
+        "complete.json": "5aca8257301d379334df4f4055d168ddc837d8def7ba4badc4f6b84d481a5caa",
+        "evaluation-rows.npy": "629866627f9add06da2fba820bb4eed946bfbe8f52b235220ece9a530a7fb640",
+        "cells.parquet": "cd4467d72d9f82613ad46179243600b0a87dfceb762f3640d29146ed567882ba"
+      }
+    },
+    "Jurkat": {
+      "path": "/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp005/experiments/exp005/outputs/20260926-exp005-nested-residual-s17/cache/official/Jurkat/real-cache/de_wilcoxon_table-a9e8fb0247922634.parquet",
+      "sha256": "f9c53703f52e6d6145e33b46b1f9449ddc8375f9a565bf512e0ba8039ad729c6",
+      "params": {
+        "allow_discrete": false,
+        "allow_fractional_counts": false,
+        "autodetect_input_type": false,
+        "backend": "gpudge",
+        "clip_value": null,
+        "control": "non-targeting",
+        "control_source": "real",
+        "epsilon": 1e-09,
+        "fdr_scope": "per_pert",
+        "filter_gene_min_cpm_cell": 5.0,
+        "input_type": "counts",
+        "max_counts_per_cell": 1000000.0,
+        "mean_calc": "arithmetic",
+        "method": "wilcoxon",
+        "pert_col": "target",
+        "target_sum": 1000000.0,
+        "validate_input": true,
+        "version": "v2"
+      },
+      "data_checks": {
+        "complete.json": "cb164ebcfb7fa84c950e6239c50fb58a3ce2ee343b6467111f9182812e8ebe62",
+        "evaluation-rows.npy": "c4b770f5da482b8c2cbc4a3d92f6c47596f2c5879fa6bafc3f1f072a9d46a552",
+        "cells.parquet": "10c7ff54e41504439d90b6b5b3567f236d56a13cef8cfddbc7fdf50d463014b3"
+      }
+    }
+  }
+}

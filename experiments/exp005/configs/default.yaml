@@ -1,0 +1,34 @@
+experiment_id: exp005
+collectri_sha256: 0c4afb99a5590313802beee251b071b332876bea393f03aba8fb822eee28d05c
+seed: 17
+contexts: [H1, K562, RPE1, HepG2, Jurkat]
+checkpoints: [1, 16, 64, 128, 256, 384, 512]
+cells_per_prediction: 400
+reference_cells_per_target: 400
+minimum_target_cells: 50
+ntc_augmentation_bags: 8
+ntc_bag_cells: 400
+training_readouts_per_target: 512
+graph_dimensions: 16
+network_minimum_score: 700
+threads: 6
+official_device: cuda
+official_de_backend: gpudge
+prediction_seed: 101
+replicate_splits: 5
+replicate_seed: 0
+model:
+  objective: reg:squarederror
+  eval_metric: rmse
+  tree_method: hist
+  device: cpu
+  nthread: 6
+  max_depth: 6
+  eta: 0.05
+  min_child_weight: 20
+  subsample: 1.0
+  colsample_bytree: 1.0
+  lambda: 10.0
+  max_bin: 128
+  base_score: 0.0
+  seed_per_iteration: true

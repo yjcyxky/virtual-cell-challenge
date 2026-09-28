@@ -2,6 +2,7 @@
 # data/raw/ 是 237 GB 只读语料；models/ 是预训练权重，各自带 SOURCE.json 记着出处
 data/raw/
 models/
+models
 
 # 噪声
 data/logs/
