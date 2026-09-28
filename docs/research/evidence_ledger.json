@@ -648,15 +648,35 @@
     },
     "E-CONDITION-ABLATION": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-CONDITION-ABLATION",
-      "node_ids": [],
+      "node_ids": [
+        "init-linear-s01",
+        "init-linear-nocontext-s01"
+      ],
       "hypothesis": "匹配正则与权重后，移除NTC条件项能否改善H1迁移，解释当前linear劣于未正则shared的归因缺口",
-      "claim": "待检验：在匹配正则、权重和生成器后，仅移除NTC条件项是否改善H1迁移。",
-      "limitations": "尚无候选执行结果；不把E-BASE结果移作本方法有效证据。",
-      "source_refs": [],
-      "next_action": "落实init-linear-nocontext-s01的完整配置、来源哈希和条件开关，通过门禁后独立拟合并配对评分。",
-      "reopen_when": "关闭后按新背景或匹配反证重新登记比较。"
+      "claim": "在匹配alpha=1、细胞权重、截距、数据与生成器的H1单背景开发比较中，禁用NTC条件项使Overall从0.161135012变为0.168646252（差+0.007511240），25官方重叠靶差+0.004913237；未达到预注册0.02筛选判据。",
+      "limitations": "仅H1单背景、一次解析拟合与一个配对生成seed；无新官方提交、跨背景确认或SOTA证据。真实监督缺口保持不变；禁用的是当前整组NTC条件项，不能否定所有NTC表示。",
+      "source_refs": [
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+          "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-nocontext-s01/metrics.json",
+          "sha256": "963c2321e5c5d0f05c416fb1f8668fb808a00c30edf2e340d31889451b36b34f"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-nocontext-s01/cache/condition-analysis.json",
+          "sha256": "66e68936a94da4a51347e826e704599d24446a75dadfc8095ae913fd925cebe3"
+        },
+        {
+          "path": "experiments/init-linear/REPORT.md",
+          "sha256": "93dbf8be8d936abbe0c4a4417b05509aa242e8c5d5fce2e11dd090c1dc7597c4"
+        }
+      ],
+      "next_action": "按反对分支先执行C-RIDGE-STRENGTH：固定无条件响应头，仅将alpha从1降到0.1，区分正则强度与NTC条件项；继续以shared为强参照。随后推进C-PROGRAM的等维真实程序/PCA/随机模块表示探索，不把局部alpha优化当作SOTA终点。",
+      "reopen_when": "新背景的匹配对照出现反证、改变NTC表示/正则/响应空间，或新增官方评价证据时另建比较；原H1结论保留。"
     },
     "E-BASE-OFFICIAL": {
       "kind": "experiment",
@@ -918,23 +938,45 @@
       "limitations": "仅限2026-09-28核查的公开来源；不证明记录不存在。",
       "next_action": "固定本地reference开展baseline敏感性诊断；官方发布构建依据时重新核查。",
       "reopen_when": "官方发布r4构建manifest或版本化配方。"
+    },
+    "E-RIDGE-STRENGTH": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-RIDGE-STRENGTH",
+      "node_ids": [],
+      "hypothesis": "固定无NTC条件头与生成器，减弱L2正则能否恢复扰动特异性并缩小shared差距",
+      "claim": "待检验：降低正则强度能否改善迁移，不能由shared较好直接推断正则有害。",
+      "limitations": "尚无alpha=0.1执行；保留单H1/seed和参数耦合限制。",
+      "source_refs": [],
+      "next_action": "冻结并执行一个alpha=0.1候选，与当前alpha=1匹配比较；不做额外在线网格搜索。",
+      "reopen_when": "关闭后出现其他背景或正则结构反证时另建比较。"
     }
   },
   "queue": [
     {
-      "id": "Q-CONDITION-ABLATION",
+      "id": "Q-RIDGE-STRENGTH",
       "priority": 1,
-      "comparison_id": "C-CONDITION-ABLATION",
-      "question": "匹配正则和权重后，当前线性模型的损失能否归因于NTC条件项？",
-      "action": "按已关闭基线与评分审计结论推进init-linear-nocontext-s01：保留原dispersed/exclude=true协议，匹配alpha/权重/数据/生成器，仅移除NTC条件项。先冻结新run完整配置与代码、通过门禁后完整训练评估；不再因未知r4配方搁置模型归因。",
+      "comparison_id": "C-RIDGE-STRENGTH",
+      "question": "余下的shared差距是否部分来自正则收缩，而非缺少更大模型？",
+      "action": "按反对分支先执行C-RIDGE-STRENGTH：固定无条件响应头，仅将alpha从1降到0.1，区分正则强度与NTC条件项；继续以shared为强参照。随后推进C-PROGRAM的等维真实程序/PCA/随机模块表示探索，不把局部alpha优化当作SOTA终点。",
+      "requires_evidence": [
+        "E-CONDITION-ABLATION"
+      ]
+    },
+    {
+      "id": "Q-PROGRAM",
+      "priority": 2,
+      "comparison_id": "C-PROGRAM",
+      "question": "功能程序表示是否提供超出PCA、随机模块和共享响应的迁移信息？",
+      "action": "按文献卡片和训练边界落实真实程序/PCA/匹配随机三臂；冻结维数、覆盖、头、正则及比较范围。无论当前NTC消融阴阳性，都不能替代该表示实验。",
       "requires_evidence": [
         "E-BASE",
-        "E-ANCHOR-AUDIT"
+        "E-CONDITION-ABLATION"
       ]
     },
     {
       "id": "Q-QUALITY",
-      "priority": 2,
+      "priority": 3,
       "comparison_id": "C-QC",
       "question": "额外QC改变的是可靠性，还是数量、target覆盖与弱响应人群？",
       "action": "条件项归因后落实基础/QC/匹配随机三臂，保持评估群体及官方轴；单列181仅K562与99四背景支持靶的保留率，不能把响应强度/覆盖变化当作质量收益。",

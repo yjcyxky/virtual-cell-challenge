@@ -2190,7 +2190,7 @@
       "legacy": false,
       "method_id": "M-RIDGE-NO-CONTEXT",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-CONDITION-ABLATION",
       "controls": [
         "init-linear-s01"
@@ -2384,11 +2384,17 @@
           "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/init-linear/outputs/init-linear-nocontext-s01/metrics.json",
+        "sha256": "963c2321e5c5d0f05c416fb1f8668fb808a00c30edf2e340d31889451b36b34f"
+      },
+      "report_ref": {
+        "path": "experiments/init-linear/REPORT.md",
+        "sha256": "93dbf8be8d936abbe0c4a4417b05509aa242e8c5d5fce2e11dd090c1dc7597c4"
+      },
+      "git_commit": "8b4c7b70749d37b6fc31e03cfecb8ed87947a7ce",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-nocontext-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/init-linear-nocontext-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "dataset_ids": [
@@ -2408,7 +2414,65 @@
         "allocation": "一次独立run；沿用init-linear源码与环境，不创建另一套Experiment。",
         "unresolved": []
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online",
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-nocontext-s01-evidence:v0"
+    },
+    "init-linear-nocontext-a01-s01": {
+      "experiment_id": "init-linear",
+      "run_id": "init-linear-nocontext-a01-s01",
+      "directory": "experiments/init-linear",
+      "legacy": false,
+      "method_id": "M-RIDGE-WEAKREG",
+      "protocol_id": "PSEUDO-VCC-INIT",
+      "status": "draft",
+      "comparison_id": "C-RIDGE-STRENGTH",
+      "controls": [
+        "init-linear-nocontext-s01"
+      ],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [
+        "E-CONDITION-ABLATION"
+      ],
+      "evidence_conditions": {
+        "E-CONDITION-ABLATION": [
+          "not_supported"
+        ]
+      },
+      "config_ref": null,
+      "expected_config": null,
+      "code_refs": [],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 1,
+        "dataset_ids": [
+          "DS-H1",
+          "DS-K562",
+          "DS-RPE1",
+          "DS-HEPG2",
+          "DS-JURKAT"
+        ],
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "comparison": "alpha=0.1与已完成alpha=1匹配比较；禁用NTC条件项不变。",
+        "source_usage": "只复用原冻结预处理/NTC/reference/bundles并验证逐文件哈希；不复用任何权重，独立完整解析拟合。",
+        "allocation": "同init-linear路线，一个run一次独立拟合；draft不创建输出/W&B。",
+        "end_condition": "全量拟合、全轴预测、两个面板官方六指标有效，报告相对alpha=1及shared差距后关闭证据。",
+        "unresolved": [
+          "冻结完整配置、实际差异和代码/来源引用；入口登记run选择，通过校验并提交后启动"
+        ]
+      },
+      "blockers": [
+        "待冻结alpha=0.1完整配置与入口选择；未执行"
+      ]
     }
   },
   "comparisons": {
@@ -3053,6 +3117,35 @@
         "on_against": "如变化小仍保留原协议，转入条件项消融；不以此确认跨背景校准。"
       },
       "execution_stage": "anchor_audit"
+    },
+    "C-RIDGE-STRENGTH": {
+      "status": "draft",
+      "purpose": "screen",
+      "hypothesis": "固定无NTC条件头与生成器，减弱L2正则能否恢复扰动特异性并缩小shared差距",
+      "controls": [
+        "init-linear-nocontext-s01"
+      ],
+      "candidates": [
+        "init-linear-nocontext-a01-s01"
+      ],
+      "changed_axes": [
+        "L"
+      ],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "S2.Overall",
+        "direction": "maximize",
+        "min_effect": 0.02,
+        "scope": "S2-H1/context-seen/seed1，280靶及25官方重叠靶；开发证据。",
+        "on_support": "仅支持降低此实现的正则强度；仍对照shared绝对成绩，未超过强参照不替换当前最佳方法。随后检验有约束表示或在新背景确认。",
+        "on_against": "停止本轮alpha局部搜索，保留shared强参照，推进C-PROGRAM或响应空间比较，不通过增加容量掩盖问题。",
+        "on_inconclusive": "核对分项、有效数和生成波动；协议保持不变。",
+        "threshold_policy": "alpha=0.1相对已完成alpha=1主面板提升至少0.02，重叠面板不下降超过0.02；仅此一个预定候选，不在线搜索。"
+      },
+      "attribution_plan": "相同无条件target-ID+截距、细胞权重、训练数据、掩码、响应定义、生成和评分；唯一科学变化alpha=1到0.1。",
+      "cost": "low",
+      "priority_basis": "E-CONDITION-ABLATION反对分支：先归因剩余正则/参数耦合差距；服务强模型选择。",
+      "evidence_id": "E-RIDGE-STRENGTH"
     }
   },
   "continuation_rules": {

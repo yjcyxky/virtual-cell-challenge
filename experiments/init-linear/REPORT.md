@@ -287,3 +287,75 @@ PDS、Jaccard 的 raw 在两臂也都下降，表达误差 raw 上升；Expressi
 提交 `41f4374` 仅增加分块 CSR 存储转换：官方函数仍生成原 tile counts，每块最多 2,048 行，逐元素核对后再交给未修改的官方 scorer。真实主面板每个 tile 条件核验 2,225,867,322 个值；模型数据、评分人群、公式、baseline 因素、seed 和环境均不变。新目录重跑全部条件和 anchors；原条件两面板均在 1e-8 门限内复现，主面板实际差约 1e-16。小型回归测试先抓到两次整块转换，再验证转换上限、逐值相等、官方 bulk/jackknife 与 CUDA raw/aggregate 一致；加上门禁、错误 reference 与恢复身份测试，共 5 项通过。原生 dense 的全规模 tile 评分未完成，因此没有这一路径与 CSR 的全规模分数直接对照；工程等价依据是全量元素核对、小型官方 CUDA 对照与原条件复现。
 
 完整正式结果与 104 个结果文件已上传 `yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit:v0`，仍使用原 [W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01)。本地 [结果](outputs/init-linear-s01/cache/anchor-audit-csr/results.json)、[归因摘要](outputs/init-linear-s01/cache/anchor-audit-csr/analysis.json)、[执行身份](outputs/init-linear-s01/cache/anchor-audit-csr/identity.json)与分数表均可核查；原始细胞矩阵未作为公开 artifact 上传。
+
+## 匹配正则的 NTC 条件项消融：C-CONDITION-ABLATION
+
+独立 run `init-linear-nocontext-s01` 已完成全量解析训练与两个面板×四臂官方评分。训练代码提交 `8b4c7b70749d37b6fc31e03cfecb8ed87947a7ce`；沿用 init-linear 的环境、数据、alpha=1、细胞权重、截距正则、测量掩码和生成器，只禁用全部 NTC 条件项。预处理和同群体 bundles 从哈希清单复制，模型参数独立拟合。原模型、metrics、预测与历史证据保留。
+
+| H1 面板 | 原 conditional ridge | 无条件 ridge | 配对 Overall 差 | 未正则 shared | 固定 K562 source | zero |
+|---|---:|---:|---:|---:|---:|---:|
+| 280 靶 | 0.161135 | 0.168646 | 0.007511 | 0.210866 | 0.205146 | -0.064307 |
+| 官方重叠 25 靶 | 0.131714 | 0.136627 | 0.004913 | 0.204838 | 0.204838 | -0.079036 |
+
+预注册筛选判据（主面板提升≥0.02、重叠面板不下降超过0.02）：**未满足，记 not_supported**。它评价此实现中禁用条件项的效应，未正则 shared 仍是另一种参数估计方法。
+
+### 六指标及有效数
+
+下表 raw 保留官方聚合口径，normalized 由原冻结 cell-eval2 和各面板匹配 anchors 输出。表达误差 raw 是群体比值，有效数指其 capped-MSE 底层分量。
+
+| 面板 | 指标 | 原模型 raw | 新模型 raw / 有效靶数 | 原 normalized | 新 normalized |
+|---|---|---:|---:|---:|---:|
+| 280 | PDS ↑ | 0.671697 | 0.710394 / 280 | 0.358462 | 0.438690 |
+| 280 | 表达误差 ↓ | 1.726618 | 1.652757 / 280 | 0.000000 | 0.000000 |
+| 280 | LFC-NMAE ↓ | 0.974346 | 0.970319 / 247 | -0.056982 | -0.050200 |
+| 280 | Direction fidelity ↑ | 0.482698 | 0.467911 / 280 | 0.438445 | 0.417319 |
+| 280 | Direction reach ↑ | 0.096273 | 0.093209 / 279 | 0.006505 | 0.003088 |
+| 280 | DE Jaccard ↑ | 0.100712 | 0.093534 / 280 | 0.220379 | 0.202981 |
+| 25 | PDS ↑ | 0.663333 | 0.706667 / 25 | 0.316111 | 0.404487 |
+| 25 | 表达误差 ↓ | 1.935097 | 1.822173 / 25 | 0.000000 | 0.000000 |
+| 25 | LFC-NMAE ↓ | 0.982082 | 0.978666 / 25 | -0.138977 | -0.132841 |
+| 25 | Direction fidelity ↑ | 0.489942 | 0.465432 / 25 | 0.444589 | 0.411078 |
+| 25 | Direction reach ↑ | 0.034312 | 0.031317 / 25 | -0.049316 | -0.052580 |
+| 25 | DE Jaccard ↑ | 0.102640 | 0.092190 / 25 | 0.217874 | 0.189617 |
+
+zero/shared/source 两面板的 raw、normalized 与 Overall 均在 1e-8 内复现，逐靶 NaN 位置一致；checkpoint 的 shared 响应矩阵逐元素完全相同。复用未改变数据和评估条件。原官方 NaN/gate/下界截断保持不变，全部八组六项 normalized 均有限。
+
+### 配对效应与边界
+
+逐靶新模型−原模型。SD 为靶点间异质性，不是跨背景置信区间；表达项在这里使用 capped-MSE 底层分量。完整结果及 5%/95% 分位数见分析 JSON/CSV。
+
+| 面板 | raw 指标 | 配对数 | 均值差 | 中位数差 | SD | 新模型较好比例 |
+|---|---|---:|---:|---:|---:|---:|
+| 280 | PDS ↑ | 280 | +0.038697 | +0.017921 | 0.091417 | 68.9% |
+| 280 | capped MSE ↓ | 280 | -0.000245 | -0.000259 | 0.000175 | 92.1% |
+| 280 | LFC-NMAE ↓ | 247 | -0.004027 | -0.002651 | 0.021406 | 59.1% |
+| 280 | Direction fidelity ↑ | 280 | -0.014787 | -0.006033 | 0.028425 | 32.1% |
+| 280 | Direction reach ↑ | 279 | -0.003064 | +0.000000 | 0.076067 | 24.7% |
+| 280 | DE Jaccard ↑ | 280 | -0.007178 | -0.003203 | 0.010422 | 28.2% |
+| 25 | PDS ↑ | 25 | +0.043333 | +0.000000 | 0.118756 | 40.0% |
+| 25 | capped MSE ↓ | 25 | -0.000277 | -0.000272 | 0.000163 | 96.0% |
+| 25 | LFC-NMAE ↓ | 25 | -0.003417 | -0.005620 | 0.024759 | 64.0% |
+| 25 | Direction fidelity ↑ | 25 | -0.024510 | -0.008141 | 0.041677 | 28.0% |
+| 25 | Direction reach ↑ | 25 | -0.002995 | +0.000000 | 0.053938 | 16.0% |
+| 25 | DE Jaccard ↑ | 25 | -0.010450 | -0.009574 | 0.011809 | 32.0% |
+
+| 主面板训练来源支持 | 靶数 | PDS 均值差（新−原） | PDS 均值差（新−shared） | NMAE 均值差（新−原） |
+|---|---:|---:|---:|---:|
+| K562_only | 181 | +0.053744 | -0.176261 | -0.005451 |
+| four_contexts | 99 | +0.011187 | -0.011947 | -0.001825 |
+
+新模型训练 MSE=0.00136416，原模型 0.00125619；训练拟合改善与留出迁移改善不同。所有 NTC 条件系数严格为零，截距保留且 L2 范数为 1.726002。17,040 个训练背景×靶点任务来自四背景、两来源研究，H1 为唯一评估背景；独立生物重复数未知。官方基因轴18,533，H1可评分18,074，训练响应有监督10,916，H1评分轴中7,292基因缺少训练响应监督，限制没有因本轮消融而消失。
+
+一次确定性解析拟合、一个配对生成 seed；未估计生成随机性的跨 seed 波动。H1 与官方 A/B/C 已用于选择，均是开发证据。本轮没有新官方提交或跨背景确认，不能宣称 SOTA，亦不能把此结果推广为所有 NTC 表示的优劣。固定生成器使本比较能归因于条件项禁用；并不证明更高 Overall 等于所有生物响应分项均改善。
+
+PDS raw 平均提升 0.038697，其中仅 K562 支持靶提升 0.053744、四背景靶提升 0.011187；但主面板 fidelity、reach 和 Jaccard raw 均下降（−0.014787、−0.003064、−0.007178）。这不是生物响应分项的全面改善。新模型距 shared 仍差 0.042219 Overall；不将小涨分提升为采用证据，也不把本轮未测的正则/截距耦合直接写成已证实原因。
+
+### 决策与产物
+
+在匹配alpha=1、细胞权重、截距、数据与生成器的H1单背景开发比较中，禁用NTC条件项使Overall从0.161135012变为0.168646252（差+0.007511240），25官方重叠靶差+0.004913237；未达到预注册0.02筛选判据。 按反对分支先执行C-RIDGE-STRENGTH：固定无条件响应头，仅将alpha从1降到0.1，区分正则强度与NTC条件项；继续以shared为强参照。随后推进C-PROGRAM的等维真实程序/PCA/随机模块表示探索，不把局部alpha优化当作SOTA终点。
+
+完整训练/生成/评分本次执行 1115.9 秒，峰值主机 RSS 57.12 GiB。70 项研究管理行为测试、7 项模型/数据测试和正式八组官方评分通过。
+
+- [新 run 的 W&B](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-nocontext-s01)，模型 Artifact：`yjcyxky/virtual-cell-challenge/init-linear-nocontext-s01-result:v0`。
+- [完整 metrics](outputs/init-linear-nocontext-s01/metrics.json)、[分析与分层](outputs/init-linear-nocontext-s01/cache/condition-analysis.json)、[280 靶配对差](outputs/init-linear-nocontext-s01/cache/paired-all-nocontext-vs-original.csv)、[25 靶配对差](outputs/init-linear-nocontext-s01/cache/paired-official_overlap-nocontext-vs-original.csv)。
+- checkpoint、四份全轴预测、逐靶 raw 与官方评分文件保存在新 run 输出目录；没有上传原始数据。
