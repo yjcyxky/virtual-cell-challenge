@@ -284,3 +284,41 @@ H1/K562/RPE1/HepG2/Jurkat 的可靠可测 readout 分别为 18,005/7,669/8,250/9
 按 Issue #34 与用户本次指令，新目标保留条件 NB ELBO，以真正的双预测分支归一化 delta 为主目标，NB ELBO、NTC 生成锚和原始总计数均值/方差校准作为辅助；观测监督改为全任务独立细胞的实验因素加权统计。详细估计对象、噪声代理、有限 Monte Carlo 偏差和固定梯度校准规则见 PLAN。
 
 新 run 计划为 [20260925-lodo-response-s17](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260925-lodo-response-s17)，固定 LR=0.001，从头初始化，保留五折四训练/一验证、原官方验证/早停安排，不提交 leaderboard。用户已确认使用统一归一化表达差值，具体固定为共同可测基因轴上 `log1p(CP10K(weighted mean counts))` 的扰动减匹配 NTC。delta 系数为 1，三项辅助以初始梯度比例 0.1/0.25/0.05 校准后冻结。代码验证为 54 项通过，覆盖双分支梯度、独立细胞/实验因素权重、归一化与计数尺度区分、NB 总计数二阶矩、无留出响应泄漏以及 CPU/CUDA 完整恢复。新 run 按统一入口执行；运行状态和阶段进度持续记录在 Issue #33/#34 与 W&B，尚无新目标训练性能结论。启动或测试通过不等于五折完成。
+
+## 第 4 周期 checkpoint 的提交文件导出（2026-09-25）
+
+按用户要求完成同一 run 的独立预测阶段：holdout-H1 第 4 覆盖周期、44,946 步，本地 H1 三生成种子均分 -0.06763583483674279。固定 checkpoint `checkpoints/holdout-H1-cycle-0004.pt`，SHA256 `b6548345c029bc3ad6a089c2959a9d5d4eb089b729410c13ab3350162bcb372b`。未训练新模型，也未修改活动训练的源码、权重、输入或环境。导出代码 [49e00ea](https://github.com/yjcyxky/virtual-cell-challenge/commit/49e00ea) 当时在独立 `exp003-export-c4` 分支提交与执行；活动训练 checkout 保持 b16daa1。该分支于 2026-09-28 合入主线，历史导出版本与产物身份保持不变。
+
+预测按 PLAN 的部署口径，从官方 validation A/B/C 的 NTC 产生状态，固定 PCA 和原模型负二项生成器；生成 seed=101。全量 360,000×18,533 矩阵，900 组各 400 个细胞，2,347,119,397 个非零元素，逐细胞总计数 4,153–49,648。独立完整矩阵审计和官方 `vcc prep` 均通过；`counts-preserved`，无字段丢弃、基因重排、超限裁剪或重采样。相关测试 56 项通过；状态描述器重构与旧实现 100 个数组及 PCA 逐项相同。完整导出约 847 秒，主训练持续运行。
+
+产物位于原 run 的 `predictions/leaderboard-holdout-H1-cycle-0004-seed-101/`：
+
+- `predictions.vcc`：4,146,370,560 bytes，SHA256 `d4d7e3d73d9bb4761a8320b928a738e36aeace270b9e7be6f03b98a559d874d9`。
+- `predictions.h5ad`：5,432,917,256 bytes，SHA256 `3ca2e7eed47dd38647385afe03d6c8a2aab21c808167cb2bb09f01a470dbf3bb`。
+- `export-identity.json`、`gene-support.csv`、`emission-diagnostics.parquet`、`prediction-audit.json`、`prep.json`、`submission-file.json` 和 `complete.json` 记录来源与校验。固定 checkpoint 和摘要通过 Public API 附加到原 W&B run，避免另开 run 或附加第二个历史写入进程；版本化 Artifact 留到活动训练写入进程结束后统一归档。
+
+**导出完成时尚未上传**；用户随后授权提交，其官方结果见下节。该四背景模型有 7,632 个读出无训练监督、42/300 个官方靶点未在合格训练任务中出现，均保留原模型预测并列入支持台账；没有静默回退 NTC。文件格式合格不代表这些预测可靠。单个 checkpoint 的将来官方分数只提供一个跨数据集对照点；判断本地改善趋势是否迁移到官方需另一周期同口径对照。此导出完成不代表五折训练已完成或充分收敛。
+
+## 第 4 周期 checkpoint 的官方评分（2026-09-25）
+
+用户随后明确授权提交上述已校验文件。重新配置 CLI 登录后，提交同一 SHA256 文件，唯一 entry 为 `wDKL5Vvgw5wf2LuqfdUG`，模型名 `ContextModuleCVAE-c4-20260925-lodo-response-s17`。官方状态 `published`，评分和完整回执保存在原导出目录的 `official-summary.json` / `official-status.json`，比较保存为 `official-comparison.json`。未重新训练或更换 checkpoint、生成种子、预测文件。
+
+|评分项|SharedResponseShrink 历史官方|ContextRelationXGB 历史官方|本次 CVAE 官方|同 checkpoint 本地 H1 三种子均值|
+|---|---:|---:|---:|---:|
+|PDS|0.232316|0.007589|0.002145|0.026395|
+|表达 MSE|0.000000|0.000000|0.000000|0.000000|
+|LFC 幅度|0.029302|0.001819|-0.156851|-0.181342|
+|方向 fidelity|-1.439033|-1.722954|-0.024458|-0.195180|
+|方向 reach|0.052035|-0.022812|-0.033825|-0.068508|
+|DE Jaccard|-0.061650|-0.082562|-0.002412|0.012820|
+|六项均分|-0.197838|-0.303153|-0.035900|-0.067636|
+
+官方 partition `val`，panel `vcc2026-val-1`，anchor `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4`。与两次历史回执的 partition/panel/anchor 全部一致。历史排名只保留各次查询时快照，不当作同一时刻排名比较。
+
+本次总分相对 SharedResponseShrink 变化 +0.161938，相对 ContextRelationXGB 变化 +0.267253。这只是完整流程的结果比较：历史方法使用五个训练背景，本次 checkpoint 为 H1 留出、其余四背景训练；不能单独归因于架构或新 loss。
+
+总分提升主要来自方向 fidelity 的大幅改善，并非所有任务都改善：PDS、LFC 幅度和 reach 均低于两次历史官方结果；Jaccard 改善。原始表达误差也不能从归一化 MSE 均为 0 推断为相同：本次回执的 `expr_mse_unbiased_capped_norm` 为 11.966576，历史 XGB 为 2.093375。当前总分仍低于零分参考，不能称为已达到有效泛化。
+
+本地 H1 均分 -0.067635835（三生成种子 SD 0.001110707），生成种子 101 的本地分数 -0.066850369。它和官方 A/B/C 分数使用不同数据、背景均值基线和真实重复 anchor，数值不能直接互换。此次仅得到一个 checkpoint 的跨数据集对应点，仍不足以判断本地周期提升是否同步迁移到官方；该判断需要至少另一周期的同口径结果。官方 validation 的反馈若用于下一轮选择，须作为开发反馈记录。
+
+支持范围限制继续适用：7,632 个读出没有训练监督、42/300 个靶点未在合格训练任务出现。结果和提交身份通过 Public API 附加到原 [W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/20260925-lodo-response-s17)，不另启历史写入进程；版本化 Artifact 在主训练写入结束后统一归档。此次取得官方分数不代表五折训练已完成或充分收敛。
