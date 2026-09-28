@@ -598,6 +598,28 @@
           }
         },
         "comparison_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-official-comparison:v0"
+      },
+      "anchor_audit": {
+        "status": "registered",
+        "comparison_id": "C-ANCHOR-AUDIT",
+        "requires_evidence": [
+          "E-BASE-OFFICIAL"
+        ],
+        "config_ref": {
+          "path": "experiments/init-linear/configs/anchor-audit-s01.json",
+          "sha256": "0bf530b1ee8665cbcd327e5ba7864f4b45501eb632b83916daf0573f51439c0b"
+        },
+        "code_refs": [
+          {
+            "path": "experiments/init-linear/src/anchor_audit.py",
+            "sha256": "10758d15ab6da82334896b40f7be0addcf3f95470e20286bf92ba677320a3d30"
+          },
+          {
+            "path": "experiments/init-linear/anchor-audit.sh",
+            "sha256": "f11f75f391c044dd01b406256578ea783f2038d2f9c21c8d1ef48bd7ebf3b36f"
+          }
+        ],
+        "entrypoint": "experiments/init-linear/anchor-audit.sh"
       }
     },
     "init-absolute-s01": {
@@ -2758,7 +2780,9 @@
       "purpose": "protocol_audit",
       "hypothesis": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
       "controls": [],
-      "candidates": [],
+      "candidates": [
+        "init-linear-s01"
+      ],
       "changed_axes": [
         "V"
       ],
@@ -2770,14 +2794,29 @@
         "requires_evidence": [
           "E-BASE-OFFICIAL"
         ],
-        "scope": "评价协议诊断，不拟合模型，不将H1模拟差异等同A/B/C真实因果贡献。",
+        "scope": "同一已完成run的评分协议诊断，复用全部四臂raw结果；不拟合模型，不等同A/B/C真实因果贡献。",
         "unresolved": [
-          "官方回执未提供r4构建配置、逐背景anchors和有效数；公开来源能否核实仍未知。",
-          "诊断配置、候选协议绑定和阶段入口尚未登记完成；当前不能执行。"
+          "线上r4实际baseline构建及逐背景anchors仍未知；公开核查详见来源卡片。"
         ],
-        "completion": "给出官方构建信息的已验证/未知清单，以及固定真实群体下raw不变、scaled受哪些设置影响的可复核比较；任何新默认协议需来源证据和同步重评全部对照。"
+        "completion": "给出官方构建信息的已验证/未知清单，以及固定真实群体下raw不变、scaled受哪些设置影响的可复核比较；任何新默认协议需来源证据和同步重评全部对照。",
+        "config_ref": {
+          "path": "experiments/init-linear/configs/anchor-audit-s01.json",
+          "sha256": "0bf530b1ee8665cbcd327e5ba7864f4b45501eb632b83916daf0573f51439c0b"
+        },
+        "execution_status_policy": "沿用官方导出机制：已完成fit的追加评估由node.anchor_audit独立门禁；比较保持draft至评估完成，避免把fit完成误当作诊断完成。完整设计和来源先提交，阶段执行后ready并close。"
       },
-      "priority_basis": "两份真实官方回执均与H1绝对分数明显不接近；先解决分数解释和跨群体适用范围，再按单因素改模型。"
+      "priority_basis": "两份真实官方回执均与H1绝对分数明显不接近；先解决分数解释和跨群体适用范围，再按单因素改模型。",
+      "decision_rule": {
+        "success": "完成已冻结2×2及原条件复现；报告分项、Overall、四臂排序、效应和交互，保留有效数和anchors。",
+        "on_inconclusive": "官方指标无效或原条件不复现则停止结论，先排查实现/来源。",
+        "primary_metric": "max_abs_Overall_shift_from_original",
+        "direction": "higher",
+        "min_effect": 0.02,
+        "scope": "两面板四臂固定预测；>=0.02仅描述标尺敏感性，不是显著性或线上配方判据。",
+        "on_support": "若标尺明显敏感，报告敏感性并限制绝对分数外推；r4配方未知时保留原默认协议，转入条件项消融。",
+        "on_against": "如变化小仍保留原协议，转入条件项消融；不以此确认跨背景校准。"
+      },
+      "execution_stage": "anchor_audit"
     }
   },
   "continuation_rules": {

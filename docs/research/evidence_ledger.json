@@ -785,12 +785,33 @@
       "kind": "experiment",
       "state": "pending",
       "comparison_id": "C-ANCHOR-AUDIT",
-      "node_ids": [],
+      "node_ids": [
+        "init-linear-s01"
+      ],
       "claim": "固定模型预测与本地真实评价群体后，baseline构造与anchors能解释多少本地分数标尺变化；哪些线上r4构建条件仍未验证？",
       "limitations": "官方隐藏真实群体及逐背景r4锚点未公开，本地协议诊断不证明端到端复现线上。",
       "source_refs": [],
-      "next_action": "核查公开r4构建信息，并登记固定reference与预测的2×2baseline协议诊断；未取得线上构建证据时保持未知，不以本地/榜单距离调anchors。",
+      "next_action": "执行已冻结anchor-audit.sh，完成两面板四条件四臂诊断，报告全部结果并关闭证据。",
       "reopen_when": "具体诊断配置与来源冻结且可执行，或官方发布新构建证据。"
+    },
+    "P-R4-AUDIT": {
+      "kind": "protocol",
+      "state": "constraint",
+      "claim": "公开cell-eval2默认配置及r4名字不足以认证线上baseline构建配方；当前公开资料未找到r4构建manifest。",
+      "node_ids": [],
+      "source_refs": [
+        {
+          "path": "docs/research/r4_anchor_audit.md",
+          "sha256": "c41bd31ce58df29f76b1f12a7a9e209db21e7853b386f37f94a1394db54ac2d7"
+        }
+      ],
+      "source_urls": [
+        "https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/real_bundle.py",
+        "https://vcc-cli-wiki.virtualcellchallenge.org/"
+      ],
+      "limitations": "仅限2026-09-28核查的公开来源；不证明记录不存在。",
+      "next_action": "固定本地reference开展baseline敏感性诊断；官方发布构建依据时重新核查。",
+      "reopen_when": "官方发布r4构建manifest或版本化配方。"
     }
   },
   "queue": [

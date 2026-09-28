@@ -47,3 +47,13 @@
 入口 `./submit.sh --submit` 在环境调用和输出前检查已完成模型、登记与已提交哈希；共用原 `.venv` 且 uv --locked --no-sync。复用已有来源校验、CSR 写入与全文件审计；外部官方 CLI 0.2.1 负责 prep/submit/status，不改训练环境。串行提交，保存文件哈希和 entry_id，失败沿用同一 entry 恢复，避免重复提交。同一 W&B run 的 official/linear 与 official/shared 分开记录，产物存于原 run 的 predictions/official-abc/。
 
 完成条件为两臂官方 published 且六分项、Overall 有限，panel=vcc2026-val-1，保存实际 anchor_version、全部回执与版本化 Artifact。报告 H1 280 靶和官方重叠 25 靶与 A/B/C 的六项、Overall 和有符号差值；事前以绝对 Overall 差值<=0.02描述“接近”，同时报告排序，不作为统计等价检验。评价背景、靶点、实测基因轴和真实 anchors 同时变化，不能凭差距归因于实现错误，也不能凭接近证明协议等价；官方未提供 raw 时明确不可取得，不能反推冒充原始值。A/B/C 反馈只算开发证据。
+
+## 固定预测的 baseline 归因：C-ANCHOR-AUDIT
+
+沿用已完成 `init-linear-s01` 的评估身份，入口 `./anchor-audit.sh`；不重新训练。完整配置 `configs/anchor-audit-s01.json` 冻结两面板 reference、四臂预测与 raw aggregate/run_meta、原 bundles、源哈希和评分器。四条件为 `dispersed/tile × exclude_target_gene=true/false`，仅改变评分 baseline 的生成；这个排除开关不改变指标本身的 target exclusion。各条件 profile 使用该面板全部冻结扰动，不增加筛选。
+
+每面板首个条件从相同 reference 通过官方接口重建 baseline 与五次 replicate anchors，后续通过官方严格内容缓存复用该 reference 的 anchors、分别重算 baseline。以官方 `score_metrics(real_bundle=..., user_meta=...)` 对原四臂 raw 结果统一缩放。原条件必须以绝对误差 1e-8 复现历史分项与 Overall；reference fingerprint、anchor 语义、seed、rule digest 必须一致，全部输入产物执行前后哈希不变。两个面板×四条件×四臂均取得六项有效分数才完成，失败不作方法阴性结论。
+
+报告各条件 baseline raw、normalized 六项、Overall、有效数、linear−shared 差距，以及固定另一个因素的两项效应和二阶交互。实际官方分差不作为配方选择目标；[公开来源核查](../../docs/research/r4_anchor_audit.md)未找到 r4 构建记录，诊断仅证明本地标尺敏感性。敏感或不敏感均保留原默认协议，除非另有直接官方来源支持新配方；完成后转入已登记条件项消融。
+
+登记沿用官方导出的追加阶段机制：DAG 中 `node.anchor_audit` 冻结配置、源码和前置证据，并由入口检查提交版本；比较对象在阶段执行完成后置 ready 并关闭，避免管理器把已完成拟合误认为本次追加评分已完成。

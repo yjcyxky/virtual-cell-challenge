@@ -1,0 +1,619 @@
+{
+  "experiment_id": "init-linear",
+  "run_id": "init-linear-s01",
+  "comparison_id": "C-ANCHOR-AUDIT",
+  "mode": "fixed_prediction_protocol_diagnostic",
+  "arms": [
+    "zero",
+    "shared",
+    "source",
+    "linear"
+  ],
+  "panels": {
+    "all": {
+      "targets": [
+        "ACAT2",
+        "ACLY",
+        "ACTN1",
+        "ACVR1B",
+        "ADNP",
+        "AKT2",
+        "ANKZF1",
+        "ANXA6",
+        "APOE",
+        "ARID1A",
+        "ARID3A",
+        "ARPC2",
+        "ASF1A",
+        "ATF4",
+        "ATM",
+        "ATP6V0B",
+        "ATP6V0C",
+        "BECN1",
+        "BIRC2",
+        "BRD9",
+        "BRPF1",
+        "C1QBP",
+        "CALM3",
+        "CASP2",
+        "CASP3",
+        "CAST",
+        "CD276",
+        "CDC25B",
+        "CDCA2",
+        "CENPB",
+        "CENPO",
+        "CHMP3",
+        "CLDN6",
+        "CLDN7",
+        "COASY",
+        "COX4I1",
+        "COX6C",
+        "CREG1",
+        "CREM",
+        "CSK",
+        "CSNK1E",
+        "CTBP2",
+        "CTNNB1",
+        "CTSV",
+        "CYCS",
+        "CYFIP1",
+        "DAXX",
+        "DCK",
+        "DHCR24",
+        "DHX36",
+        "DHX9",
+        "DLG5",
+        "DNAJA3",
+        "DNMT1",
+        "DOT1L",
+        "DPF2",
+        "DPH2",
+        "EHMT1",
+        "EHMT2",
+        "EID2",
+        "EIF3H",
+        "EIF4B",
+        "ELAC2",
+        "EP300",
+        "EPB41L2",
+        "EPHB4",
+        "EPHX1",
+        "ETV4",
+        "EWSR1",
+        "FDPS",
+        "FGFR1",
+        "FIBP",
+        "FOXH1",
+        "FUBP1",
+        "GNG12",
+        "GRB10",
+        "GSK3B",
+        "GSTZ1",
+        "GULP1",
+        "HAT1",
+        "HAX1",
+        "HDAC3",
+        "HDAC8",
+        "HDGF",
+        "HIRA",
+        "HMGB2",
+        "HMGCR",
+        "HMGCS1",
+        "HMGN1",
+        "HMGXB4",
+        "HSBP1",
+        "HSP90B1",
+        "HTATSF1",
+        "IDE",
+        "IGF1R",
+        "IGF2R",
+        "IKBKG",
+        "INO80B",
+        "INSIG1",
+        "IRF3",
+        "ITGAV",
+        "JAZF1",
+        "JMJD1C",
+        "JMJD8",
+        "KAT2A",
+        "KDM1A",
+        "KDM2B",
+        "KIF1B",
+        "KIF20A",
+        "KLF10",
+        "KLHDC2",
+        "KRT18",
+        "LAP3",
+        "LBR",
+        "LRPPRC",
+        "LTBR",
+        "LZTR1",
+        "MAP1B",
+        "MAP3K7",
+        "MAPKAPK2",
+        "MAST2",
+        "MAT2A",
+        "MAU2",
+        "MAX",
+        "MBTPS1",
+        "MED1",
+        "MED12",
+        "MED13",
+        "MED13L",
+        "MED15",
+        "MED19",
+        "MED23",
+        "MED24",
+        "MED25",
+        "METTL14",
+        "METTL17",
+        "METTL3",
+        "MFSD10",
+        "MGST1",
+        "MKI67",
+        "MLLT1",
+        "MORN2",
+        "MPC2",
+        "MTA1",
+        "MTFR1",
+        "NCAPH2",
+        "NCK2",
+        "NCKAP1",
+        "NDUFB4",
+        "NDUFB6",
+        "NDUFB9",
+        "NDUFC2",
+        "NEK2",
+        "NELFE",
+        "NFATC3",
+        "NFE2L1",
+        "NFX1",
+        "NGRN",
+        "NISCH",
+        "NIT1",
+        "NRAS",
+        "NSDHL",
+        "NUDT9",
+        "OAZ1",
+        "OSTC",
+        "OXA1L",
+        "OXCT1",
+        "PACSIN3",
+        "PAGR1",
+        "PAXIP1",
+        "PBX1",
+        "PBX3",
+        "PCCB",
+        "PGAM1",
+        "PHF10",
+        "PHF12",
+        "PHF14",
+        "PIAS1",
+        "PLAGL2",
+        "PLCB3",
+        "PMS1",
+        "POLB",
+        "PPP2R3C",
+        "PRCP",
+        "PRDM14",
+        "PRR12",
+        "PSME1",
+        "PSMG1",
+        "PTPN1",
+        "RAF1",
+        "RBPJ",
+        "RFX5",
+        "RNF2",
+        "RNF20",
+        "RNF40",
+        "RRM1",
+        "RRM2",
+        "SAFB",
+        "SAFB2",
+        "SALL4",
+        "SBDS",
+        "SCCPDH",
+        "SDC1",
+        "SEC62",
+        "SET",
+        "SETDB1",
+        "SHPRH",
+        "SIN3B",
+        "SIX4",
+        "SLC25A3",
+        "SLC39A6",
+        "SLC5A6",
+        "SLIRP",
+        "SMAGP",
+        "SMARCA4",
+        "SMARCA5",
+        "SMARCB1",
+        "SMARCE1",
+        "SOX2",
+        "SOX4",
+        "SSBP1",
+        "STAG2",
+        "STAT1",
+        "STAT6",
+        "STRAP",
+        "STUB1",
+        "STX4",
+        "STXBP1",
+        "SUPT4H1",
+        "SUPV3L1",
+        "TADA1",
+        "TAF11",
+        "TAF13",
+        "TARBP2",
+        "TAZ",
+        "TCF3",
+        "TCF7L2",
+        "TET1",
+        "TFAM",
+        "THAP11",
+        "TMBIM6",
+        "TMSB10",
+        "TMSB4X",
+        "TNFRSF12A",
+        "TOR1A",
+        "TRAFD1",
+        "TRAM2",
+        "TRAPPC6A",
+        "TSC22D4",
+        "TSFM",
+        "TSKU",
+        "TUSC3",
+        "TWF2",
+        "TXNDC9",
+        "UBE3C",
+        "UGDH",
+        "UGP2",
+        "UQCRB",
+        "UQCRQ",
+        "USF2",
+        "USP22",
+        "VCL",
+        "WAC",
+        "WSB2",
+        "XRCC4",
+        "ZBTB39",
+        "ZFP62",
+        "ZNF107",
+        "ZNF286A",
+        "ZNF32",
+        "ZNF426",
+        "ZNF562",
+        "ZNF581",
+        "ZNF593",
+        "ZNF598",
+        "ZNF664",
+        "ZNF714",
+        "ZNF850",
+        "ZNF92",
+        "ZRSR2"
+      ],
+      "original_bundle": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all"
+    },
+    "official_overlap": {
+      "targets": [
+        "ACLY",
+        "ADNP",
+        "AKT2",
+        "ANKZF1",
+        "BRPF1",
+        "HDAC8",
+        "HSBP1",
+        "MED13",
+        "MED15",
+        "MED25",
+        "MTA1",
+        "NFE2L1",
+        "PLAGL2",
+        "RNF2",
+        "SHPRH",
+        "SIN3B",
+        "SLIRP",
+        "SMARCA5",
+        "STAT6",
+        "TARBP2",
+        "TRAPPC6A",
+        "TWF2",
+        "ZFP62",
+        "ZNF32",
+        "ZNF714"
+      ],
+      "original_bundle": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap"
+    }
+  },
+  "conditions": [
+    {
+      "id": "dispersed-exclude",
+      "emit": "dispersed",
+      "exclude_target_gene": true
+    },
+    {
+      "id": "tile-exclude",
+      "emit": "tile",
+      "exclude_target_gene": true
+    },
+    {
+      "id": "dispersed-include",
+      "emit": "dispersed",
+      "exclude_target_gene": false
+    },
+    {
+      "id": "tile-include",
+      "emit": "tile",
+      "exclude_target_gene": false
+    }
+  ],
+  "baseline_seed": 0,
+  "anchor_seed": 0,
+  "anchor_splits": 5,
+  "runtime": {
+    "device": "cuda",
+    "num_threads": 8,
+    "pert_chunk": 16
+  },
+  "replay_atol": 1e-08,
+  "reference_ref": {
+    "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-reference.h5ad",
+    "sha256": "974e5d33ab83747205e7445c04e83485d6557a5073913945c9bee42e9cc3d4c2"
+  },
+  "source_refs": [
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+      "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-reference.h5ad",
+      "sha256": "974e5d33ab83747205e7445c04e83485d6557a5073913945c9bee42e9cc3d4c2"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/config.yaml",
+      "sha256": "079517be25ff37f160c438656a2869d16c006fd15deb19a90635b3c75fc32a84"
+    },
+    {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/predictions/manifest.json",
+      "sha256": "cc48f5cfc836cbece8583b2c01496f203fdd53c7ca545e66ba808a179b4cab1e"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/predictions/zero.h5ad",
+      "sha256": "2f3a51e38bba68486e7880aef7ed3f8f3156c0cc9abddebeaecffa653dd7b383"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/predictions/shared.h5ad",
+      "sha256": "5f0fa0e03a03ab3e925e3b62534545e2fc263a2e16120783ae76ffcee951b000"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/predictions/source.h5ad",
+      "sha256": "bacc4a91addbf1c5b92c247249b45c37063b0a33ff452fb417f34530a02eae6c"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/predictions/linear.h5ad",
+      "sha256": "350b5b0d5261dccb271c16a972001d5fee374bb952af96c1db4428b02979eb26"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-input.h5ad",
+      "sha256": "b2a5f19d07f7acc5cd10662052e0558c53c2aea20eeeb5b20225f565b01b60b2"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-statistics.npz",
+      "sha256": "95f897ac5a929cb115073ec64842c426ebddeb0c6610cf23eea12c6fd099e13a"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_agg.parquet",
+      "sha256": "68e6352e986aac89356ef777e569cf678466357ff6c399f52b5cc9989b3f6d53"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_meta.json",
+      "sha256": "e895465045e1866214259755d7d055532d140cb05a95d312fbb7f8619374a5e2"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/anchor_splits.parquet",
+      "sha256": "3ff53971f2a29451973c0bd4ac55d0488ea927d065eaa0645419dd89ca52d774"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/baseline_agg.csv",
+      "sha256": "396e964c9f25c48d3729606c7adffc1a7257f94989a2165fd3336b5546f24991"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/baseline_meta.json",
+      "sha256": "f11ffe6ecf2f21a857a18b69c91639f8208589c91645d4405431f1ce9d8494f5"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/config.yaml",
+      "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-all/manifest.json",
+      "sha256": "0421c9358d81a9e89f0858b45482ca76bc12775e3326bdddebff694d67e2842e"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/aggregate.csv",
+      "sha256": "fd8ed075e2df47c62b399964389743ea5657254efaf7245358306cbe6094e45b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/raw.parquet",
+      "sha256": "aef6865598a1de0d71eaa001d3da2030206545e728bdc662369c38619c0c0dda"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/run_meta.json",
+      "sha256": "427ea04fb80a0b8fcad7e9a8524441e39e58a0e2b381ef6878ee763843bdd9c5"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/scores.csv",
+      "sha256": "b2c01e354134c491a0590cf17e73d67f37aea7a421ea6c18cbed49e3b7b60a26"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/aggregate.csv",
+      "sha256": "34fe6c4cc1fbda00c2655142d6a22013fd559ab50b7aff9a88944c678fb7bd6b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/raw.parquet",
+      "sha256": "e3e99e33539a1b8545ba217ef3922f9e83eaab7edbb24ac365b1ce7df472d0b1"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/run_meta.json",
+      "sha256": "aeb7098469ad4ff7a7aba82e0b890a5fd190d490005dbd3286930bc8d67d6962"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/scores.csv",
+      "sha256": "5039c8912dde17ae9482df082cad3dad07f01c3578a2acaec0edcef08032280f"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/aggregate.csv",
+      "sha256": "a1817d214ba515935d655b45d9c1040d06560fd752024c9d4f219fd7bc3b96ad"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/raw.parquet",
+      "sha256": "b4848d74edf64da974bc61cf5be74f159dc7afb90356c8ea476ef4230655bd9a"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/run_meta.json",
+      "sha256": "df83018f9f9bbe917ddae1899937b1c1bb9c10450c4f6dd69ddfa0ec2b804e22"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/scores.csv",
+      "sha256": "8ccf7cf7dcace8091e4cfc12edabeb5c8d13ceb8a31900a425f347833f164fdd"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-linear/aggregate.csv",
+      "sha256": "06dc0bc6d4b506b48dc814b0c4a867801b2ca12f68ddf7abb6d2bcf43f6d8334"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-linear/raw.parquet",
+      "sha256": "8ea4bfa7dcc96956fc6391cf1b29ca9f400f76c8495c9185810bc7fba44fd3fe"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-linear/run_meta.json",
+      "sha256": "a913e67634a58a27cae0809ce0600d4399ae11d3bef030124c9773252f59353d"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-linear/scores.csv",
+      "sha256": "96cafb9c1c1cd1b727d1e3c9b761536d933d682e2a462fb88d5a5fea5ab76ac9"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/anchor_agg.parquet",
+      "sha256": "9153ce9c8feec98049307172bbc88b3a9de5f4870ec803917c13d541d253c633"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/anchor_meta.json",
+      "sha256": "51f0dd8c76f9831794e0c8ab68acd7c109c011781fdf412b666a638dc80812c6"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/anchor_splits.parquet",
+      "sha256": "a4ce99114e7fef80d25f9060d589b7f2d0f6547480f654d40047fddeafd17e96"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/baseline_agg.csv",
+      "sha256": "d2a9cf468534900d985e6e8371aeb56cf0fcde3ac1bb25a1275e59b5010a8dbb"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/baseline_meta.json",
+      "sha256": "ebae4d80757c95120dc823e67a4fea848132662ca6f2982beb94765ca55a5a38"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/config.yaml",
+      "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/bundle-official_overlap/manifest.json",
+      "sha256": "86f5352d3d660fd27d97c01ef928b3a0a3821ff25c9974ed242c2884e4885781"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/aggregate.csv",
+      "sha256": "99fa065733d15323290bc8e534f9ab429c8dbdf3b365358451e9f900be2d2f6a"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/raw.parquet",
+      "sha256": "b9ef0af5f94173f2b68d57fded57f6408e799f656043b40281ce6e09e3c36a6c"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/run_meta.json",
+      "sha256": "cbcd8d059e8e5c94ee172a195f012d50d8e2581047a8b153262747835a73be40"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/scores.csv",
+      "sha256": "07cc2dd6724fa4df5ec9992250ccee76299db8b5138fd30c7ab47458d0157042"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/aggregate.csv",
+      "sha256": "b60b1a9865570483e74dd69e782833d3d8447a97232a5a3ff54cb0d265e6368d"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/raw.parquet",
+      "sha256": "210a9bbac5b107ec6915e65386caf7b8cb26efcf36bd0be0f5945d8429dfc936"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/run_meta.json",
+      "sha256": "8c13c3d516d56f335356003ad38962d58bafdeecafa7dbbe1bbb6790e4e01f0b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/scores.csv",
+      "sha256": "4f2b2e63dfff7989756fcab5822627b35623def1c67b929d02e88bdfe6f244f1"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/aggregate.csv",
+      "sha256": "323ff0ae78442097b96b1db94bbf26331a56a2be62af069f0ac6feddfa255df8"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/raw.parquet",
+      "sha256": "db9c453e074f6bbfe845c8d460cd312e9e674c1c9c3198cd8a7315db21c31c1f"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/run_meta.json",
+      "sha256": "d3a50748b2dff84667813cc99aaee7129f89c9f5555ff3446001bc1f82659188"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/scores.csv",
+      "sha256": "e9e3f095a94227bc7a7c7562fb672c99e97111233e0641a13ecdde4b4eb10378"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-linear/aggregate.csv",
+      "sha256": "5967575dc9bcedffa800364dc81943d637c40e270844a6da4b4a133c2858dd73"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-linear/raw.parquet",
+      "sha256": "bd89d09b1ebcee1d2285a07acbbb121947d0d80e684f85288ab63046661419db"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-linear/run_meta.json",
+      "sha256": "053cfacb89fea5990ec67c3a128023237651277bf59a3c9ee15c589197fd2745"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-linear/scores.csv",
+      "sha256": "0d1ed06504044ac146bb1d1913e37ac4289cc4d6e249e489ca0f783caba9f330"
+    }
+  ],
+  "fixed_scorer": {
+    "path": "docs/research/challenge_2026/scorer.json",
+    "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+  },
+  "profile_scope": "all frozen reference perturbations; no new filtering",
+  "raw_policy": "reuse original official aggregate+run_meta byte-for-byte; do not regenerate or refit",
+  "anchor_policy": "rebuild first condition per reference, official strict content-keyed real cache thereafter; validate against original anchors",
+  "completion": "2 panels x 4 conditions x 4 arms; six finite official scores, original condition replay <=1e-8, sources unchanged",
+  "decision": "report baseline effects and interaction; preserve existing protocol unless direct official deployment evidence supports changing it; no tuning to leaderboard distance"
+}
