@@ -2,7 +2,17 @@
 
 本 Experiment 管正则化线性响应路线；首个 run 为 `init-linear-s01`，比较 `C-BASE`，方法 `M-BASE`，证据问题 `E-BASE`。全部生效条件在 configs/s2-h1-s01.json 与 DAG 冻结，执行产物进入 outputs/init-linear-s01/。
 
-## 当前模型实验：C-CONDITION-ABLATION
+## 当前模型实验：C-RIDGE-STRENGTH
+
+run `init-linear-nocontext-a01-s01`（M-RIDGE-WEAKREG / E-RIDGE-STRENGTH）检验上一轮剩余性能差距是否部分来自正则强度。以已完成 `init-linear-nocontext-s01` 为匹配控制，唯一实际配置差异是 `model.alpha: 1.0 → 0.1`；响应头继续禁用 NTC 条件项，保留同一目标 ID、截距及其正则形式、细胞数/100 权重、测量掩码、数据/划分、生成器和官方评分。全部参数从头求解析解，不复用旧权重。仅运行这一个事先登记的 alpha 候选，不追加在线网格搜索。
+
+完整配置 `configs/s2-h1-nocontext-a01-s01.json`；复用相同的已哈希预处理及两个群体各自的 bundles，按来源清单校验并复制到本 run。训练与生成代码不改，四臂预测和两个面板的评分完整重跑；zero/shared/source 应复现（raw/normalized/Overall 绝对误差≤1e-8，NaN 位置一致）。本 run 预计约32 GiB磁盘、峰值约60 GiB主机内存，启动前已有容量可满足；共用本路线锁定环境。
+
+执行 `./reproduce.sh --run-id init-linear-nocontext-a01-s01`，恢复追加 `--resume`。结束条件为完整解析拟合、四臂全18,533基因轴预测、H1实测轴上两个面板的官方六分项及Overall有效、checkpoint/预测/结果Artifact保存，随后完成配对报告与E-RIDGE-STRENGTH闭环。
+
+主判据保持已登记规则：相对alpha=1，280靶Overall提升至少0.02且25官方重叠靶下降不超过0.02，才记筛选线索；同时报告相对shared的绝对差距，未超越它不替换当前强参照。分项、181仅K562/99四背景支持靶、训练拟合与生成波动限制分别报告。若有信号，仅归因于此模型的共同L2强度，不能宣称SOTA；若无信号，停止本轮alpha局部搜索，推进功能程序/PCA/匹配随机表示或响应空间问题。两种分支都不重开已关闭的评分审计。
+
+## 条件项消融：C-CONDITION-ABLATION
 
 目标是为 VCC 2026 的高性能方法选择消除条件化与正则化的混杂。新 run `init-linear-nocontext-s01`（M-RIDGE-NO-CONTEXT / E-CONDITION-ABLATION）在同一 S2-H1/context-seen/seed1 上，仅将 NTC 条件项禁用。训练时保留目标 ID 与原截距及其 alpha=1 正则、细胞数/100 权重、测量掩码、目标和解析求解；全部系数重新拟合，不能在旧权重上只关闭推断条件项。没有搜索超参数。
 

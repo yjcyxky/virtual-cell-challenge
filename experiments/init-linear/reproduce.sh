@@ -14,6 +14,7 @@ done
 case "$RUN_ID" in
   init-linear-s01) CONFIG=configs/s2-h1-s01.json ;;
   init-linear-nocontext-s01) CONFIG=configs/s2-h1-nocontext-s01.json ;;
+  init-linear-nocontext-a01-s01) CONFIG=configs/s2-h1-nocontext-a01-s01.json ;;
   *) echo "Unknown run: $RUN_ID" >&2; exit 2 ;;
 esac
 exec "$BASE_PYTHON" ../../scripts/research.py execute "$RUN_ID" "${RESUME[@]}" -- \

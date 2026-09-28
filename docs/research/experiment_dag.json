@@ -2390,7 +2390,8 @@
       },
       "report_ref": {
         "path": "experiments/init-linear/REPORT.md",
-        "sha256": "93dbf8be8d936abbe0c4a4417b05509aa242e8c5d5fce2e11dd090c1dc7597c4"
+        "sha256": "93dbf8be8d936abbe0c4a4417b05509aa242e8c5d5fce2e11dd090c1dc7597c4",
+        "git_commit": "6dc746faf7de6a66456aa6143d39a9cfff708988"
       },
       "git_commit": "8b4c7b70749d37b6fc31e03cfecb8ed87947a7ce",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-nocontext-s01",
@@ -2416,7 +2417,8 @@
       },
       "blockers": [],
       "wandb_sync": "online",
-      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-nocontext-s01-evidence:v0"
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-nocontext-s01-evidence:v0",
+      "code_snapshot_commit": "8b4c7b70749d37b6fc31e03cfecb8ed87947a7ce"
     },
     "init-linear-nocontext-a01-s01": {
       "experiment_id": "init-linear",
@@ -2425,7 +2427,7 @@
       "legacy": false,
       "method_id": "M-RIDGE-WEAKREG",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "draft",
+      "status": "ready",
       "comparison_id": "C-RIDGE-STRENGTH",
       "controls": [
         "init-linear-nocontext-s01"
@@ -2441,9 +2443,183 @@
           "not_supported"
         ]
       },
-      "config_ref": null,
-      "expected_config": null,
-      "code_refs": [],
+      "config_ref": {
+        "path": "experiments/init-linear/configs/s2-h1-nocontext-a01-s01.json",
+        "sha256": "b2341464b43191d5482f072936673c38b81a2b1357f70b78d87b7474c5c8f09c"
+      },
+      "expected_config": {
+        "experiment_id": "init-linear",
+        "run_id": "init-linear-nocontext-a01-s01",
+        "seed": 1,
+        "fit_scope": {
+          "outer_split": "S2-H1",
+          "target_partition": "context-seen"
+        },
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          }
+        },
+        "data": {
+          "chunk_rows": 2048,
+          "target_sum": 10000,
+          "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+          "qc": "frozen_correctness_only"
+        },
+        "model": {
+          "kind": "masked_ridge_target_id_plus_linear_ntc_mean",
+          "alpha": 0.1,
+          "weight_cell_unit": 100.0,
+          "gene_chunk": 256,
+          "context_features": "exact_full_train_NTC_span_on_training_measured_intersection",
+          "target_features": "input_NTC_target_mean_div5_and_measurement_indicator",
+          "missing_output": "zero_delta_when_no_training_measurement",
+          "end_condition": "exact_ridge_solution_all_measured_gene_groups",
+          "ntc_conditioning": false
+        },
+        "generation": {
+          "kind": "fixed_NTC_log_shift_library_preserving_stochastic_round",
+          "cells_per_target": 400,
+          "paired_rng": "seed_plus_frozen_target_index",
+          "missing_input": "zero_baseline_and_zero_delta_with_mask"
+        },
+        "evaluation": {
+          "arms": [
+            "zero",
+            "shared",
+            "source",
+            "linear"
+          ],
+          "single_source": "K562",
+          "panels": [
+            "all",
+            "official_overlap"
+          ],
+          "runtime": {
+            "device": "cuda",
+            "num_threads": 8,
+            "pert_chunk": 16
+          }
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "reuse": {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/init-linear/reproduce.sh",
+          "sha256": "9c4a8fb9d801359ec323728c685ac6927e5620af0fa2af0d932300e626e2f17a"
+        },
+        {
+          "path": "experiments/init-linear/pyproject.toml",
+          "sha256": "57c109791bae59a7593e7272332e56aa1afc297b63616d5def40cf309ae2457f"
+        },
+        {
+          "path": "experiments/init-linear/uv.lock",
+          "sha256": "aa1d9d73a98203d0acb820f8d7193c9862967b42b0f42fd72a2ce578d2758446"
+        },
+        {
+          "path": "experiments/init-linear/PLAN.md",
+          "sha256": "61b0576597b7eebee73525d3d21fe76365d1066cbc47d97ac75056a18abeff1d"
+        },
+        {
+          "path": "experiments/init-linear/configs/reuse-s2-h1-s01.json",
+          "sha256": "1850e880a896010ef7c2e05bfa5f032b9c573c45f6570315ac4a023b58e5f461"
+        },
+        {
+          "path": "experiments/init-linear/src/anchor_audit.py",
+          "sha256": "ba7f725bdd49cde9304c9294400e1e63a5ed458f2d847641a5251599554562b6"
+        },
+        {
+          "path": "experiments/init-linear/src/data.py",
+          "sha256": "48a47d280424bd32786483b4b2dc7b403b44102c4989ee246854ae6a14f42a7a"
+        },
+        {
+          "path": "experiments/init-linear/src/evaluation.py",
+          "sha256": "d07e6246042c1f1024a41cc50d90b7ca6b16093fd9ecdc2eb52f56f89a93f7fb"
+        },
+        {
+          "path": "experiments/init-linear/src/model.py",
+          "sha256": "4fe77049609dd0b27390d1eb914598c6b988f379a0883715fcdadc562f1aceec"
+        },
+        {
+          "path": "experiments/init-linear/src/submission.py",
+          "sha256": "b748d432b615399c42ed5a64ecdf892db4046b8feeaa015593d7add8b913262d"
+        },
+        {
+          "path": "experiments/init-linear/src/train.py",
+          "sha256": "dee03e2b518c7a26b76555cb6856fc6dc23ef94344cbcd52b35a2215edd8fbc5"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "2301a133b7a602ea02e886dc47732ca63d7851c69222ff790f9499598d2f6681"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+          "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+        },
+        {
+          "path": "scripts/dossier/response.py",
+          "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+        },
+        {
+          "path": "scripts/dossier/render.py",
+          "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+        },
+        {
+          "path": "scripts/dossier/profile_responses.py",
+          "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+          "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+          "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+        },
+        {
+          "path": "scripts/dossier/heterogeneity.py",
+          "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+          "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+          "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+        }
+      ],
       "metrics_ref": null,
       "report_ref": null,
       "git_commit": null,
@@ -2466,13 +2642,9 @@
         "source_usage": "只复用原冻结预处理/NTC/reference/bundles并验证逐文件哈希；不复用任何权重，独立完整解析拟合。",
         "allocation": "同init-linear路线，一个run一次独立拟合；draft不创建输出/W&B。",
         "end_condition": "全量拟合、全轴预测、两个面板官方六指标有效，报告相对alpha=1及shared差距后关闭证据。",
-        "unresolved": [
-          "冻结完整配置、实际差异和代码/来源引用；入口登记run选择，通过校验并提交后启动"
-        ]
+        "unresolved": []
       },
-      "blockers": [
-        "待冻结alpha=0.1完整配置与入口选择；未执行"
-      ]
+      "blockers": []
     }
   },
   "comparisons": {
@@ -3119,7 +3291,7 @@
       "execution_stage": "anchor_audit"
     },
     "C-RIDGE-STRENGTH": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "screen",
       "hypothesis": "固定无NTC条件头与生成器，减弱L2正则能否恢复扰动特异性并缩小shared差距",
       "controls": [
@@ -3131,7 +3303,9 @@
       "changed_axes": [
         "L"
       ],
-      "changed_fields": [],
+      "changed_fields": [
+        "model.alpha"
+      ],
       "decision_rule": {
         "primary_metric": "S2.Overall",
         "direction": "maximize",

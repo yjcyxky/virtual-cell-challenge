@@ -672,7 +672,8 @@
         },
         {
           "path": "experiments/init-linear/REPORT.md",
-          "sha256": "93dbf8be8d936abbe0c4a4417b05509aa242e8c5d5fce2e11dd090c1dc7597c4"
+          "sha256": "93dbf8be8d936abbe0c4a4417b05509aa242e8c5d5fce2e11dd090c1dc7597c4",
+          "git_commit": "6dc746faf7de6a66456aa6143d39a9cfff708988"
         }
       ],
       "next_action": "按反对分支先执行C-RIDGE-STRENGTH：固定无条件响应头，仅将alpha从1降到0.1，区分正则强度与NTC条件项；继续以shared为强参照。随后推进C-PROGRAM的等维真实程序/PCA/随机模块表示探索，不把局部alpha优化当作SOTA终点。",
