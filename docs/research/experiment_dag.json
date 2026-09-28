@@ -6154,7 +6154,7 @@
       "legacy": false,
       "method_id": "M-COMPOSITION-LFC",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-MECHANISM-PORTFOLIO",
       "controls": [
         "masked-response-shared-s01"
@@ -6416,11 +6416,14 @@
           "sha256": "ca2452dd50c93f6f7ed6c3f4a473977d82e978b8008ea1f0b03cf122f163608e"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/composition-response/outputs/composition-lfc-s01/metrics.json",
+        "sha256": "dd513dd9a9d98319827386d239362d068dd061debf939202374e715698b40a2d"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "git_commit": "3307835975cb466d84ce9f2e6bf27ab1a7ac64aa",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/composition-lfc-s01",
+      "artifact": "yjcyxky/virtual-cell-challenge/composition-lfc-s01-result:v0",
       "design": {
         "seed_plan": 1,
         "fit_scope": {
@@ -6440,7 +6443,8 @@
         "allocation": "三机制各一个预先冻结完整配置，顺序训练及两面板评分；全部完成后才分配下一轮。",
         "end_condition": "完成登记训练预算、全轴预测、两个面板六指标、模型artifact，三臂报告并关闭E-MECHANISM-PORTFOLIO。"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online"
     },
     "distribution-nb-s01": {
       "experiment_id": "distribution-response",

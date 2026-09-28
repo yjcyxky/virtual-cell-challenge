@@ -50,7 +50,7 @@ flowchart TD
   n43["transport-linear-s01 | draft"]
   n44["transport-mlp-s01 | completed"]
   n45["transport-no-ntc-s01 | draft"]
-  n46["composition-lfc-s01 | ready"]
+  n46["composition-lfc-s01 | completed"]
   n47["distribution-nb-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
