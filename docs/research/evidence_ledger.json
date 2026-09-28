@@ -1174,6 +1174,19 @@
       "source_refs": [],
       "next_action": "完成四臂可比设计、数据/先验边界、完整配置和判据后check/commit/execute。",
       "reopen_when": "待完成首次正式归因比较。"
+    },
+    "E-SHARED-QC-OFFICIAL": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-SHARED-QC-OFFICIAL",
+      "node_ids": [
+        "masked-response-qc-s01"
+      ],
+      "hypothesis": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
+      "claim": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
+      "source_refs": [],
+      "next_action": "校验已提交官方阶段，导出完整VCC，沿用原run提交评分；published后报告raw/normalized/Overall及群体差异。",
+      "reopen_when": "只有published有效六分项与Overall并归档完整回执后关闭；失败按同一VCC/entry恢复。"
     }
   },
   "queue": [
