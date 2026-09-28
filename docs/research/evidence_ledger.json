@@ -656,12 +656,38 @@
       "source_refs": [],
       "next_action": "落实init-linear-nocontext-s01的完整配置、来源哈希和条件开关，通过门禁后独立拟合并配对评分。",
       "reopen_when": "关闭后按新背景或匹配反证重新登记比较。"
+    },
+    "E-BASE-OFFICIAL": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-BASE-OFFICIAL",
+      "node_ids": [],
+      "claim": "本轮固定模型在官方A/B/C的Overall是否接近本地H1，以及linear/shared排序是否一致？",
+      "limitations": "官方A/B/C真值不公开；本地H1不是同一评价群体。",
+      "source_refs": [
+        {
+          "path": "experiments/init-linear/configs/official-s01.json",
+          "sha256": "89f9297f70e870b17ea2ce26f48571a6144d23672a5b3b177f7f5b0e12a3f3d0"
+        }
+      ],
+      "next_action": "导出两臂完整官方面板VCC，验证后按同一run提交并等待官方回执；比较六项和Overall，保存panel/anchors身份。",
+      "reopen_when": "官方发布两臂分数或评分终止后更新状态；输入/模型变化必须另登记。"
     }
   },
   "queue": [
     {
-      "id": "Q-CONDITION-ABLATION",
+      "id": "Q-BASE-OFFICIAL",
       "priority": 1,
+      "comparison_id": "C-BASE-OFFICIAL",
+      "question": "本轮固定模型在官方A/B/C的Overall是否接近本地H1，以及linear/shared排序是否一致？",
+      "action": "用户已授权正式提交；保持checkpoint与生成器，先完成两臂官方核查再恢复条件项消融。",
+      "requires_evidence": [
+        "E-BASE"
+      ]
+    },
+    {
+      "id": "Q-CONDITION-ABLATION",
+      "priority": 2,
       "comparison_id": "C-CONDITION-ABLATION",
       "question": "匹配正则和权重后，当前线性模型的损失能否归因于NTC条件项？",
       "action": "落实已登记init-linear-nocontext-s01；仅禁用NTC条件项、其余固定。新run仍归init-linear，共享环境；保留历史代码版本及原research绑定。完整训练/评分后关闭E-CONDITION-ABLATION，按预设分支决定是否跨背景复验。",
@@ -671,20 +697,10 @@
     },
     {
       "id": "Q-QUALITY",
-      "priority": 2,
+      "priority": 3,
       "comparison_id": "C-QC",
       "question": "额外QC改变的是可靠性，还是数量、target覆盖与弱响应人群？",
       "action": "条件项归因后落实基础/QC/匹配随机三臂，保持评估群体及官方轴；单列181仅K562与99四背景支持靶的保留率，不能把响应强度/覆盖变化当作质量收益。",
-      "requires_evidence": [
-        "E-BASE"
-      ]
-    },
-    {
-      "id": "Q-PRIOR-REP",
-      "priority": 3,
-      "comparison_id": "C-TARGET-PRIOR",
-      "question": "五背景靶点覆盖有限时，真实生物先验能否提供未见靶点信息？",
-      "action": "在全局target留出的S1/S3比较无先验、真实GO和匹配随机GO；程序/PCA与NTC表示作为并列候选，不预选模型。",
       "requires_evidence": [
         "E-BASE"
       ]

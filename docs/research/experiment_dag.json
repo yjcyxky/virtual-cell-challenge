@@ -494,7 +494,62 @@
         ]
       },
       "wandb_sync": "online",
-      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-evidence:v0"
+      "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-evidence:v0",
+      "official_evaluation": {
+        "comparison_id": "C-BASE-OFFICIAL",
+        "status": "registered",
+        "config_ref": {
+          "path": "experiments/init-linear/configs/official-s01.json",
+          "sha256": "89f9297f70e870b17ea2ce26f48571a6144d23672a5b3b177f7f5b0e12a3f3d0"
+        },
+        "code_refs": [
+          {
+            "path": "experiments/init-linear/src/submission.py",
+            "sha256": "b748d432b615399c42ed5a64ecdf892db4046b8feeaa015593d7add8b913262d"
+          },
+          {
+            "path": "experiments/init-linear/submit.sh",
+            "sha256": "845ae16f6ad804fd0c5131f9d17c56704fc5a8f3b0382abf7074b34c476540ff"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+            "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+          },
+          {
+            "path": "scripts/dossier/response.py",
+            "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+          },
+          {
+            "path": "scripts/dossier/render.py",
+            "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+          },
+          {
+            "path": "scripts/dossier/profile_responses.py",
+            "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+            "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+            "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+          },
+          {
+            "path": "scripts/dossier/heterogeneity.py",
+            "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+            "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+            "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+          }
+        ],
+        "scope": "Same completed fit and W&B identity; official A/B/C inference and remote validation, no additional fitting. Helpers from exp002 are file IO/audit only; model and generator from init-linear."
+      }
     },
     "init-absolute-s01": {
       "experiment_id": "init-absolute-s01",
@@ -2617,6 +2672,37 @@
       "cost": "low",
       "priority_basis": "E-BASE显示linear与shared的比较同时涉及条件项与正则耦合，先补最小匹配对照。",
       "evidence_id": "E-CONDITION-ABLATION"
+    },
+    "C-BASE-OFFICIAL": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "本轮固定模型在官方A/B/C的Overall是否接近本地H1，以及linear/shared排序是否一致？",
+      "controls": [],
+      "candidates": [
+        "init-linear-s01"
+      ],
+      "changed_axes": [
+        "V"
+      ],
+      "changed_fields": [
+        "evaluation.backgrounds",
+        "evaluation.target_panel",
+        "evaluation.measured_gene_axis",
+        "evaluation.reference_and_anchors",
+        "evaluation.execution_service"
+      ],
+      "decision_rule": {
+        "primary_metric": "official.score_avg_minus_local.Overall",
+        "direction": "minimize_absolute_difference",
+        "min_effect": 0.02,
+        "scope": "Fixed checkpoint, both linear/shared; A/B/C 300 targets vs H1 280/25 targets. Descriptive development evidence, not evaluator equivalence or causal attribution.",
+        "on_support": "差值绝对值均<=0.02且排序一致则记本次接近线索，不外推协议等价。",
+        "on_against": "任一差值>0.02或排序翻转，则禁止以H1分数预测榜单；先分解raw与anchors/覆盖变化。",
+        "on_inconclusive": "评分失败/未发布则保留问题；不作模型阴性结论。",
+        "threshold_policy": "Before official scores: abs Overall difference <=0.02 is descriptive closeness, not statistical equivalence. Report both H1 panels, all six components and signed gaps regardless."
+      },
+      "evidence_id": "E-BASE-OFFICIAL",
+      "attribution_plan": "No model changes; simultaneous evaluation population/protocol changes prohibit single-factor causal attribution."
     }
   },
   "continuation_rules": {

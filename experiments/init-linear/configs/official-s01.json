@@ -1,0 +1,37 @@
+{
+  "run_id": "init-linear-s01",
+  "comparison_id": "C-BASE-OFFICIAL",
+  "arms": [
+    "linear",
+    "shared"
+  ],
+  "checkpoint_ref": {
+    "path": "experiments/init-linear/outputs/init-linear-s01/checkpoints/ridge.npz",
+    "sha256": "bfb5af829a6ade289dc4a1d2901f56dae20f0353ec5bf0c1dd4393cc9e871e71"
+  },
+  "official": "data/raw/arc_vcc2026_controls",
+  "panel_id": "vcc2026-val-1",
+  "seed": 1,
+  "data": {
+    "chunk_rows": 2048,
+    "target_sum": 10000,
+    "normalization": "mean_of_cell_log1p_CPM10k_on_context_measured_official_axis",
+    "qc": "frozen_correctness_only"
+  },
+  "generation": {
+    "kind": "fixed_NTC_log_shift_library_preserving_stochastic_round",
+    "cells_per_target": 400,
+    "paired_rng": "seed_plus_frozen_target_index",
+    "missing_input": "zero_baseline_and_zero_delta_with_mask"
+  },
+  "max_nnz": 4750000000,
+  "max_counts_per_cell": 1000000,
+  "vcc_cli": "/home/jy001/micromamba/envs/virtual-cell/bin/vcc",
+  "cli_python": "/home/jy001/micromamba/envs/virtual-cell/bin/python",
+  "vcc_cli_version": "0.2.1",
+  "model_names": {
+    "linear": "init-linear-s01-linear",
+    "shared": "init-linear-s01-shared"
+  },
+  "description": "Fixed init-linear-s01 checkpoint, trained on K562/RPE1/HepG2/Jurkat; H1 excluded. Official A/B/C NTC log-shift, library preservation, stochastic rounding, seed 1. Paired linear/shared audit, no refit or calibration to leaderboard."
+}

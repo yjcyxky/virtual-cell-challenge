@@ -37,3 +37,13 @@
 ## 执行
 
 `./reproduce.sh` 在环境同步前执行 research execute；`./reproduce.sh --resume` 恢复同一 run。W&B entity=yjcyxky、project=virtual-cell-challenge、group=init-linear、id=init-linear-s01。上传模型及结果清单，原始细胞数据不上传。依赖和源码提交后才正式启动。
+
+## 本轮官方核查：C-BASE-OFFICIAL
+
+用户于 2026-09-28 授权基于当前模型生成 VCC 并提交 leaderboard。追加同一 `init-linear-s01` 的推断/评估阶段，冻结 `checkpoints/ridge.npz`，不重新训练、不加入 H1 扰动监督、不校准响应幅度。完整条件在 `configs/official-s01.json`，DAG 节点的 `official_evaluation` 锁定代码和配置，账本问题 `E-BASE-OFFICIAL`。
+
+两臂为当前 linear 与 checkpoint 内的 shared；A/B/C 分别使用全部官方 NTC 计算与训练相同的逐细胞 log1p(CP10K) 均值，映射到已训练表示。18,533 个基因按官方顺序保留，300 靶每背景每靶 400 细胞，共 360,000 细胞/臂。沿用 `predict` 和 `generate_counts`；每背景使用 seed=1+官方 CSV 靶点序号，跨臂配对。未见靶 linear 仅条件项、shared 零响应；所有训练背景均缺测的输出基因为零响应，官方 NTC 的真实基线保留。导出记录实有监督覆盖，不根据官方结果改变规则。
+
+入口 `./submit.sh --submit` 在环境调用和输出前检查已完成模型、登记与已提交哈希；共用原 `.venv` 且 uv --locked --no-sync。复用已有来源校验、CSR 写入与全文件审计；外部官方 CLI 0.2.1 负责 prep/submit/status，不改训练环境。串行提交，保存文件哈希和 entry_id，失败沿用同一 entry 恢复，避免重复提交。同一 W&B run 的 official/linear 与 official/shared 分开记录，产物存于原 run 的 predictions/official-abc/。
+
+完成条件为两臂官方 published 且六分项、Overall 有限，panel=vcc2026-val-1，保存实际 anchor_version、全部回执与版本化 Artifact。报告 H1 280 靶和官方重叠 25 靶与 A/B/C 的六项、Overall 和有符号差值；事前以绝对 Overall 差值<=0.02描述“接近”，同时报告排序，不作为统计等价检验。评价背景、靶点、实测基因轴和真实 anchors 同时变化，不能凭差距归因于实现错误，也不能凭接近证明协议等价；官方未提供 raw 时明确不可取得，不能反推冒充原始值。A/B/C 反馈只算开发证据。
