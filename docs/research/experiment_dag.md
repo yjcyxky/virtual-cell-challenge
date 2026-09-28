@@ -14,9 +14,9 @@ flowchart TD
   n7["init-target-balanced-s01 | draft"]
   n8["init-meanvar-s01 | draft"]
   n9["init-set-s01 | draft"]
-  n10["init-pca-s01 | draft"]
-  n11["init-program-s01 | draft"]
-  n12["init-random-program-s01 | draft"]
+  n10["init-pca-s01 | ready"]
+  n11["init-program-s01 | ready"]
+  n12["init-random-program-s01 | ready"]
   n13["init-pretrained-s01 | draft"]
   n14["init-random-encoder-s01 | draft"]
   n15["init-scfoundation-s01 | draft"]
@@ -36,6 +36,7 @@ flowchart TD
   n29["confirm-random-s03 | draft"]
   n30["init-linear-nocontext-s01 | completed"]
   n31["init-linear-nocontext-a01-s01 | completed"]
+  n32["init-program-raw-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -58,35 +59,44 @@ flowchart TD
   n8 -->|control| n9
   n0 -.->|"evidence: E-MOMENTS"| n9
   n8 -.->|"evidence: E-MOMENTS"| n9
-  n0 -->|control| n10
+  n32 -->|control| n10
+  n0 -->|source| n10
   n0 -.->|"evidence: E-BASE"| n10
+  n0 -.->|"evidence: E-CONDITION-ABLATION"| n10
+  n30 -.->|"evidence: E-CONDITION-ABLATION"| n10
   n30 -.->|"evidence: E-RIDGE-STRENGTH"| n10
   n31 -.->|"evidence: E-RIDGE-STRENGTH"| n10
-  n0 -->|control| n11
+  n32 -->|control| n11
+  n0 -->|source| n11
   n0 -.->|"evidence: E-BASE"| n11
+  n0 -.->|"evidence: E-CONDITION-ABLATION"| n11
+  n30 -.->|"evidence: E-CONDITION-ABLATION"| n11
   n30 -.->|"evidence: E-RIDGE-STRENGTH"| n11
   n31 -.->|"evidence: E-RIDGE-STRENGTH"| n11
-  n0 -->|control| n12
+  n32 -->|control| n12
+  n0 -->|source| n12
   n0 -.->|"evidence: E-BASE"| n12
+  n0 -.->|"evidence: E-CONDITION-ABLATION"| n12
+  n30 -.->|"evidence: E-CONDITION-ABLATION"| n12
   n30 -.->|"evidence: E-RIDGE-STRENGTH"| n12
   n31 -.->|"evidence: E-RIDGE-STRENGTH"| n12
   n10 -->|control| n13
-  n0 -.->|"evidence: E-PROGRAM"| n13
+  n32 -.->|"evidence: E-PROGRAM"| n13
   n10 -.->|"evidence: E-PROGRAM"| n13
   n11 -.->|"evidence: E-PROGRAM"| n13
   n12 -.->|"evidence: E-PROGRAM"| n13
   n10 -->|control| n14
-  n0 -.->|"evidence: E-PROGRAM"| n14
+  n32 -.->|"evidence: E-PROGRAM"| n14
   n10 -.->|"evidence: E-PROGRAM"| n14
   n11 -.->|"evidence: E-PROGRAM"| n14
   n12 -.->|"evidence: E-PROGRAM"| n14
   n10 -->|control| n15
-  n0 -.->|"evidence: E-PROGRAM"| n15
+  n32 -.->|"evidence: E-PROGRAM"| n15
   n10 -.->|"evidence: E-PROGRAM"| n15
   n11 -.->|"evidence: E-PROGRAM"| n15
   n12 -.->|"evidence: E-PROGRAM"| n15
   n10 -->|control| n16
-  n0 -.->|"evidence: E-PROGRAM"| n16
+  n32 -.->|"evidence: E-PROGRAM"| n16
   n10 -.->|"evidence: E-PROGRAM"| n16
   n11 -.->|"evidence: E-PROGRAM"| n16
   n12 -.->|"evidence: E-PROGRAM"| n16
@@ -139,4 +149,10 @@ flowchart TD
   n0 -->|source| n31
   n0 -.->|"evidence: E-CONDITION-ABLATION"| n31
   n30 -.->|"evidence: E-CONDITION-ABLATION"| n31
+  n0 -->|source| n32
+  n0 -.->|"evidence: E-BASE"| n32
+  n0 -.->|"evidence: E-CONDITION-ABLATION"| n32
+  n30 -.->|"evidence: E-CONDITION-ABLATION"| n32
+  n30 -.->|"evidence: E-RIDGE-STRENGTH"| n32
+  n31 -.->|"evidence: E-RIDGE-STRENGTH"| n32
 ```

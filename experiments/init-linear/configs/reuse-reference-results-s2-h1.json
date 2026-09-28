@@ -1,0 +1,105 @@
+{
+  "source_run_id": "init-linear-s01",
+  "metrics_ref": {
+    "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+    "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+  },
+  "files": [
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/raw.parquet",
+      "sha256": "aef6865598a1de0d71eaa001d3da2030206545e728bdc662369c38619c0c0dda"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/aggregate.csv",
+      "sha256": "fd8ed075e2df47c62b399964389743ea5657254efaf7245358306cbe6094e45b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/scores.csv",
+      "sha256": "b2c01e354134c491a0590cf17e73d67f37aea7a421ea6c18cbed49e3b7b60a26"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-zero-attempt1/run_meta.json",
+      "sha256": "427ea04fb80a0b8fcad7e9a8524441e39e58a0e2b381ef6878ee763843bdd9c5"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/raw.parquet",
+      "sha256": "e3e99e33539a1b8545ba217ef3922f9e83eaab7edbb24ac365b1ce7df472d0b1"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/aggregate.csv",
+      "sha256": "34fe6c4cc1fbda00c2655142d6a22013fd559ab50b7aff9a88944c678fb7bd6b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/scores.csv",
+      "sha256": "5039c8912dde17ae9482df082cad3dad07f01c3578a2acaec0edcef08032280f"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-shared/run_meta.json",
+      "sha256": "aeb7098469ad4ff7a7aba82e0b890a5fd190d490005dbd3286930bc8d67d6962"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/raw.parquet",
+      "sha256": "b4848d74edf64da974bc61cf5be74f159dc7afb90356c8ea476ef4230655bd9a"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/aggregate.csv",
+      "sha256": "a1817d214ba515935d655b45d9c1040d06560fd752024c9d4f219fd7bc3b96ad"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/scores.csv",
+      "sha256": "8ccf7cf7dcace8091e4cfc12edabeb5c8d13ceb8a31900a425f347833f164fdd"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-all-source/run_meta.json",
+      "sha256": "df83018f9f9bbe917ddae1899937b1c1bb9c10450c4f6dd69ddfa0ec2b804e22"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/raw.parquet",
+      "sha256": "b9ef0af5f94173f2b68d57fded57f6408e799f656043b40281ce6e09e3c36a6c"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/aggregate.csv",
+      "sha256": "99fa065733d15323290bc8e534f9ab429c8dbdf3b365358451e9f900be2d2f6a"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/scores.csv",
+      "sha256": "07cc2dd6724fa4df5ec9992250ccee76299db8b5138fd30c7ab47458d0157042"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-zero/run_meta.json",
+      "sha256": "cbcd8d059e8e5c94ee172a195f012d50d8e2581047a8b153262747835a73be40"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/raw.parquet",
+      "sha256": "210a9bbac5b107ec6915e65386caf7b8cb26efcf36bd0be0f5945d8429dfc936"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/aggregate.csv",
+      "sha256": "b60b1a9865570483e74dd69e782833d3d8447a97232a5a3ff54cb0d265e6368d"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/scores.csv",
+      "sha256": "4f2b2e63dfff7989756fcab5822627b35623def1c67b929d02e88bdfe6f244f1"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-shared/run_meta.json",
+      "sha256": "8c13c3d516d56f335356003ad38962d58bafdeecafa7dbbe1bbb6790e4e01f0b"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/raw.parquet",
+      "sha256": "db9c453e074f6bbfe845c8d460cd312e9e674c1c9c3198cd8a7315db21c31c1f"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/aggregate.csv",
+      "sha256": "323ff0ae78442097b96b1db94bbf26331a56a2be62af069f0ac6feddfa255df8"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/scores.csv",
+      "sha256": "e9e3f095a94227bc7a7c7562fb672c99e97111233e0641a13ecdde4b4eb10378"
+    },
+    {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/score-official_overlap-source/run_meta.json",
+      "sha256": "d3a50748b2dff84667813cc99aaee7129f89c9f5555ff3446001bc1f82659188"
+    }
+  ]
+}

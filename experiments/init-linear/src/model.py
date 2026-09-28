@@ -55,7 +55,11 @@ def fit(directory, genes, split, config):
     stats = {c: dict(np.load(directory/f'{c}-statistics.npz')) for c in contexts}
     targets = np.asarray(sorted(set(t for s in stats.values() for t in s['labels'][1:])))
     target_map = {t: i for i, t in enumerate(targets)}
-    common, center, basis, scale = context_features(stats, contexts, genes)
+    if 'representation' in config:
+        from representation import ntc_projection
+        common, center, basis, scale = ntc_projection(stats, contexts, genes, directory, config)
+    else:
+        common, center, basis, scale = context_features(stats, contexts, genes)
     feature_args = (genes, common, center, basis, scale)
     features = {c: task_features(stats[c], stats[c]['labels'][1:], *feature_args) for c in contexts}
     conditioning = config['model'].get('ntc_conditioning', True)

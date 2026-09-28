@@ -157,9 +157,14 @@ def import_cached_inputs(output, config):
             metrics['research']['node_id'] != manifest['source_run_id'] or
             previous['research'] != metrics['research']):
         raise ValueError('reuse source is not the registered completed run')
-    for key in ('benchmark', 'data', 'fit_scope', 'seed', 'generation', 'evaluation'):
+    for key in ('benchmark', 'data', 'fit_scope', 'seed', 'generation'):
         if previous[key] != config[key]:
             raise ValueError(f'reuse changes frozen {key}')
+    # Inputs and reference bundles are independent of which prediction arms are scored.
+    old_evaluation, new_evaluation = dict(previous['evaluation']), dict(config['evaluation'])
+    old_arms, new_arms = old_evaluation.pop('arms', []), new_evaluation.pop('arms', [])
+    if old_evaluation != new_evaluation or not set(new_arms) <= set(old_arms):
+        raise ValueError('reuse changes frozen evaluation protocol')
     source_cache = (ROOT / manifest['source_metrics']['path']).parent / 'cache'
     for item in manifest['files']:
         record, relative = item['ref'], Path(item['destination'])
@@ -178,3 +183,53 @@ def import_cached_inputs(output, config):
         if hash_file(destination) != record['sha256']:
             raise ValueError(f'reuse destination checksum mismatch: {destination.name}')
     print(f'Verified {len(manifest["files"])} immutable cache files from {manifest["source_run_id"]}; no weights reused', flush=True)
+
+
+def verify_reference_reuse(output, model, config):
+    """Reuse invariant zero/shared/source scores, with the source predictions retained."""
+    sources = config['reference_reuse']
+    for record in sources.values():
+        if ref(ROOT/record['path']) != record:
+            raise ValueError('reference reuse source checksum mismatch')
+    previous = yaml.safe_load((ROOT/sources['config']['path']).read_text())
+    metrics = json.loads((ROOT/sources['metrics']['path']).read_text())
+    if metrics['status'] != 'completed' or not metrics['evaluation_completed'] or metrics['research'] != previous['research']:
+        raise ValueError('reference reuse requires a completed bound source')
+    for key in ('benchmark', 'data', 'fit_scope', 'seed', 'generation'):
+        if previous[key] != config[key]:
+            raise ValueError(f'reference reuse changes {key}')
+    for key in ('single_source', 'panels', 'runtime'):
+        if previous['evaluation'][key] != config['evaluation'][key]:
+            raise ValueError(f'reference reuse changes evaluation {key}')
+    with np.load(ROOT/sources['checkpoint']['path']) as source:
+        if not all(np.array_equal(source[k], model[k]) for k in ('shared', 'targets', 'genes', 'trained_mask')):
+            raise ValueError('shared response changed; invariant reference cannot be reused')
+    manifest = json.loads((ROOT/sources['predictions']['path']).read_text())
+    files = [r for r in manifest['files'] if Path(r['path']).stem in ('zero','shared','source')]
+    if {Path(r['path']).stem for r in files} != {'zero','shared','source'}:
+        raise ValueError('missing frozen reference predictions')
+    for record in files:
+        if ref(ROOT/record['path']) != record:
+            raise ValueError('reference prediction checksum changed')
+    frozen_scores = json.loads((ROOT/sources['score_manifest']['path']).read_text())['files']
+    for record in frozen_scores:
+        if ref(ROOT/record['path']) != record:
+            raise ValueError('reference score checksum changed')
+    evaluation, score_refs = {}, []
+    for panel in config['evaluation']['panels']:
+        evaluation[panel] = {}
+        for arm in ('zero','shared','source'):
+            result = metrics['evaluation'][panel][arm]
+            if not np.isfinite(result['Overall']) or not all(np.isfinite(list(result['normalized'].values()))):
+                raise ValueError('invalid reference scores')
+            evaluation[panel][arm] = dict(result, reused_from=sources['metrics'])
+            for name in ('raw.parquet','aggregate.csv','scores.csv','run_meta.json'):
+                score_refs.append(ref(ROOT/result['result_directory']/name))
+    if sorted(score_refs, key=lambda r:r['path']) != sorted(frozen_scores, key=lambda r:r['path']):
+        raise ValueError('reference score manifest does not cover the requested scores')
+    audit = {'sources': sources, 'reference_predictions': files, 'score_refs': score_refs,
+             'shared_response_exact_match': True, 'scores_recomputed': False,
+             'scope': 'unchanged data/split/generator/seed/scorer/reference; model predictions scored afresh'}
+    write_json(output/'cache/reference-reuse.json', audit)
+    print('Verified frozen zero/shared/source predictions and exact shared response; reusing their scores', flush=True)
+    return evaluation

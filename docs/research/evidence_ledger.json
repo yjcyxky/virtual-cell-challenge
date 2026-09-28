@@ -458,11 +458,11 @@
       "state": "pending",
       "comparison_id": "C-PROGRAM",
       "node_ids": [],
-      "hypothesis": "生物程序是否优于等维PCA与匹配随机模块",
-      "claim": "待检验：生物程序是否优于等维PCA与匹配随机模块",
-      "limitations": "没有本地执行或效应；一seed筛选不能证明跨背景普遍有效",
+      "hypothesis": "相同基因覆盖、特征总尺度、线性响应头和生成器下，32维真实功能程序NTC表示是否优于原始表示、训练内PCA、匹配随机程序并超过shared",
+      "claim": "待检验：真实功能程序NTC表示是否超过匹配PCA、随机模块、raw和shared。",
+      "limitations": "四run已冻结尚未执行；只有一个H1背景与一个生成/随机图seed，不能外推跨背景或其他表示注入位置。",
       "source_refs": [],
-      "next_action": "在已冻结H1开发协议下落实等维真实功能程序/PCA/匹配随机表示；先确定注入位置、共同头/alpha、覆盖和数值判据，必要时新建匹配raw控制。不得把原始NTC条件项的结果当作所有表示的结论。",
+      "next_action": "依次完整执行匹配raw、PCA、真实程序、匹配随机程序四run；按预注册规则关闭证据，不在过程中改候选。",
       "reopen_when": "当前为待检验问题；关闭后按同一scope的反证/新数据重新提出比较"
     },
     "E-PRETRAIN": {
@@ -966,11 +966,35 @@
         },
         {
           "path": "experiments/init-linear/REPORT.md",
-          "sha256": "54c326518c284dcee26d90c971d0205fd7fa49127c7f9e5fe45d57ce6a789503"
+          "sha256": "54c326518c284dcee26d90c971d0205fd7fa49127c7f9e5fe45d57ce6a789503",
+          "git_commit": "604360d0d5cca6eeddf163f749e63f76c98a8b66"
         }
       ],
       "next_action": "结束本轮alpha局部试验，推进C-PROGRAM：固定头、正则和生成器，比较真实功能程序、等维训练内PCA与匹配随机模块；完整报告相对shared的成绩。表示注入位置与缺测/无target×gene监督位置的回退必须先冻结，并跨臂保持一致。 shared继续作为当前强参照；相对较弱控制涨分不等于找到更强或SOTA方法。",
       "reopen_when": "新背景或官方评分出现反证、目标/权重/正则结构或缺测回退改变时另建比较；不覆盖本H1开发结论。"
+    },
+    "DS-REACTOME-SNAPSHOT": {
+      "kind": "dataset",
+      "state": "observed",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "本地Reactome GMT内容快照已按SHA-256固定；官方提供pathway gene-set下载。它是外部注释，不含本轮预测任务标签。",
+      "limitations": "2026-09-14获取；具体release编号未从该GMT核实。注释本身不证明VCC模型收益。",
+      "source_urls": [
+        "https://reactome.org/download-data"
+      ],
+      "source_refs": [
+        {
+          "path": "data/raw/networks/ReactomePathways.gmt.zip",
+          "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4"
+        },
+        {
+          "path": "data/raw/networks/hgnc_complete_set.txt",
+          "sha256": "9e07bb49393c12aca8bc931a4349010404c24994a8a58745c14676b8c2b74492"
+        }
+      ],
+      "next_action": "固定内容版本与映射，在相同覆盖/维数下比较真实和随机模块。",
+      "reopen_when": "来源内容、映射或适用基因轴改变时另行审计。"
     }
   },
   "queue": [
@@ -979,7 +1003,7 @@
       "priority": 1,
       "comparison_id": "C-PROGRAM",
       "question": "功能程序表示是否提供超出PCA、随机模块和共享响应的迁移信息？",
-      "action": "结束本轮alpha局部试验，推进C-PROGRAM：固定头、正则和生成器，比较真实功能程序、等维训练内PCA与匹配随机模块；完整报告相对shared的成绩。表示注入位置与缺测/无target×gene监督位置的回退必须先冻结，并跨臂保持一致。 shared继续作为当前强参照；相对较弱控制涨分不等于找到更强或SOTA方法。",
+      "action": "依次完整执行匹配raw、PCA、真实程序、匹配随机程序四run；按预注册规则关闭证据，不在过程中改候选。",
       "requires_evidence": [
         "E-BASE",
         "E-CONDITION-ABLATION",

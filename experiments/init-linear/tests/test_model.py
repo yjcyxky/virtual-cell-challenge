@@ -107,6 +107,7 @@ def test_reused_inputs_reject_changed_scope_or_file_and_never_link_source(tmp_pa
     (source/'cache').mkdir(parents=True)
     config = {key: {'fixed': True} for key in ('benchmark','data','fit_scope','generation','evaluation')}
     config['seed'] = 1
+    config['evaluation']['arms'] = ['zero','shared','source','linear']
     binding = {'node_id': 'source'}
     (source/'metrics.json').write_text(json.dumps({'status':'completed', 'evaluation_completed':True, 'research':binding}))
     (source/'config.yaml').write_text(yaml.safe_dump(dict(config, research=binding)))
@@ -117,9 +118,14 @@ def test_reused_inputs_reject_changed_scope_or_file_and_never_link_source(tmp_pa
                 'files':[{'ref':data.ref(cached), 'destination':'cache/A-statistics.npz'}]}
     path = tmp_path/'reuse.json'; path.write_text(json.dumps(manifest))
     config['reuse'] = data.ref(path)
+    config['evaluation']['arms'] = ['linear']
     data.import_cached_inputs(destination, config)
     copied = destination/'cache/A-statistics.npz'
     assert copied.read_bytes() == cached.read_bytes() and copied.stat().st_ino != cached.stat().st_ino
+    config['evaluation']['new_protocol'] = True
+    with pytest.raises(ValueError, match='evaluation protocol'):
+        data.import_cached_inputs(destination, config)
+    config['evaluation'].pop('new_protocol')
     config['seed'] = 2
     with pytest.raises(ValueError, match='frozen seed'):
         data.import_cached_inputs(destination, config)

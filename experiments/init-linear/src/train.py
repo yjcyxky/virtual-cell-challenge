@@ -11,7 +11,7 @@ import time
 import numpy as np
 import yaml
 import wandb
-from data import ROOT, prepare, write_json, ref
+from data import ROOT, prepare, write_json, ref, verify_reference_reuse
 from model import fit
 from evaluation import generate, evaluate
 
@@ -79,12 +79,16 @@ def main():
             with (checkpoint_dir/'ridge.tmp').open('wb') as stream:
                 np.savez_compressed(stream, **model)
             (checkpoint_dir/'ridge.tmp').replace(checkpoint)
+        references = verify_reference_reuse(output, model, config) if 'reference_reuse' in config else {}
         run.log({'train/masked_mse': float(model['training_mse']), 'train/tasks': int(model['training_tasks']),
                  'train/complete': 1, 'resources/max_rss_gib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/2**20})
         print(f'Analytic ridge training complete: masked MSE={float(model["training_mse"]):.8f}', flush=True)
         generate(output, model, axis, split, config)
         del model
         result = evaluate(output, split, config, run)
+        for panel, arms in references.items():
+            result[panel].update(arms)
+            run.log({f'reference/{panel}/{arm}/Overall': item['Overall'] for arm, item in arms.items()})
         metrics = {'status': 'completed', 'research': research, 'execution': execution, 'evaluation_completed': True,
                    'S2': {'Overall': result['all']['linear']['Overall']}, 'evaluation': result,
                    'checkpoint_ref': ref(checkpoint), 'predictions_ref': ref(output/'predictions/manifest.json'),
@@ -92,12 +96,20 @@ def main():
                    'wandb_sync': 'online', 'preparation': prepared,
                    'elapsed_seconds_this_attempt': time.monotonic()-started,
                    'resources': {'max_rss_gib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/2**20}}
+        for name in ('representation', 'reference-reuse'):
+            path = output/'cache'/f'{name}.json'
+            if path.exists():
+                metrics[name.replace('-', '_')+'_ref'] = ref(path)
         write_json(output/'metrics.json', metrics)
         artifact = wandb.Artifact(config['run_id']+'-result', type='model', metadata={'research': research})
         artifact.add_file(str(checkpoint), name='ridge.npz')
         artifact.add_file(str(output/'metrics.json'), name='metrics.json')
         artifact.add_file(str(output/'config.yaml'), name='config.yaml')
         artifact.add_file(str(output/'predictions/manifest.json'), name='prediction-manifest.json')
+        for name in ('representation', 'reference-reuse'):
+            path = output/'cache'/f'{name}.json'
+            if path.exists():
+                artifact.add_file(str(path), name=f'{name}.json')
         logged = run.log_artifact(artifact)
         logged.wait()
         metrics['artifact'] = logged.qualified_name

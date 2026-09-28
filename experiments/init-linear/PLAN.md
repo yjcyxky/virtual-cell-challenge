@@ -2,7 +2,40 @@
 
 本 Experiment 管正则化线性响应路线；首个 run 为 `init-linear-s01`，比较 `C-BASE`，方法 `M-BASE`，证据问题 `E-BASE`。全部生效条件在 configs/s2-h1-s01.json 与 DAG 冻结，执行产物进入 outputs/init-linear-s01/。
 
-## 当前模型实验：C-RIDGE-STRENGTH
+## 当前模型实验：C-PROGRAM
+
+问题：**在相同输入覆盖、响应头、正则和生成器下，NTC背景的功能程序表示是否优于训练内PCA、匹配随机程序及原始表示，并超过shared？** 本轮仅检验NTC表示，不把它当成响应输出低秩表示或未见靶点先验的检验。初始依据为文献卡片L03/L05；实际优劣由本轮实验决定。
+
+四个独立拟合共用本Experiment代码/环境：`init-program-raw-s01`、`init-pca-s01`、`init-program-s01`、`init-random-program-s01`。继续S2-H1/context-seen/seed1；四训练背景、两来源研究，H1标签仅在evaluator使用。原始控制必须重拟合，因为表示输入覆盖及统一尺度与旧控制不同；不把旧alpha=0.1无条件头作为本轮匹配控制。
+
+### 冻结表示与可归因边界
+
+- [Reactome官方gene-set下载](https://reactome.org/download-data)是外部注释来源，不是模型有效证据。本地GMT为2026-09-14取得的内容快照，以`8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4`冻结；没有从文件推定未知发布版本。HGNC同样按既有内容哈希固定。只取R-HSA条目，经既有ChallengeIdentity映射，保留训练四背景共同实测轴内大小10–500的模块，重复成员集按稳定ID保留首项，不依据响应选择模块。
+- 6203个训练共同实测基因中，1020个模块覆盖4129个基因、47603条成员边。**这个交集仅限制NTC表示**；训练、预测和评分仍使用既有完整官方轴及各背景测量掩码，不能把输出缩成4129基因。
+- `raw`：上述同一4129基因上的NTC均值，用训练背景均值的非零SVD方向精确重参数化，不丢弃可拟合线性信息。
+- `pca`：在四背景的32592个输入NTC细胞上拟合32维随机化PCA；先按原背景实测完整轴CP10k/log1p，再取共同表示轴。四背景总权重相等，中心为四背景NTC均值平均；不读H1 NTC或任何扰动响应。固定seed=1729、oversample=16、power_iterations=2，不按解释率或评分选秩。
+- `program`：成员矩阵做基因度数与模块大小的双侧平方根归一化，以固定seed=1729的Gaussian sketch压到32列，再QR得到正交基。这是对模块核的固定近似，不复现GEARS图网络。使用sketch而非截断图SVD，以避免只保留大连通分量而悄然移除部分基因。
+- `random_program`：对真实成员矩阵执行每条边10次成功double-edge swap，逐基因度数、逐模块大小及覆盖完全保留；再使用与真实程序相同的sketch/QR。记录实际边重叠及交换数。一个随机图seed只支持初筛，不代表整个随机先验分布。
+- 三候选都32维；原始控制是未压缩参照，等效训练NTC秩最多3。所有臂的context embedding用一个训练内标量缩放，使四背景平均平方范数为1；不逐轴白化，不看H1适配尺度。靶点ID、原NTC靶基因值/5及测量标记、截距、alpha=1、细胞权重和解析解一致。四个背景的条件特征有效秩仍有限，32维不增加独立背景数。
+- H1只在推断时投影其输入NTC均值；缺少表示基因时使用训练中心。响应头对全训练缺测输出基因给零Δ；缺少特定target×gene监督时保留原条件/截距回退。四臂完全一致，本轮不同时修复这一结构问题。
+
+### 完整执行、资源与参照复用
+
+完整配置位于`configs/s2-h1-{program-raw,pca,program,random-program}-s01.json`。唯一候选间/相对匹配raw控制的配置变化为`representation.kind`。源码、配置、PLAN及来源清单提交并通过门禁后，依次执行`./reproduce.sh --run-id <ID>`；同条件中断按`--resume`恢复完整解析checkpoint。
+
+每run独立复制已冻结输入、统计及匹配bundles，完整拟合全部允许训练任务、保存全18,533基因轴新模型预测，并在H1实测轴的280靶/25官方重叠靶上执行官方cell-eval2六分项。输入与评分NTC保持隔离，评分公式、reference、anchors、采样种子不变。
+
+剩余磁盘约73GB；四run预计共需约56GiB，每run峰值内存约60GiB，顺序运行。为避免重复保存约66GiB不变预测，四臂共同只生成并重评`linear`。zero/shared/source参照复用`init-linear-s01`的已完成结果，配置冻结来源metrics/config/checkpoint/预测清单及逐评分文件哈希；运行时核对数据、划分、生成、种子、评分参数完全相同，并验证新拟合shared响应矩阵逐元素一致、三份原参照预测文件哈希不变。metrics明确标注reused_from，历史预测和原始评分文件保留。复用不覆盖、删除或重写历史产物。
+
+### 预注册判据与结束条件
+
+主指标仍为H1全280靶的Overall。真实程序必须比`max(raw, PCA, random_program, shared)`高至少0.02，且25官方重叠靶相对这个主面板最强参照下降不超过0.02，才将E-PROGRAM记为生物程序优越性的筛选线索；并单列program−raw/PCA/random/shared所有配对差。该0.02为实用阈值，不是显著性判断。
+
+若未支持，不把所有表示或先验判为无效。任何候选若比`max(raw, shared)`高至少0.02且同样通过重叠面板门槛，单独记录其开发线索并优先在新背景确认；若均未达到，则停止这轮NTC投影比较，转向响应表示/缺测回退的独立归因，保持shared强参照。新背景、改变表示注入位置或获得新训练监督可重开；不追加本轮维数、图seed或alpha网格。
+
+全部四run训练与两个面板评分完成、checkpoint/预测/官方raw及normalized六项/Overall保存并同步W&B后，报告配对效应、逐靶波动、有效数、181仅K562/99四背景支持靶分层，以及训练内表示秩/覆盖/随机化诊断，关闭E-PROGRAM并提交。H1与此前官方反馈均属开发证据；本轮不因局部涨分宣称SOTA。
+
+## 正则强度实验：C-RIDGE-STRENGTH
 
 run `init-linear-nocontext-a01-s01`（M-RIDGE-WEAKREG / E-RIDGE-STRENGTH）检验上一轮剩余性能差距是否部分来自正则强度。以已完成 `init-linear-nocontext-s01` 为匹配控制，唯一实际配置差异是 `model.alpha: 1.0 → 0.1`；响应头继续禁用 NTC 条件项，保留同一目标 ID、截距及其正则形式、细胞数/100 权重、测量掩码、数据/划分、生成器和官方评分。全部参数从头求解析解，不复用旧权重。仅运行这一个事先登记的 alpha 候选，不追加在线网格搜索。
 

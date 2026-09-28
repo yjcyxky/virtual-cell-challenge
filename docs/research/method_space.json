@@ -812,9 +812,12 @@
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
-        "L03"
+        "L03",
+        "E-PROGRAM"
       ],
-      "selection_basis": "待检验假设；没有引用既有实验效果"
+      "selection_basis": "待检验假设；没有引用既有实验效果",
+      "implementation_scope": "四训练背景输入NTC细胞、等背景权重的32维随机化PCA；不使用扰动标签或留出NTC拟合。",
+      "local_status_scope": "首轮仅S2-H1/context-seen/seed1上的NTC表示；不代表响应输出表示或全局未见靶点先验。"
     },
     "M-PROGRAM": {
       "description": "真实基因程序表示",
@@ -835,9 +838,13 @@
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
-        "L05"
+        "L05",
+        "E-PROGRAM",
+        "DS-REACTOME-SNAPSHOT"
       ],
-      "selection_basis": "待检验假设；没有引用既有实验效果"
+      "selection_basis": "待检验假设；没有引用既有实验效果",
+      "implementation_scope": "固定Reactome成员矩阵归一化后Gaussian sketch/QR的32维NTC表示；不是GEARS复现。",
+      "local_status_scope": "首轮仅S2-H1/context-seen/seed1上的NTC表示；不代表响应输出表示或全局未见靶点先验。"
     },
     "M-RANDOM-PROGRAM": {
       "description": "等维/覆盖/模块大小匹配的随机程序",
@@ -858,9 +865,13 @@
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
-        "L05"
+        "L05",
+        "E-PROGRAM",
+        "DS-REACTOME-SNAPSHOT"
       ],
-      "selection_basis": "待检验假设；没有引用既有实验效果"
+      "selection_basis": "待检验假设；没有引用既有实验效果",
+      "implementation_scope": "对同一成员矩阵做逐基因/逐模块度数守恒的随机化，再用同一32维sketch/QR；单个预定图seed。",
+      "local_status_scope": "首轮仅S2-H1/context-seen/seed1上的NTC表示；不代表响应输出表示或全局未见靶点先验。"
     },
     "M-PRETRAIN": {
       "description": "冻结scGPT表示",
@@ -1220,6 +1231,30 @@
       ],
       "selection_basis": "条件项消融增益未达到阈值且仍低于shared；正则强度是待分离的机制，不先宣称其为原因。",
       "local_status_scope": "仅未支持alpha=0.1相对alpha=1在S2-H1/context-seen/seed1上提升Overall至少0.02的主张；观察到+0.017448正向效应，仍低于shared。不是否定所有弱正则方法或跨背景结论。"
+    },
+    "M-PROGRAM-RAW": {
+      "description": "功能程序覆盖匹配的原始NTC表示控制",
+      "axes": {
+        "T": "T1",
+        "D": "D1",
+        "R": "R0",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I6",
+        "G": "G1"
+      },
+      "signature": "T1-D1-R0-A0-L1-O0-V5-I6-G1",
+      "prior": "无功能结构先验；仅匹配Reactome覆盖与训练内总尺度，保留原始可拟合NTC均值信息。",
+      "local_status": "UNTESTED",
+      "execution_role": "control",
+      "cost": "low",
+      "evidence_ids": [
+        "E-PROGRAM",
+        "DS-REACTOME-SNAPSHOT"
+      ],
+      "selection_basis": "为C-PROGRAM隔离输入覆盖和特征尺度与表示结构的效应。"
     }
   }
 }
