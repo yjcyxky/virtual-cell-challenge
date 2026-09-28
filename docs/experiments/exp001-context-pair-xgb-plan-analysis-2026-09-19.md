@@ -1,6 +1,6 @@
 # EXP001 实验计划分析：预期目标、合理性与收益
 
-> 本文是 2026-09-19 的历史设计评审，所引计划固定到历史 Git 版本。当前背景与关系条件化模型以 [Issue #31](https://github.com/yjcyxky/virtual-cell-challenge/issues/31) 为准。
+> 本文是 2026-09-19 的历史设计评审，所引计划固定到历史 Git 版本。归档时后续路线参照 [Issue #31](https://github.com/yjcyxky/virtual-cell-challenge/issues/31)；当前研发入口见 [RESEARCH.md](../RESEARCH.md)。
 
 | 字段 | 内容 |
 |---|---|

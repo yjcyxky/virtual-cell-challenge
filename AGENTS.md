@@ -76,6 +76,8 @@ experiments/<experiment_id>/
 
 目录和产物按需创建。Experiment 根目录同时承担代码、配置、依赖、研究文档和本次训练产物的管理。
 
+查找或新增跨实验文档时，按 [docs 索引](docs/README.md) 归档；单次训练的方案和结果继续写入对应 Experiment 的 PLAN/REPORT。
+
 禁止在 Experiment 内再建立 `runs/`、`outputs/<run_id>/`、`preflight/`、`preparation/` 等第二套实验或阶段管理目录。输入校验、预处理、训练和评估只是同一 Experiment 的流程阶段，而不是独立的 run。
 
 ## 代码保留与主动清理

@@ -10,7 +10,7 @@ VCC2026 官方任务是未见扰动响应的细胞背景泛化；官方只给新
 
 ## 原始覆盖核查
 
-本轮只读审计读取 `obs` 元数据，没有读取表达矩阵。查询集合是 [官方靶点表](../data/raw/arc_vcc2026_controls/pert_counts.csv) 的 300 个唯一 symbol。H1 使用 `obs/target_gene`，Replogle/Nadig 使用 `obs/gene`，并以 `gene_id` 与 HGNC 作独立核对；不把 `sgID_AB` 构建体身份直接当 gene symbol。
+本轮只读审计读取 `obs` 元数据，没有读取表达矩阵。查询集合是 [官方靶点表](../../data/raw/arc_vcc2026_controls/pert_counts.csv) 的 300 个唯一 symbol。H1 使用 `obs/target_gene`，Replogle/Nadig 使用 `obs/gene`，并以 `gene_id` 与 HGNC 作独立核对；不把 `sgID_AB` 构建体身份直接当 gene symbol。
 
 | 原始来源 | 原始扰动靶点数 | 与官方 300 的交集 |
 | --- | ---: | ---: |
@@ -42,7 +42,7 @@ VCC2026 官方任务是未见扰动响应的细胞背景泛化；官方只给新
 
 针对“两届是否为相同 300 靶点”的疑问，重新从 Arc 官方 GCS 读取 [2025 Training CSV](https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/train/pert_counts_Training.csv)、[Validation CSV](https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/validation/pert_counts_Validation.csv)、[Test CSV](https://storage.googleapis.com/arc-institute-virtual-cell-atlas/virtual-cell-challenge/2025/test/pert_counts_Test.csv)，三者均与本地原始文件字节相同，分别含 150/50/100 个靶点。独立审计又确认对应三个 H5AD 的 `obs/target_gene`（排除 non-targeting）与各自 CSV 集合完全一致。
 
-2026 侧直接读取原始 ZIP 中的 `pert_counts.csv`，与解压文件字节相同，SHA256 为 `f57edd7b912ebd718efc7ee9d0f334772513e7cc418d133ce525470e373b3276`，符合 [SOURCE.json](../data/raw/arc_vcc2026_controls/SOURCE.json)；ZIP manifest 指定 `vcc2026-val-1`。因此本结论对应这个已登记的官方 2026 快照，不声称重新下载了当前服务端 2026 ZIP。
+2026 侧直接读取原始 ZIP 中的 `pert_counts.csv`，与解压文件字节相同，SHA256 为 `f57edd7b912ebd718efc7ee9d0f334772513e7cc418d133ce525470e373b3276`，符合 [SOURCE.json](../../data/raw/arc_vcc2026_controls/SOURCE.json)；ZIP manifest 指定 `vcc2026-val-1`。因此本结论对应这个已登记的官方 2026 快照，不声称重新下载了当前服务端 2026 ZIP。
 
 两届各有 300 靶点，交集为 13+4+8=25，各自独有 275。`TMSB4X` 仅在 2025，`ABCD1` 仅在 2026。完整交集为：ACLY、ADNP、AKT2、ANKZF1、BRPF1、HDAC8、HSBP1、MED13、MED15、MED25、MTA1、NFE2L1、PLAGL2、RNF2、SHPRH、SIN3B、SLIRP、SMARCA5、STAT6、TARBP2、TRAPPC6A、TWF2、ZFP62、ZNF32、ZNF714。
 
@@ -63,7 +63,7 @@ CollecTRI 的官方接口明确提供 TF、target、正/负调控权重与可用
 
 STRING 明确区分 functional 与 physical networks；前者涵盖共同生物过程，后者也可能表示同一复合体而非直接结合。不能给普通 combined score 人为加上因果符号。若使用新版另外提供的有向调控信息，必须明确具体字段和版本，不能将已有无方向网络重新解释为有符号图。[STRING 网络与证据说明](https://string-db.org/help/scores/)、[STRING 2025 原始论文](https://pmc.ncbi.nlm.nih.gov/articles/PMC11701646/)
 
-Reactome 的核心是经整理的反应与通路；现有 GMT 的成员关系是对这些机制的简化，不足以决定 knockdown 的净效应。项目已经登记 STRING / Reactome / GO，优先核查并复用现有版本。[Reactome 数据模型说明](https://reactome.org/what-is-reactome)、[本地登记](datasets/data-inventory-audit-2026-09-18.md)
+Reactome 的核心是经整理的反应与通路；现有 GMT 的成员关系是对这些机制的简化，不足以决定 knockdown 的净效应。项目已经登记 STRING / Reactome / GO，优先核查并复用现有版本。[Reactome 数据模型说明](https://reactome.org/what-is-reactome)、[本地登记](../datasets/data-inventory-audit-2026-09-18.md)
 
 ## 背景信息与因果解释
 

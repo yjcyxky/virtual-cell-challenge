@@ -21,8 +21,8 @@ class InventoryTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.directory = self.root / "data/raw/demo"
         self.directory.mkdir(parents=True)
-        (self.root / "docs").mkdir()
-        (self.root / "docs/README.md").write_text("Test scope")
+        (self.root / "docs/ideas").mkdir(parents=True)
+        (self.root / "docs/ideas/challenge-overview.md").write_text("Test scope")
         self.file = self.directory / "counts.csv"
         self.file.write_bytes(b"cell,gene,count\na,TP53,2\n")
         digest = audit.sha256(self.file.read_bytes())

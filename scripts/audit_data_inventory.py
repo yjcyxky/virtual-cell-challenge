@@ -153,7 +153,7 @@ def coverage_summary(config, source):
 def run_audit(root: Path, workers=2, only=None) -> dict:
     started, t0 = datetime.now(timezone.utc).isoformat(), time.monotonic()
     inputs = {p: (root / p).read_bytes() for p in (
-        "docs/README.md", "data/sources.json", "data/registry.lock.json", "data/MANIFEST.tsv")}
+        "docs/ideas/challenge-overview.md", "data/sources.json", "data/registry.lock.json", "data/MANIFEST.tsv")}
     registered = json.loads(inputs["data/registry.lock.json"])["sources"]
     if only:
         unknown = set(only) - {s["id"] for s in registered}

@@ -1,8 +1,10 @@
 # VCC 2026 推荐数据集入库核查
 
+> 历史核查快照：文中的下载状态、目录和协议均指核查时点；原审计 JSON 的路径与哈希保持不变。当前训练约定见 [AGENTS.md](../../AGENTS.md)。
+
 核查日期：2026-09-18，America/New_York。内容校验执行时间为 21:20–21:23，耗时 187.8 秒。
 
-依据：[challenge 摘要](../README.md)、[训练协议](../../CLAUDE.md)、[数据源登记](../../data/sources.json)、[文件锁](../../data/registry.lock.json)、[落盘清单](../../data/MANIFEST.tsv) 和各数据源的 `SOURCE.json`。
+依据：当时的 `docs/README.md` challenge 摘要、`CLAUDE.md` 训练协议、[数据源登记](../../data/sources.json)、[文件锁](../../data/registry.lock.json)、[落盘清单](../../data/MANIFEST.tsv) 和各数据源的 `SOURCE.json`。原文档版本按审计 JSON 的哈希及 Git 历史追溯；后续保留的摘要已移至 [challenge-overview.md](../ideas/challenge-overview.md)，不声称与当时审计版本相同。
 
 **结论：尚不能说推荐数据集都已规整完成。已登记的下载范围全部完整；推荐资源中 scBaseCount 缺失、Tahoe 仅选取了部分分片；跨来源的统一训练语料尚未生成。**
 

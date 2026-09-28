@@ -66,7 +66,7 @@ H1 已用于开发与选模，不能称为独立测试；H1 与 A/B/C 绝对分�
 这些结果没有证明失败主要由脏数据造成，也没有证明清洗必然提高成绩。
 
 来源：[exp007 PLAN](../exp007/PLAN.md)、[REPORT](../exp007/REPORT.md)、
-[模型特征](../exp007/src/features.py)、[评分协议审计](../../docs/exp007-official-scoring-protocol-audit.md)。
+[模型特征](../exp007/src/features.py)、[评分协议审计](../../docs/experiments/exp007-official-scoring-protocol-audit.md)。
 
 ### 现有预处理的边界
 
@@ -143,7 +143,7 @@ H1 按 Q13 在 batch 内固定种子近似 1∶1 分池；Q24 已确定真实参
 不能只更换 scorer 的 control。新数据、新轴、新面板须新建评分基准，不复用历史 anchors。
 保留零响应与同靶点响应转移作为候选强对照，最终训练组合与选模方案仍待确定。
 
-来源：[本地两实验逐项审计](../../docs/exp007-official-scoring-protocol-audit.md)、
+来源：[本地两实验逐项审计](../../docs/experiments/exp007-official-scoring-protocol-audit.md)、
 [官方 baseline 固定源码](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py)、
 [官方评分与 held-out controls 说明](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/vcc2026_metrics/vcc2026-metrics.md#7-submission-file-requirements)。
 

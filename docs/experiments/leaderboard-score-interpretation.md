@@ -81,9 +81,9 @@ PDS 衡量扰动身份的可区分性：随机配对或相同响应预测的无�
 | exp001 ContextRelationXGB / 20260923-a | 0.007589 | 0 | 0.001819 | -1.722954 | -0.022812 | -0.082562 | -0.303153 |
 | exp003 ContextModuleCVAE / cycle 4 | 0.002145 | 0 | -0.156851 | -0.024458 | -0.033825 | -0.002412 | -0.035900 |
 
-来源：[exp002 官方结果](../experiments/exp002-response-transfer-validation/outputs/20260922-d/official-summary.json)、[exp001 官方结果](../experiments/exp001-context-pair-xgb/outputs/20260923-a/official-summary.json)、[exp003 官方结果](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/official-summary.json)。
+来源：[exp002 官方结果](../../experiments/exp002-response-transfer-validation/outputs/20260922-d/official-summary.json)、[exp001 官方结果](../../experiments/exp001-context-pair-xgb/outputs/20260923-a/official-summary.json)、[exp003 官方结果](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/official-summary.json)。
 
-CVAE 相对 SharedResponse 的 Overall 增加 `0.161938`，其中 Fidelity 的单项改善对总分贡献 `1.414575/6 = 0.235762`，同时 PDS、NMAE 和 Reach 下降。故目前的进展主要是摆脱 Fidelity 的大额负分，不能说靶点特异预测全面提高。Fidelity 含覆盖因素，旧分数低本身也不能区分“没有预测出足够有置信度的变化”与“方向预测错误”；需要原始 DE 表进一步拆解。[归档逐项比较](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/official-comparison.json)
+CVAE 相对 SharedResponse 的 Overall 增加 `0.161938`，其中 Fidelity 的单项改善对总分贡献 `1.414575/6 = 0.235762`，同时 PDS、NMAE 和 Reach 下降。故目前的进展主要是摆脱 Fidelity 的大额负分，不能说靶点特异预测全面提高。Fidelity 含覆盖因素，旧分数低本身也不能区分“没有预测出足够有置信度的变化”与“方向预测错误”；需要原始 DE 表进一步拆解。[归档逐项比较](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/official-comparison.json)
 
 这些是完整流程的比较。旧模型使用五个训练背景，新提交使用排除 H1 的四背景模型；架构、目标、数据覆盖及生成方法均有变化，不能把差值单独归因于 CVAE 架构。
 
@@ -93,7 +93,7 @@ CVAE 相对 SharedResponse 的 Overall 增加 `0.161938`，其中 Fidelity 的�
 
 ### 跨背景泛化比继续优化训练误差更紧迫
 
-H1 留出验证第 4 周期最佳分为 `-0.067635835`，第 20 周期为 `-0.105008598`。该折在完整覆盖与稳定条件满足后正常早停。第 4→20 周期，四个训练背景的 response loss 均下降，response skill 相对零响应均提高；但 H1 验证变差。此证据支持泛化/目标适配问题，不能由此认定多训练一定会提高官方分数，也不能证明所有其他背景都会如此。[该折完成记录](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/holdout-H1/complete.json)、[周期 4](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/cache/holdout-H1/cycle-0004.json)、[周期 20](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/cache/holdout-H1/cycle-0020.json)
+H1 留出验证第 4 周期最佳分为 `-0.067635835`，第 20 周期为 `-0.105008598`。该折在完整覆盖与稳定条件满足后正常早停。第 4→20 周期，四个训练背景的 response loss 均下降，response skill 相对零响应均提高；但 H1 验证变差。此证据支持泛化/目标适配问题，不能由此认定多训练一定会提高官方分数，也不能证明所有其他背景都会如此。[该折完成记录](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/holdout-H1/complete.json)、[周期 4](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/cache/holdout-H1/cycle-0004.json)、[周期 20](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/cache/holdout-H1/cycle-0020.json)
 
 最佳模型 297 个 H1 靶点的辅助研究指标取逐任务均值：
 
@@ -106,15 +106,15 @@ H1 留出验证第 4 周期最佳分为 `-0.067635835`，第 20 周期为 `-0.10
 | 预测/观测总计数均值比 | 1.179390 |
 | 总计数 CV：预测 / 观测 | 0.105064 / 0.348275 |
 
-来源：[逐任务指标](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/holdout-H1/metrics.parquet)，列定义见 [evaluation.py](../experiments/exp003-context-module-cvae/src/evaluation.py)。这些是本地共同基因轴等既定研究口径，不是官方 A/B/C 的 raw/scaled 分数，也不与官方方向指标混同。
+来源：[逐任务指标](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/holdout-H1/metrics.parquet)，列定义见 [evaluation.py](../../experiments/exp003-context-module-cvae/src/evaluation.py)。这些是本地共同基因轴等既定研究口径，不是官方 A/B/C 的 raw/scaled 分数，也不与官方方向指标混同。
 
 新模型整体响应幅度已接近观测，但方向和相关性弱；不能继续用历史模型“幅度偏大”的诊断直接解释它。总计数分布明显偏窄是另一个校准信号，但仅凭 library-size CV 不能证明所有基因都欠离散，更不能宣称它已被证实为负分的唯一原因。
 
 ### 监督覆盖不足且主目标与评分仍有差异
 
-此次官方提交有 **7,632/18,533（41.18%）readout 没有训练测量监督**，**42/300（14%）靶点不在合格训练任务中**。生成时保留原模型输出，没有对这些 readout 自动回退为 NTC。这是该 H1 留出 checkpoint 的具体限制，不是全项目所有数据都缺少这些基因。[导出身份](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/export-identity.json)、[比较中的限制记录](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/official-comparison.json)
+此次官方提交有 **7,632/18,533（41.18%）readout 没有训练测量监督**，**42/300（14%）靶点不在合格训练任务中**。生成时保留原模型输出，没有对这些 readout 自动回退为 NTC。这是该 H1 留出 checkpoint 的具体限制，不是全项目所有数据都缺少这些基因。[导出身份](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/export-identity.json)、[比较中的限制记录](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/official-comparison.json)
 
-主 delta loss 只在 **6,114** 个共同可测基因上计算 `log1p(CP10K(weighted mean counts))`，比较预测扰动与预测 NTC；官方表达比较使用 group-sum 的 `log1p(CP50K)`、DE 使用细胞归一化表达及 Wilcoxon，并以真实 NTC 为参照。NTC 辅助锚已经存在，但同样只作用于共同轴；原生轴的 NB 与总计数约束承担不同职责。因而“主训练误差下降”不等于“全部官方 readout 上的真实 NTC 相对效应准确”。这是一项待通过对照验证的目标适配问题，不是本次确认的实现 bug。[目标实现](../experiments/exp003-context-module-cvae/src/objectives.py)、[固定训练统计的轴](../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/cache/holdout-H1/task-statistics/complete.json)、[官方归一化及参照定义](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/metrics.md#12-normalization)
+主 delta loss 只在 **6,114** 个共同可测基因上计算 `log1p(CP10K(weighted mean counts))`，比较预测扰动与预测 NTC；官方表达比较使用 group-sum 的 `log1p(CP50K)`、DE 使用细胞归一化表达及 Wilcoxon，并以真实 NTC 为参照。NTC 辅助锚已经存在，但同样只作用于共同轴；原生轴的 NB 与总计数约束承担不同职责。因而“主训练误差下降”不等于“全部官方 readout 上的真实 NTC 相对效应准确”。这是一项待通过对照验证的目标适配问题，不是本次确认的实现 bug。[目标实现](../../experiments/exp003-context-module-cvae/src/objectives.py)、[固定训练统计的轴](../../experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/cache/holdout-H1/task-statistics/complete.json)、[官方归一化及参照定义](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/metrics.md#12-normalization)
 
 ## 建议的改进顺序与验证方式
 
@@ -124,7 +124,7 @@ H1 留出验证第 4 周期最佳分为 `-0.067635835`，第 20 周期为 `-0.10
 2. **优先处理监督覆盖。** 对已训练/未训练 readout、已见/未见靶点分别报 raw 指标与效应误差贡献；对新训练方案评估逐背景可测轴的 masked response 监督，补充测量覆盖及跨背景支持，不将缺测补成零。若最终提交采用包含 H1 的模型或多折集成，应在新的明确配置中验证；当前四背景单折结果不能代表全部数据训练的上限。不能未经验证就把未监督基因回退为 NTC 后宣称改进。
 3. **校准 NTC 与计数分布，再判断 DE 改进。** 用独立真实 NTC 检查生成 NTC 的均值、零率、逐基因方差和总计数分布；跑相同 DE 流程测量伪变化。针对当前总计数均值偏高、CV 偏窄的证据，分别固定响应均值或分布参数做对照，验证哪一项影响 NMAE/Fidelity/Jaccard。主 delta 两个预测分支可能同时带有残余基线偏移，需检验辅助 NTC 锚是否足够；目前没有完成这一因果检验。
 4. **让可优化目标覆盖官方真正关心的效应。** 在新 run 中对照不同归一化轴/尺度、真实 NTC 相对误差及可靠效应权重，同时分开 on-target 与下游 readout。目标是提高靶点间可区分性、效应方向与幅度；不能靠增加所有扰动的共同变化去换 Fidelity，或仅优化 loss 数字。低表达 LFC、生成方差与 DE 覆盖需联查，避免只调整幅度。
-5. **用跨背景结果决定复杂度。** 当前 H1 折在训练拟合继续改善时留出变差，优先评估正则化、背景迁移与简单对照。现有历史消融没有证明真实先验的总体收益，后续先验证可迁移响应，再用控制容量的消融检验模块、状态及先验增益；不能据一次负结果否定生物先验。继续训练、扩大模型或增加知识模块都需要新的证据支撑。[历史消融与限制](../experiments/exp003-context-module-cvae/REPORT.md)
+5. **用跨背景结果决定复杂度。** 当前 H1 折在训练拟合继续改善时留出变差，优先评估正则化、背景迁移与简单对照。现有历史消融没有证明真实先验的总体收益，后续先验证可迁移响应，再用控制容量的消融检验模块、状态及先验增益；不能据一次负结果否定生物先验。继续训练、扩大模型或增加知识模块都需要新的证据支撑。[历史消融与限制](../../experiments/exp003-context-module-cvae/REPORT.md)
 
 每项涉及数据、模型或训练条件变化时另建 run，保持原结果及原评分口径。沿用正式六项评分、raw 指标与固定本地参照，先在留出背景验证，再用官方 validation 检查迁移；已用于选择的 validation 属于开发反馈。正分不是唯一验收条件，必须确认是否同时改善响应区分、幅度及分布，而不是仅减少一项惩罚。
 

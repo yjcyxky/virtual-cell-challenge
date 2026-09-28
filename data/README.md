@@ -2,7 +2,7 @@
 
 这里保存已登记的外部数据、官方任务输入和来源记录，**不是已经统一好的训练集**。2026 官方不提供 challenge-specific 训练集；参赛者根据未扰动背景和 CRISPRi 靶基因预测扰动后表达，官方对照不是扰动监督标签。[Arc 官方任务说明](https://arcinstitute.org/news/virtual-cell-challenge-2026)
 
-本页以 [CLAUDE.md](../CLAUDE.md)、实际文件和核验记录为准。`sources.json` 中的 `tier`、`why`、`caveat` 含有历史判断，不能直接当作质量认证或已验证的建模结论。
+当前使用约定以 [AGENTS.md](../AGENTS.md) 为准；下文数据状态按注明的快照时点阅读，后续核查见 [数据文档索引](../docs/datasets/README.md)。`sources.json` 中的 `tier`、`why`、`caveat` 含有历史判断，不能直接当作质量认证或已验证的建模结论。
 
 ## 当前登记与下载范围
 
@@ -37,7 +37,7 @@ Tahoe 使用 `n_shards=300`、`shard_stride=11`。300/3,388 只是分片数量�
 | ESM-2 650M | `models/esm2_650m/` | 5 个文件，2.61 GB |
 | Arc SE-600M | `models/arc_se600m/` | 3 个文件，5.68 GB；包含上游 `se600m_epoch4.safetensors` |
 
-这些是第三方输入，**不是本项目自训练产物**。核查时这 8 个文件仍有写权限；按协议应作为固定版本输入使用，实验 manifest 必须记录内容哈希。自训练模型只能写入本轮实验的 `outputs/`。
+这些是第三方输入，**不是本项目自训练产物**。核查时这 8 个文件仍有写权限；按协议应作为固定版本输入使用，在 Experiment 的实际配置中记录内容哈希。自训练模型写入对应 Experiment 的 `checkpoints/`。
 
 ## 目录与写入约定
 
@@ -54,12 +54,14 @@ data/
 └── processed/         历史目录，目前为空；没有现成的统一训练语料
 
 models/<model_id>/                  第三方模型与权重
-experiments/<id>/inputs/            对固定输入的引用
-experiments/<id>/outputs/           解压、预处理、特征、切分、模型及训练日志
+experiments/<id>/config.yaml        实际配置及固定输入引用
+experiments/<id>/cache/             解压、预处理、特征和切分
+experiments/<id>/checkpoints/       模型及完整训练状态
+experiments/<id>/predictions/       预测产物
 docs/datasets/                     数据说明与审计报告
 ```
 
-按照 `CLAUDE.md`，实验只读 `data/`，不得覆盖、删除或修改输入；**新的预处理、缓存、切分和增强结果写入各实验 `outputs/`**，不写回 `data/interim/`、`data/processed/` 或软链接目标。数据获取和注册是独立的入库步骤，不是实验预处理的输出。
+按照 [AGENTS.md](../AGENTS.md)，实验只读 `data/`，不得覆盖、删除或修改输入；**新的预处理、缓存、切分和增强结果写入对应 Experiment 的 `cache/`**，不写回 `data/interim/`、`data/processed/` 或软链接目标。数据获取和注册是独立的入库步骤，不是实验预处理的输出。
 
 已完成的原始数据文件和其 `SOURCE.json` 已去除写权限；scBaseCount 下载中的文件除外。`chmod a-w` 只是辅助保护，不等同于不可变存储或备份，不能宣称它能阻止所有误删、替换或权限变更。
 
@@ -137,7 +139,7 @@ A/B/C 对照的中位数接近 20k，但每个细胞并非恰有 20k 计数；�
 
 ## 核查和获取命令
 
-以下全局获取/核查工具通过已有的 `virtual-cell` 基础环境执行，不依赖仓库根目录 `.venv`；实验依赖仍按 `CLAUDE.md` 使用各实验独立的 uv 项目。
+以下全局获取/核查工具通过已有的 `virtual-cell` 基础环境执行，不依赖仓库根目录 `.venv`；实验依赖按 [AGENTS.md](../AGENTS.md) 使用各 Experiment 独立的 uv 项目。
 
 ```bash
 # 只读内容审计：每次使用新的报告文件名；--only 可排除正在下载的来源

@@ -1,5 +1,7 @@
 # scBaseCount 对 EXP001 的适用性评估
 
+> 历史评估快照：下文范围选择、用户决定状态及旧 run/阶段目录均属于 2026-09-19，当前研发从 [RESEARCH.md](../RESEARCH.md) 开始。第 5 节所列原产物和评估脚本在当前检出中未保留，不能直接按本文命令复现。
+
 评估日期：2026-09-19。**下载完整，数值层面可读取；不能把所选 scBaseCount 整体作为未扰动对照或 CRISPRi 监督训练集。原 PLAN 的 HepG2 任务覆盖门槛仍未通过，尚未启动新的模型训练。**
 
 本次只进行数据评估和准备，没有创建本地 `outputs/runs/`、W&B run 或模型 checkpoint。没有恢复用户移除的历史 preflight runs，没有修改共享 `data/`。原始 PLAN 从提交 `177f53c` 恢复；该历史版本仅实现过 S0 元数据审计，并没有可直接启动的 S1–S5 基线训练程序。
@@ -95,19 +97,21 @@ scBaseCount 增加的是可供状态表示学习的数据，**没有修复同批
 
 本次已提出范围选择，尚未收到用户决定。按原 PLAN §2.3、§3.2、§8.2，不能默认降低门槛并启动。现有仓库及历史提交也尚无 S1–S5 训练/评估实现，确认新 run 范围后仍需补齐、验证并冻结这些程序，不能把 `assess_data.sh` 当作训练入口。
 
-## 5. 证据与复现
+## 5. 原证据位置与复现限制
 
-- [完整性报告](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/integrity.json)
-- [全量结构与计数摘要](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/structure-summary.json)；[逐文件记录](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/structure-counts.jsonl)
-- [上游溯源与 XML 哈希](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/ena/provenance.json)
-- [全部文件接纳状态](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/admission.tsv)
-- [辅助候选清单](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/auxiliary-selection.proposed.json)
-- [原门槛覆盖](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/coverage-ntc50.json)；[40 门槛候选覆盖](../../experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/coverage-ntc40.json)
-- [新 run 修订草案](../../experiments/exp001-context-pair-xgb/RUN_PROPOSAL.md)；[候选配置](../../experiments/exp001-context-pair-xgb/configs/baseline-scbasecount.proposed.yaml)
+以下为当时记录的仓库相对路径，当前检出不存在这些文件；保留位置用于历史追溯，不作为可访问的证据链接。恢复相应产物及版本之前，本文数值只能作为历史报告引用。
+
+- 完整性报告：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/integrity.json`
+- 全量结构与计数摘要：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/structure-summary.json`；逐文件记录：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/structure-counts.jsonl`
+- 上游溯源与 XML 哈希：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/ena/provenance.json`
+- 全部文件接纳状态：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/admission.tsv`
+- 辅助候选清单：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/auxiliary-selection.proposed.json`
+- 原门槛覆盖：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/coverage-ntc50.json`；40 门槛候选覆盖：`experiments/exp001-context-pair-xgb/preparation/scbasecount-20260919/coverage-ntc40.json`
+- 新 run 修订草案：`experiments/exp001-context-pair-xgb/RUN_PROPOSAL.md`；候选配置：`experiments/exp001-context-pair-xgb/configs/baseline-scbasecount.proposed.yaml`
 
 评估依赖已按原 `uv.lock` 安装到 EXP001 独立环境，未修改基础 `virtual-cell`。Python 3.14.7/aarch64，XGBoost 3.3.0，cell-eval2 固定提交 `5e64833518a6603a0301cbe28185d49c30f4a986`；导入检查通过。计数、稀疏偏移、重复身份、轴顺序等 6 项边界测试通过。
 
-重复评估创建新的准备目录，不创建训练/W&B run，不覆盖已有报告：
+当时记录的评估命令如下；`assess_data.sh` 当前未保留，这不是现行评估或训练入口：
 
 ```bash
 cd experiments/exp001-context-pair-xgb
@@ -116,4 +120,4 @@ cd experiments/exp001-context-pair-xgb
 
 ENA 属于可更新的外部来源，重取结果可能变化；本次结论以已保存的 XML 快照及其哈希为准，不以未来在线内容替换本次证据。
 
-原始 XML 集中保存为评估目录中的 `upstream-xml-snapshots.tar.gz`，避免将数百页上游 XML 展开混入代码 diff；本地展开文件不单独提交。在该评估目录执行 `tar -xzf upstream-xml-snapshots.tar.gz` 可恢复原始路径，逐项 SHA-256 见 `assessment-identity.json` 和 `ena/provenance.json`。归档本身的 SHA-256 见 `verification.json`。
+当时原始 XML 集中保存为评估目录中的 `upstream-xml-snapshots.tar.gz`，避免将数百页上游 XML 展开混入代码 diff；本地展开文件不单独提交。如从历史来源恢复原归档，可在该评估目录执行 `tar -xzf upstream-xml-snapshots.tar.gz` 恢复原始路径，逐项 SHA-256 见 `assessment-identity.json` 和 `ena/provenance.json`。归档本身的 SHA-256 见 `verification.json`。

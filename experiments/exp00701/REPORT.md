@@ -10,7 +10,7 @@
 
 用户指出口径问题后重新核对：exp00701 的 evaluation.py 与 exp007 仅 bundle_id 名称不同，实际直接复用了 exp007 的 H1 reference 和 baseline/replicate anchors。三个新 run 中，生成输入 NTC 都是 38,176 个，与评分 reference 的交集也全部为 38,176；Fidelity baseline 均为 0.1650026331。exp004 的输入与参考 NTC 各 3,072 个且互不重叠，其 Fidelity baseline 为 0.561495。两者还存在 tiled/dispersed baseline、baseline profile 是否排除靶基因、真实扰动细胞数及基因轴的差异；同一官方包版本不等于同一评估协议。
 
-本次实施未处理[已有核查记录](../../docs/exp007-official-scoring-protocol-audit.md)中明确识别的 control 复用问题。共用 control 可能使基线估计误差相消，乐观偏差大小及对组间排序的影响尚未量化。不能把与榜单的差异仅归因于 context 不同，也不能由现有差距证明某一个因素解释了全部偏差。
+本次实施未处理[已有核查记录](../../docs/experiments/exp007-official-scoring-protocol-audit.md)中明确识别的 control 复用问题。共用 control 可能使基线估计误差相消，乐观偏差大小及对组间排序的影响尚未量化。不能把与榜单的差异仅归因于 context 不同，也不能由现有差距证明某一个因素解释了全部偏差。
 
 后续需要先固定互不重叠的输入/参考 NTC，同步重建相应输入特征、预测、baseline 与 replicate anchors，在统一协议下重评对照和三个特征组，再判断特征增益。不能只替换缩放 anchors 或复用旧预测后宣称协议已修复。exp004 的 control 隔离值得恢复，但其整套本地评分同样未被证明与线上 r4 bundles 等价。本次补充只核查并修正结论范围，历史数值及已上传 Artifact 保持原样。
 

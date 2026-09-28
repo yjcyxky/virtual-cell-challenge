@@ -12,7 +12,7 @@ exp007 第 512 轮本地 H1 Overall 为 `0.020419414867561134`，官方 A/B/C Ov
 
 最明显证据是 Fidelity：本地 raw 为 `0.29169028079778847`，官方回执 raw 为 `0.30974049436509715`，后者反而较高；scaled 却从 `0.17928123492966228` 变成 `-0.6867549109343541`。这证明不能将 scaled 跌幅描述成“原始 Fidelity 崩溃”。不同数据的 raw 也不是同条件配对实验，故不能据 raw 较高断言官方泛化更好。
 
-来源：[本地 raw](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/HepG2+Jurkat+K562+RPE1/H1/model-0512/aggregate.csv)、[本地 scaled](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/HepG2+Jurkat+K562+RPE1/H1/model-0512/scores.csv)、[官方完整回执](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/official-status.json)。
+来源：[本地 raw](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/HepG2+Jurkat+K562+RPE1/H1/model-0512/aggregate.csv)、[本地 scaled](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/HepG2+Jurkat+K562+RPE1/H1/model-0512/scores.csv)、[官方完整回执](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/official-status.json)。
 
 ## 数值证据
 
@@ -29,7 +29,7 @@ exp007 第 512 轮本地 H1 Overall 为 `0.020419414867561134`，官方 A/B/C Ov
 
 按两组 scaled 分数相减，再除以六，Overall 的净差为 `-0.1482177587`。Fidelity 项贡献 `-0.1443393576`，约占净差 `97.38%`；Jaccard 为 `-0.0207165891`、PDS 为 `-0.0041916483`，NMAE 与 Reach 分别抵消 `+0.0137741016`、`+0.0072557348`，MSE 为零。这只是跨面板分数的算术分解，不是“Fidelity 机制导致 97.38% 泛化损失”的因果归因。
 
-本地 H1 Fidelity baseline `b=0.16500263308066102`，取自 [baseline_agg.csv](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/baseline_agg.csv)；replicate `r=0.8716446180426178`，取自 [anchor_agg.parquet](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/anchor_agg.parquet)，并通过保存的 raw/scaled 值复算确认。因而本地：
+本地 H1 Fidelity baseline `b=0.16500263308066102`，取自 [baseline_agg.csv](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/baseline_agg.csv)；replicate `r=0.8716446180426178`，取自 [anchor_agg.parquet](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/anchor_agg.parquet)，并通过保存的 raw/scaled 值复算确认。因而本地：
 
 ```text
 (0.2916902808 - 0.1650026331) / (0.8716446180 - 0.1650026331)
@@ -42,9 +42,9 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
 
 ## 本地实际配置和官方要求
 
-本地从 `EvalConfig.from_preset('vcc2026')` 出发，只覆盖 device、threads、pert_chunk、cache 路径、DE backend；没有发现修改六项指标定义、阈值、归一化尺度或得分方向。本地保存配置为 counts、control_source=real、CPM=1e6、bulk_target_sum=50000、Wilcoxon、BH per_pert、p_adj<0.05、control CPM>5、epsilon=1e-9、PDS panel target exclusion。来源：[evaluation.py:169–175](../experiments/exp007/src/evaluation.py#L169)、[实际 bundle config](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/config.yaml)、[固定官方 preset](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/configs/vcc2026.yaml)。
+本地从 `EvalConfig.from_preset('vcc2026')` 出发，只覆盖 device、threads、pert_chunk、cache 路径、DE backend；没有发现修改六项指标定义、阈值、归一化尺度或得分方向。本地保存配置为 counts、control_source=real、CPM=1e6、bulk_target_sum=50000、Wilcoxon、BH per_pert、p_adj<0.05、control CPM>5、epsilon=1e-9、PDS panel target exclusion。来源：[evaluation.py:169–175](../../experiments/exp007/src/evaluation.py#L169)、[实际 bundle config](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/config.yaml)、[固定官方 preset](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/configs/vcc2026.yaml)。
 
-本地 baseline 的 `exclude_target_gene=True`、`emit=dispersed` 与固定官方包默认值一致。这不是任意放宽评分。stream_baseline 使用官方 `_emission_scale` 和 `_emit_scaled_resample`，为了避免大矩阵驻留内存而分块写出。此核查只确认调用与配置；未重跑数值 parity。来源：[evaluation.py:73–110](../experiments/exp007/src/evaluation.py#L73)、[evaluation.py:203–212](../experiments/exp007/src/evaluation.py#L203)、[官方 profile 默认值](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py#L104)、[官方 emission 默认值](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py#L347)。
+本地 baseline 的 `exclude_target_gene=True`、`emit=dispersed` 与固定官方包默认值一致。这不是任意放宽评分。stream_baseline 使用官方 `_emission_scale` 和 `_emit_scaled_resample`，为了避免大矩阵驻留内存而分块写出。此核查只确认调用与配置；未重跑数值 parity。来源：[evaluation.py:73–110](../../experiments/exp007/src/evaluation.py#L73)、[evaluation.py:203–212](../../experiments/exp007/src/evaluation.py#L203)、[官方 profile 默认值](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py#L104)、[官方 emission 默认值](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/baseline.py#L347)。
 
 但使用同一个包不等于使用同一评估数据：
 
@@ -56,7 +56,7 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
 | 真实细胞取样 | 每靶点最多 400、不放回；完整 H1 NTC pool | 官方固定 reference；提交每靶点恰好 400 |
 | anchors | 本地 `exp007-H1`，五次拆半、base seed 0 | `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4` |
 
-本地来源：[reference.json](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/reference.json)、[bundle manifest](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/manifest.json)、[checkpoint metrics](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/HepG2+Jurkat+K562+RPE1/H1/model-0512/metrics.json)。官方 panel/anchor 身份来自回执；官方提交规格来自 [VCC CLI requirements](https://vcc-cli-wiki.virtualcellchallenge.org/#submission-requirements-2026)。
+本地来源：[reference.json](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/reference.json)、[bundle manifest](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle/manifest.json)、[checkpoint metrics](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/HepG2+Jurkat+K562+RPE1/H1/model-0512/metrics.json)。官方 panel/anchor 身份来自回执；官方提交规格来自 [VCC CLI requirements](https://vcc-cli-wiki.virtualcellchallenge.org/#submission-requirements-2026)。
 
 本地 bundle manifest 的 `control_source_effective=pred` 是拆半 replicate 路径的元数据，不能据此认定模型评分把 control_source 偷换为 pred；实际配置和模型 run metadata 应分开读取。官方 replicate 本来就使用各半自己的 control 以避免共享控制诱导相关性。[官方定义 §0](https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/vcc2026_metrics/vcc2026-metrics.md#0-overview)。
 
@@ -92,10 +92,10 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
    indptr 从 int64 改存 int32，但数值未变；官方 prep 回执为 `normalization=counts-preserved`。
    `.vcc` SHA-256 为 `4001093ad0047309a4381abbc860462553861a8d6aaf495a13925b31c6f5f562`。
 
-来源：[训练配置](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/config.yaml)、
-[导出身份](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/export-identity.json)、
-[导出实现](../experiments/exp007/src/submission.py)、
-[官方打包回执](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/prep.json)。
+来源：[训练配置](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/config.yaml)、
+[导出身份](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/export-identity.json)、
+[导出实现](../../experiments/exp007/src/submission.py)、
+[官方打包回执](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/prep.json)。
 
 这些证据未发现换模型、核心生成逻辑变化、基因/标签错位或打包归一化造成的数值偏差。
 本地与官方模型输入的背景、NTC、基因轴和靶点面板确实变化：H1 已见靶点为 269/297，
@@ -104,7 +104,7 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
 
 另一个已有结果是同口径 H1 的 shared_response 对照 Overall 为 `0.1867720084`，
 高于第 512 轮模型的 `0.0204194149`。本地模型为正不代表它已优于简单迁移基线。
-来源：[完整本地指标](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/metrics.json)。
+来源：[完整本地指标](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/metrics.json)。
 
 ## exp004 到 exp007：实际评分协议变更
 
@@ -125,7 +125,7 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
 
 这里的 exclude_target_gene 变化只指 **baseline profile 构造**，不能误写为六项指标中的 PDS 靶基因排除开关变化。平铺均值与 dispersed 的细胞间方差不同，会影响 baseline 的 Wilcoxon 显著性及 Fidelity、Reach、Jaccard；reference 数量变化也会影响真实显著基因集和 replicate anchors。尚未进行固定 reference 的配对消融，不能将以下变化全部归因于单独一个开关。
 
-源码来源：exp004 复用 `experiments/exp003-context-module-cvae/src/official.py:120–133`；exp007 为 [evaluation.py](../experiments/exp007/src/evaluation.py)。baseline 变更可追溯至 exp006 commit `b013bbeca93a971894f3a91ad03edbf4e022d809`，2026-09-26 21:11:57 -0400，`fix(exp006): align official baseline and prevent THP stalls`。exp007 继承此协议；[exp006 REPORT](../experiments/exp006/REPORT.md) 已注明旧 tiled baseline 分数不能作为同口径成绩比较。exp004 所引用源码、reference 与 bundle 位于并列 worktree `/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004`。
+源码来源：exp004 复用 `experiments/exp003-context-module-cvae/src/official.py:120–133`；exp007 为 [evaluation.py](../../experiments/exp007/src/evaluation.py)。baseline 变更可追溯至 exp006 commit `b013bbeca93a971894f3a91ad03edbf4e022d809`，2026-09-26 21:11:57 -0400，`fix(exp006): align official baseline and prevent THP stalls`。exp007 继承此协议；[exp006 REPORT](../../experiments/exp006/REPORT.md) 已注明旧 tiled baseline 分数不能作为同口径成绩比较。exp004 所引用源码、reference 与 bundle 位于并列 worktree `/home/jy001/Downloads/virtual-cell-challenge-worktrees/exp004`。
 
 以下直接读取两个历史 H1 bundle 的 `baseline_agg.csv`（mean 行）与 `anchor_agg.parquet`（replicate 列），未改写历史结果：
 
@@ -138,7 +138,7 @@ Fidelity 是方向正确的调用数除以预测调用数与真实显著基因�
 | Reach | 0.146069 | 0.088324 | 0.982044 | 0.987732 |
 | Jaccard | 0.060169 | 0.006344 | 0.420783 | 0.439376 |
 
-exp004 bundle：`experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/`（exp004 worktree）；exp007 bundle：[bundle](../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle)。真实样本信息分别来自其相邻 `reference.json` 和参考 obs；NMAE 数量来自 baseline count 行。
+exp004 bundle：`experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/cache/holdout-H1/official/reference-bundle/`（exp004 worktree）；exp007 bundle：[bundle](../../experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/cache/official/H1/bundle)。真实样本信息分别来自其相邻 `reference.json` 和参考 obs；NMAE 数量来自 baseline count 行。
 
 Fidelity 使用 `(raw - baseline) / (replicate - baseline)`。仅作标尺敏感性的算术示例：固定 exp007 raw `0.2916902808`，使用 exp007 anchors 得 `+0.179281`，代入 exp004 anchors 则约 `-0.984398`。后者不是合法的 exp007 重评成绩，因为 reference、预测样本和基因轴没有同步对齐。它明确说明仅声称“公式相同”不足以证明分数可比。
 
@@ -172,4 +172,4 @@ H1 预测矩阵附加 NTC 是直接调用 scorer 所需的结构；上传文件�
 
 实际调用路径同样分离：exp003 `state.py` 中 FoldView 的生成输入 base/theta/centers/scales/probability/condition 来自 half=0，inputs 不传 reference 字段；`official.py:80–82` 构造评分 reference 仅选 half=1。故 exp004 不存在本次确认的“同一批 H1 NTC 同时作生成输入和评分 control”问题。此判断不表示其全套评分与排行榜等价：其本地最多 128 扰动细胞、旧 tiled baseline、不同基因轴等差异仍然存在。
 
-沿革应与 baseline emission 修正分开：[exp005 PLAN](../experiments/exp005/PLAN.md) 第 13 行已明确改为不拆 NTC 输入/参照池，第 55 行规定保留完整 NTC pool；exp006/exp007 延续了这一设计。因此 control 隔离丢失至少始于 exp005，不是 exp006 将 tile 改为 dispersed 所必需的结果，也不能据此单因素解释全部分差。
+沿革应与 baseline emission 修正分开：[exp005 PLAN](../../experiments/exp005/PLAN.md) 第 13 行已明确改为不拆 NTC 输入/参照池，第 55 行规定保留完整 NTC pool；exp006/exp007 延续了这一设计。因此 control 隔离丢失至少始于 exp005，不是 exp006 将 tile 改为 dispersed 所必需的结果，也不能据此单因素解释全部分差。

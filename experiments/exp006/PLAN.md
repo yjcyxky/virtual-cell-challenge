@@ -16,7 +16,7 @@ H1 三个历史 split 合并，重复 NTC 只计一次。同 context 内不拆�
 原始数据、HGNC、STRING、Reactome 从登记来源验证 SHA-256；CollecTRI 由固定 SHA-256 快照登记。
 旧 HOMEZ Ensembl ID 的显式映射有官方历史依据。TIAF1 与 MYO18A 在官方轴中均存在，
 保留两个独立列，不能依据新版 HGNC 别名将它们合并；来源 gene ID 冲突排除并记录。
-数据事实见 `docs/exp005-target-coverage-and-priors.md`。2025 H1 与 2026 面板均为 300，交集只有 25。
+数据事实见 `docs/experiments/exp005-target-coverage-and-priors.md`。2025 H1 与 2026 面板均为 300，交集只有 25。
 
 ## 模型、增强与对照
 
