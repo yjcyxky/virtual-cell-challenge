@@ -206,7 +206,7 @@
       "legacy": false,
       "method_id": "M-BASE",
       "protocol_id": "PSEUDO-VCC-INIT",
-      "status": "ready",
+      "status": "interrupted",
       "comparison_id": "C-BASE",
       "controls": [],
       "sources": [],
@@ -332,10 +332,13 @@
           "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+        "sha256": "8640c4cc57046fc0282e216dbcd08f9d8f922c1f4e0a2f01b1336f1085607582"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
+      "git_commit": "26a03062011fe902ee4a2c41cbdc287858ce3561",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/init-linear-s01",
       "artifact": null,
       "design": {
         "seed_plan": 1,

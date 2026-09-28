@@ -28,7 +28,7 @@ Pseudo-VCC 先冻结五背景轮换留出及全局靶点留出；每折只能看
 
 2026 官方任务使用未知背景的 NTC 和 CRISPRi 靶点；验证与最终背景不同。当前提交每背景每靶点 400 个细胞，覆盖官方 18,533 基因轴并输出非负整数 counts；六项 normalized 指标等权聚合。本地须同时保存 raw 分项、逐背景/靶点结果及 reference/scorer 身份，局部基准分数不能直接当榜单分数；细胞采样波动与训练随机性分别记录。[官方任务](https://arcinstitute.org/news/virtual-cell-challenge-2026)、[官方 CLI 与评分要求](https://vcc-cli-wiki.virtualcellchallenge.org/#submission-requirements-2026)
 
-初始 DAG 只预留有具体对照的 draft 槽位；零响应等无需训练的参照随基线执行评估。**每次独立拟合占一个 Experiment**：ready 前须按外层划分、全局靶点分区及 seed 展开实际节点，填写 `design.fit_scope` 和一致的 `expected_config.fit_scope`。一个节点不能装入五折训练；比较层汇总各折，控制按相同 fit_scope 和 seed 配对。
+初始 DAG 只预留有具体对照的 draft 槽位；零响应等无需训练的参照随基线执行评估。**每次独立拟合占一个 run，同路线共用 Experiment**：ready 前须按外层划分、全局靶点分区及 seed 展开实际节点，填写 `design.fit_scope` 和一致的 `expected_config.fit_scope`。一个节点不能装入五折训练；比较层汇总各折，控制按相同 fit_scope 和 seed 配对。
 
 QC 的配对 seed 2/3 确认分支已预留，但只有首轮 signal/supported 才能进入；其余确认与交互等待具体证据后展开。`design` 是待落实方案，不能冒充完整 `expected_config`。单 seed 只产生线索，优化稳定性和跨背景一致性需各自的重复与分层证据。
 
