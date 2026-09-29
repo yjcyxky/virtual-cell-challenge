@@ -27,11 +27,19 @@ def gate(root=ROOT, config_path=CONFIG):
         raise ValueError('export configuration must be the registered file')
     if node['status'] != 'completed' or stage['comparison_id'] != config['comparison_id']:
         raise ValueError('export requires completed registered training')
-    code = [stage['config_ref'], *stage['code_refs'], node['config_ref'], *node['code_refs']]
-    for item in [*code, node['metrics_ref'], config['checkpoint_ref']]:
+    # The training sources are immutable at the commit recorded with the run.
+    # They can legitimately differ from the current checkout after later
+    # research-management changes. Only this export stage must match HEAD.
+    stage_refs = [stage['config_ref'], *stage['code_refs']]
+    snapshot = node.get('code_snapshot_commit') or node.get('git_commit')
+    if not snapshot:
+        raise ValueError('completed training must have a frozen code snapshot')
+    training_refs = [node['config_ref'], *node['code_refs']]
+    training_refs = [dict(item, git_commit=snapshot) for item in training_refs]
+    for item in [*stage_refs, *training_refs, node['metrics_ref'], config['checkpoint_ref']]:
         if problem := ref_error(root, item):
             raise ValueError(f'{item["path"]}: {problem}')
-    for item in code:
+    for item in stage_refs:
         if hashlib.sha256(git(root, 'show', 'HEAD:' + item['path']).stdout).hexdigest() != item['sha256']:
             raise ValueError('export code/config must be committed: ' + item['path'])
     frozen = json.loads(git(root, 'show', 'HEAD:docs/research/experiment_dag.json').stdout)['nodes'][config['run_id']]['official_evaluation']

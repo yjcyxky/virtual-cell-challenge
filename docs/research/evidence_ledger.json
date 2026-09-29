@@ -1612,9 +1612,9 @@
           "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
         }
       ],
-      "next_action": "2026-09-29 00:01 UTC定时重试同一VCC，等待published；之后比较六项raw/normalized、Overall和群体差异并关闭证据。",
+      "next_action": "Submit the sealed VCC through the corrected provenance gate; after published, report all raw/normalized scores and close the official protocol audit.",
       "reopen_when": "只有published有效六分项与Overall并归档完整回执后关闭；失败按同一VCC/entry恢复。",
-      "execution_status": "blocked_daily_submission_allowance",
+      "execution_status": "ready_to_submit",
       "retry_at_utc": "2026-09-29T00:01:00Z",
       "limitations": "只有导出/校验完成；官方每日额度阻塞，尚无entry或官方评分。"
     },

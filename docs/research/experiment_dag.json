@@ -5107,7 +5107,7 @@
       "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-SHARED-QC-evidence:v0",
       "official_evaluation": {
         "comparison_id": "C-SHARED-QC-OFFICIAL",
-        "status": "blocked_daily_submission_allowance",
+        "status": "ready",
         "config_ref": {
           "path": "experiments/masked-response/configs/official-qc-s01.json",
           "sha256": "3ed8bf208895f1df2b507cb1bdece5591d66cb9a05c07279167e3ad93a5692f2"
@@ -5115,7 +5115,7 @@
         "code_refs": [
           {
             "path": "experiments/masked-response/src/submission.py",
-            "sha256": "7d979f30b7e649e0e13ee1c90122b5c9d5cbda10561692eeeb6a705b3d9f894e"
+            "sha256": "48ef49d95fcccd9364b77b75547c8927ab42a58344fc46fb626cf5a1c86d011c"
           },
           {
             "path": "experiments/masked-response/submit.sh",
@@ -5193,7 +5193,7 @@
         },
         "prepared_artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-prepared:v0",
         "retry_at_utc": "2026-09-29T00:01:00Z",
-        "next_action": "Retry the sealed VCC after official quota reset; only published scores permit evidence closure.",
+        "next_action": "Resume submission of the sealed VCC after correcting archived training-source validation.",
         "retry_schedule_ref": {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/retry-schedule.json",
           "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
