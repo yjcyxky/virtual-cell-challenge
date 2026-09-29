@@ -287,3 +287,35 @@ VCC大小 3,330,877,440 字节，SHA-256 `97c68d18b5c5386e4447afcefc5b529400dde9
 安排在2026-09-29 00:01 UTC（纽约2026-09-28 20:01 EDT）调用原入口 `./submit.sh --submit`。同一VCC恢复时校验全部来源、文件哈希与原导出身份，已完成生成/打包由封存文件恢复；如果已有entry则恢复该entry。重试使用用户systemd定时器 `vcc-shared-qc-official-retry.timer`，详细登记见同目录 `retry-schedule.json`，运行日志为 `official-retry.log`。后台入口等待published并保存完整回执、六分项raw/normalized、Overall和版本化提交Artifact。
 
 待published后，对比本地H1两个面板与既有官方shared（entry `vWd1Z4K9tJ2tjfns2gSj`）的raw、normalized、Overall、panel和anchors，再补REPORT并关闭账本；目前不能报告该模型官方成绩。官方A/B/C与本地H1的背景、目标面板、测量轴、参考群体与anchors不同，单次得分属于开发证据。
+
+
+## C-SHARED-QC-OFFICIAL：官方榜单结果
+
+同一 checkpoint 的 VCC 已 published。entry `due9As7B4FXieRh6I8No`，回执 rank-at-receipt 664（非最终排名），Overall **0.050078800**；panel `vcc2026-val-1`，anchors `vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4`。
+
+| 指标 | H1主 normalized | H1官方重叠 normalized | 官方 normalized | 既有官方shared normalized |
+|---|---:|---:|---:|---:|
+| PDS | 0.692296260 | 0.791978246 | 0.376325017 | 0.371244827 |
+| MSE | 0.000000000 | 0.000000000 | 0.000000000 | 0.000000000 |
+| NMAE | -0.140991649 | -0.225286820 | 0.046840065 | 0.046465682 |
+| Fidelity | 0.466901308 | 0.462161255 | -0.196871998 | -0.194497781 |
+| Reach | 0.009131698 | -0.002605079 | 0.105432228 | 0.101549126 |
+| Jaccard | 0.249229432 | 0.231573913 | -0.031252510 | -0.030913064 |
+| Overall | 0.212761175 | 0.209636919 | 0.050078800 | 0.048974798 |
+
+| 指标 | H1主 raw | H1官方重叠 raw | 官方 raw | 既有官方shared raw |
+|---|---:|---:|---:|---:|
+| PDS | 0.832718894 | 0.896666667 | 0.671374954 | 0.669056113 |
+| MSE | 2.435515975 | 2.535358214 | 4.723512797 | 4.531899649 |
+| NMAE | 1.024229631 | 1.030149175 | 0.970748334 | 0.970947883 |
+| Fidelity | 0.502615580 | 0.502794653 | 0.454155712 | 0.454853286 |
+| Reach | 0.098628201 | 0.077175374 | 0.172267579 | 0.168870927 |
+| Jaccard | 0.112615248 | 0.107706233 | 0.018915500 | 0.019047397 |
+
+官方减本地H1主/重叠Overall分别为 -0.162682374/-0.159558119，超过预设0.02接近阈值，不能用本地Overall预测榜单。六个 normalized 指标由官方返回，越高越好；raw MSE/NMAE越低越好，其余raw越高越好。MSE normalized触底为0时仍报告raw。H1主NMAE有效247/280，其余直接项280/280；重叠25/25。官方没有返回逐背景有效数。QC相对既有官方shared的Overall差值为 +0.001104002；这是相同panel/anchor上的描述性整包差异，不是匹配随机QC的因果消融。
+
+VCC含360,000细胞、18,533基因、900个context×target组合，文件SHA-256 `97c68d18b5c5386e4447afcefc5b529400dde901c7d07a3609dcb87addf8c745`。全量审计确认非负整数、完整基因顺序和每组合400细胞；9个实际预测块与原预测器/生成器逐值回放一致。W&B Artifact `yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-shared-qc:v0`；仍使用原[W&B run](https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-qc-s01)。
+
+H1为单一开发背景，主/重叠面板为280/25个靶点且只评分真实测得官方基因轴；官方A/B/C为300靶点、完整18533基因轴、不同参考群体与anchors。单checkpoint、单生成seed；线上只给汇总，未提供逐背景/逐靶点有效数。既有官方shared是整包描述对照，不是匹配随机QC消融。本结果不能外推跨背景稳定性或SOTA。
+
+结论：只关闭本次官方协议核查；保留原QC相对基础/匹配随机的本地结论，不凭单次榜单差异改变QC方法判定。继续已登记的机制整包搜索；独立背景、重复seed或官方逐背景回执到位后可重开。

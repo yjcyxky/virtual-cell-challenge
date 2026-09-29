@@ -1559,13 +1559,14 @@
     },
     "E-SHARED-QC-OFFICIAL": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-SHARED-QC-OFFICIAL",
       "node_ids": [
         "masked-response-qc-s01"
       ],
       "hypothesis": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
-      "claim": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
+      "claim": "shared＋低深度QC checkpoint已获official published Overall 0.050078800。官方减H1主/重叠为-0.162682374/-0.159558119，预设绝对差≤0.02接近标准不满足。；相对既有官方shared差值+0.001104002，仅为描述性整包差异。",
+      "limitations": "H1为单一开发背景，主/重叠面板为280/25个靶点且只评分真实测得官方基因轴；官方A/B/C为300靶点、完整18533基因轴、不同参考群体与anchors。单checkpoint、单生成seed；线上只给汇总，未提供逐背景/逐靶点有效数。既有官方shared是整包描述对照，不是匹配随机QC消融。本结果不能外推跨背景稳定性或SOTA。",
       "source_refs": [
         {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/metrics.json",
@@ -1573,31 +1574,55 @@
         },
         {
           "path": "experiments/masked-response/REPORT.md",
-          "sha256": "128a3ead93d822a5eb03f8d18b94628fc9b00dc0a424b117da34ab7429dc9062"
+          "sha256": "edb7292e2affb25cf00b80f4676929f5ce91f26727ca78cc3d1e72e5bc4fb2f3"
         },
         {
           "path": "experiments/masked-response/configs/official-qc-s01.json",
           "sha256": "3ed8bf208895f1df2b507cb1bdece5591d66cb9a05c07279167e3ad93a5692f2"
         },
         {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/comparison.json",
+          "sha256": "266d6ed2d020d41b5be1837d4fb61f8a5fb0b29eeef131cadd5e0b0fff6b2ba6"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity.json",
+          "sha256": "19e89dd8f79547bc8dbcabae0ba291e0b6025c14144db674d42b129de04a56e8"
+        },
+        {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity-pre-gate-fix.json",
           "sha256": "465e22fb4d5876c2fb694cfd0ae3cf7fdc9dea4432703b14988640cc99f97112"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/official-status.json",
+          "sha256": "4e9bce2dfcc7b77e698a5eb23b2bbe6f72eb5d0bd026c85814ddf688fe6f6aa5"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/official-summary.json",
+          "sha256": "95daa130cf1f71e740136f39263b68c2fbeeb7540552dd5ae05ce44d2fc3718d"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-entry.json",
+          "sha256": "7ee534b4affcb281d5cf4b33ff5b27cf21b4bf46f79ca0288aa67335447fbedf"
         },
         {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-file.json",
           "sha256": "0c9621189292a45d038e9fd16a34acb6f46bf74abb7c0a5216842541602d5647"
         },
         {
-          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-blocked.json",
-          "sha256": "766df7fe4b848787397b8a3a232380548b5177a58dc28622d59157252fd99b77"
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/artifact.json",
+          "sha256": "98ea09ef2976c21743744f20ce5c3988ec6988f8f2b26896d18c40e45c135e8c"
         },
         {
-          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/export-replay.json",
-          "sha256": "51a560081b8bf243f2132d4c74bbba26d1e398235eec30af6d33f1cadb1dff0d"
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/generation.json",
+          "sha256": "d1bc0890cf45e57670d75137090b0cd9da357ab21ea73d342d7f49d8e6034c24"
         },
         {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/prediction-audit.json",
           "sha256": "552c20060d78e24336131449d6db9b08b121e6171ac29ac729c1617eee41757f"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/export-replay.json",
+          "sha256": "51a560081b8bf243f2132d4c74bbba26d1e398235eec30af6d33f1cadb1dff0d"
         },
         {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/prep.json",
@@ -1608,19 +1633,215 @@
           "sha256": "fa948c666dda6a8dc9f6cb4eebd11927d94bb3b9d83719e789cb99f54f995ebb"
         },
         {
-          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/retry-schedule.json",
-          "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/official-status.json",
+          "sha256": "024dac1a0d29efbf20adf0395b771bebf7fa8fd14c095db7b2bcfa73b6fa2c2e"
         },
         {
-          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity.json",
-          "sha256": "19e89dd8f79547bc8dbcabae0ba291e0b6025c14144db674d42b129de04a56e8"
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/official-summary.json",
+          "sha256": "a1496c49fa0c615546fd97aaecf96c6ffb7194aaaaeab9265b906a0e7a6485d0"
         }
       ],
-      "next_action": "Submit the sealed VCC through the corrected provenance gate; after published, report all raw/normalized scores and close the official protocol audit.",
-      "reopen_when": "只有published有效六分项与Overall并归档完整回执后关闭；失败按同一VCC/entry恢复。",
-      "execution_status": "ready_to_submit",
-      "retry_at_utc": "2026-09-29T00:01:00Z",
-      "limitations": "只有导出/校验完成；官方每日额度阻塞，尚无entry或官方评分。"
+      "decision": "保存官方结果；不以本协议核查替代本地QC因果比较，也不改写QC采用结论。",
+      "next_action": "继续当前已登记的机制整包搜索。",
+      "reopen_when": "获得独立背景/重复seed匹配比较，或官方逐背景/逐靶点结果改变本判断。",
+      "metrics": {
+        "comparison_id": "C-SHARED-QC-OFFICIAL",
+        "official_panel": "vcc2026-val-1",
+        "official_anchors": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+        "rank_at_receipt": 664,
+        "official_valid_counts": null,
+        "local": {
+          "all": {
+            "Overall": 0.21276117480743986,
+            "raw": {
+              "pds_cosine": 0.832718894,
+              "expr_mse_unbiased_capped_norm": 2.4355159746,
+              "de_wilcoxon_lfc_nmae": 1.0242296315,
+              "de_wilcoxon_direction_fidelity_yield_raw": 0.5026155801,
+              "de_wilcoxon_direction_reach_raw": 0.0986282013,
+              "de_wilcoxon_sig_jaccard": 0.1126152477
+            },
+            "normalized": {
+              "pds_cosine": 0.6922962601246274,
+              "expr_mse_unbiased_capped_norm": 0.0,
+              "de_wilcoxon_lfc_nmae": -0.1409916494665273,
+              "de_wilcoxon_direction_fidelity_yield_raw": 0.46690130801228125,
+              "de_wilcoxon_direction_reach_raw": 0.009131697835630897,
+              "de_wilcoxon_sig_jaccard": 0.24922943233862693
+            },
+            "valid_count": {
+              "pds_cosine": 280.0,
+              "expr_mse_unbiased_capped_norm": null,
+              "de_wilcoxon_lfc_nmae": 247.0,
+              "de_wilcoxon_direction_fidelity_yield_raw": 280.0,
+              "de_wilcoxon_direction_reach_raw": 280.0,
+              "de_wilcoxon_sig_jaccard": 280.0
+            }
+          },
+          "official_overlap": {
+            "Overall": 0.2096369192872868,
+            "raw": {
+              "pds_cosine": 0.8966666667,
+              "expr_mse_unbiased_capped_norm": 2.5353582137,
+              "de_wilcoxon_lfc_nmae": 1.0301491754,
+              "de_wilcoxon_direction_fidelity_yield_raw": 0.5027946529,
+              "de_wilcoxon_direction_reach_raw": 0.0771753737,
+              "de_wilcoxon_sig_jaccard": 0.1077062335
+            },
+            "normalized": {
+              "pds_cosine": 0.7919782460910947,
+              "expr_mse_unbiased_capped_norm": 0.0,
+              "de_wilcoxon_lfc_nmae": -0.22528681965111308,
+              "de_wilcoxon_direction_fidelity_yield_raw": 0.46216125525505447,
+              "de_wilcoxon_direction_reach_raw": -0.002605079338276542,
+              "de_wilcoxon_sig_jaccard": 0.23157391336696134
+            },
+            "valid_count": {
+              "pds_cosine": 25.0,
+              "expr_mse_unbiased_capped_norm": null,
+              "de_wilcoxon_lfc_nmae": 25.0,
+              "de_wilcoxon_direction_fidelity_yield_raw": 25.0,
+              "de_wilcoxon_direction_reach_raw": 25.0,
+              "de_wilcoxon_sig_jaccard": 25.0
+            }
+          }
+        },
+        "official": {
+          "entry_id": "due9As7B4FXieRh6I8No",
+          "Overall": 0.050078800485630855,
+          "raw": {
+            "pds_cosine": 0.6713749535488666,
+            "expr_mse_unbiased_capped_norm": 4.723512797105159,
+            "de_wilcoxon_lfc_nmae": 0.970748333539384,
+            "de_wilcoxon_direction_fidelity_yield_raw": 0.45415571179158476,
+            "de_wilcoxon_direction_reach_raw": 0.17226757908380919,
+            "de_wilcoxon_sig_jaccard": 0.018915499830660872
+          },
+          "normalized": {
+            "pds_cosine": 0.37632501732515916,
+            "expr_mse_unbiased_capped_norm": 0,
+            "de_wilcoxon_lfc_nmae": 0.046840064767249334,
+            "de_wilcoxon_direction_fidelity_yield_raw": -0.19687199760606688,
+            "de_wilcoxon_direction_reach_raw": 0.10543222814377118,
+            "de_wilcoxon_sig_jaccard": -0.031252509716327655
+          }
+        },
+        "existing_official_shared": {
+          "entry_id": "vWd1Z4K9tJ2tjfns2gSj",
+          "Overall": 0.04897479831660533,
+          "raw": {
+            "pds_cosine": 0.6690561129691565,
+            "expr_mse_unbiased_capped_norm": 4.531899648503604,
+            "de_wilcoxon_lfc_nmae": 0.9709478831711583,
+            "de_wilcoxon_direction_fidelity_yield_raw": 0.45485328574008116,
+            "de_wilcoxon_direction_reach_raw": 0.1688709273504775,
+            "de_wilcoxon_sig_jaccard": 0.01904739669917965
+          },
+          "normalized": {
+            "pds_cosine": 0.37124482673379755,
+            "expr_mse_unbiased_capped_norm": 0,
+            "de_wilcoxon_lfc_nmae": 0.046465682206470925,
+            "de_wilcoxon_direction_fidelity_yield_raw": -0.1944977810303019,
+            "de_wilcoxon_direction_reach_raw": 0.10154912557431378,
+            "de_wilcoxon_sig_jaccard": -0.030913063584648338
+          }
+        },
+        "official_minus_local": {
+          "all": {
+            "Overall": -0.16268237432180901,
+            "raw": {
+              "pds_cosine": -0.16134394045113343,
+              "expr_mse_unbiased_capped_norm": 2.2879968225051592,
+              "de_wilcoxon_lfc_nmae": -0.05348129796061596,
+              "de_wilcoxon_direction_fidelity_yield_raw": -0.0484598683084152,
+              "de_wilcoxon_direction_reach_raw": 0.07363937778380919,
+              "de_wilcoxon_sig_jaccard": -0.09369974786933913
+            },
+            "normalized": {
+              "pds_cosine": -0.31597124279946825,
+              "expr_mse_unbiased_capped_norm": 0.0,
+              "de_wilcoxon_lfc_nmae": 0.18783171423377665,
+              "de_wilcoxon_direction_fidelity_yield_raw": -0.6637733056183481,
+              "de_wilcoxon_direction_reach_raw": 0.09630053030814029,
+              "de_wilcoxon_sig_jaccard": -0.2804819420549546
+            }
+          },
+          "official_overlap": {
+            "Overall": -0.15955811880165596,
+            "raw": {
+              "pds_cosine": -0.2252917131511334,
+              "expr_mse_unbiased_capped_norm": 2.1881545834051592,
+              "de_wilcoxon_lfc_nmae": -0.059400841860616116,
+              "de_wilcoxon_direction_fidelity_yield_raw": -0.04863894110841527,
+              "de_wilcoxon_direction_reach_raw": 0.09509220538380919,
+              "de_wilcoxon_sig_jaccard": -0.08879073366933912
+            },
+            "normalized": {
+              "pds_cosine": -0.4156532287659355,
+              "expr_mse_unbiased_capped_norm": 0.0,
+              "de_wilcoxon_lfc_nmae": 0.2721268844183624,
+              "de_wilcoxon_direction_fidelity_yield_raw": -0.6590332528611214,
+              "de_wilcoxon_direction_reach_raw": 0.10803730748204772,
+              "de_wilcoxon_sig_jaccard": -0.262826423083289
+            }
+          }
+        },
+        "official_qc_minus_existing_shared": {
+          "Overall": 0.0011040021690255225,
+          "raw": {
+            "pds_cosine": 0.002318840579710102,
+            "expr_mse_unbiased_capped_norm": 0.19161314860155532,
+            "de_wilcoxon_lfc_nmae": -0.00019954963177437612,
+            "de_wilcoxon_direction_fidelity_yield_raw": -0.0006975739484963994,
+            "de_wilcoxon_direction_reach_raw": 0.0033966517333316737,
+            "de_wilcoxon_sig_jaccard": -0.00013189686851877713
+          },
+          "normalized": {
+            "pds_cosine": 0.005080190591361611,
+            "expr_mse_unbiased_capped_norm": 0,
+            "de_wilcoxon_lfc_nmae": 0.0003743825607784093,
+            "de_wilcoxon_direction_fidelity_yield_raw": -0.002374216575764976,
+            "de_wilcoxon_direction_reach_raw": 0.0038831025694573973,
+            "de_wilcoxon_sig_jaccard": -0.00033944613167931695
+          }
+        },
+        "within_preregistered_0.02": false,
+        "population": {
+          "contexts": [
+            "A",
+            "B",
+            "C"
+          ],
+          "targets": 300,
+          "genes": 18533,
+          "cells": 360000,
+          "input_ntc_cells_per_context": 18400,
+          "seen_targets": 272,
+          "unseen_targets": 28,
+          "untrained_output_genes": 7617
+        },
+        "export_audit": {
+          "status": "completed",
+          "cells": 360000,
+          "genes": 18533,
+          "target_contexts": 900,
+          "nnz": 2091611125,
+          "all_values_finite_nonnegative_integers": true,
+          "gene_order_matches": true,
+          "exact_context_target_cell_counts": true,
+          "minimum_cell_counts": 708,
+          "maximum_cell_counts": 52482
+        },
+        "replay_exact_blocks": 9,
+        "limitations": "H1为单一开发背景，主/重叠面板为280/25个靶点且只评分真实测得官方基因轴；官方A/B/C为300靶点、完整18533基因轴、不同参考群体与anchors。单checkpoint、单生成seed；线上只给汇总，未提供逐背景/逐靶点有效数。既有官方shared是整包描述对照，不是匹配随机QC消融。本结果不能外推跨背景稳定性或SOTA。"
+      },
+      "official_entries": {
+        "shared_qc": "due9As7B4FXieRh6I8No"
+      },
+      "panel_id": "vcc2026-val-1",
+      "anchor_version": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+      "artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-shared-qc:v0",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/masked-response-qc-s01"
     },
     "E-GENE-DECODER-PACKAGE": {
       "kind": "experiment",

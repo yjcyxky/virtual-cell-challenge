@@ -5107,7 +5107,7 @@
       "evidence_artifact": "yjcyxky/virtual-cell-challenge/masked-response-C-SHARED-QC-evidence:v0",
       "official_evaluation": {
         "comparison_id": "C-SHARED-QC-OFFICIAL",
-        "status": "ready",
+        "status": "completed",
         "config_ref": {
           "path": "experiments/masked-response/configs/official-qc-s01.json",
           "sha256": "3ed8bf208895f1df2b507cb1bdece5591d66cb9a05c07279167e3ad93a5692f2"
@@ -5183,17 +5183,12 @@
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-file.json",
           "sha256": "0c9621189292a45d038e9fd16a34acb6f46bf74abb7c0a5216842541602d5647"
         },
-        "blocker_ref": {
-          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-blocked.json",
-          "sha256": "766df7fe4b848787397b8a3a232380548b5177a58dc28622d59157252fd99b77"
-        },
         "report_ref": {
           "path": "experiments/masked-response/REPORT.md",
-          "sha256": "128a3ead93d822a5eb03f8d18b94628fc9b00dc0a424b117da34ab7429dc9062"
+          "sha256": "edb7292e2affb25cf00b80f4676929f5ce91f26727ca78cc3d1e72e5bc4fb2f3"
         },
         "prepared_artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-prepared:v0",
-        "retry_at_utc": "2026-09-29T00:01:00Z",
-        "next_action": "Resume submission of the sealed VCC after correcting archived training-source validation.",
+        "next_action": "Return to the registered mechanism portfolio; reopen official comparison only with independent-background, replicate-seed, or per-context score evidence.",
         "retry_schedule_ref": {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/retry-schedule.json",
           "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
@@ -5201,6 +5196,29 @@
         "prior_identity_ref": {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity-pre-gate-fix.json",
           "sha256": "465e22fb4d5876c2fb694cfd0ae3cf7fdc9dea4432703b14988640cc99f97112"
+        },
+        "result_ref": {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/comparison.json",
+          "sha256": "266d6ed2d020d41b5be1837d4fb61f8a5fb0b29eeef131cadd5e0b0fff6b2ba6"
+        },
+        "results": {
+          "shared_qc": {
+            "entry_id": "due9As7B4FXieRh6I8No",
+            "Overall": 0.050078800485630855,
+            "summary_ref": {
+              "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/official-summary.json",
+              "sha256": "95daa130cf1f71e740136f39263b68c2fbeeb7540552dd5ae05ce44d2fc3718d"
+            },
+            "status_ref": {
+              "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/official-status.json",
+              "sha256": "4e9bce2dfcc7b77e698a5eb23b2bbe6f72eb5d0bd026c85814ddf688fe6f6aa5"
+            },
+            "submission_file_ref": {
+              "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/submission-file.json",
+              "sha256": "0c9621189292a45d038e9fd16a34acb6f46bf74abb7c0a5216842541602d5647"
+            },
+            "artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-shared-qc:v0"
+          }
         }
       }
     },
@@ -9038,7 +9056,7 @@
       "evidence_id": "E-MECHANISM-PORTFOLIO"
     },
     "C-SHARED-QC-OFFICIAL": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "protocol_audit",
       "hypothesis": "固定shared＋低深度QC checkpoint的官方A/B/C Overall是否接近本地H1，以及相对既有官方shared的描述性差异是多少？",
       "controls": [],
