@@ -1580,7 +1580,7 @@
           "sha256": "3ed8bf208895f1df2b507cb1bdece5591d66cb9a05c07279167e3ad93a5692f2"
         },
         {
-          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity.json",
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity-pre-gate-fix.json",
           "sha256": "465e22fb4d5876c2fb694cfd0ae3cf7fdc9dea4432703b14988640cc99f97112"
         },
         {
@@ -1610,6 +1610,10 @@
         {
           "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/retry-schedule.json",
           "sha256": "0cbec05b526d84df45ddf8ef413263737e21282eb8f8706a5e440daf377067e4"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/export-identity.json",
+          "sha256": "19e89dd8f79547bc8dbcabae0ba291e0b6025c14144db674d42b129de04a56e8"
         }
       ],
       "next_action": "Submit the sealed VCC through the corrected provenance gate; after published, report all raw/normalized scores and close the official protocol audit.",
