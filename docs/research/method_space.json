@@ -583,7 +583,8 @@
       "failure_condition": "收益仅来自模板/强响应筛选/覆盖变化，或在joint-OOD残差恢复与官方分项中无增量。",
       "evidence_ids": [
         "L03",
-        "L13-DEPMAP-ALIGNMENT"
+        "L13-DEPMAP-ALIGNMENT",
+        "L14-DECOMPOSITION-FULLTEXT-V1"
       ]
     }
   },
@@ -1825,9 +1826,10 @@
       "cost": "low",
       "evidence_ids": [
         "L03",
-        "L13-DEPMAP-ALIGNMENT"
+        "L13-DEPMAP-ALIGNMENT",
+        "L14-DECOMPOSITION-FULLTEXT-V1"
       ],
-      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。"
+      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。 v1全文支持监督对齐候选；不是现有one-hot Ridge的重复，不预设线性或NTC条件化的普遍结论。"
     },
     "M-DEPMAP-ALIGNED-MLP": {
       "description": "DepMap监督对齐小MLP响应与目标NTC计数生成候选",
@@ -1849,9 +1851,10 @@
       "cost": "medium",
       "evidence_ids": [
         "L03",
-        "L13-DEPMAP-ALIGNMENT"
+        "L13-DEPMAP-ALIGNMENT",
+        "L14-DECOMPOSITION-FULLTEXT-V1"
       ],
-      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。"
+      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。 v1全文支持监督对齐候选；不是现有one-hot Ridge的重复，不预设线性或NTC条件化的普遍结论。"
     },
     "M-TASK-OBSERVATION": {
       "description": "无预测器拟合的五背景观测与计数生成校准；官方DE、实测独立NTC和已知效应对照",

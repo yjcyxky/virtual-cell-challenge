@@ -11528,9 +11528,9 @@
         "on_inconclusive": "补齐可评分性或恢复完整执行，不能把未完成当阴性。",
         "threshold_policy": "按设计说明在训练/校准范围内固定数值容差、功效和配对比较门槛；未冻结前不启动。"
       },
-      "attribution_plan": "完整方案开发证据；容量或先验的单因素归因需另做实际配置匹配；此处只登记问题，执行前按外层划分×靶点分区×seed建立独立节点、完整expected_config及配置差异。",
+      "attribution_plan": "完整方案开发证据；容量或先验的单因素归因需另做实际配置匹配；此处只登记问题，执行前按外层划分×靶点分区×seed建立独立节点、完整expected_config及配置差异。 全文核验支持候选而非已验证方法：旧one-hot Ridge/NTC程序不构成DepMap对照；保留同靶Shared，单列28个当前官方未见靶点及靶点×读出监督覆盖，首批Ridge/小MLP不自动扩rank网格。",
       "cost": "medium",
-      "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。",
+      "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。 2026-09-30全文核验见L14-DECOMPOSITION-FULLTEXT-V1；适用边界详见docs/research/perturbation_decomposition_review.md。",
       "evidence_id": "E-DEPMAP-RESPONSE-ALIGNMENT"
     },
     "C-TASK-DATA-GENERATION-R2": {
@@ -11626,9 +11626,9 @@
         "on_inconclusive": "区分技术失败、统计功效和真实不确定性，按预定停止条件处理。",
         "threshold_policy": "启动前冻结数值容差、重复次数、真实细胞/面板范围及停止条件；旧0.01单次均值检查的失败保持原结论。"
       },
-      "attribution_plan": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。",
+      "attribution_plan": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。 补充全文核验：mean-log响应加到单细胞并反变换不保证bulk/DE统计；固定响应比较中同时检查观测空间偏差和有限n波动。现有合法整数无需重复当作模型能力。",
       "cost": "medium",
-      "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。",
+      "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。 2026-09-30全文核验见L14-DECOMPOSITION-FULLTEXT-V1；适用边界详见docs/research/perturbation_decomposition_review.md。",
       "evidence_id": "E-POPULATION-EMISSION"
     },
     "C-LOCAL-EVAL-SUPPORT": {
@@ -11649,9 +11649,9 @@
         "on_inconclusive": "保留六项raw和不可定义Overall，停止面板/seed追分；有效预定范围继续支持范围内研发，不能宣称完整五背景/joint-OOD验收。",
         "threshold_policy": "启动前冻结数值容差、重复次数、真实细胞/面板范围及停止条件；旧0.01单次均值检查的失败保持原结论。"
       },
-      "attribution_plan": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。",
+      "attribution_plan": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。 补充分解诊断：区分source-only模板方向投影、固定centroid相减及评分侧ANOVA；split-half显式处理独立NTC和分母。真实五背景/joint-OOD拟合与接口面板分开计数。",
       "cost": "medium",
-      "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。",
+      "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。 2026-09-30全文核验见L14-DECOMPOSITION-FULLTEXT-V1；适用边界详见docs/research/perturbation_decomposition_review.md。",
       "evidence_id": "E-LOCAL-EVAL-SUPPORT"
     },
     "C-LEADERBOARD-COUNTS-AUDIT": {

@@ -2127,9 +2127,13 @@
         {
           "path": "docs/research/task_constraints_review.md",
           "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+        },
+        {
+          "path": "docs/research/perturbation_decomposition_review.md",
+          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
         }
       ],
-      "next_action": "实例化M-DEPMAP-ALIGNED-RIDGE/MLP及无先验/随机先验/原始kNN对照；固定DepMap来源、训练内PCA、每折目标列表和全轴策略，不自动扩参数网格。",
+      "next_action": "实例化M-DEPMAP-ALIGNED-RIDGE/MLP及无先验/随机先验/原始kNN对照；固定DepMap来源、训练内PCA、每折目标列表和全轴策略，不自动扩参数网格。 全文核验支持候选而非已验证方法：旧one-hot Ridge/NTC程序不构成DepMap对照；保留同靶Shared，单列28个当前官方未见靶点及靶点×读出监督覆盖，首批Ridge/小MLP不自动扩rank网格。",
       "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
     },
     "E-TASK-DATA-GENERATION-R2": {
@@ -2256,8 +2260,13 @@
       "node_ids": [],
       "claim": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
       "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
-      "source_refs": [],
-      "next_action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。",
+      "source_refs": [
+        {
+          "path": "docs/research/perturbation_decomposition_review.md",
+          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+        }
+      ],
+      "next_action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。 补充全文核验：mean-log响应加到单细胞并反变换不保证bulk/DE统计；固定响应比较中同时检查观测空间偏差和有限n波动。现有合法整数无需重复当作模型能力。",
       "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
     },
     "E-LOCAL-EVAL-SUPPORT": {
@@ -2267,8 +2276,13 @@
       "node_ids": [],
       "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
       "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
-      "source_refs": [],
-      "next_action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。",
+      "source_refs": [
+        {
+          "path": "docs/research/perturbation_decomposition_review.md",
+          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+        }
+      ],
+      "next_action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。 补充分解诊断：区分source-only模板方向投影、固定centroid相减及评分侧ANOVA；split-half显式处理独立NTC和分母。真实五背景/joint-OOD拟合与接口面板分开计数。",
       "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
     },
     "DATA-SUPPORT-20260930": {
@@ -2431,6 +2445,27 @@
       "next_action": "保留可迁移同靶平均响应的有效部分；维持当前population emission、全折本地评价支持、DepMap响应对齐三优先问题。生成器用真实NTC/零响应与已知响应检验期望和联合结构；建模检验seen/joint OOD及未测读出，不能以计数合法或高噪声秩充当泛化证据。",
       "reopen_when": "新增具有固定身份的提交/生成器或目标先验；取得隐藏分项、真实扰动联合结构、匹配零响应和独立生成重复，或五背景严格匹配比较。",
       "hypothesis": "固定正式提交的预测是否满足计数约束、保留细胞异质性，且官方分数支持超出NTC继承/共同偏移的扰动特异准确性？"
+    },
+    "L14-DECOMPOSITION-FULLTEXT-V1": {
+      "kind": "literature",
+      "state": "external",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "已核验Molina/Zhang bioRxiv v1全文44页、关键图及固定作者代码：DepMap训练内PCA后的监督Ridge/MLP支持其四背景任务的跨背景/未见靶点预测；模板方向投影、质心相减和ANOVA是不同诊断，不能替代VCC全轴计数与六指标。",
+      "limitations": "论文采用四个essential富集背景和mean(log1p(CP10K))的2000 HVG；合并HVG含留出表达，目标真实质心仅用于评分。没有证明交互普遍不可预测、NTC无信息或线性普遍最优。学习率、划分和噪声分母等存在图文/代码差异。外部观察不证明本地DepMap或新生成器有效；历史L13-DEPMAP-ALIGNMENT的访问限制保留为当时记录。",
+      "source_urls": [
+        "https://www.biorxiv.org/content/10.64898/2026.07.24.740459v1.full.pdf",
+        "https://github.com/xinyizhanglab/perturbation-decomposition/tree/a15214780619736d393f40240e56ba992fd416a3"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/perturbation_decomposition_review.md",
+          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+        }
+      ],
+      "next_action": "按C-POPULATION-EMISSION/C-LOCAL-EVAL-SUPPORT/C-DEPMAP-RESPONSE-ALIGNMENT落实观测与生成一致性、source-only表示和真实joint-OOD；保留同靶Shared及匹配随机/无先验/原始kNN对照，冻结独立run后执行。",
+      "reopen_when": "论文修订、作者确认运行版本、先验/数据/评估范围变化；本地有效性仅由完成的匹配比较给出。",
+      "publication": "Molina & Zhang, bioRxiv v1, posted 2026-07-27; PDF sha256 d34e545d0f50ad7e4369126f50dad8965be5a0dad2ac4e0e62c76261b8eb6f5c"
     }
   },
   "queue": [
@@ -2439,7 +2474,7 @@
       "priority": 1,
       "comparison_id": "C-POPULATION-EMISSION",
       "question": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
-      "action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。 在新模型响应监督/解码时显式满足DATA-EVAL-DEFAULTS-20260930的mask内分母契约；旧缓存不得标成跨assay已对齐。",
+      "action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。 在新模型响应监督/解码时显式满足DATA-EVAL-DEFAULTS-20260930的mask内分母契约；旧缓存不得标成跨assay已对齐。 补充全文核验：mean-log响应加到单细胞并反变换不保证bulk/DE统计；固定响应比较中同时检查观测空间偏差和有限n波动。现有合法整数无需重复当作模型能力。",
       "requires_evidence": []
     },
     {
@@ -2447,7 +2482,7 @@
       "priority": 2,
       "comparison_id": "C-LOCAL-EVAL-SUPPORT",
       "question": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。",
+      "action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。 补充分解诊断：区分source-only模板方向投影、固定centroid相减及评分侧ANOVA；split-half显式处理独立NTC和分母。真实五背景/joint-OOD拟合与接口面板分开计数。",
       "requires_evidence": []
     },
     {
@@ -2455,7 +2490,7 @@
       "priority": 3,
       "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
       "question": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
-      "action": "保留首个正式建模预算给DepMap监督对齐Ridge/小MLP整包及无先验/随机先验/原始kNN对照；复用全五背景统计并在拟合前限制fold/target读取。冻结生成和有效评估条件后按outer×target partition×seed各立完整run；未识别剂量作unknown，不以可估计性删掉公共数据。",
+      "action": "保留首个正式建模预算给DepMap监督对齐Ridge/小MLP整包及无先验/随机先验/原始kNN对照；复用全五背景统计并在拟合前限制fold/target读取。冻结生成和有效评估条件后按outer×target partition×seed各立完整run；未识别剂量作unknown，不以可估计性删掉公共数据。 全文核验支持候选而非已验证方法：旧one-hot Ridge/NTC程序不构成DepMap对照；保留同靶Shared，单列28个当前官方未见靶点及靶点×读出监督覆盖，首批Ridge/小MLP不自动扩rank网格。",
       "requires_evidence": []
     }
   ],
