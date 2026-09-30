@@ -1,5 +1,6 @@
 """One complete full-panel reference/bundle batch; no predictive model fit."""
 import argparse
+from contextlib import ExitStack
 import gc
 import json
 import os
@@ -19,7 +20,7 @@ from research import bind
 from vcc_task.common import NTC, ref, verified, write_json
 from vcc_task.count_store import copy_panel
 from vcc_task.full_reference import prepare_full_context, external_prior
-from vcc_task.bounded_bundle import bounded_bundle
+from vcc_task.bounded_bundle import bounded_bundle, mapped_reference
 from vcc_task.prediction_diagnostics import diagnose_panel
 from vcc_task.frozen_scoring import score_frozen
 from vcc_task.run_context import RegisteredRun
@@ -41,11 +42,27 @@ def template_for(split, observations, width):
     return np.divide(total,mass,out=np.zeros_like(total),where=mass>0)
 
 
-def panel(job,split,context,observations,checkpoint):
+def panel(job,split,context,observations,checkpoint,banks,reference_stack):
     cfg=job.config; info=observations[context]
     directory=job.output/'predictions'/split['id']/context
     directory.mkdir(parents=True,exist_ok=True)
     marker=directory/'panel.json'
+    reuse_key=split['id']+'/'+context
+    if reuse_key in cfg.get('reuse',{}).get('panels',{}):
+        source=cfg['reuse']['panels'][reuse_key]
+        result=json.loads(verified(source).read_text())
+        for item in result['files']+result['bundle']['files']:
+            verified(item)
+        if result['split']!=split['id'] or result['context']!=context:
+            raise ValueError('Reused panel identity mismatch')
+        if reuse_key==cfg['baseline_memory']['canonical_equivalence_panel']:
+            check=result['bundle']['baseline_equivalence']
+            if not check['canonical_full_checked'] or check['different_entries']!=0:
+                raise ValueError('Canonical official baseline equivalence was not established')
+        result=dict(result,reused_panel_ref=source)
+        write_json(marker,result)
+        print('REUSED COMPLETE PANEL',reuse_key,flush=True)
+        return result
     if marker.exists():
         result=json.loads(marker.read_text())
         for item in result['files']:
@@ -54,8 +71,10 @@ def panel(job,split,context,observations,checkpoint):
     targets=info['panels'][split['id']]
     real_path=directory/'real.h5ad'
     if not real_path.exists():
-        bank=ad.read_h5ad(verified(info['bank_ref']),backed='r')
-        copy_panel(bank,targets,real_path,cfg['chunk_rows']); bank.file.close()
+        if context not in banks:
+            banks[context]=reference_stack.enter_context(mapped_reference(
+                verified(info['bank_ref']),job.output/'cache/decoded-banks'/context))
+        copy_panel(banks[context],targets,real_path,cfg['chunk_rows'])
     ntc=ad.read_h5ad(verified(info['input_ntc_ref']))
     full_width=len(pd.read_csv(verified(cfg['benchmark']['gene_axis'])))
     template=template_for(split,observations,full_width)[info['official_gene_positions']]
@@ -123,11 +142,14 @@ def main():
         write_json(checkpoint,{'research':research,'protocol':cfg['benchmark'],'predictor_fit':False})
         splits=json.loads(verified(cfg['benchmark']['split_manifest']).read_text())
         results={}
-        for split in splits:
-            if split['scenario'] not in cfg['scenarios']:
-                continue
-            for context in split['evaluation_contexts']:
-                results[split['id']+'/'+context]=panel(job,split,context,observations,checkpoint)
+        with ExitStack() as reference_stack:
+            banks={}
+            for split in splits:
+                if split['scenario'] not in cfg['scenarios']:
+                    continue
+                for context in split['evaluation_contexts']:
+                    results[split['id']+'/'+context]=panel(job,split,context,observations,checkpoint,banks,reference_stack)
+            banks.clear()
         if len(results)!=cfg['expected_panels']:
             raise ValueError('Incomplete full-fold evaluation support batch')
         manifest=job.output/'predictions/manifest.json'

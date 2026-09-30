@@ -11124,7 +11124,7 @@
       "legacy": false,
       "method_id": "M-LOCAL-CAPABILITY",
       "protocol_id": "FULL-EVAL-SUPPORT-20260930",
-      "status": "ready",
+      "status": "failed",
       "comparison_id": "C-LOCAL-EVAL-SUPPORT-R2",
       "controls": [],
       "sources": [
@@ -11357,7 +11357,10 @@
           "sha256": "ab2a872f3c1396545bb9de5bd0f9fa2ccd7b8f2887c7c47bef01f7fc4702becf"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/full-eval-support/outputs/full-eval-support-s02/metrics.json",
+        "sha256": "3aac09491f8cf262c48d8e30e14962789e8b41171e7d4497409d365832d0601a"
+      },
       "report_ref": null,
       "git_commit": null,
       "wandb_url": null,
@@ -11370,27 +11373,29 @@
         "budget": "15 full panels, 15 new bundles, 30 official scores, full per-target diagnostics; no predictor fits",
         "scope": "One fixed support batch, retain undefined scores and stop expanding panels"
       },
-      "blockers": [],
+      "blockers": [
+        "execution exited 134; completed status rejected"
+      ],
       "artifact": "yjcyxky/virtual-cell-challenge/population-emission-s01-results:v0",
       "last_attempt": {
         "status": "failed",
         "research": {
-          "node_id": "full-eval-support-s01",
+          "node_id": "full-eval-support-s02",
           "experiment_id": "full-eval-support",
           "method_id": "M-LOCAL-CAPABILITY",
-          "comparison_id": "C-LOCAL-EVAL-SUPPORT",
+          "comparison_id": "C-LOCAL-EVAL-SUPPORT-R2",
           "protocol_id": "FULL-EVAL-SUPPORT-20260930",
           "protocol_sha256": "1371e528beab4dc9fde5c34ff11f379691cd5823007defe4d114ea77d6e8c3bd",
-          "effective_config_sha256": "451b0128aae97036f2b6c0f240b123a28439be27a712ce4beaf1078a124da147",
-          "registration_sha256": "760512faa308a80ec03cdd64a1a496cb75fa0416185ccb5877865d1e5efc8e76",
-          "git_commit": "4a0cf784e07cf5d5de0cb41c41facfa5986502af"
+          "effective_config_sha256": "275e2ee3fc5fd3c92a1268fa39d8b0c32870033e7d85b9f86aeb1463f01ff98a",
+          "registration_sha256": "cc0f7b7676d5145aff8e18590f4c74fdf7f84b1d984241db2ff460cd7fb16bc7",
+          "git_commit": "91814ad896e5da52eb03d315ccdf9527a0eabb8e"
         },
         "execution": {
-          "git_commit": "8fea42d1e66c48b25e019204093f285e3229c8ad",
+          "git_commit": "91814ad896e5da52eb03d315ccdf9527a0eabb8e",
           "code_refs": [
             {
               "path": "experiments/full-eval-support/PLAN.md",
-              "sha256": "6b773e07f8f2a09577536dbdbfc6724a7a1a247aa85f0081c5e2186ba6b0c99d"
+              "sha256": "31db394a1bb897eabca57e56047f13dd44a39fe69d2963a3c2351a83d5e43a98"
             },
             {
               "path": "experiments/full-eval-support/protocol.json",
@@ -11406,19 +11411,19 @@
             },
             {
               "path": "experiments/full-eval-support/reproduce.sh",
-              "sha256": "faf45eaa428834165ca0298b542de954bb00da8a2e5964a40e186fb056ef1e3b"
+              "sha256": "261041dcc3311efeaf0f2441a72ce36eb8cd035a4859308b27991b18abace237"
             },
             {
               "path": "experiments/full-eval-support/src/run.py",
-              "sha256": "0f854019c264ef47b522769555a37dd892011a6d830482790c768b70a7e0b380"
+              "sha256": "e868eec485aca93963deb5379fee09e01d2a155cd999197202d14665b03f22b2"
             },
             {
               "path": "src/vcc_task/count_store.py",
-              "sha256": "d8a830db44f60f375ccaa02088fe0108f33ef7f4740c92d119f3e947b6a2a9b1"
+              "sha256": "db070efd4db4ca304258e6491b23338a3d437c63454211767eb2a5bf2ed0dfd9"
             },
             {
               "path": "src/vcc_task/full_reference.py",
-              "sha256": "91804829a4a74e2e681efa045218259913f22c8cee415c0fb5a11b4d43bd9f23"
+              "sha256": "d65f111b73b955ee1b4ea4110b7aede4197141cac4af19d871cef35506bf9269"
             },
             {
               "path": "src/vcc_task/prediction_diagnostics.py",
@@ -11467,12 +11472,304 @@
             {
               "path": "scripts/analyze_submitted_counts.py",
               "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+            },
+            {
+              "path": "src/vcc_task/bounded_bundle.py",
+              "sha256": "ab2a872f3c1396545bb9de5bd0f9fa2ccd7b8f2887c7c47bef01f7fc4702becf"
             }
           ],
           "evaluation_repair_sha256": null
         },
-        "error": "execution exited 1; completed status rejected"
-      }
+        "error": "execution exited 134; completed status rejected"
+      },
+      "code_snapshot_commit": "91814ad896e5da52eb03d315ccdf9527a0eabb8e",
+      "superseded_by": "full-eval-support-s03",
+      "superseded_reason": "Completed all five source banks and S2-H1 panel; stopped compressed-CSR random-read bottleneck. Native SIGINT handler exited 134. R3 uses read-only decoded banks and contiguous diagnostic slices; no changed cells, rows, formulas or seeds."
+    },
+    "full-eval-support-s03": {
+      "experiment_id": "full-eval-support",
+      "directory": "experiments/full-eval-support",
+      "run_id": "full-eval-support-s03",
+      "legacy": false,
+      "method_id": "M-LOCAL-CAPABILITY",
+      "protocol_id": "FULL-EVAL-SUPPORT-20260930",
+      "status": "ready",
+      "comparison_id": "C-LOCAL-EVAL-SUPPORT-R3",
+      "controls": [],
+      "sources": [
+        "task-observation-s02",
+        "local-capability-s03",
+        "full-eval-support-s01",
+        "full-eval-support-s02"
+      ],
+      "requires_evidence": [],
+      "evidence_conditions": {},
+      "config_ref": {
+        "path": "experiments/full-eval-support/configs/full-eval-support-s03.json",
+        "sha256": "26e13dcd5122bf892fa1d31739069524a13c1d2e6a2f6a1056dbde6ce597fce1"
+      },
+      "expected_config": {
+        "experiment_id": "full-eval-support",
+        "run_id": "full-eval-support-s03",
+        "seed": 930,
+        "contexts": [
+          "H1",
+          "K562",
+          "RPE1",
+          "HepG2",
+          "Jurkat"
+        ],
+        "scenarios": [
+          "S2",
+          "S3",
+          "S4"
+        ],
+        "expected_panels": 15,
+        "reference_cells": 400,
+        "chunk_rows": 1024,
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          },
+          "observation_view": {
+            "path": "experiments/task-observation/protocol.json",
+            "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+          },
+          "full_support_view": {
+            "path": "experiments/full-eval-support/protocol.json",
+            "sha256": "c987d3ab3880c86d825852204f2247bad730be7da7ef0eba7ee94a2d1ec4e1f6"
+          }
+        },
+        "fit_scope": {
+          "outer_split": "full-S2-S3-S4-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "observation_refs": {
+          "H1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/observations.json",
+            "sha256": "5f4cb078b2aca17479f5a5ef3b342629edd0d30e7f7db9610f771372a7494a5a"
+          },
+          "K562": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/observations.json",
+            "sha256": "fae14763117cfded4a1cd29709de5637ebef835845d3637884ef70c8b7caea63"
+          },
+          "RPE1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/observations.json",
+            "sha256": "f6f7d26f0b167f65f1e15b962250b9032a2c0014f615036bcdeaadaa9394f2a8"
+          },
+          "HepG2": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/observations.json",
+            "sha256": "7c6438023326ca6daaf456dc3f4c04c9024858b06975f9417e0ef1fa642c0fe5"
+          },
+          "Jurkat": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/Jurkat/observations.json",
+            "sha256": "20390ecd38e3828d475f62524a8288457c16b1489ef499bfef07ec80b7b8eb1f"
+          }
+        },
+        "mapping_ref": {
+          "path": "docs/research/challenge_2026/gene_mapping.csv.gz",
+          "sha256": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328"
+        },
+        "tasks_ref": {
+          "path": "docs/research/challenge_2026/tasks.csv",
+          "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+        },
+        "pathway_ref": {
+          "path": "data/raw/networks/ReactomePathways.gmt.zip",
+          "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4"
+        },
+        "runtime": {
+          "device": "cuda",
+          "num_threads": 8,
+          "pert_chunk": 16
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "diagnostics": {
+          "covariance_genes": 128,
+          "raw_cpm_and_meanlog": true,
+          "exact_participation_rank": true,
+          "pair_samples": 20000,
+          "before_official_scoring": true,
+          "failure_policy": "hard violations stop; statistical deviations retained without response filtering"
+        },
+        "external_prior": {
+          "release": "DepMap 24Q2 Public version 1",
+          "doi": "10.25452/figshare.plus.25880521.v1",
+          "url": "https://ndownloader.figshare.com/files/46489063",
+          "filename": "CRISPRGeneEffect.csv",
+          "size": 419330454,
+          "md5": "d10d73692672380b3792231549e97d5a"
+        },
+        "reuse": {
+          "source_run_id": "full-eval-support-s02",
+          "prior_ref": {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s01/cache/CRISPRGeneEffect.csv",
+            "sha256": "d155149181308f8e16b6a4677cde3e5af1ddef68ada1947486ae8c0bcb231452"
+          },
+          "contexts": {
+            "H1": {
+              "path": "experiments/full-eval-support/outputs/full-eval-support-s01/cache/H1/reference.json",
+              "sha256": "457dcb7e236e85289cda458c64ad4f01da8789f0baa34a06512a47d13a5e76de"
+            },
+            "K562": {
+              "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/K562/reference.json",
+              "sha256": "7c230402bad6c9eef84b9112d97f7f0682489072159a43f2f67f71df64548ef5"
+            },
+            "RPE1": {
+              "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/RPE1/reference.json",
+              "sha256": "ddd6b42a295f3d2d4ade0df7ef99888a7db7d0c4d588d21e309f3918ec0d8388"
+            },
+            "HepG2": {
+              "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/HepG2/reference.json",
+              "sha256": "7b919d75b94c0eb68d8660ce34b02a86ee6976fe9882b233347abfa345e70247"
+            },
+            "Jurkat": {
+              "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/Jurkat/reference.json",
+              "sha256": "4e3e49618a3d5c93d3fcb53ccff9e502220647a2148c39b022aab7e4b353225b"
+            }
+          },
+          "panels": {
+            "S2-H1/H1": {
+              "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/panel.json",
+              "sha256": "bab0b7b7dbe3768e5cb64c52140933da6fe320e62acc0000bacc9e5dad9307e2"
+            }
+          }
+        },
+        "baseline_memory": {
+          "chunk_targets": 16,
+          "canonical_equivalence_panel": "S2-H1/H1",
+          "required_different_entries": 0,
+          "reference_arrays": "read-only disk-backed CSR, original counts dtype; int64 indices/indptr",
+          "reference_row_order": "NTC first, sorted targets, stable physical order within each group",
+          "baseline_api": "official generic_response_profile + public build_baseline_prediction on bounded templates; one shared PCG64(0) stream; official build_real_bundle unchanged"
+        },
+        "reference_io": {
+          "bank_reads": "one sequential decode per context into read-only memory-mapped CSR; reuse across panels",
+          "diagnostic_group_reads": "one span for contiguous groups; retain original indices for noncontiguous groups",
+          "permanent_counts": "same physical rows, values, order, masks and random draws",
+          "reused_panels": 1,
+          "new_panels": 14
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/full-eval-support/PLAN.md",
+          "sha256": "11f6e7285b15d85783b215e6d4243319fc7a9dbcd100cbba6d86964d315e07e5"
+        },
+        {
+          "path": "experiments/full-eval-support/protocol.json",
+          "sha256": "c987d3ab3880c86d825852204f2247bad730be7da7ef0eba7ee94a2d1ec4e1f6"
+        },
+        {
+          "path": "experiments/full-eval-support/pyproject.toml",
+          "sha256": "615fd0cf4453479511530d4caeae5ab0637b0ee2a1390fc50391a6cafb81737c"
+        },
+        {
+          "path": "experiments/full-eval-support/uv.lock",
+          "sha256": "d9bbf35c3941701e5f82fe6fc06906fb598d9365812c0c1da0485e5d6a2901fc"
+        },
+        {
+          "path": "experiments/full-eval-support/reproduce.sh",
+          "sha256": "795493632a1e23c5339ebf02921b4700b87318fb169338881c7cdcc3cffe0d75"
+        },
+        {
+          "path": "experiments/full-eval-support/src/run.py",
+          "sha256": "0b793a81d0dabde8ec9a96ee787dd265edb79b624706769c3f4c000ce9dab67f"
+        },
+        {
+          "path": "src/vcc_task/count_store.py",
+          "sha256": "db070efd4db4ca304258e6491b23338a3d437c63454211767eb2a5bf2ed0dfd9"
+        },
+        {
+          "path": "src/vcc_task/full_reference.py",
+          "sha256": "d65f111b73b955ee1b4ea4110b7aede4197141cac4af19d871cef35506bf9269"
+        },
+        {
+          "path": "src/vcc_task/prediction_diagnostics.py",
+          "sha256": "b326170825af8dc3277d91a84d812d48fd30d5e3c91b22655d53f892d641cd54"
+        },
+        {
+          "path": "src/vcc_task/frozen_scoring.py",
+          "sha256": "b1f50a83b7ced87b8ad1952d8424d261094ced4f82fe7c512ff374a761bdd9f2"
+        },
+        {
+          "path": "src/vcc_task/run_context.py",
+          "sha256": "086bde937aff0857f1c8ac5c40ba436915231985e326e1e54f1b5b31b4bd3fde"
+        },
+        {
+          "path": "src/vcc_task/counts.py",
+          "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+        },
+        {
+          "path": "src/vcc_task/observations.py",
+          "sha256": "b4b1f2df68148b988055b2367cd7bd7124bb370668c9a48ee34afb8ed17b35fa"
+        },
+        {
+          "path": "src/vcc_task/common.py",
+          "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+        },
+        {
+          "path": "src/vcc_task/capability.py",
+          "sha256": "a01fd8917d50916f98adde204a841b7cd3fbe89a74626d1114523b7fc796c42b"
+        },
+        {
+          "path": "src/vcc_task/__init__.py",
+          "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/analyze_submitted_counts.py",
+          "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+        },
+        {
+          "path": "src/vcc_task/bounded_bundle.py",
+          "sha256": "ab2a872f3c1396545bb9de5bd0f9fa2ccd7b8f2887c7c47bef01f7fc4702becf"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "design": {
+        "fit_scope": {
+          "outer_split": "full-S2-S3-S4-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "seed_plan": 930,
+        "budget": "Original 15-panel support batch: one immutable completed H1 panel reused, 14 new bundles and 28 new full official instrument scores; all pre-score diagnostics retained",
+        "scope": "One fixed support batch, retain undefined scores and stop expanding panels"
+      },
+      "blockers": []
     }
   },
   "comparisons": {
@@ -12841,6 +13138,31 @@
       "cost": "medium",
       "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。 2026-09-30全文核验见L14-DECOMPOSITION-FULLTEXT-V1；适用边界详见docs/research/perturbation_decomposition_review.md。 原s01为int32累计索引技术失败，未产生方法结论；仅复用已完成H1和已校验外部先验。",
       "evidence_id": "E-LOCAL-EVAL-SUPPORT-R2"
+    },
+    "C-LOCAL-EVAL-SUPPORT-R3": {
+      "status": "ready",
+      "purpose": "protocol_audit",
+      "hypothesis": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
+      "controls": [],
+      "candidates": [
+        "full-eval-support-s03"
+      ],
+      "changed_axes": [],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "support.fraction",
+        "direction": "higher",
+        "min_effect": 1.0,
+        "scope": "All 15 frozen full panels, two instrument controls each; 15/15 required for complete normalized support",
+        "on_support": "按预定范围采用生成/评估条件，优先推进DepMap整包训练，不自动扩局部网格。",
+        "on_against": "保留限制，重分配机制资源；不改写既有失败或用部分指标伪造Overall。",
+        "on_inconclusive": "保留六项raw和不可定义Overall，停止面板/seed追分；有效预定范围继续支持范围内研发，不能宣称完整五背景/joint-OOD验收。",
+        "threshold_policy": "启动前冻结数值容差、重复次数、真实细胞/面板范围及停止条件；旧0.01单次均值检查的失败保持原结论。"
+      },
+      "attribution_plan": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。 补充分解诊断：区分source-only模板方向投影、固定centroid相减及评分侧ANOVA；split-half显式处理独立NTC和分母。真实五背景/joint-OOD拟合与接口面板分开计数。 R2冻结只读磁盘映射和官方公开baseline函数的分块调用，首个完整H1面板要求与标准调用counts/obs/var零差异；不修改评分公式或官方包。 R3 only changes I/O: one decoded memory-mapped source bank per context and contiguous group spans. Completed H1 panel and exact official baseline equivalence are reused with hashes; original scientific counts, rows, seeds and all 15 panels remain fixed.",
+      "cost": "medium",
+      "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。 2026-09-30全文核验见L14-DECOMPOSITION-FULLTEXT-V1；适用边界详见docs/research/perturbation_decomposition_review.md。 原s01为int32累计索引技术失败，未产生方法结论；仅复用已完成H1和已校验外部先验。",
+      "evidence_id": "E-LOCAL-EVAL-SUPPORT-R3"
     }
   },
   "continuation_rules": {

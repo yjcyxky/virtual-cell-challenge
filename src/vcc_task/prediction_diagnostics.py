@@ -14,6 +14,14 @@ from .counts import profile, validate_counts
 from .capability import pearson, pathway_vectors
 
 
+def read_group(matrix, rows):
+    """Use one CSR span for a contiguous group; preserve arbitrary index order."""
+    rows=np.asarray(rows,dtype=np.int64)
+    if len(rows) and np.all(np.diff(rows)==1):
+        return matrix[int(rows[0]):int(rows[-1])+1]
+    return matrix[rows]
+
+
 def response_geometry(values, seed):
     values = np.asarray(values, dtype=np.float64)
     if values.shape[1] == 0:
@@ -91,10 +99,10 @@ def diagnose_panel(prediction, ntc, directory, *, seed, checkpoint_ref, expected
     rows, bulk_values = [], []
     real_ad = ad.read_h5ad(real,backed='r') if real is not None else None
     real_groups = real_ad.obs.groupby('target_gene',observed=True).indices if real_ad is not None else None
-    real_origin = profile(real_ad.X[real_groups[NTC]]) if real_ad is not None else None
+    real_origin = profile(read_group(real_ad.X,real_groups[NTC])) if real_ad is not None else None
     real_values = []
     for i,target in enumerate(targets):
-        matrix = sparse.csr_matrix(pred.X[groups[target]],dtype=np.float64)
+        matrix = sparse.csr_matrix(read_group(pred.X,groups[target]),dtype=np.float64)
         depth = validate_counts(matrix)
         if expected_cells is not None and len(depth) != expected_cells:
             raise ValueError('Generated cell count differs from registered count')
@@ -118,7 +126,7 @@ def diagnose_panel(prediction, ntc, directory, *, seed, checkpoint_ref, expected
         if source_coverage is not None:
             summary.update(source_coverage[target])
         if real_ad is not None:
-            truth = real_ad.X[real_groups[target]]
+            truth = read_group(real_ad.X,real_groups[target])
             response = profile(truth)-real_origin
             real_values.append(response)
             summary.update(real_n=truth.shape[0], real_n_ge_400=truth.shape[0]>=400,
@@ -128,7 +136,7 @@ def diagnose_panel(prediction, ntc, directory, *, seed, checkpoint_ref, expected
         if (i+1)%250 == 0:
             print(f'counts diagnostics {i+1}/{len(targets)}',flush=True)
     if NTC in groups:
-        validate_counts(pred.X[groups[NTC]])
+        validate_counts(read_group(pred.X,groups[NTC]))
     moment_file.close(); pred.file.close()
     if real_ad is not None:
         real_ad.file.close()

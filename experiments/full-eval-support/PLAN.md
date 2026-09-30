@@ -1,6 +1,6 @@
 # 完整留出面板与本地评分支持
 
-Comparisons: `C-LOCAL-EVAL-SUPPORT`、`C-LOCAL-EVAL-SUPPORT-R2`。此路线实现有界内存的完整参考群体与评分；不拟合预测模型。
+Comparisons: `C-LOCAL-EVAL-SUPPORT`、`C-LOCAL-EVAL-SUPPORT-R2`、`C-LOCAL-EVAL-SUPPORT-R3`。此路线实现有界内存的完整参考群体与评分；不拟合预测模型。
 
 KnowGraph attention: `EXP-LOCAL-EVAL`, `EXP-LOCO`, `ST-WILCOXON`, `PAP-F-PATHWAY`。
 
@@ -33,3 +33,9 @@ KnowGraph attention: `EXP-LOCAL-EVAL`, `EXP-LOCO`, `ST-WILCOXON`, `PAP-F-PATHWAY
 完整 K562 bank 约 186 万细胞，预计 CSR nnz 超过 50 亿。R2 在首次执行前同时冻结有界内存适配：参考组间顺序固定为 NTC 在前、靶点字典序，组内物理顺序不变；实际整数矩阵的 data/indices/indptr 解码为只读磁盘映射，调用原官方 generic_response_profile 和 build_real_bundle。indices/indptr 用 int64，数据 dtype 和数值不变；临时解码缓存可重建，成功或异常退出后释放，压缩参考文件及哈希永久保留。
 
 baseline 使用同一个官方全体参考 profile，每 16 个靶点调用公开 build_baseline_prediction；模板只需原 NTC 与原 obs/var，非 NTC X 是不被该函数消费的零占位。一次 PCG64(0) Generator 贯穿字典序组调用，并以 int(seed)=0 保留官方元数据；不重置每组随机流。首个 S2-H1 面板另执行一次标准全模板 seed=0 调用，对全部元素、obs/var 逐项比对，必须零差异才进入 anchors。其余背景只复用已通过的同一分块实现；输出 fractional baseline 是官方参照，不属于待提交模型计数。五次 anchor 和所有评分仍调用原官方函数，未修改 cell-eval2 包、公式或采样口径。该适配是计算实现变更并完整记录，不能以名称相同冒充逐项核验已完成。
+
+## 压缩稀疏随机读取的修复
+
+R2 已完成五背景原始参考与完整 S2-H1 面板，H1 的分块 baseline 等价检查为 106097×18074 个元素零差异、obs/var 一致。继续 K562 时，原 backed CSR 整数索引路径会逐行读取压缩块，产生大量重复解压。为将计算预算用于完整机制实验，主动停止 R2；本平台 SIGINT 导致原生信号处理器退出 134，研究入口据实记录 failed。它不是评分退化或方法阴性，也不重启原身份。
+
+R3 复用有固定哈希的五背景银行、DepMap 原件及完整 H1 面板（含诊断、两份评分、baseline/anchors 和等价证据），其余 14 个面板完成原定计算。新的参考重排先将每个背景银行顺序解压为只读 CSR 内存映射，在整个 run 内复用；仍使用相同 row indices 生成同一顺序的参考。逐靶诊断对连续行组改用等价的单 span 切片，非连续组保留原索引顺序。数值运算、目标、种子、矩阵和指标定义均不改变。解码缓存约百 GB 级，属于本 run 可重建 I/O 缓存，结束后清理；正式参考/预测/统计全部保留。已有 H1 面板不是新增独立重复，最终报告区分实际新增与复用。
