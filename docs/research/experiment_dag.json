@@ -8138,7 +8138,7 @@
         "source_usage": "仅复用固定输入/物理NTC/reference和合法细胞池；不复用阴性模型权重；H1仅input NTC。复用前逐项登记manifest/hash。",
         "mechanism": "从头训练的NTC细胞集合Transformer，学习cell-state-dependent残差；实测mask上的energy目标与响应辅助，经验NTC模板+零扰动恒等约束后输出完整18533轴counts。State-inspired而非已复现作者ST。",
         "budget": {
-          "allocation": "下一探索槽，一个完整配置、一个独立fit、主/重叠两个官方面板；其余两槽保留给达标后的新背景确认及另一机制，当前不启动局部网格。",
+          "allocation": "2026-09-30用户重排后本轮训练预算为零；保留原32768更新/64细胞集合设想，不作为当前可启动预算。数据/本地能力评价基础完成后重新分配探索槽。",
           "planned_updates": 32768,
           "planned_cells_per_set": 64,
           "status": "资源计划；真实尺寸接口前后向后冻结完整配置，当前不是可执行预算或已完成实验",
@@ -8158,7 +8158,8 @@
         ]
       },
       "blockers": [
-        "新集合机制尚未实现/冻结；当前draft不可启动，不创建训练目录或W&B run。"
+        "新集合机制尚未实现/冻结；当前draft不可启动，不创建训练目录或W&B run。",
+        "2026-09-30当前队列优先任务约束、数据生成和本地能力评价；集合机制预算待重新分配，参见task_constraints_review.md。"
       ]
     }
   },
@@ -9276,8 +9277,77 @@
       },
       "attribution_plan": "先验证完整机制价值；相同评估与信息边界下可联动T/A/L/I等轴。ready前冻结全部生效配置并据实际差异生成changed_fields；结果出现前固定预算。",
       "cost": "high",
-      "priority_basis": "跨基因解码及计数VAE均未晋级；将第三槽用于细胞状态依赖的集合分布机制，当前两条失败配置和CellOT原版不分配本轮计算。",
+      "priority_basis": "2026-09-30用户将下一轮重心改为数据/任务约束和本地能力评估；集合机制保留候选，不再因弱模型失败自动获得下一训练槽。",
       "evidence_id": "E-SET-DISTRIBUTION-PACKAGE"
+    },
+    "C-TASK-DATA-GENERATION": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": null,
+        "direction": null,
+        "min_effect": null,
+        "scope": "观测条件与计数生成诊断；不归因于现有弱模型的生物机制",
+        "on_support": "完成预定批次后关闭真实证据，推进下一项已冻结工作；模型晋级须有独立范围确认。",
+        "on_against": "定位该实现/观测条件不成立的部分，保持真实评分群体和历史结果；不据此否定整个方法家族。",
+        "on_inconclusive": "补齐可评分性或恢复完整执行，不能把未完成当阴性。",
+        "threshold_policy": "按设计说明在训练/校准范围内固定数值容差、功效和配对比较门槛；未冻结前不启动。"
+      },
+      "attribution_plan": "观测条件与计数生成诊断；不归因于现有弱模型的生物机制；此处只登记问题，执行前按外层划分×靶点分区×seed建立独立节点、完整expected_config及配置差异。",
+      "cost": "medium",
+      "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。",
+      "evidence_id": "E-TASK-DATA-GENERATION"
+    },
+    "C-LOCAL-CAPABILITY-EVALUATOR": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": null,
+        "direction": null,
+        "min_effect": null,
+        "scope": "评价器能力验收；不能以榜单接近度或单一Overall作为通过依据",
+        "on_support": "完成预定批次后关闭真实证据，推进下一项已冻结工作；模型晋级须有独立范围确认。",
+        "on_against": "定位该实现/观测条件不成立的部分，保持真实评分群体和历史结果；不据此否定整个方法家族。",
+        "on_inconclusive": "补齐可评分性或恢复完整执行，不能把未完成当阴性。",
+        "threshold_policy": "按设计说明在训练/校准范围内固定数值容差、功效和配对比较门槛；未冻结前不启动。"
+      },
+      "attribution_plan": "评价器能力验收；不能以榜单接近度或单一Overall作为通过依据；此处只登记问题，执行前按外层划分×靶点分区×seed建立独立节点、完整expected_config及配置差异。",
+      "cost": "medium",
+      "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。",
+      "evidence_id": "E-LOCAL-CAPABILITY-EVALUATOR"
+    },
+    "C-DEPMAP-RESPONSE-ALIGNMENT": {
+      "status": "draft",
+      "purpose": "integrate",
+      "hypothesis": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": null,
+        "direction": null,
+        "min_effect": null,
+        "scope": "完整方案开发证据；容量或先验的单因素归因需另做实际配置匹配",
+        "on_support": "完成预定批次后关闭真实证据，推进下一项已冻结工作；模型晋级须有独立范围确认。",
+        "on_against": "定位该实现/观测条件不成立的部分，保持真实评分群体和历史结果；不据此否定整个方法家族。",
+        "on_inconclusive": "补齐可评分性或恢复完整执行，不能把未完成当阴性。",
+        "threshold_policy": "按设计说明在训练/校准范围内固定数值容差、功效和配对比较门槛；未冻结前不启动。"
+      },
+      "attribution_plan": "完整方案开发证据；容量或先验的单因素归因需另做实际配置匹配；此处只登记问题，执行前按外层划分×靶点分区×seed建立独立节点、完整expected_config及配置差异。",
+      "cost": "medium",
+      "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。",
+      "evidence_id": "E-DEPMAP-RESPONSE-ALIGNMENT"
     }
   },
   "continuation_rules": {

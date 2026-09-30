@@ -182,6 +182,10 @@
         "R19": {
           "description": "NTC逐细胞token及集合交互，保留细胞状态异质性；靶点条件化，无真实纵向配对",
           "local_status": "UNTESTED"
+        },
+        "R20": {
+          "description": "版本化DepMap靶点依赖谱，经训练靶点内拟合的表示及监督响应对齐；缺先验与未知效率显式处理",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -417,6 +421,10 @@
         "I9": {
           "description": "以真实NTC细胞为模板的学习残差变换及counts逆映射；零扰动恒等约束，避免重建整个NTC分布",
           "local_status": "UNTESTED"
+        },
+        "I10": {
+          "description": "目标NTC经验状态与显式深度机制生成完整轴整数counts；零响应、组成投影和效应实现误差在冻结前校准，具体生成族待定",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -555,6 +563,23 @@
       "evidence_ids": [
         "L01",
         "L02"
+      ]
+    },
+    "P-DEPMAP-ALIGNMENT": {
+      "hypothesis": "共依赖谱经过监督响应对齐后包含可迁移的扰动特异信息，可能支持全局未见靶点。",
+      "injection": [
+        "R",
+        "A"
+      ],
+      "matched_controls": [
+        "无靶点信息均值/零Δ",
+        "覆盖及维度匹配随机先验或靶点映射打乱",
+        "未经响应对齐的原始余弦kNN"
+      ],
+      "failure_condition": "收益仅来自模板/强响应筛选/覆盖变化，或在joint-OOD残差恢复与官方分项中无增量。",
+      "evidence_ids": [
+        "L03",
+        "L13-DEPMAP-ALIGNMENT"
       ]
     }
   },
@@ -1774,7 +1799,55 @@
         "L12",
         "E-SET-DISTRIBUTION-PACKAGE"
       ],
-      "selection_basis": "本轮基因解码与计数VAE完整比较均未达标后，把剩余探索槽转向经验细胞集合响应；是资源选择，不是新方法有效证据。"
+      "selection_basis": "保留原集合分布候选；2026-09-30用户重排后无本轮训练预算，后续由任务/数据约束和完整能力评价决定资源分配。"
+    },
+    "M-DEPMAP-ALIGNED-RIDGE": {
+      "description": "DepMap监督对齐正则线性/低秩响应与目标NTC计数生成候选",
+      "axes": {
+        "T": "T1",
+        "D": "D2",
+        "R": "R20",
+        "A": "A0",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I10",
+        "G": "G0"
+      },
+      "signature": "T1-D2-R20-A0-L1-O0-V5-I10-G0",
+      "prior": "P-DEPMAP-ALIGNMENT；先验提供靶点信息，监督只用源背景允许标签；bulk响应的具体空间、全轴未测坐标策略、效率处理和生成规则在ready前冻结。NTC到模板及稳定性门控不预设有效。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "low",
+      "evidence_ids": [
+        "L03",
+        "L13-DEPMAP-ALIGNMENT"
+      ],
+      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。"
+    },
+    "M-DEPMAP-ALIGNED-MLP": {
+      "description": "DepMap监督对齐小MLP响应与目标NTC计数生成候选",
+      "axes": {
+        "T": "T1",
+        "D": "D2",
+        "R": "R20",
+        "A": "A1",
+        "L": "L1",
+        "O": "O0",
+        "V": "V5",
+        "I": "I10",
+        "G": "G0"
+      },
+      "signature": "T1-D2-R20-A1-L1-O0-V5-I10-G0",
+      "prior": "P-DEPMAP-ALIGNMENT；先验提供靶点信息，监督只用源背景允许标签；bulk响应的具体空间、全轴未测坐标策略、效率处理和生成规则在ready前冻结。NTC到模板及稳定性门控不预设有效。",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "medium",
+      "evidence_ids": [
+        "L03",
+        "L13-DEPMAP-ALIGNMENT"
+      ],
+      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。"
     }
   }
 }

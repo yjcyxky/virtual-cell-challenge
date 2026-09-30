@@ -2033,31 +2033,135 @@
           "sha256": "344ca7b9f11951fc8f3c213204f93c46bc123f6ac73841a8d559a6e20c35e590"
         }
       ],
-      "next_action": "执行真实尺寸接口/资源核验，冻结一个完整配置后通过execute/bind完成32768步计划及两面板；冻结前资源核验可调整预算，评分出现后不可延长追分。",
+      "next_action": "本轮暂不分配训练预算；完成任务数据/生成与本地能力评价基础后重新评估资源，再冻结完整方案。保留此前来源和未验证状态。",
       "reopen_when": "完整比较完成后按主+0.02及重叠−0.02门槛分配确认或新机制预算；执行失败单独记录。"
+    },
+    "PROTOCOL-TASK-REVIEW-20260930": {
+      "kind": "protocol",
+      "state": "constraint",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "用户将下一轮重心改为实验观测/数据约束、任务匹配处理和提交前本地能力评估。官方定义约束整数计数、完整轴、评分靶点排除及bulk/DE两套统计；均值学习与分布生成均需验证。",
+      "limitations": "这是任务约束与用户资源决策，不是本地方法有效证据。约20k为参考中位深度；低深度/少细胞无法补出独立观测。论文模板、NTC可预测性和先验优胜仍为假设。新处理不改写已冻结历史协议。",
+      "source_urls": [
+        "https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/docs/vcc2026_metrics/vcc2026-metrics-brief.md",
+        "https://vcc-cli-wiki.virtualcellchallenge.org/"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/task_constraints_review.md",
+          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+        }
+      ],
+      "next_action": "按队列完成数据/生成诊断、本地能力评估和DepMap监督对齐设计；冻结新协议及独立run后才能执行。",
+      "reopen_when": "官方输入/协议变化，或实测校准揭示当前处理与能力判据不适用；方法结论由新比较产生。"
+    },
+    "L13-DEPMAP-ALIGNMENT": {
+      "kind": "literature",
+      "state": "external",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "固定作者代码实现了DepMap特征的训练内PCA、Ridge/MLP监督响应映射、跨背景预测及Hallmark通路诊断，支持将先验对齐设为候选。",
+      "limitations": "bioRxiv全文此次403；未独立确认图谱中的精确百分比、模型名次或容量饱和。作者CP10K/HVG结果不等同本地完整轴计数任务；评分侧真实centroid不得进入推断。",
+      "source_urls": [
+        "https://github.com/xinyizhanglab/perturbation-decomposition/blob/a15214780619736d393f40240e56ba992fd416a3/models/ridge.py",
+        "https://github.com/xinyizhanglab/perturbation-decomposition/blob/a15214780619736d393f40240e56ba992fd416a3/benchmarks/cross_cl.py",
+        "https://github.com/xinyizhanglab/perturbation-decomposition/blob/a15214780619736d393f40240e56ba992fd416a3/benchmarks/pathway_prediction.py"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/task_constraints_review.md",
+          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+        }
+      ],
+      "next_action": "冻结DepMap版本/覆盖、训练内表示、全轴解码、匹配随机先验及LOCO/joint-OOD条件后执行。",
+      "reopen_when": "作者发布可核验全文/结果或代码变化；本地优劣仅由实际完成的匹配比较判断。"
+    },
+    "E-TASK-DATA-GENERATION": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-TASK-DATA-GENERATION",
+      "node_ids": [],
+      "hypothesis": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
+      "claim": "待检验：训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
+      "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
+      "source_refs": [
+        {
+          "path": "docs/research/task_constraints_review.md",
+          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+        }
+      ],
+      "next_action": "冻结按来源/guide/靶点的效率与覆盖审计、深度可行视图、零响应和已知可实现效应对照；官方DE与双统计诊断。改变reference时新建协议/anchors，不覆写旧结果。",
+      "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
+    },
+    "E-LOCAL-CAPABILITY-EVALUATOR": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR",
+      "node_ids": [],
+      "hypothesis": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
+      "claim": "待检验：使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
+      "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
+      "source_refs": [
+        {
+          "path": "docs/research/task_constraints_review.md",
+          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+        }
+      ],
+      "next_action": "复用官方scorer，补齐可复用诊断与五背景实际执行路径；固定null/模板/已知信号对照和训练内统计容差，记录稀缺真实n、覆盖及未定义指标。",
+      "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
+    },
+    "E-DEPMAP-RESPONSE-ALIGNMENT": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
+      "node_ids": [],
+      "hypothesis": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
+      "claim": "待检验：匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
+      "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
+      "source_refs": [
+        {
+          "path": "docs/research/task_constraints_review.md",
+          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+        }
+      ],
+      "next_action": "实例化M-DEPMAP-ALIGNED-RIDGE/MLP及无先验/随机先验/原始kNN对照；固定DepMap来源、训练内PCA、每折目标列表和全轴策略，不自动扩参数网格。",
+      "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
     }
   },
   "queue": [
     {
-      "id": "Q-SET-DISTRIBUTION-PACKAGE",
+      "id": "Q-TASK-DATA-GENERATION",
       "priority": 1,
-      "comparison_id": "C-SET-DISTRIBUTION-PACKAGE",
-      "question": "保留实测NTC细胞模板，学习集合条件异质响应并用分布目标训练，能否在匹配数据和官方评分下超过shared，同时避免当前计数重建的基线漂移？",
-      "action": "将未用探索槽转入集合分布机制，先冻结一套可执行方案后完整训练/评分；当前基因解码/VAE追加H1网格预算为零。接口预检不是完成实验。",
-      "requires_evidence": [
-        "E-GENE-DECODER-PACKAGE",
-        "E-CELL-VAE-ALIGNED-PACKAGE"
-      ]
+      "comparison_id": "C-TASK-DATA-GENERATION",
+      "question": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
+      "action": "冻结按来源/guide/靶点的效率与覆盖审计、深度可行视图、零响应和已知可实现效应对照；官方DE与双统计诊断。改变reference时新建协议/anchors，不覆写旧结果。",
+      "requires_evidence": []
+    },
+    {
+      "id": "Q-LOCAL-CAPABILITY-EVALUATOR",
+      "priority": 2,
+      "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR",
+      "question": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
+      "action": "复用官方scorer，补齐可复用诊断与五背景实际执行路径；固定null/模板/已知信号对照和训练内统计容差，记录稀缺真实n、覆盖及未定义指标。",
+      "requires_evidence": []
+    },
+    {
+      "id": "Q-DEPMAP-RESPONSE-ALIGNMENT",
+      "priority": 3,
+      "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
+      "question": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
+      "action": "实例化M-DEPMAP-ALIGNED-RIDGE/MLP及无先验/随机先验/原始kNN对照；固定DepMap来源、训练内PCA、每折目标列表和全轴策略，不自动扩参数网格。",
+      "requires_evidence": []
     }
   ],
   "resource_allocation": {
-    "after_evidence": "E-MECHANISM-PORTFOLIO",
-    "unit": "one_predeclared_complete_fit_and_two_matched_official_panels",
+    "after_evidence": "PROTOCOL-TASK-REVIEW-20260930",
+    "unit": "设计重排；当前训练/leaderboard预算为零。先完成一个数据生成校准批次及一个本地能力评估验收批次；模型预算需在独立run配置中冻结。",
     "exploration_slots": [
-      "C-GENE-DECODER-PACKAGE",
-      "C-CELL-VAE-PACKAGE"
+      "C-DEPMAP-RESPONSE-ALIGNMENT"
     ],
-    "third_slot": "unallocated_until_two_new_packages_finish; qualifying package gets new-context confirmation, otherwise a different mechanism",
+    "third_slot": "集合分布整包保留draft，能力评估基础完成后再分配；不要求所有模板/稳定性假设或线性基线先获胜。",
     "stopped_local_branches": [
       "transport-linear-s01",
       "transport-no-ntc-s01"
