@@ -604,6 +604,221 @@
         "实际训练代码/配置/依赖锁引用",
         "结束条件、数值判据及计算预算"
       ]
+    },
+    "DATA-EVAL-DEFAULTS-20260930": {
+      "status": "draft",
+      "description": "已选择的数据处理与本地评估默认规范；全折视图和生成器未完成执行验收",
+      "scope": "后续新run使用的默认设计；不追溯替换既有数据/参考/模型绑定",
+      "datasets": {
+        "DS-H1": {
+          "context": "H1",
+          "study": "ARC-H1",
+          "files": [
+            "data/raw/arc_vcc2025_h1/adata_Training.h5ad",
+            "data/raw/arc_vcc2025_h1/adata_Validation.h5ad",
+            "data/raw/arc_vcc2025_h1/adata_Test.h5ad"
+          ]
+        },
+        "DS-K562": {
+          "context": "K562 GWPS",
+          "study": "REPLOGLE-2022",
+          "files": [
+            "data/raw/replogle2022/K562_gwps_raw_singlecell_01.h5ad"
+          ]
+        },
+        "DS-RPE1": {
+          "context": "RPE1",
+          "study": "REPLOGLE-2022",
+          "files": [
+            "data/raw/replogle2022/rpe1_raw_singlecell_01.h5ad"
+          ]
+        },
+        "DS-HEPG2": {
+          "context": "HepG2",
+          "study": "NADIG-2025",
+          "files": [
+            "data/raw/nadig2025/GSE264667_hepg2_raw_singlecell_01.h5ad"
+          ]
+        },
+        "DS-JURKAT": {
+          "context": "Jurkat",
+          "study": "NADIG-2025",
+          "files": [
+            "data/raw/nadig2025/GSE264667_jurkat_raw_singlecell_01.h5ad"
+          ]
+        }
+      },
+      "split_design": {
+        "S0": "仅管线/拟合诊断；按物理身份分组，杜绝重复NTC跨池",
+        "S1": "从全部训练背景监督中移除冻结target集合；在已见背景评价",
+        "S2": "五背景轮换留出扰动标签；只评分在允许来源见过的target，目标NTC可输入",
+        "S3": "同时留出背景及全局target集合，天然LOCO未见集合另报",
+        "S4": "按ARC-H1 / REPLOGLE-2022 / NADIG-2025三个研究组留出；混杂限制单列",
+        "selection": "开发选择使用训练内嵌套划分；外层响应仅评价。重复探索后外层仍是开发证据，不称最终无偏检验"
+      },
+      "frozen_before_ready": [
+        "实际原始文件SHA256与SOURCE、HGNC映射和官方基因轴",
+        "H1重复表达与标签核验；物理NTC池身份和零重叠规则",
+        "必要计数正确性与映射排除规则、测量mask",
+        "15个S0–S4实际划分、合格target及每背景已测官方面板",
+        "官方cell-eval2固定commit/preset及baseline/anchor生成配方",
+        "生物独立重复unknown和三研究组混杂限制"
+      ],
+      "evaluation": {
+        "primary": "S2.Overall",
+        "secondary": [
+          "S3.Overall",
+          "S1.Overall",
+          "S4 per-study",
+          "six_raw_metrics",
+          "six_normalized_metrics",
+          "worst_context",
+          "coverage",
+          "runtime"
+        ],
+        "generation": "400个预测细胞用于官方形态的受控评估；真实组数量不足按冻结scorer规则处理，不复制真实细胞伪造样本量",
+        "reference": "每折全部结构合格留出靶点，真实min(n,400)、预测400、input/score NTC物理隔离；每个新参考完整重建官方baseline与五次anchors；稀缺n和400充分支持范围分别报告",
+        "gene_axis": "full official axis + explicit per-context measurement mask; local scorer uses measured official subset in original order",
+        "official_target_reporting": "deployment-panel overlap is separate; auxiliary-panel PDS must not be relabeled as official-panel PDS",
+        "scorer_ref": {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        }
+      },
+      "source_refs": [
+        {
+          "path": "docs/research/dataset_foundations.md",
+          "sha256": "a193f9b07ca92bca2de53cd7af7cf81276a83dc0d00eeee6cf5769e9a98465e7"
+        },
+        {
+          "path": "docs/RESEARCH.md",
+          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24",
+          "git_commit": "41e29043a476041478f978f48831100adf5a09b5"
+        },
+        {
+          "path": "docs/research/challenge_2026/artifacts.json",
+          "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+        },
+        {
+          "path": "docs/research/challenge_2026/data_audit.json",
+          "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+        },
+        {
+          "path": "docs/research/challenge_2026/gene_mapping.csv.gz",
+          "sha256": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328"
+        },
+        {
+          "path": "docs/research/challenge_2026/official_gene_axis.csv",
+          "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+        },
+        {
+          "path": "docs/research/challenge_2026/official_target_coverage.csv",
+          "sha256": "c52947b78a00456b8c23424b14ace8c98f1763cdfa9837685a10d7c9d9eb25db"
+        },
+        {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        {
+          "path": "docs/research/challenge_2026/splits.json",
+          "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+        },
+        {
+          "path": "docs/research/challenge_2026/target_mapping.csv",
+          "sha256": "148b84d61221f0f22b1c12c365a3ebf0876ddff6cf080e42828f80387a7b94e6"
+        },
+        {
+          "path": "docs/research/challenge_2026/tasks.csv",
+          "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+        },
+        {
+          "path": "docs/research/challenge_protocol.json",
+          "sha256": "dbf4e4b5f68126f1c9a78444c559be17670b0e4bf9cae5ad885cb1e941bf8c71"
+        },
+        {
+          "path": "docs/research/challenge_protocol.md",
+          "sha256": "eb2242a0db9c7560f25082c961125b260c94346beffd990de893f3120ef1a808"
+        },
+        {
+          "path": "docs/RESEARCH.md",
+          "sha256": "a9a3cef2abf90db02dfff31a2c64cbb4ac415779b6312a0f69905e25ecc6740d",
+          "git_commit": "03cf49770cd435a18799cad665513df26f157432"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/dossier/pyproject.toml",
+          "sha256": "f2df037fda8d9b4e5ed6f9fc7f11b86b3ebeaa32e3109b4e26eb7e0e8830cc0e"
+        },
+        {
+          "path": "scripts/dossier/uv.lock",
+          "sha256": "cf814d7c9f78d51290cbefc6b647941aeb7e157f72bf7ea5c8a20ec5b0584dc2"
+        },
+        {
+          "path": "docs/research/data_evaluation_decision.md",
+          "sha256": "c1f50437d3834fe87e7811ef4a63fcd75a1e1d32556ecb81441baabf5cf11cd3"
+        }
+      ],
+      "contract_kind": "vcc2026",
+      "binding": {
+        "data_audit": {
+          "path": "docs/research/challenge_2026/data_audit.json",
+          "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+        },
+        "scorer": {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        "artifacts": {
+          "path": "docs/research/challenge_2026/artifacts.json",
+          "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+        },
+        "split_manifest": {
+          "path": "docs/research/challenge_2026/splits.json",
+          "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+        },
+        "gene_axis": {
+          "path": "docs/research/challenge_2026/official_gene_axis.csv",
+          "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+        },
+        "decision_spec": {
+          "path": "docs/research/data_evaluation_decision.md",
+          "sha256": "c1f50437d3834fe87e7811ef4a63fcd75a1e1d32556ecb81441baabf5cf11cd3"
+        }
+      },
+      "runtime_requirements": [
+        "记录actual reference/baseline/anchor hashes及effective DE backend和依赖版本",
+        "保留六raw/normalized分项、每指标有效target数与缺失原因；官方退化拒绝时阻止Overall",
+        "oracle评分baseline仅属于评估，不进入模型拟合、特征、QC或参数选择",
+        "训练仅使用split_manifest规定的背景、target与细胞；benchmark等于此协议binding"
+      ],
+      "node_before_ready": [
+        "独立outer_split×target_partition×seed",
+        "完整expected_config及benchmark绑定",
+        "实际训练代码/配置/依赖锁引用",
+        "结束条件、数值判据及计算预算"
+      ],
+      "decision_status": "defaults_selected_execution_pending",
+      "adoption": {
+        "selected": "原始counts保留+mask内观测投影+bulk/DE双视图+嵌套OOD和全折范围",
+        "completed_evidence": [
+          "E-TASK-DATA-GENERATION-R2",
+          "E-LOCAL-CAPABILITY-EVALUATOR-R3"
+        ],
+        "not_completed": [
+          "新模型观测投影",
+          "guide/target剂量汇聚",
+          "总体校准后独立计数抽样",
+          "全折参考bundle"
+        ],
+        "reference_stop_rule": "单次全折扩展，仍未定义则完整保留并限制结论；不换seed或选强响应面板求可评分"
+      }
     }
   },
   "nodes": {
@@ -11365,7 +11580,7 @@
     "C-LOCAL-EVAL-SUPPORT": {
       "status": "draft",
       "purpose": "protocol_audit",
-      "hypothesis": "不按响应挑选的更大固定面板，能否在稀缺真实n下支持五背景的官方六项归一化及稳定比较？",
+      "hypothesis": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
       "controls": [],
       "candidates": [],
       "changed_axes": [],
@@ -11374,13 +11589,13 @@
         "primary_metric": null,
         "direction": null,
         "min_effect": null,
-        "scope": "由已完成校准提出的新有限批次，尚未冻结完整配置或执行预算",
+        "scope": "正式全折范围，一次新reference/bundle批次；当前尚未冻结各run完整配置及数值验收容差。",
         "on_support": "按预定范围采用生成/评估条件，优先推进DepMap整包训练，不自动扩局部网格。",
         "on_against": "保留限制，重分配机制资源；不改写既有失败或用部分指标伪造Overall。",
-        "on_inconclusive": "区分技术失败、统计功效和真实不确定性，按预定停止条件处理。",
+        "on_inconclusive": "保留六项raw和不可定义Overall，停止面板/seed追分；有效预定范围继续支持范围内研发，不能宣称完整五背景/joint-OOD验收。",
         "threshold_policy": "启动前冻结数值容差、重复次数、真实细胞/面板范围及停止条件；旧0.01单次均值检查的失败保持原结论。"
       },
-      "attribution_plan": "按metadata预先固定扩面板规模与n分层，单批构建所有anchors；不重抽seed挑结果；若仍不可评分保留六项raw/未定义Overall。并在训练数据侧改用批次校准后的guide/target剂量汇聚，unknown不硬删。",
+      "attribution_plan": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。",
       "cost": "medium",
       "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。",
       "evidence_id": "E-LOCAL-EVAL-SUPPORT"

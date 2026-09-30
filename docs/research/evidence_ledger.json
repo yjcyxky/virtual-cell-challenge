@@ -2265,11 +2265,84 @@
       "state": "pending",
       "comparison_id": "C-LOCAL-EVAL-SUPPORT",
       "node_ids": [],
-      "claim": "不按响应挑选的更大固定面板，能否在稀缺真实n下支持五背景的官方六项归一化及稳定比较？",
+      "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
       "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
       "source_refs": [],
-      "next_action": "按metadata预先固定扩面板规模与n分层，单批构建所有anchors；不重抽seed挑结果；若仍不可评分保留六项raw/未定义Overall。并在训练数据侧改用批次校准后的guide/target剂量汇聚，unknown不硬删。",
+      "next_action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。",
       "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
+    },
+    "DATA-SUPPORT-20260930": {
+      "kind": "dataset",
+      "state": "observed",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "冻结任务表有17322个结构合格背景×靶点任务，806个有至少400真实细胞；当前官方靶点的400细胞支持仅H1 20个、K562 3个。输入NTC在官方已测轴保留的native计数质量中位数为H1 99.98%、K562 68.36%、RPE1 72.17%、HepG2 74.12%、Jurkat 73.40%。",
+      "limitations": "源任务与输入NTC的只读描述性汇总，不是方法比较。不同背景面板、化学和n存在混杂；统计中的结构合格任务数与既有报告的全部有效标签数不同。metadata UMI定义尚不能认证为跨来源统一分母。",
+      "source_urls": [
+        "https://github.com/ArcInstitute/arc-virtual-cell-atlas/blob/main/virtual-cell-challenge/README.md",
+        "https://plus.figshare.com/articles/dataset/20029387",
+        "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE264667"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/data_evaluation_decision.md",
+          "sha256": "c1f50437d3834fe87e7811ef4a63fcd75a1e1d32556ecb81441baabf5cf11cd3"
+        },
+        {
+          "path": "docs/research/challenge_2026/tasks.csv",
+          "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/cells.parquet",
+          "sha256": "22f2947dfe83888de99d43a40a5ad888ccb8a9e2c3f3185c660bf76d2dc9b8ab"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/cells.parquet",
+          "sha256": "3ae13d36d8bb16c824059e7a7101d5e3a6097b07b08dd72eb3b3ac65c8df4814"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/cells.parquet",
+          "sha256": "94ad4a9e6d36819f1bf5273a032fc7721a773675a32897224b1d780b10a307a9"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/cells.parquet",
+          "sha256": "3bf4dcffb7eb69ebc1a3c9cda51c2b95fcaa9475822a8dd8a21a446c3b3050a3"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/Jurkat/cells.parquet",
+          "sha256": "b9242ac7cf447706e06b811c4277080db6c1413e30dce020950a56b56ce29e81"
+        }
+      ],
+      "next_action": "保留全部有效观测和真实n；全折评价单报400真实细胞支持及官方重叠，完整轴预测按每源测量掩码投影后再标准化。",
+      "reopen_when": "任务映射、身份/细胞资格、测量轴、原始来源或深度定义变化时重算支持；不把描述统计作为方法有效前置。"
+    },
+    "PROTOCOL-DATA-EVAL-DEFAULTS-20260930": {
+      "kind": "protocol",
+      "state": "constraint",
+      "comparison_id": null,
+      "node_ids": [],
+      "claim": "默认采用原始counts保留、显式测量掩码、背景内响应和bulk CP50K/逐细胞CPM双视图；正式本地评价用全折合格靶点、五背景S2/S3和三来源S4，完整保留官方六项及不可评分状态。小面板只作诊断。",
+      "limitations": "用户要求下的方案选择，非性能最优或新方法通过的证据。观测投影、剂量汇聚、独立抽样生成和全折bundle尚待实现/冻结执行；现有归一化分数不因本决策改写。",
+      "source_urls": [
+        "https://github.com/ArcInstitute/cell-eval2/blob/5e64833518a6603a0301cbe28185d49c30f4a986/src/cell_eval2/configs/vcc2026.yaml",
+        "https://vcc-cli-wiki.virtualcellchallenge.org/#submission-requirements-2026"
+      ],
+      "source_refs": [
+        {
+          "path": "docs/research/data_evaluation_decision.md",
+          "sha256": "c1f50437d3834fe87e7811ef4a63fcd75a1e1d32556ecb81441baabf5cf11cd3"
+        },
+        {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        {
+          "path": "docs/research/challenge_2026/splits.json",
+          "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+        }
+      ],
+      "next_action": "按两个有限批次确定生成和全折参考支持后推进首轮预测器；面板扩至全折仍退化时保留raw与未定义Overall，停止面板/seed追分，并限制能力主张范围。",
+      "reopen_when": "新正式比较、独立目标数据或官方口径提供反证；改变具体科学条件须另立run和匹配对照。"
     }
   },
   "queue": [
@@ -2278,15 +2351,15 @@
       "priority": 1,
       "comparison_id": "C-POPULATION-EMISSION",
       "question": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
-      "action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。",
+      "action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。 在新模型响应监督/解码时显式满足DATA-EVAL-DEFAULTS-20260930的mask内分母契约；旧缓存不得标成跨assay已对齐。",
       "requires_evidence": []
     },
     {
       "id": "Q-LOCAL-EVAL-SUPPORT",
       "priority": 2,
       "comparison_id": "C-LOCAL-EVAL-SUPPORT",
-      "question": "不按响应挑选的更大固定面板，能否在稀缺真实n下支持五背景的官方六项归一化及稳定比较？",
-      "action": "按metadata预先固定扩面板规模与n分层，单批构建所有anchors；不重抽seed挑结果；若仍不可评分保留六项raw/未定义Overall。并在训练数据侧改用批次校准后的guide/target剂量汇聚，unknown不硬删。",
+      "question": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
+      "action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。",
       "requires_evidence": []
     },
     {
@@ -2299,8 +2372,8 @@
     }
   ],
   "resource_allocation": {
-    "after_evidence": "E-LOCAL-CAPABILITY-EVALUATOR-R3",
-    "unit": "本轮两项完整批次已回收关闭。下一轮先各冻结一个总体生成和面板可评分性批次，禁止种子/面板追分网格；DepMap整包是首个预测器训练槽，当前尚未登记完整训练配置，不能把本轮oracle控制当训练成果。",
+    "after_evidence": "PROTOCOL-DATA-EVAL-DEFAULTS-20260930",
+    "unit": "已确定数据/标准化/评估默认方案；只分配一个固定响应生成比较和一个全折reference支持批次，完成后进入DepMap预测器整包。全折仍退化则停止面板/seed网格、如实限制结论；不以所有归一化都可用作为后续机制启动前置。具体run及计算预算仍须正式冻结。",
     "exploration_slots": [
       "C-POPULATION-EMISSION",
       "C-LOCAL-EVAL-SUPPORT",
