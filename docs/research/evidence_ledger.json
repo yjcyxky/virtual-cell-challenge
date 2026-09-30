@@ -2257,7 +2257,9 @@
       "kind": "experiment",
       "state": "pending",
       "comparison_id": "C-POPULATION-EMISSION",
-      "node_ids": [],
+      "node_ids": [
+        "population-emission-s01"
+      ],
       "claim": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
       "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
       "source_refs": [

@@ -10341,6 +10341,230 @@
       },
       "blockers": [],
       "wandb_sync": "online"
+    },
+    "population-emission-s01": {
+      "experiment_id": "population-emission",
+      "directory": "experiments/population-emission",
+      "run_id": "population-emission-s01",
+      "legacy": false,
+      "method_id": "M-POPULATION-EMISSION",
+      "protocol_id": "TASK-OBSERVATION-20260930",
+      "status": "ready",
+      "comparison_id": "C-POPULATION-EMISSION",
+      "controls": [],
+      "sources": [
+        "task-observation-s02"
+      ],
+      "requires_evidence": [],
+      "evidence_conditions": {},
+      "config_ref": {
+        "path": "experiments/population-emission/configs/population-emission-s01.json",
+        "sha256": "a26d69929841d3053218292cdcb23cd258f7474db5fdcc27d8751c44995d03f1"
+      },
+      "expected_config": {
+        "experiment_id": "population-emission",
+        "run_id": "population-emission-s01",
+        "seed": 930,
+        "contexts": [
+          "H1",
+          "K562",
+          "RPE1",
+          "HepG2",
+          "Jurkat"
+        ],
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          },
+          "observation_view": {
+            "path": "experiments/task-observation/protocol.json",
+            "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+          }
+        },
+        "fit_scope": {
+          "outer_split": "population-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "arms": [
+          "bag",
+          "population"
+        ],
+        "cells": 400,
+        "repeats": 20,
+        "de_repeats": 3,
+        "null_repeats": 5,
+        "population": {
+          "iterations": 128,
+          "smoothing": 1e-06,
+          "tolerance": 1e-07
+        },
+        "bag": {
+          "iterations": 64,
+          "smoothing": 1e-06,
+          "tolerance": 1e-07,
+          "rounding": "conservative"
+        },
+        "acceptance": {
+          "variance_ratio": [
+            0.5,
+            1.5
+          ],
+          "pooled_bulk_rms": 0.02,
+          "population_bulk_rms": 0.0001
+        },
+        "diagnostics": {
+          "covariance_genes": 128,
+          "reference": "disjoint input/score NTC; score halved reference/real-null",
+          "count_space": "measured official axis, native depth-view",
+          "stage_order": [
+            "generate",
+            "freeze",
+            "statistics",
+            "official_de"
+          ]
+        },
+        "runtime": {
+          "threads": 8,
+          "device": "cuda",
+          "de_backend": "gpudge"
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "bank_refs": {
+          "H1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/bank-depth-view.h5ad",
+            "sha256": "eca05079997a9d0d3694afe2cf4d9785509562ec868ea90534524e3a529b21a0"
+          },
+          "K562": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/bank-depth-view.h5ad",
+            "sha256": "8f5d1652fcf523b5d71f0856ea05c9465377ab219ab86984de4ea790ab87b9c0"
+          },
+          "RPE1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/bank-depth-view.h5ad",
+            "sha256": "2215b891b6e399608963af8fda43d10deeaf1029a81a936fe4e894a28a5615da"
+          },
+          "HepG2": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/bank-depth-view.h5ad",
+            "sha256": "2296163ec982ca087bd276143dad41da4641904a841fdfe258315acfd748ab96"
+          },
+          "Jurkat": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/Jurkat/bank-depth-view.h5ad",
+            "sha256": "2c29d3e6a53740d98a9c7ac9cab6dceb979ab7f32d5bcd027974659d4438f629"
+          }
+        },
+        "calibration_refs": {
+          "H1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/H1/calibration.json",
+            "sha256": "167b30d46effc8908cb9c2afeadfcef8e68e8818becad1eb4e5145802e64ccf3"
+          },
+          "K562": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/K562/calibration.json",
+            "sha256": "3fa1a0e338eb60d5111d809c9639cff5b1cb9049a3101782f2f5ff613ce8d484"
+          },
+          "RPE1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/RPE1/calibration.json",
+            "sha256": "fa56056188996f9c09846bce237b7e76649b54bed6f4ccc09df7d4b9270c0116"
+          },
+          "HepG2": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/HepG2/calibration.json",
+            "sha256": "8d4028cb9d7bdc0abc2e3a69d6d88250fda5ad8fee67bbe7fd8a55a8d89924c8"
+          },
+          "Jurkat": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/Jurkat/calibration.json",
+            "sha256": "d4803c76e0552e3fd088df1976dcc8179e9f49748ae05dc6f10ad0afff99a443"
+          }
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/population-emission/PLAN.md",
+          "sha256": "76e0b549c13bf66e95196c5a239c42371008ac8daae909b2e8dd2700f95d2302"
+        },
+        {
+          "path": "experiments/population-emission/reproduce.sh",
+          "sha256": "f2da723c4b2833b7f6e9080237812600622c5ab4155db28470f02089bf6bcdc3"
+        },
+        {
+          "path": "experiments/population-emission/pyproject.toml",
+          "sha256": "9d45041450e623cfaf7a1c383496de8e681fabb8358a7ffe46e6d0452cee7c71"
+        },
+        {
+          "path": "experiments/population-emission/uv.lock",
+          "sha256": "7c8b673f037d13f2d618aa4b838d36cda7a959db5124b37be6f3470bb7f50c11"
+        },
+        {
+          "path": "experiments/population-emission/src/run.py",
+          "sha256": "00ffab94b11f7b629180f1557c70f3a41aa51281f9e6680f2466b66307ad04d2"
+        },
+        {
+          "path": "src/vcc_task/population_emission.py",
+          "sha256": "dd047b0412e3aa5a780e39cc96ffbdac911a703c2e786a5b839ea560b23f5aec"
+        },
+        {
+          "path": "src/vcc_task/run_context.py",
+          "sha256": "086bde937aff0857f1c8ac5c40ba436915231985e326e1e54f1b5b31b4bd3fde"
+        },
+        {
+          "path": "src/vcc_task/counts.py",
+          "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+        },
+        {
+          "path": "src/vcc_task/official.py",
+          "sha256": "2089b0fe480030efc48a945f487fa443370d1b935c679040e2e9ad590d5a1f98"
+        },
+        {
+          "path": "src/vcc_task/common.py",
+          "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+        },
+        {
+          "path": "src/vcc_task/__init__.py",
+          "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/analyze_submitted_counts.py",
+          "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "design": {
+        "fit_scope": {
+          "outer_split": "population-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "seed_plan": 930,
+        "scope": "Fixed-response generator comparison, 800 nonzero populations and five-context null diagnostics; no predictive fit",
+        "budget": "All five contexts, four fixed targets, 20 generation repeats per emitter, official DE first three repeats plus nmatch and five null repeats"
+      },
+      "blockers": []
     }
   },
   "comparisons": {
@@ -11609,18 +11833,20 @@
       "evidence_id": "E-LOCAL-CAPABILITY-EVALUATOR-R3"
     },
     "C-POPULATION-EMISSION": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "protocol_audit",
       "hypothesis": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
       "controls": [],
-      "candidates": [],
+      "candidates": [
+        "population-emission-s01"
+      ],
       "changed_axes": [],
       "changed_fields": [],
       "decision_rule": {
-        "primary_metric": null,
-        "direction": null,
-        "min_effect": null,
-        "scope": "由已完成校准提出的新有限批次，尚未冻结完整配置或执行预算",
+        "primary_metric": "acceptance.fraction",
+        "direction": "higher",
+        "min_effect": 1.0,
+        "scope": "Five-context fixed-response emitter calibration; all 15 acceptance checks, not predictive generalization",
         "on_support": "按预定范围采用生成/评估条件，优先推进DepMap整包训练，不自动扩局部网格。",
         "on_against": "保留限制，重分配机制资源；不改写既有失败或用部分指标伪造Overall。",
         "on_inconclusive": "区分技术失败、统计功效和真实不确定性，按预定停止条件处理。",

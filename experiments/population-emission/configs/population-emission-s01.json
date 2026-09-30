@@ -1,0 +1,132 @@
+{
+  "experiment_id": "population-emission",
+  "run_id": "population-emission-s01",
+  "seed": 930,
+  "contexts": [
+    "H1",
+    "K562",
+    "RPE1",
+    "HepG2",
+    "Jurkat"
+  ],
+  "benchmark": {
+    "data_audit": {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    "scorer": {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    "artifacts": {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    "split_manifest": {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    "gene_axis": {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    },
+    "observation_view": {
+      "path": "experiments/task-observation/protocol.json",
+      "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+    }
+  },
+  "fit_scope": {
+    "outer_split": "population-five-contexts",
+    "target_partition": "no_predictor_fit"
+  },
+  "arms": [
+    "bag",
+    "population"
+  ],
+  "cells": 400,
+  "repeats": 20,
+  "de_repeats": 3,
+  "null_repeats": 5,
+  "population": {
+    "iterations": 128,
+    "smoothing": 1e-06,
+    "tolerance": 1e-07
+  },
+  "bag": {
+    "iterations": 64,
+    "smoothing": 1e-06,
+    "tolerance": 1e-07,
+    "rounding": "conservative"
+  },
+  "acceptance": {
+    "variance_ratio": [
+      0.5,
+      1.5
+    ],
+    "pooled_bulk_rms": 0.02,
+    "population_bulk_rms": 0.0001
+  },
+  "diagnostics": {
+    "covariance_genes": 128,
+    "reference": "disjoint input/score NTC; score halved reference/real-null",
+    "count_space": "measured official axis, native depth-view",
+    "stage_order": [
+      "generate",
+      "freeze",
+      "statistics",
+      "official_de"
+    ]
+  },
+  "runtime": {
+    "threads": 8,
+    "device": "cuda",
+    "de_backend": "gpudge"
+  },
+  "tracking": {
+    "mode": "online"
+  },
+  "bank_refs": {
+    "H1": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/bank-depth-view.h5ad",
+      "sha256": "eca05079997a9d0d3694afe2cf4d9785509562ec868ea90534524e3a529b21a0"
+    },
+    "K562": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/bank-depth-view.h5ad",
+      "sha256": "8f5d1652fcf523b5d71f0856ea05c9465377ab219ab86984de4ea790ab87b9c0"
+    },
+    "RPE1": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/bank-depth-view.h5ad",
+      "sha256": "2215b891b6e399608963af8fda43d10deeaf1029a81a936fe4e894a28a5615da"
+    },
+    "HepG2": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/bank-depth-view.h5ad",
+      "sha256": "2296163ec982ca087bd276143dad41da4641904a841fdfe258315acfd748ab96"
+    },
+    "Jurkat": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/Jurkat/bank-depth-view.h5ad",
+      "sha256": "2c29d3e6a53740d98a9c7ac9cab6dceb979ab7f32d5bcd027974659d4438f629"
+    }
+  },
+  "calibration_refs": {
+    "H1": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/predictions/H1/calibration.json",
+      "sha256": "167b30d46effc8908cb9c2afeadfcef8e68e8818becad1eb4e5145802e64ccf3"
+    },
+    "K562": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/predictions/K562/calibration.json",
+      "sha256": "3fa1a0e338eb60d5111d809c9639cff5b1cb9049a3101782f2f5ff613ce8d484"
+    },
+    "RPE1": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/predictions/RPE1/calibration.json",
+      "sha256": "fa56056188996f9c09846bce237b7e76649b54bed6f4ccc09df7d4b9270c0116"
+    },
+    "HepG2": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/predictions/HepG2/calibration.json",
+      "sha256": "8d4028cb9d7bdc0abc2e3a69d6d88250fda5ad8fee67bbe7fd8a55a8d89924c8"
+    },
+    "Jurkat": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/predictions/Jurkat/calibration.json",
+      "sha256": "d4803c76e0552e3fd088df1976dcc8179e9f49748ae05dc6f10ad0afff99a443"
+    }
+  }
+}
