@@ -100,7 +100,16 @@ def audit_panel(output, config, context, panel_id, observation_ref):
     if real.obs.physical_id.duplicated().any():
         raise ValueError('Reference has duplicate physical cells')
     real_path = directory / 'real.h5ad'
-    real.write_h5ad(real_path, compression='lzf')
+    if real_path.exists():
+        saved = ad.read_h5ad(real_path)
+        if (saved.shape != real.shape or not saved.var_names.equals(real.var_names) or
+                not np.array_equal(saved.obs.physical_id, real.obs.physical_id) or
+                not np.array_equal(saved.obs.target_gene.astype(str), real.obs.target_gene.astype(str)) or
+                (saved.X != real.X).nnz):
+            raise ValueError('Previously saved panel reference changed')
+        real = saved
+    else:
+        real.write_h5ad(real_path, compression='lzf')
     real_ntc = real.X[real.obs.target_gene.eq(NTC).to_numpy()]
     ordered = sorted(targets, key=lambda t: stable_seed(config['seed'], context, panel_id, 'template', t))
     template_targets = ordered[:len(ordered)//2]
@@ -110,7 +119,12 @@ def audit_panel(output, config, context, panel_id, observation_ref):
     scope = {'kind': 'evaluation_only_oracle_no_predictor_fit', 'fit_targets': template_targets,
              'diagnostic_targets': diagnostic_targets, 'partition': 'fixed_identity_hash_half',
              'reference_ref': ref(real_path)}
-    np.save(directory / 'oracle-template.npy', template)
+    template_path = directory / 'oracle-template.npy'
+    if template_path.exists():
+        if not np.array_equal(np.load(template_path), template):
+            raise ValueError('Previously saved evaluator template changed')
+    else:
+        np.save(template_path, template)
     bundle_status = ensure_bundle(real, directory / 'real-bundle',
                                  config['run_id'] + '-' + panel_id + '-' + context, config['runtime'])
     bundle = ROOT / bundle_status['bundle_directory']

@@ -9268,7 +9268,7 @@
         },
         {
           "path": "src/vcc_task/capability_controls.py",
-          "sha256": "84cc86ec1ffeee0af5e90c0b7b5503a263aba0af8258c8d46d9631310612c658"
+          "sha256": "a7657fc045865d67eb1af8c31754a49d80a6dd3fc11fb521547563ed284c3997"
         }
       ],
       "metrics_ref": null,
