@@ -425,6 +425,10 @@
         "I10": {
           "description": "目标NTC经验状态与显式深度机制生成完整轴整数counts；零响应、组成投影和效应实现误差在冻结前校准，具体生成族待定",
           "local_status": "UNTESTED"
+        },
+        "I11": {
+          "description": "在输入NTC总体上校准响应变换后独立抽取细胞，显式保留有限n均值波动；不在每个生成组重新钉住基因列总量",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -1864,8 +1868,11 @@
       },
       "signature": "T4-D1-R1-A6-L6-O0-V5-I10-G0",
       "prior": "none；参数化整数生成作为待校准观测模型，诊断不构成生物响应预测性能。",
-      "local_status": "UNTESTED",
-      "evidence_ids": []
+      "local_status": "REJECTED",
+      "evidence_ids": [
+        "E-TASK-DATA-GENERATION-R2"
+      ],
+      "selection_basis": "仅初版逐组IPF+行守恒取整未达到预定20项接口要求；观测数据/测量mask已产出。不得外推为所有计数生成器无效。"
     },
     "M-LOCAL-CAPABILITY": {
       "description": "无预测器拟合的官方六指标、标签置乱、去模板与通路评价器验收；不可部署oracle对照",
@@ -1882,8 +1889,30 @@
       },
       "signature": "T4-D1-R1-A6-L6-O0-V5-I10-G0",
       "prior": "none；oracle仅评分侧验收，不构成模型输入或生物机制结论。",
+      "local_status": "CONTEXT_DEPENDENT",
+      "evidence_ids": [
+        "E-LOCAL-CAPABILITY-EVALUATOR-R3"
+      ],
+      "selection_basis": "这是评价器仪器验收，非预测模型。标签/残差诊断已执行；有限16靶面板的官方归一化存在参考可评分性限制。"
+    },
+    "M-POPULATION-EMISSION": {
+      "description": "NTC总体条件变换与独立细胞计数抽样候选；分开检验期望响应、生成波动和官方DE",
+      "axes": {
+        "T": "T4",
+        "D": "D1",
+        "R": "R1",
+        "A": "A6",
+        "L": "L6",
+        "O": "O0",
+        "V": "V5",
+        "I": "I11",
+        "G": "G0"
+      },
+      "signature": "T4-D1-R1-A6-L6-O0-V5-I11-G0",
+      "prior": "总体校准与细胞抽样分离可能避免组均值约束造成波动抵消；只是一条由本地诊断提出的待检验假设，不保证恢复扰动特异异质性。",
       "local_status": "UNTESTED",
-      "evidence_ids": []
+      "evidence_ids": [],
+      "selection_basis": "E-TASK-DATA-GENERATION-R2与E-LOCAL-CAPABILITY-EVALUATOR-R3提供设计动机，不是本候选的有效性证据。"
     }
   }
 }

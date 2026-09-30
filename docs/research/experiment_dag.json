@@ -9758,7 +9758,7 @@
       "legacy": false,
       "method_id": "M-LOCAL-CAPABILITY",
       "protocol_id": "LOCAL-CAPABILITY-20260930",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR-R3",
       "controls": [],
       "sources": [
@@ -10050,11 +10050,17 @@
           "sha256": "68fb858cdea271df1624be522fe9ba0054104f9a2220072af7c9dfb2c63a6b8c"
         }
       ],
-      "metrics_ref": null,
-      "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
-      "artifact": null,
+      "metrics_ref": {
+        "path": "experiments/local-capability/outputs/local-capability-s03/metrics.json",
+        "sha256": "8f6f52a8b1f9bf92ede0708d32d7b5fbca073464ec888924ddd8b5b96f863285"
+      },
+      "report_ref": {
+        "path": "experiments/local-capability/REPORT.md",
+        "sha256": "bf35e1143a9ed9a56f6e8278ced9822b8c8167607cc1502e97471bfae48d86af"
+      },
+      "git_commit": "27b6ba39ec08191069d691364e4f24e8cc4f83b9",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/local-capability-s03",
+      "artifact": "yjcyxky/virtual-cell-challenge/local-capability-s03-diagnostics:v0",
       "design": {
         "seed_plan": 930,
         "fit_scope": {
@@ -10064,7 +10070,8 @@
         "source_usage": "固定观测视图；按hash继承s02的13个完整面板和五背景n敏感性诊断，其中8面板最初来自s01。科学配置逐项等价核验；原失败保持原身份和代码。",
         "scope": "无预测器拟合，oracle与置乱及模板只验收评价器；15面板不是15个生物重复"
       },
-      "blockers": []
+      "blockers": [],
+      "wandb_sync": "online"
     }
   },
   "comparisons": {
@@ -11331,6 +11338,52 @@
       "cost": "medium",
       "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。",
       "evidence_id": "E-LOCAL-CAPABILITY-EVALUATOR-R3"
+    },
+    "C-POPULATION-EMISSION": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": null,
+        "direction": null,
+        "min_effect": null,
+        "scope": "由已完成校准提出的新有限批次，尚未冻结完整配置或执行预算",
+        "on_support": "按预定范围采用生成/评估条件，优先推进DepMap整包训练，不自动扩局部网格。",
+        "on_against": "保留限制，重分配机制资源；不改写既有失败或用部分指标伪造Overall。",
+        "on_inconclusive": "区分技术失败、统计功效和真实不确定性，按预定停止条件处理。",
+        "threshold_policy": "启动前冻结数值容差、重复次数、真实细胞/面板范围及停止条件；旧0.01单次均值检查的失败保持原结论。"
+      },
+      "attribution_plan": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。",
+      "cost": "medium",
+      "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。",
+      "evidence_id": "E-POPULATION-EMISSION"
+    },
+    "C-LOCAL-EVAL-SUPPORT": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "不按响应挑选的更大固定面板，能否在稀缺真实n下支持五背景的官方六项归一化及稳定比较？",
+      "controls": [],
+      "candidates": [],
+      "changed_axes": [],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": null,
+        "direction": null,
+        "min_effect": null,
+        "scope": "由已完成校准提出的新有限批次，尚未冻结完整配置或执行预算",
+        "on_support": "按预定范围采用生成/评估条件，优先推进DepMap整包训练，不自动扩局部网格。",
+        "on_against": "保留限制，重分配机制资源；不改写既有失败或用部分指标伪造Overall。",
+        "on_inconclusive": "区分技术失败、统计功效和真实不确定性，按预定停止条件处理。",
+        "threshold_policy": "启动前冻结数值容差、重复次数、真实细胞/面板范围及停止条件；旧0.01单次均值检查的失败保持原结论。"
+      },
+      "attribution_plan": "按metadata预先固定扩面板规模与n分层，单批构建所有anchors；不重抽seed挑结果；若仍不可评分保留六项raw/未定义Overall。并在训练数据侧改用批次校准后的guide/target剂量汇聚，unknown不硬删。",
+      "cost": "medium",
+      "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。",
+      "evidence_id": "E-LOCAL-EVAL-SUPPORT"
     }
   },
   "continuation_rules": {

@@ -2216,39 +2216,77 @@
     },
     "E-LOCAL-CAPABILITY-EVALUATOR-R3": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "inconclusive",
       "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR-R3",
       "node_ids": [
         "local-capability-s03"
       ],
-      "hypothesis": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
-      "claim": "待检验：使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
-      "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
+      "claim": "完整15面板60次官方指标计算完成，评价器接口/标签敏感性验收87/90。真实复制、靶标签置乱、零响应和评分侧半面板模板均形成可追溯六指标、去模板和Reactome诊断。固定生成总体的n匹配直接显示部分DE显著数对细胞数高度敏感。",
+      "limitations": "无预测器拟合或迁移能力结论；5背景3研究、固定16靶面板、一个生成seed。模板是真值oracle且只去一个方向。真实n少于400、低深度、测量缺失继续限制；未知敲低不能当失败。当前逐组IPF生成触发官方方差抵消提示，不能晋级部署默认。",
       "source_refs": [
         {
-          "path": "docs/research/task_constraints_review.md",
-          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+          "path": "experiments/local-capability/outputs/local-capability-s03/metrics.json",
+          "sha256": "8f6f52a8b1f9bf92ede0708d32d7b5fbca073464ec888924ddd8b5b96f863285"
+        },
+        {
+          "path": "experiments/local-capability/REPORT.md",
+          "sha256": "bf35e1143a9ed9a56f6e8278ced9822b8c8167607cc1502e97471bfae48d86af"
+        },
+        {
+          "path": "experiments/local-capability/outputs/local-capability-s03/train.log",
+          "sha256": "9a6635abe0b854c0401f7cd214b250234d8c29343c8ae881d3fce3bb43b62662"
+        },
+        {
+          "path": "experiments/local-capability/outputs/local-capability-s01/train.log",
+          "sha256": "1fde275ad98e3d9c7f19c2efdb15bbb73ecf552d21c73243ca83f761e3fac2b8"
+        },
+        {
+          "path": "experiments/local-capability/outputs/local-capability-s02/train.log",
+          "sha256": "e355783b2a72776cbf191febb1188e515b49f8f565ce019217b6e9f7a48ade94"
         }
       ],
-      "next_action": "完整保留原15面板60评分范围，按hash复用13面板，处理官方不可评分状态并补齐末两面板；完整指标轴保留未定义值，不形成部分指标Overall。",
-      "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
+      "next_action": "优先登记NTC总体上校准、独立细胞抽样的生成器比较，保留旧失败；同时修正剂量汇聚粒度，再冻结DepMap监督对齐Ridge/MLP完整五背景训练预算。评价器保留六项/置乱/去模板/通路及n敏感性诊断。",
+      "reopen_when": "候选模型进入外层训练验证，或改变面板、测量轴、生成n/depth、scorer或模板/通路定义时，重建对应对照与anchors；不能继承当前接口signal为预测器有效性。",
+      "hypothesis": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？"
+    },
+    "E-POPULATION-EMISSION": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-POPULATION-EMISSION",
+      "node_ids": [],
+      "claim": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
+      "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
+      "source_refs": [],
+      "next_action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。",
+      "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
+    },
+    "E-LOCAL-EVAL-SUPPORT": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-LOCAL-EVAL-SUPPORT",
+      "node_ids": [],
+      "claim": "不按响应挑选的更大固定面板，能否在稀缺真实n下支持五背景的官方六项归一化及稳定比较？",
+      "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
+      "source_refs": [],
+      "next_action": "按metadata预先固定扩面板规模与n分层，单批构建所有anchors；不重抽seed挑结果；若仍不可评分保留六项raw/未定义Overall。并在训练数据侧改用批次校准后的guide/target剂量汇聚，unknown不硬删。",
+      "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
     }
   },
   "queue": [
     {
-      "id": "Q-LOCAL-CAPABILITY-EVALUATOR",
+      "id": "Q-POPULATION-EMISSION",
       "priority": 1,
-      "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR-R3",
-      "question": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
-      "action": "完整保留原15面板60评分范围，按hash复用13面板，处理官方不可评分状态并补齐末两面板；完整指标轴保留未定义值，不形成部分指标Overall。",
+      "comparison_id": "C-POPULATION-EMISSION",
+      "question": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
+      "action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。",
       "requires_evidence": []
     },
     {
-      "id": "Q-TASK-DATA-GENERATION",
+      "id": "Q-LOCAL-EVAL-SUPPORT",
       "priority": 2,
-      "comparison_id": "C-TASK-DATA-GENERATION-R2",
-      "question": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
-      "action": "本批已完整闭环，16/20接口检查通过；结合local-capability固定总体n敏感性结果，冻结下一批计数取整和剂量汇聚方案，不重跑已完成run或放宽阈值。",
+      "comparison_id": "C-LOCAL-EVAL-SUPPORT",
+      "question": "不按响应挑选的更大固定面板，能否在稀缺真实n下支持五背景的官方六项归一化及稳定比较？",
+      "action": "按metadata预先固定扩面板规模与n分层，单批构建所有anchors；不重抽seed挑结果；若仍不可评分保留六项raw/未定义Overall。并在训练数据侧改用批次校准后的guide/target剂量汇聚，unknown不硬删。",
       "requires_evidence": []
     },
     {
@@ -2256,17 +2294,19 @@
       "priority": 3,
       "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
       "question": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
-      "action": "实例化M-DEPMAP-ALIGNED-RIDGE/MLP及无先验/随机先验/原始kNN对照；固定DepMap来源、训练内PCA、每折目标列表和全轴策略，不自动扩参数网格。",
+      "action": "保留首个正式建模预算给DepMap监督对齐Ridge/小MLP整包及无先验/随机先验/原始kNN对照；复用全五背景统计并在拟合前限制fold/target读取。冻结生成和有效评估条件后按outer×target partition×seed各立完整run；未识别剂量作unknown，不以可估计性删掉公共数据。",
       "requires_evidence": []
     }
   ],
   "resource_allocation": {
-    "after_evidence": "PROTOCOL-TASK-REVIEW-20260930",
-    "unit": "local-capability-s03沿用原15面板完整预算，复用13面板和五背景n诊断；官方reference分母非正/anchor无标尺保留未定义。不改变评分人群或随机种子。",
+    "after_evidence": "E-LOCAL-CAPABILITY-EVALUATOR-R3",
+    "unit": "本轮两项完整批次已回收关闭。下一轮先各冻结一个总体生成和面板可评分性批次，禁止种子/面板追分网格；DepMap整包是首个预测器训练槽，当前尚未登记完整训练配置，不能把本轮oracle控制当训练成果。",
     "exploration_slots": [
+      "C-POPULATION-EMISSION",
+      "C-LOCAL-EVAL-SUPPORT",
       "C-DEPMAP-RESPONSE-ALIGNMENT"
     ],
-    "third_slot": "集合分布整包保留draft，能力评估基础完成后再分配；不要求所有模板/稳定性假设或线性基线先获胜。",
+    "third_slot": "后续探索候选：集合分布整包继续保留draft，本轮未分配执行预算；能力评估基础完成后再决定，不要求所有模板/稳定性假设或线性基线先获胜。",
     "stopped_local_branches": [
       "transport-linear-s01",
       "transport-no-ntc-s01"
