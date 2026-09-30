@@ -2520,14 +2520,22 @@
         "full-eval-support-s04"
       ],
       "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "limitations": "Pending complete 15-panel protocol evidence. One completed H1 panel reused, 14 remaining panels; no predictor fit or efficacy conclusion.",
+      "limitations": "Pending complete evaluation. First R4 attempt stopped after NumPy hugepage advice caused sustained kernel compaction during official jackknife. A 100M-element allocation/cast probe took 0.32s without advice, while advice timed out before input allocation at 25s. This operational failure is not scientific evidence. Original attempt and fixed intermediate outputs retained.",
       "source_refs": [
         {
           "path": "docs/research/perturbation_decomposition_review.md",
           "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/attempt-01-failure.json",
+          "sha256": "c4e9eaa55d699e2fe61c0c96ca9a1eab756badeecc25fa75a02a1baee54da80b"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/runtime-allocation.json",
+          "sha256": "788e842890599fde75ede4a6f8291726dc093535c75049980e34f9ac4533790a"
         }
       ],
-      "next_action": "Complete registered full-eval-support-s04 with corrected pointer storage/accessor reuse, retaining all original scientific conditions; then complete the DepMap mechanism batch.",
+      "next_action": "Resume full-eval-support-s04 with NUMPY_MADVISE_HUGEPAGE=0 after recorded allocation diagnosis; identical registered code/config, arrays, seeds and scoring formulas; reuse completed immutable panel and anchors, finish 15 panels.",
       "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
     }
   },
