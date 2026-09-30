@@ -59,7 +59,8 @@ flowchart TD
   n52["task-observation-s01 | failed"]
   n53["task-observation-s02 | completed"]
   n54["local-capability-s01 | failed"]
-  n55["local-capability-s02 | ready"]
+  n55["local-capability-s02 | failed"]
+  n56["local-capability-s03 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -303,4 +304,7 @@ flowchart TD
   n53 -->|source| n54
   n53 -->|source| n55
   n54 -->|source| n55
+  n53 -->|source| n56
+  n54 -->|source| n56
+  n55 -->|source| n56
 ```

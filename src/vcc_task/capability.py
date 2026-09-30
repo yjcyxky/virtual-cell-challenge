@@ -25,6 +25,47 @@ def finite_number(value):
     return float(value) if value is not None and np.isfinite(value) else None
 
 
+def reference_unavailable(error):
+    """Only explicit reference/gate failures; API and numeric bugs remain fatal."""
+    return any(message in str(error).lower() for message in (
+        'baseline leg is degenerate', 'degenerate baseline for metric',
+        'no usable replicate scale', 'ratio of sums is undefined or sign-flipped',
+        'ratio of sums has nothing to sum'))
+
+
+def aggregate_with_unavailable(raw, names):
+    """Retain EVERY metric, using official aggregation and explicit nulls.
+
+    A refused whole-panel aggregate is never passed to normalized scoring. The
+    remaining raw columns are diagnostic reports, not a substitute competition.
+    """
+    try:
+        return aggregate_metrics_wide(raw, metrics=names), {}
+    except ValueError as exc:
+        if not reference_unavailable(exc):
+            raise
+    columns, errors, result = {}, {}, None
+    for name in names:
+        try:
+            part = aggregate_metrics_wide(raw, metrics=[name]).select('statistic', name)
+        except ValueError as exc:
+            if not reference_unavailable(exc):
+                raise
+            errors[name] = str(exc)
+        else:
+            if result is None:
+                result = part.select('statistic')
+            columns[name] = part
+    if result is None:
+        raise ValueError('No official statistic rows available for a raw diagnostic report')
+    for name in sorted(names):
+        if name in errors:
+            result = result.with_columns(pl.lit(None, dtype=pl.Float64).alias(name))
+        else:
+            result = result.join(columns[name], on='statistic', how='left', maintain_order='left')
+    return result, errors
+
+
 def pearson(x, y):
     x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
     if len(x) < 3 or not np.isfinite(x).all() or not np.isfinite(y).all():
@@ -166,8 +207,7 @@ def ensure_bundle(real, directory, bundle_id, runtime):
     try:
         build_reference_bundle(real, directory, bundle_id, **runtime)
     except ValueError as exc:
-        if not any(message in str(exc).lower() for message in
-                   ('degenerate', 'non-finite', 'no usable replicate scale')):
+        if not reference_unavailable(exc):
             raise
         result = {'available': False, 'official_rejection': str(exc), 'files': []}
     else:
@@ -195,22 +235,24 @@ def evaluate_counts(prediction, real, bundle, bundle_status, directory, runtime,
         raise ValueError('Prediction/reference measured gene axis mismatch')
     cfg = scorer_config(outdir=str(directory), **runtime)
     raw = compute_metrics(prediction, real, config=cfg, write_de=True)
-    aggregate = aggregate_metrics_wide(raw, metrics=metric_output_names(cfg))
-    meta = build_run_meta(cfg, real, prediction)
     raw.write_parquet(directory / 'raw.parquet')
+    aggregate, aggregate_errors = aggregate_with_unavailable(raw, metric_output_names(cfg))
+    meta = build_run_meta(cfg, real, prediction)
     aggregate.write_csv(directory / 'aggregate.csv')
     write_json(directory / 'run_meta.json', meta)
     raw_means = aggregate.filter(pl.col('statistic') == 'mean').to_dicts()[0]
     result = {'raw': {k: finite_number(v) for k, v in raw_means.items() if k != 'statistic'},
               'raw_aggregate': json.loads(aggregate.to_pandas().to_json(orient='records')),
               'normalized': None, 'Overall': None,
+              'raw_aggregation_rejections': aggregate_errors,
               'official_rejection': bundle_status.get('official_rejection')}
-    if bundle_status['available']:
+    if aggregate_errors:
+        result['official_rejection'] = 'Official raw aggregation unavailable: ' + '; '.join(aggregate_errors.values())
+    if bundle_status['available'] and not aggregate_errors:
         try:
             scored = score_metrics(aggregate, real_bundle=str(bundle), user_meta=meta)
         except ValueError as exc:
-            if not any(message in str(exc).lower() for message in
-                       ('no usable replicate scale', 'degenerate baseline', 'non-finite nmae_ref_raw')):
+            if not reference_unavailable(exc):
                 raise
             result['official_rejection'] = str(exc)
         else:

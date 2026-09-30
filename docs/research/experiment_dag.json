@@ -9383,7 +9383,7 @@
       "legacy": false,
       "method_id": "M-LOCAL-CAPABILITY",
       "protocol_id": "LOCAL-CAPABILITY-20260930",
-      "status": "ready",
+      "status": "failed",
       "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR-R2",
       "controls": [],
       "sources": [
@@ -9646,7 +9646,10 @@
           "sha256": "68fb858cdea271df1624be522fe9ba0054104f9a2220072af7c9dfb2c63a6b8c"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/local-capability/outputs/local-capability-s02/metrics.json",
+        "sha256": "445059608b022e7f504598179c4c981a0d74d1130890959da715cd0d4e5bf512"
+      },
       "report_ref": null,
       "git_commit": null,
       "wandb_url": null,
@@ -9658,6 +9661,407 @@
           "target_partition": "no_predictor_fit"
         },
         "source_usage": "复用task-observation完整观测；local-capability-s01中已完成8面板及3个n敏感性阶段按来源hash直接保留，当前配置逐项核对科学条件相同；原run失败仍非方法证据。",
+        "scope": "无预测器拟合，oracle与置乱及模板只验收评价器；15面板不是15个生物重复"
+      },
+      "blockers": [
+        "execution exited 1; completed status rejected"
+      ],
+      "last_attempt": {
+        "status": "failed",
+        "research": {
+          "node_id": "local-capability-s02",
+          "experiment_id": "local-capability",
+          "method_id": "M-LOCAL-CAPABILITY",
+          "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR-R2",
+          "protocol_id": "LOCAL-CAPABILITY-20260930",
+          "protocol_sha256": "b043058911b8b02315e917d37a5c98c343fc1c75feb0e0d5aa62665f085be4f5",
+          "effective_config_sha256": "6f190326512dd0bc587242be9a21b792df6678e63733bc1414539a14c6fcd047",
+          "registration_sha256": "23409b75eae4c09ba425949ce47c0a05252fa2798e41876e5c51cb0a936da1e8",
+          "git_commit": "fbacbb0467988545882f6c7facd6a1c896520363"
+        },
+        "execution": {
+          "git_commit": "fbacbb0467988545882f6c7facd6a1c896520363",
+          "code_refs": [
+            {
+              "path": "experiments/local-capability/PLAN.md",
+              "sha256": "c142cd488f96e9a5f5ab302e7fba3196d3ec3fa9334a40e6b9b7f98228e42c2f"
+            },
+            {
+              "path": "experiments/local-capability/protocol.json",
+              "sha256": "040b90efc9f0893ece6df70d66ba4d6490010d651fd16a8a5914010ac7b0e26e"
+            },
+            {
+              "path": "experiments/local-capability/pyproject.toml",
+              "sha256": "9b367103960f3e9d0b6da6d92a769a62f1f4250047609314ca63b55661bc3742"
+            },
+            {
+              "path": "experiments/local-capability/uv.lock",
+              "sha256": "59058117786a84739d5a3f5ab022164da34189785b5f2012624b157433c3db7d"
+            },
+            {
+              "path": "experiments/local-capability/reproduce.sh",
+              "sha256": "95fc422a3c6c7aeee16ba1871f4d5d0d5d4d011acba0c9b7a0d367be34a3298c"
+            },
+            {
+              "path": "experiments/local-capability/src/run.py",
+              "sha256": "b76e39f35badcfc9821ce103bc9c9080cdde70f7a7937ac96ca0347c86391965"
+            },
+            {
+              "path": "scripts/research.py",
+              "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+            },
+            {
+              "path": "scripts/dossier/challenge.py",
+              "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+            },
+            {
+              "path": "scripts/dossier/rna.py",
+              "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+            },
+            {
+              "path": "src/vcc_task/__init__.py",
+              "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+            },
+            {
+              "path": "src/vcc_task/common.py",
+              "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+            },
+            {
+              "path": "src/vcc_task/counts.py",
+              "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+            },
+            {
+              "path": "src/vcc_task/official.py",
+              "sha256": "2089b0fe480030efc48a945f487fa443370d1b935c679040e2e9ad590d5a1f98"
+            },
+            {
+              "path": "src/vcc_task/capability.py",
+              "sha256": "1473b66a5210f9a4d2700f9026fe5017a94b7b68700c397940e908eb2ac9553f"
+            },
+            {
+              "path": "src/vcc_task/capability_controls.py",
+              "sha256": "68fb858cdea271df1624be522fe9ba0054104f9a2220072af7c9dfb2c63a6b8c"
+            }
+          ],
+          "evaluation_repair_sha256": null
+        },
+        "error": "execution exited 1; completed status rejected"
+      },
+      "superseded_by": "local-capability-s03",
+      "superseded_reason": "Official expression ratio rejected a nonpositive noise-corrected reference mass in an anchor half. Preserve 13 completed panels and all five power diagnostics; replacement records explicit unavailable raw/normalized metrics without changing formulas, panels, seeds or anchors.",
+      "code_snapshot_commit": "fbacbb0467988545882f6c7facd6a1c896520363"
+    },
+    "local-capability-s03": {
+      "experiment_id": "local-capability",
+      "directory": "experiments/local-capability",
+      "run_id": "local-capability-s03",
+      "legacy": false,
+      "method_id": "M-LOCAL-CAPABILITY",
+      "protocol_id": "LOCAL-CAPABILITY-20260930",
+      "status": "ready",
+      "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR-R3",
+      "controls": [],
+      "sources": [
+        "task-observation-s02",
+        "local-capability-s01",
+        "local-capability-s02"
+      ],
+      "requires_evidence": [],
+      "evidence_conditions": {},
+      "config_ref": {
+        "path": "experiments/local-capability/configs/local-capability-s03.json",
+        "sha256": "cf8e69e9c3736a2507b8f4ffd04c09c49b4b53500529c9fa1d4ccff76bedd8aa"
+      },
+      "expected_config": {
+        "experiment_id": "local-capability",
+        "run_id": "local-capability-s03",
+        "seed": 930,
+        "contexts": [
+          "H1",
+          "K562",
+          "RPE1",
+          "HepG2",
+          "Jurkat"
+        ],
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          },
+          "observation_view": {
+            "path": "experiments/task-observation/protocol.json",
+            "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+          },
+          "capability_view": {
+            "path": "experiments/local-capability/protocol.json",
+            "sha256": "040b90efc9f0893ece6df70d66ba4d6490010d651fd16a8a5914010ac7b0e26e"
+          }
+        },
+        "fit_scope": {
+          "outer_split": "instrument-S2-S3-S4-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "observation_refs": {
+          "H1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/observations.json",
+            "sha256": "5f4cb078b2aca17479f5a5ef3b342629edd0d30e7f7db9610f771372a7494a5a"
+          },
+          "K562": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/observations.json",
+            "sha256": "fae14763117cfded4a1cd29709de5637ebef835845d3637884ef70c8b7caea63"
+          },
+          "RPE1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/observations.json",
+            "sha256": "f6f7d26f0b167f65f1e15b962250b9032a2c0014f615036bcdeaadaa9394f2a8"
+          },
+          "HepG2": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/observations.json",
+            "sha256": "7c6438023326ca6daaf456dc3f4c04c9024858b06975f9417e0ef1fa642c0fe5"
+          },
+          "Jurkat": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/cache/Jurkat/observations.json",
+            "sha256": "20390ecd38e3828d475f62524a8288457c16b1489ef499bfef07ec80b7b8eb1f"
+          }
+        },
+        "runtime": {
+          "device": "cuda",
+          "num_threads": 8,
+          "pert_chunk": 16
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "conditions": [
+          "real_copy",
+          "target_derangement",
+          "zero",
+          "oracle_template"
+        ],
+        "prediction_cells": 400,
+        "emitter": {
+          "iterations": 64,
+          "smoothing": 1e-06,
+          "tolerance": 1e-07,
+          "rounding": "conservative"
+        },
+        "expected_panels": 15,
+        "minimum_panel_targets": 16,
+        "pathway_ref": {
+          "path": "data/raw/networks/ReactomePathways.gmt.zip",
+          "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4"
+        },
+        "acceptance": {
+          "oracle_rms": 1e-10,
+          "derangement_rms": 0.0001,
+          "derangement_pds_gap": 0.01
+        },
+        "power_diagnostic": {
+          "repeats": 5,
+          "source": "four preselected oracle-effect targets per context from completed task-observation",
+          "sampling": "without replacement from the SAME generated 400-cell population to actual real n",
+          "additional_official_de_calls": 5,
+          "kind": "diagnostic_only_no_change_to_submission_n_or_acceptance_thresholds"
+        },
+        "calibration_refs": {
+          "H1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/H1/calibration.json",
+            "sha256": "167b30d46effc8908cb9c2afeadfcef8e68e8818becad1eb4e5145802e64ccf3"
+          },
+          "K562": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/K562/calibration.json",
+            "sha256": "3fa1a0e338eb60d5111d809c9639cff5b1cb9049a3101782f2f5ff613ce8d484"
+          },
+          "RPE1": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/RPE1/calibration.json",
+            "sha256": "fa56056188996f9c09846bce237b7e76649b54bed6f4ccc09df7d4b9270c0116"
+          },
+          "HepG2": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/HepG2/calibration.json",
+            "sha256": "8d4028cb9d7bdc0abc2e3a69d6d88250fda5ad8fee67bbe7fd8a55a8d89924c8"
+          },
+          "Jurkat": {
+            "path": "experiments/task-observation/outputs/task-observation-s02/predictions/Jurkat/calibration.json",
+            "sha256": "d4803c76e0552e3fd088df1976dcc8179e9f49748ae05dc6f10ad0afff99a443"
+          }
+        },
+        "reuse_results": {
+          "source_run_id": "local-capability-s02",
+          "source_config_ref": {
+            "path": "experiments/local-capability/configs/local-capability-s02.json",
+            "sha256": "b8c0baed05842d178cc5857738e26720ef23a80ca7ecfd4c4c1e56ede52f6c2b"
+          },
+          "panels": {
+            "S2-H1/H1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S2-H1/H1/panel-result.json",
+              "sha256": "48f63f28cbcba02b89e2e72f60ba26748253411b8b53da4117e6001a75b81ccb"
+            },
+            "S2-HepG2/HepG2": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S2-HepG2/HepG2/panel-result.json",
+              "sha256": "962acc344944e07bfcaaf734e85f22a807a13a0e9d708304b0a7dce2a7a5010b"
+            },
+            "S2-Jurkat/Jurkat": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S2-Jurkat/Jurkat/panel-result.json",
+              "sha256": "367624884af9a50ed371b8722903f9efea88177c68c5235e688124f9934aab5f"
+            },
+            "S2-K562/K562": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S2-K562/K562/panel-result.json",
+              "sha256": "d0d4f051a234b2a7b5bad878edec7ffc6cc1738b85ce0aa895f9492d9e2ed6bb"
+            },
+            "S2-RPE1/RPE1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S2-RPE1/RPE1/panel-result.json",
+              "sha256": "b12c45ed5730eb5a706060bd7c3f74c97482155462261b564cbbd22773e808dd"
+            },
+            "S3-H1/H1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S3-H1/H1/panel-result.json",
+              "sha256": "b2270062bd179b9cc9e74474909da489e030b09af8ac2886f6c94549589bba30"
+            },
+            "S3-HepG2/HepG2": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S3-HepG2/HepG2/panel-result.json",
+              "sha256": "d57de3ccafc633d3ee5899583c353e02baadc780afe7c72af62084bd9573206c"
+            },
+            "S3-K562/K562": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S3-K562/K562/panel-result.json",
+              "sha256": "5fc95f29ff6f84b0f15cf37620da9741cf99b6183fe8c085ee5ce311f04feb78"
+            },
+            "S3-RPE1/RPE1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S3-RPE1/RPE1/panel-result.json",
+              "sha256": "d8a38317fbe4fd0a8506aecaaece5e9916f6fba189ebbe92906c76c0f3e663ba"
+            },
+            "S4-ARC-H1/H1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S4-ARC-H1/H1/panel-result.json",
+              "sha256": "98a9958173c312674386321e163745b9b57f3be70440754fca94519e5b83396a"
+            },
+            "S4-NADIG-2025/HepG2": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S4-NADIG-2025/HepG2/panel-result.json",
+              "sha256": "adc6a9e665b7ae26732d01a398e02b9ede58122d9b038ebc78c1fac0a08c4b32"
+            },
+            "S4-REPLOGLE-2022/K562": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S4-REPLOGLE-2022/K562/panel-result.json",
+              "sha256": "64e5173bb32cd3b5060b5e71162e60f4a2c3d8209a4e168decaa1d407ad0b614"
+            },
+            "S4-REPLOGLE-2022/RPE1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/S4-REPLOGLE-2022/RPE1/panel-result.json",
+              "sha256": "809aefd1eb0c4bf6da137bd94cb2c3ea17b60f301a8742125aee0cc2556727e2"
+            }
+          },
+          "power": {
+            "H1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/cell-count-power/H1/result.json",
+              "sha256": "cfaeac584bba744982e77472c70bdc8c41ab8812ff439ed8a627d40a8c1c8355"
+            },
+            "HepG2": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/cell-count-power/HepG2/result.json",
+              "sha256": "3f153a13ff6673fe37b7695fbdfa8499f24e36926bf46d137edc70e0b2518be6"
+            },
+            "Jurkat": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/cell-count-power/Jurkat/result.json",
+              "sha256": "1684ff40cc3abaf62d20517d458499faa70b436e24e6ef218fed469042c49389"
+            },
+            "K562": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/cell-count-power/K562/result.json",
+              "sha256": "9755f22d9a9ab60420ecb4cd08f0f01fd633c9480d60f38fe2721796df00d6b0"
+            },
+            "RPE1": {
+              "path": "experiments/local-capability/outputs/local-capability-s02/predictions/cell-count-power/RPE1/result.json",
+              "sha256": "a3f41afe6f06c8ed08c1a0e61f39763816c87413f090266b7b302537bdc36767"
+            }
+          },
+          "failure_log_ref": {
+            "path": "experiments/local-capability/outputs/local-capability-s02/train.log",
+            "sha256": "e355783b2a72776cbf191febb1188e515b49f8f565ce019217b6e9f7a48ade94"
+          }
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/local-capability/PLAN.md",
+          "sha256": "c142cd488f96e9a5f5ab302e7fba3196d3ec3fa9334a40e6b9b7f98228e42c2f"
+        },
+        {
+          "path": "experiments/local-capability/protocol.json",
+          "sha256": "040b90efc9f0893ece6df70d66ba4d6490010d651fd16a8a5914010ac7b0e26e"
+        },
+        {
+          "path": "experiments/local-capability/pyproject.toml",
+          "sha256": "9b367103960f3e9d0b6da6d92a769a62f1f4250047609314ca63b55661bc3742"
+        },
+        {
+          "path": "experiments/local-capability/uv.lock",
+          "sha256": "59058117786a84739d5a3f5ab022164da34189785b5f2012624b157433c3db7d"
+        },
+        {
+          "path": "experiments/local-capability/reproduce.sh",
+          "sha256": "34c0366a450da136c135f1699ffb3fe491b34d7b4e1ad38f61b4a5df69d8a78c"
+        },
+        {
+          "path": "experiments/local-capability/src/run.py",
+          "sha256": "b76e39f35badcfc9821ce103bc9c9080cdde70f7a7937ac96ca0347c86391965"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "src/vcc_task/__init__.py",
+          "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+        },
+        {
+          "path": "src/vcc_task/common.py",
+          "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+        },
+        {
+          "path": "src/vcc_task/counts.py",
+          "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+        },
+        {
+          "path": "src/vcc_task/official.py",
+          "sha256": "2089b0fe480030efc48a945f487fa443370d1b935c679040e2e9ad590d5a1f98"
+        },
+        {
+          "path": "src/vcc_task/capability.py",
+          "sha256": "a01fd8917d50916f98adde204a841b7cd3fbe89a74626d1114523b7fc796c42b"
+        },
+        {
+          "path": "src/vcc_task/capability_controls.py",
+          "sha256": "68fb858cdea271df1624be522fe9ba0054104f9a2220072af7c9dfb2c63a6b8c"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 930,
+        "fit_scope": {
+          "outer_split": "instrument-S2-S3-S4-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "source_usage": "固定观测视图；按hash继承s02的13个完整面板和五背景n敏感性诊断，其中8面板最初来自s01。科学配置逐项等价核验；原失败保持原身份和代码。",
         "scope": "无预测器拟合，oracle与置乱及模板只验收评价器；15面板不是15个生物重复"
       },
       "blockers": []
@@ -10902,6 +11306,31 @@
       "cost": "medium",
       "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。",
       "evidence_id": "E-LOCAL-CAPABILITY-EVALUATOR-R2"
+    },
+    "C-LOCAL-CAPABILITY-EVALUATOR-R3": {
+      "status": "ready",
+      "purpose": "protocol_audit",
+      "hypothesis": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
+      "controls": [],
+      "candidates": [
+        "local-capability-s03"
+      ],
+      "changed_axes": [],
+      "changed_fields": [],
+      "decision_rule": {
+        "primary_metric": "acceptance.fraction",
+        "direction": "maximize",
+        "min_effect": 0.0,
+        "scope": "五背景15个context×split面板，seed930，90项instrument验收，无预测器拟合",
+        "on_support": "评价器验收形成instrument证据；预测器迁移能力仍需每折独立训练和匹配对照。",
+        "on_against": "保留raw/归一化失败原因及生成失真；按失败性质冻结下一批，不靠挑面板或改指标通过。",
+        "on_inconclusive": "补齐可评分性或恢复完整执行，不能把未完成当阴性。",
+        "threshold_policy": "每面板6项：物理隔离；oracle bulk和残差RMS各≤1e-10；置乱RMS>1e-4；四对照官方六项与Overall有定义；oracle−置乱raw PDS>0.01。全部通过只支持接口和标签敏感性。"
+      },
+      "attribution_plan": "固定四种明确来源对照，逐面板重建官方尺度，比较标签敏感性及去模板残差；仅仪器验收，不归因于任何预测器。",
+      "cost": "medium",
+      "priority_basis": "2026-09-30用户对任务/数据约束与本地能力评估的修正；来源见设计说明。",
+      "evidence_id": "E-LOCAL-CAPABILITY-EVALUATOR-R3"
     }
   },
   "continuation_rules": {
