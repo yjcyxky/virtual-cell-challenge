@@ -1,0 +1,48 @@
+{
+  "kind": "local_evaluator_instrument_acceptance",
+  "training_predictor": false,
+  "contexts": [
+    "H1",
+    "K562",
+    "RPE1",
+    "HepG2",
+    "Jurkat"
+  ],
+  "scenarios": [
+    "S2",
+    "S3",
+    "S4"
+  ],
+  "expected_panels": 15,
+  "panel_targets": 16,
+  "real_cells": "maximum 400 unique per target; never duplicate scarce reference",
+  "conditions": [
+    "real_copy",
+    "target_derangement",
+    "zero",
+    "oracle_template"
+  ],
+  "prediction_cells": 400,
+  "seed": 930,
+  "template_scope": "evaluation-only oracle on hash-fixed half panel; residual and pathway diagnostics on disjoint other half; no predictor input",
+  "pathways": "hash-frozen Reactome; minimum 5 measured members; no alias guessing",
+  "acceptance": {
+    "oracle_rms": 1e-10,
+    "derangement_rms": 0.0001,
+    "derangement_pds_gap": 0.01
+  },
+  "score_scope": "frozen official six metrics and freshly rebuilt baseline/5 anchors per exact panel; preserve undefined metrics and failed bundle reasons; no leaderboard submission",
+  "pathway_ref": {
+    "path": "data/raw/networks/ReactomePathways.gmt.zip",
+    "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4"
+  },
+  "pathway_minimum_genes": 5,
+  "template_projection": "unit rank-one orthogonal direction; all panel target genes excluded from diagnostics",
+  "power_diagnostic": {
+    "repeats": 5,
+    "source": "four preselected oracle-effect targets per context from completed task-observation",
+    "sampling": "without replacement from the SAME generated 400-cell population to actual real n",
+    "additional_official_de_calls": 5,
+    "kind": "diagnostic_only_no_change_to_submission_n_or_acceptance_thresholds"
+  }
+}

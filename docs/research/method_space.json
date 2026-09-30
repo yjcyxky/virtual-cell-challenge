@@ -1866,6 +1866,24 @@
       "prior": "none；参数化整数生成作为待校准观测模型，诊断不构成生物响应预测性能。",
       "local_status": "UNTESTED",
       "evidence_ids": []
+    },
+    "M-LOCAL-CAPABILITY": {
+      "description": "无预测器拟合的官方六指标、标签置乱、去模板与通路评价器验收；不可部署oracle对照",
+      "axes": {
+        "T": "T4",
+        "D": "D1",
+        "R": "R1",
+        "A": "A6",
+        "L": "L6",
+        "O": "O0",
+        "V": "V5",
+        "I": "I10",
+        "G": "G0"
+      },
+      "signature": "T4-D1-R1-A6-L6-O0-V5-I10-G0",
+      "prior": "none；oracle仅评分侧验收，不构成模型输入或生物机制结论。",
+      "local_status": "UNTESTED",
+      "evidence_ids": []
     }
   }
 }

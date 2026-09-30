@@ -2100,7 +2100,9 @@
       "kind": "experiment",
       "state": "pending",
       "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR",
-      "node_ids": [],
+      "node_ids": [
+        "local-capability-s01"
+      ],
       "hypothesis": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
       "claim": "待检验：使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
       "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
@@ -2132,31 +2134,75 @@
     },
     "E-TASK-DATA-GENERATION-R2": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "not_supported",
       "comparison_id": "C-TASK-DATA-GENERATION-R2",
       "node_ids": [
         "task-observation-s02"
       ],
-      "hypothesis": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
-      "claim": "待检验：训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
-      "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
+      "claim": "完整五背景观测/计数校准完成；20项预定接口检查通过16项。当前实现未满足全部预定生成接口精度；失败项保留，不能晋级部署默认。",
+      "limitations": "无预测器拟合；5背景/3研究，生物重复unknown。每背景4个固定oracle靶点、5次null抽样，不支持全面生物分布或跨背景预测结论。缺测轴、低深度与稀缺真实n继续限制；源全量统计未抽稀，计数bank独立抽稀；描述性Jaccard不是官方六项。",
       "source_refs": [
         {
-          "path": "docs/research/task_constraints_review.md",
-          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+          "path": "experiments/task-observation/outputs/task-observation-s02/metrics.json",
+          "sha256": "9a3dbe2513cb87228277ffef141c9dc93a18b031f004d3df76daa909b017e23a"
+        },
+        {
+          "path": "experiments/task-observation/REPORT.md",
+          "sha256": "c132304b27cb76b959702826620b16da533c9dd031bce76e9b19f11d35d31077"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/observations.json",
+          "sha256": "5f4cb078b2aca17479f5a5ef3b342629edd0d30e7f7db9610f771372a7494a5a"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/observations.json",
+          "sha256": "fae14763117cfded4a1cd29709de5637ebef835845d3637884ef70c8b7caea63"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/observations.json",
+          "sha256": "f6f7d26f0b167f65f1e15b962250b9032a2c0014f615036bcdeaadaa9394f2a8"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/observations.json",
+          "sha256": "7c6438023326ca6daaf456dc3f4c04c9024858b06975f9417e0ef1fa642c0fe5"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/cache/Jurkat/observations.json",
+          "sha256": "20390ecd38e3828d475f62524a8288457c16b1489ef499bfef07ec80b7b8eb1f"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/predictions/H1/calibration.json",
+          "sha256": "167b30d46effc8908cb9c2afeadfcef8e68e8818becad1eb4e5145802e64ccf3"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/predictions/K562/calibration.json",
+          "sha256": "3fa1a0e338eb60d5111d809c9639cff5b1cb9049a3101782f2f5ff613ce8d484"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/predictions/RPE1/calibration.json",
+          "sha256": "fa56056188996f9c09846bce237b7e76649b54bed6f4ccc09df7d4b9270c0116"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/predictions/HepG2/calibration.json",
+          "sha256": "8d4028cb9d7bdc0abc2e3a69d6d88250fda5ad8fee67bbe7fd8a55a8d89924c8"
+        },
+        {
+          "path": "experiments/task-observation/outputs/task-observation-s02/predictions/Jurkat/calibration.json",
+          "sha256": "d4803c76e0552e3fd088df1976dcc8179e9f49748ae05dc6f10ad0afff99a443"
         }
       ],
-      "next_action": "完整执行五背景观测与生成验收，然后据真实结果关闭；禁止以部分阶段当方法证据。",
-      "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
+      "next_action": "执行冻结local-capability-s01的15面板60次官方评分，验证标签敏感性/去模板/通路和可评分性；生成失真按实际证据另冻结修正，预测器预算随后决定。",
+      "reopen_when": "数据/测量映射、计数生成、深度/n规则改变，或更多固定靶点/分布诊断显示原验收范围不够。",
+      "hypothesis": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？"
     }
   },
   "queue": [
     {
       "id": "Q-TASK-DATA-GENERATION",
       "priority": 1,
-      "comparison_id": "C-TASK-DATA-GENERATION",
+      "comparison_id": "C-TASK-DATA-GENERATION-R2",
       "question": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
-      "action": "执行已冻结task-observation-s01完整五背景批次，回收观测/剂量/官方DE/整数生成诊断并close；完成后按结果冻结下一批。",
+      "action": "完整执行task-observation-s02（s01接口故障已归档），回收五背景观测与计数/官方DE诊断；随后冻结local-capability完整验收批次。",
       "requires_evidence": []
     },
     {
@@ -2164,7 +2210,7 @@
       "priority": 2,
       "comparison_id": "C-LOCAL-CAPABILITY-EVALUATOR",
       "question": "使用官方六指标、空响应/已知响应、靶点置乱、去模板通路和实际LOCO/joint-OOD，能否区分格式合法、模板复现与可迁移扰动特异能力？",
-      "action": "复用官方scorer，补齐可复用诊断与五背景实际执行路径；固定null/模板/已知信号对照和训练内统计容差，记录稀缺真实n、覆盖及未定义指标。",
+      "action": "执行已冻结local-capability-s01完整15面板60评分/90项验收，保留退化分项及逐靶DE/去模板/通路诊断；结果关闭前不作模型泛化主张。",
       "requires_evidence": []
     },
     {
@@ -2178,7 +2224,7 @@
   ],
   "resource_allocation": {
     "after_evidence": "PROTOCOL-TASK-REVIEW-20260930",
-    "unit": "2026-09-30用户授权按设计实施。首批task-observation-s01完整五背景数据/计数生成诊断已冻结；预测器训练预算待本地能力评估条件落实。",
+    "unit": "数据/生成完整批次已执行；local-capability-s01冻结15个bundle和60次官方评分，无超参搜索。DepMap预测器预算待本地能力评价结果后冻结；无leaderboard提交。",
     "exploration_slots": [
       "C-DEPMAP-RESPONSE-ALIGNMENT"
     ],

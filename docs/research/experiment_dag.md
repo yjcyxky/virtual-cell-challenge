@@ -57,7 +57,8 @@ flowchart TD
   n50["cell-cvae-aligned-s01 | completed"]
   n51["set-distribution-s01 | draft"]
   n52["task-observation-s01 | failed"]
-  n53["task-observation-s02 | ready"]
+  n53["task-observation-s02 | completed"]
+  n54["local-capability-s01 | ready"]
   n0 -->|control| n1
   n0 -.->|"evidence: E-BASE"| n1
   n0 -->|control| n2
@@ -298,4 +299,5 @@ flowchart TD
   n50 -->|source| n51
   n0 -->|source| n52
   n0 -->|source| n53
+  n53 -->|source| n54
 ```
