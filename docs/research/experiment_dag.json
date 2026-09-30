@@ -1305,7 +1305,34 @@
         "artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit:v0",
         "evidence_artifact": "yjcyxky/virtual-cell-challenge/init-linear-s01-anchor-audit-evidence:v0"
       },
-      "code_snapshot_commit": "7465e614e8220ca3d7065d5595ac05b5a3fadb21"
+      "code_snapshot_commit": "7465e614e8220ca3d7065d5595ac05b5a3fadb21",
+      "counts_diagnostics": {
+        "comparison_id": "C-LEADERBOARD-COUNTS-AUDIT",
+        "status": "completed",
+        "plan_ref": {
+          "path": "docs/research/leaderboard_prediction_counts_PLAN.md",
+          "sha256": "9d0a28719ba3df8c841ecd8942706681f623436c079df0a2a63a03299786d350"
+        },
+        "code_refs": [
+          {
+            "path": "scripts/analyze_submitted_counts.py",
+            "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+          }
+        ],
+        "scope": "Read-only analysis of immutable official submission, no training/generation/scorer changes; use original run identity.",
+        "result_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/counts-audit-20260930/results.json",
+          "sha256": "ed656bc9318bd2c4bc7f0fb623eb6e93fce8a14b162a4bcf09efd9ad67c7a324"
+        },
+        "execution_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/counts-audit-20260930/execution.json",
+          "sha256": "4475f9b8144c20700c20d3941033864f278e2bae3073da2e4fe507ba2eeed44b"
+        },
+        "report_ref": {
+          "path": "docs/research/leaderboard_prediction_counts_REPORT.md",
+          "sha256": "ef8f7bc278042456a7b8240428bc1db8556b40747cd7f97012f1d0e2379bb7bd"
+        }
+      }
     },
     "init-absolute-s01": {
       "experiment_id": "init-absolute-s01",
@@ -5841,6 +5868,33 @@
             },
             "artifact": "yjcyxky/virtual-cell-challenge/masked-response-qc-s01-official-shared-qc:v0"
           }
+        }
+      },
+      "counts_diagnostics": {
+        "comparison_id": "C-LEADERBOARD-COUNTS-AUDIT",
+        "status": "completed",
+        "plan_ref": {
+          "path": "docs/research/leaderboard_prediction_counts_PLAN.md",
+          "sha256": "9d0a28719ba3df8c841ecd8942706681f623436c079df0a2a63a03299786d350"
+        },
+        "code_refs": [
+          {
+            "path": "scripts/analyze_submitted_counts.py",
+            "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+          }
+        ],
+        "scope": "Read-only analysis of immutable official submission, no training/generation/scorer changes; use original run identity.",
+        "result_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/counts-audit-20260930/results.json",
+          "sha256": "ed656bc9318bd2c4bc7f0fb623eb6e93fce8a14b162a4bcf09efd9ad67c7a324"
+        },
+        "execution_ref": {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/counts-audit-20260930/execution.json",
+          "sha256": "4475f9b8144c20700c20d3941033864f278e2bae3073da2e4fe507ba2eeed44b"
+        },
+        "report_ref": {
+          "path": "docs/research/leaderboard_prediction_counts_REPORT.md",
+          "sha256": "ef8f7bc278042456a7b8240428bc1db8556b40747cd7f97012f1d0e2379bb7bd"
         }
       }
     },
@@ -11599,6 +11653,33 @@
       "cost": "medium",
       "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。",
       "evidence_id": "E-LOCAL-EVAL-SUPPORT"
+    },
+    "C-LEADERBOARD-COUNTS-AUDIT": {
+      "status": "ready",
+      "purpose": "protocol_audit",
+      "hypothesis": "固定正式提交的预测是否满足计数约束、保留细胞异质性，且官方分数支持超出NTC继承/共同偏移的扰动特异准确性？",
+      "controls": [],
+      "candidates": [
+        "init-linear-s01",
+        "masked-response-qc-s01"
+      ],
+      "changed_axes": [
+        "V"
+      ],
+      "changed_fields": [
+        "evaluation.descriptive_distribution_diagnostics"
+      ],
+      "decision_rule": {
+        "primary_metric": "full_counts_contract_and_distribution_diagnostics_with_saved_official_six_metrics",
+        "direction": "diagnostic",
+        "min_effect": 0,
+        "scope": "Retrospective immutable submitted predictions. Three current-registry arms plus six historical submissions as explicitly separated descriptive sources. No fit or score changed.",
+        "on_support": "完整扫描合法、无异常坍塌且官方分项支持时，仅按实际可观测能力下结论。",
+        "on_against": "具体计数/分布失败或官方弱项只限定到对应提交与范围；不将NTC偏离自动判错。",
+        "on_inconclusive": "无隐藏真值/重复生成/逐背景官方统计时，将相应能力标为未验证。"
+      },
+      "evidence_id": "E-LEADERBOARD-COUNTS-AUDIT",
+      "attribution_plan": "Retrospective diagnosis only; generation priors and inherited NTC structure distinguished from learned response. Heterogeneous historical models are not causal ablations."
     }
   },
   "continuation_rules": {

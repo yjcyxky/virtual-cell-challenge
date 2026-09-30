@@ -2343,6 +2343,94 @@
       ],
       "next_action": "按两个有限批次确定生成和全折参考支持后推进首轮预测器；面板扩至全折仍退化时保留raw与未定义Overall，停止面板/seed追分，并限制能力主张范围。",
       "reopen_when": "新正式比较、独立目标数据或官方口径提供反证；改变具体科学条件须另立run和匹配对照。"
+    },
+    "E-LEADERBOARD-COUNTS-AUDIT": {
+      "kind": "experiment",
+      "state": "supported",
+      "comparison_id": "C-LEADERBOARD-COUNTS-AUDIT",
+      "node_ids": [
+        "init-linear-s01",
+        "masked-response-qc-s01"
+      ],
+      "claim": "固定预测诊断支持明确的能力分离：九份正式提交均为合法counts；当前Shared/QC保留NTC形态并迁移部分已见靶点平均下游信号（PDS约0.67），但28个未见靶点的全部细胞为NTC原行重采样。幅度与DE仍弱（QC raw MSE 4.7235、NMAE 0.97075、Jaccard 0.01892）。模板继承不等于学到扰动后异质性；三份历史CVAE的128基因协方差相关近0是风险诊断，不是隐藏联合分布误差真值。",
+      "limitations": "回顾性固定输出诊断，三匿名官方背景；九份提交不是九个独立生物重复。六份旧提交只作历史来源，不回填初始化方法效果。NTC不是隐藏扰动真值；官方回执无逐背景/逐靶有效数，未重复生成、未新增训练/评分；不同历史整包非因果消融。当前linear/shared差异包含正则/参数化，不归因于背景信息本身。",
+      "source_refs": [
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/metrics.json",
+          "sha256": "a7d0606966c9588d1d7390f03e76e5941e09a2df9d7b7d32baa4d8687e653ee7"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/metrics.json",
+          "sha256": "78220ee60c40744f309ad1e68ee96acdb49d63c1a933b421f915307bd145068b"
+        },
+        {
+          "path": "docs/research/leaderboard_prediction_counts_REPORT.md",
+          "sha256": "ef8f7bc278042456a7b8240428bc1db8556b40747cd7f97012f1d0e2379bb7bd"
+        },
+        {
+          "path": "docs/research/leaderboard_prediction_counts_PLAN.md",
+          "sha256": "9d0a28719ba3df8c841ecd8942706681f623436c079df0a2a63a03299786d350"
+        },
+        {
+          "path": "docs/research/leaderboard_prediction_metric_foundations.md",
+          "sha256": "1d0dbceec8b3c3cec76cff663482d6f7288857619b8b6068e2962f4f8c8a1e1d"
+        },
+        {
+          "path": "scripts/analyze_submitted_counts.py",
+          "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/counts-audit-20260930/results.json",
+          "sha256": "ed656bc9318bd2c4bc7f0fb623eb6e93fce8a14b162a4bcf09efd9ad67c7a324"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/counts-audit-20260930/execution.json",
+          "sha256": "4475f9b8144c20700c20d3941033864f278e2bae3073da2e4fe507ba2eeed44b"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/cache/counts-audit-20260930/supervision-coverage.json",
+          "sha256": "72f49ddc65107b110a0d7cba79ed661850d3eaabdc26278836075b82a4cfaa8b"
+        },
+        {
+          "path": "experiments/exp001-context-pair-xgb/outputs/20260923-a/counts-audit-20260930/summary.json",
+          "sha256": "2f56ebb488385536e73a8f4e57c533739b0f6d0c344ee61be1e554c0094ca5a4"
+        },
+        {
+          "path": "experiments/exp002-response-transfer-validation/outputs/20260922-d/counts-audit-20260930/summary.json",
+          "sha256": "2d55a285b3a67ac4bdb35579ba592b354a2da0ea1cf8ef2539fa978edfeb6d6d"
+        },
+        {
+          "path": "experiments/exp003-context-module-cvae/outputs/20260925-lodo-response-s17/predictions/leaderboard-holdout-H1-cycle-0004-seed-101/counts-audit-20260930/summary.json",
+          "sha256": "9a644800b4e349660babd02eddb630d4badd350a4bce9ba78dc15aaea34167c3"
+        },
+        {
+          "path": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/predictions/leaderboard-holdout-H1-cycle-0011-seed-101/counts-audit-20260930/summary.json",
+          "sha256": "4e253d92cf5d33e4c40dcc90c1424c6219cf8f71136f6756c08cfd2e610850d3"
+        },
+        {
+          "path": "experiments/exp004-shared-response/outputs/20260925-exp004-conditional-s17/predictions/leaderboard-holdout-K562-cycle-0001-seed-101/counts-audit-20260930/summary.json",
+          "sha256": "5ca45df87688b009ffeaa19afef3f25d5b742c13264649166c33a177b7e997c9"
+        },
+        {
+          "path": "experiments/exp007/outputs/20260927-exp007-h1-log2fc-s17/predictions/leaderboard-round-0512-seed-101/counts-audit-20260930/summary.json",
+          "sha256": "1b6176169d0818b874e60469b29758b7bf122dc15aab6d36412e26108a2ea638"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/linear/counts-audit-20260930/summary.json",
+          "sha256": "3462a96671f2b0bc5d5164cd71b1532167a89f756cab3f2e9103112274741b76"
+        },
+        {
+          "path": "experiments/init-linear/outputs/init-linear-s01/predictions/official-abc/shared/counts-audit-20260930/summary.json",
+          "sha256": "040503353d21c68c539b06cfa48be7a4ead50ec40bb4755534f1359f992c396b"
+        },
+        {
+          "path": "experiments/masked-response/outputs/masked-response-qc-s01/predictions/official-abc/linear/counts-audit-20260930/summary.json",
+          "sha256": "f232266b9273e627d3dd49f553d4dfb20129deb2368c37403c2d444608033d59"
+        }
+      ],
+      "next_action": "保留可迁移同靶平均响应的有效部分；维持当前population emission、全折本地评价支持、DepMap响应对齐三优先问题。生成器用真实NTC/零响应与已知响应检验期望和联合结构；建模检验seen/joint OOD及未测读出，不能以计数合法或高噪声秩充当泛化证据。",
+      "reopen_when": "新增具有固定身份的提交/生成器或目标先验；取得隐藏分项、真实扰动联合结构、匹配零响应和独立生成重复，或五背景严格匹配比较。",
+      "hypothesis": "固定正式提交的预测是否满足计数约束、保留细胞异质性，且官方分数支持超出NTC继承/共同偏移的扰动特异准确性？"
     }
   },
   "queue": [
