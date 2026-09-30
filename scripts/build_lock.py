@@ -37,10 +37,12 @@ def get_json(url: str, payload: dict | None = None) -> dict | list:
         return json.load(r)
 
 
-def head_size(url: str) -> int | None:
+def head_size(url: str, expected_etag: str | None = None) -> int | None:
     req = urllib.request.Request(url, headers=UA, method="HEAD")
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
+            if expected_etag and r.headers.get("ETag") != expected_etag:
+                raise ValueError(f"HTTP ETag changed: {url}")
             n = r.headers.get("Content-Length")
             return int(n) if n else None
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
@@ -110,7 +112,7 @@ def expand_figshare(src: dict) -> list[dict]:
 def expand_http(src: dict) -> list[dict]:
     out = []
     for f in src["files"]:
-        size = head_size(f["url"])
+        size = head_size(f["url"], f.get("etag"))
         pinned_size = f.get("bytes")
         if pinned_size is not None and size is not None and pinned_size != size:
             raise ValueError(f"{f['name']}: HTTP size {size} != pinned size {pinned_size}")
@@ -119,7 +121,7 @@ def expand_http(src: dict) -> list[dict]:
             "url": f["url"],
             "bytes": pinned_size if pinned_size is not None else size,
             "checksum": f.get("checksum"),
-            **{k: f[k] for k in ("origin_url", "checksum_source") if k in f},
+            **{k: f[k] for k in ("origin_url", "checksum_source", "etag", "version_id") if k in f},
         })
     return out
 

@@ -1,0 +1,408 @@
+{
+  "as_of": "2026-09-30T19:58:23.871836+00:00",
+  "scope": "Acquisition snapshot only; no training split or effect-based selection",
+  "hf_revision": "53a5bc98d49247bcf967500292575c3d3602de31",
+  "xaira_expression_shards": 332,
+  "s3_objects": [
+    {
+      "key": "marson2025_data/D1_Rest.assigned_guide.h5ad",
+      "bytes": 142828875662,
+      "version_id": "OMySnws7NOoouoAcgKU6ou0yZTMj89oC",
+      "etag": "524decb848ce000c103b21b61b22e764-8514",
+      "last_modified": "Fri, 19 Dec 2025 21:05:05 GMT"
+    },
+    {
+      "key": "marson2025_data/D1_Stim48hr.assigned_guide.h5ad",
+      "bytes": 156246167022,
+      "version_id": "BxnPyk14rwBTfuseL9LGddnHxZ3_4koz",
+      "etag": "52303f8c4d736b2d4a7b48c7a0947b3d-9313",
+      "last_modified": "Fri, 19 Dec 2025 21:05:05 GMT"
+    },
+    {
+      "key": "marson2025_data/D1_Stim8hr.assigned_guide.h5ad",
+      "bytes": 154774003188,
+      "version_id": "cGZrW3MFrFZjCNvRGYY7kbP_knQ.QBUJ",
+      "etag": "4616f819ba94a1084f0a947ba860beb4-9226",
+      "last_modified": "Fri, 19 Dec 2025 21:05:05 GMT"
+    },
+    {
+      "key": "marson2025_data/D2_Rest.assigned_guide.h5ad",
+      "bytes": 140574804978,
+      "version_id": "_K_LjiQkV2qYSD6kCzq.S_Jk75u897ZB",
+      "etag": "304e845aa97ec03e5aa389e35df60a35-8379",
+      "last_modified": "Fri, 19 Dec 2025 21:05:05 GMT"
+    },
+    {
+      "key": "marson2025_data/D2_Stim48hr.assigned_guide.h5ad",
+      "bytes": 137554355000,
+      "version_id": "AuUNMzGHzdEKcpSYJVXbUCRmaC8AMxxW",
+      "etag": "d8e5b0510a8ac8518e5401ee7cc7ccf1-8199",
+      "last_modified": "Fri, 19 Dec 2025 21:05:05 GMT"
+    },
+    {
+      "key": "marson2025_data/D2_Stim8hr.assigned_guide.h5ad",
+      "bytes": 172796432870,
+      "version_id": "_ylm2qQfQR.cgUNf_ExU2GwFhBJ9zEjl",
+      "etag": "80129a77f84b011d0dcd8e546f5138f9-5150",
+      "last_modified": "Fri, 19 Dec 2025 21:40:07 GMT"
+    },
+    {
+      "key": "marson2025_data/D3_Rest.assigned_guide.h5ad",
+      "bytes": 138149946574,
+      "version_id": "3Y3MKMLRzlD_Ce69LETCULhbR9V4FzSl",
+      "etag": "15a555deb21fe5cb8e0579344a86e52a-8235",
+      "last_modified": "Fri, 19 Dec 2025 21:42:29 GMT"
+    },
+    {
+      "key": "marson2025_data/D3_Stim48hr.assigned_guide.h5ad",
+      "bytes": 137830572362,
+      "version_id": "mZHRwxs4pvjElTP1ym1ROF3hD7zQxAB5",
+      "etag": "9c7667662eb64b1e87a4e2e215fee811-8216",
+      "last_modified": "Fri, 19 Dec 2025 21:42:56 GMT"
+    },
+    {
+      "key": "marson2025_data/D3_Stim8hr.assigned_guide.h5ad",
+      "bytes": 142656069026,
+      "version_id": "0.0vQe4Y35zXUPBBALmYpNsNGYLecdM6",
+      "etag": "5571ceee22c618919716c88a7285ee2b-8503",
+      "last_modified": "Fri, 19 Dec 2025 21:46:21 GMT"
+    },
+    {
+      "key": "marson2025_data/D4_Rest.assigned_guide.h5ad",
+      "bytes": 118609904492,
+      "version_id": "UFEJUAolKwPSaKY_0VPcPIipahAZJbyY",
+      "etag": "27f4103f28edf9cd15e64e247cd9a507-7070",
+      "last_modified": "Fri, 19 Dec 2025 21:47:01 GMT"
+    },
+    {
+      "key": "marson2025_data/D4_Stim48hr.assigned_guide.h5ad",
+      "bytes": 159231588926,
+      "version_id": "46DigC.4bxu.j_R7rQzIsnX.HLdM7Jwf",
+      "etag": "092ed7c43003bcf46241496afaf84a6f-9491",
+      "last_modified": "Fri, 19 Dec 2025 22:04:06 GMT"
+    },
+    {
+      "key": "marson2025_data/D4_Stim8hr.assigned_guide.h5ad",
+      "bytes": 134582395766,
+      "version_id": "CEB57yqeXTDton4WTotWd0QEF9F7Q.tx",
+      "etag": "68e209d3c6b9c2cc500040337bd7e245-8022",
+      "last_modified": "Fri, 19 Dec 2025 22:18:41 GMT"
+    },
+    {
+      "key": "marson2025_data/GWCD4i.DE_stats.by_donors.h5mu",
+      "bytes": 16866278447,
+      "version_id": "XlOXtBdKNdJCMcA3dnhaUbqXxuK9XMX3",
+      "etag": "1f405d8c2d202c6e845c1d11e59f2e47-2011",
+      "last_modified": "Thu, 28 May 2026 23:06:53 GMT"
+    },
+    {
+      "key": "marson2025_data/GWCD4i.DE_stats.by_guide.h5mu",
+      "bytes": 29424424894,
+      "version_id": "SQHf_ZhmdbCteM9f4HG1zs.2k25CL3gb",
+      "etag": "2e6705636ebaa276c7bc7c5a148ad096-3508",
+      "last_modified": "Thu, 28 May 2026 23:20:10 GMT"
+    },
+    {
+      "key": "marson2025_data/GWCD4i.DE_stats.h5ad",
+      "bytes": 16786240107,
+      "version_id": "IJHj.CZ2Hhw9sa41IuovIGpBZimEZo7I",
+      "etag": "c9ff52fcc6d6ce8a387a76dc757a5b97-2002",
+      "last_modified": "Thu, 28 May 2026 23:43:31 GMT"
+    },
+    {
+      "key": "marson2025_data/GWCD4i.pseudobulk_merged.h5ad",
+      "bytes": 44566657140,
+      "version_id": "BWCjgMRhH80BOFIid2.0kbCr2o8wNVmn",
+      "etag": "010c14e0af0dccbc2524529d28ca517e-5313",
+      "last_modified": "Thu, 28 May 2026 23:56:40 GMT"
+    },
+    {
+      "key": "marson2025_data/data_sharing_readme.md",
+      "bytes": 26759,
+      "version_id": "_TAl9ujQso_DC_fcVJCgmoneOMq2o78c",
+      "etag": "0919489793f206e7cc23418362a1acc8",
+      "last_modified": "Fri, 29 May 2026 00:36:20 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D1_Rest.assigned_guide.jsonld",
+      "bytes": 5781,
+      "version_id": "NmyNLhkzjtkipOlUAH3GlqTT8qG0TPdu",
+      "etag": "5467b39ab83fad3ca900522174fb36c4",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D1_Stim48hr.assigned_guide.jsonld",
+      "bytes": 5793,
+      "version_id": "3mv0o74KU0ITZT3x8DoS456YBVqhwMEY",
+      "etag": "a9bb4094d9740b116277b78e4eee30a9",
+      "last_modified": "Tue, 23 Dec 2025 22:26:35 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D1_Stim8hr.assigned_guide.jsonld",
+      "bytes": 5790,
+      "version_id": "nRNdzRPJlHPljnfItcdCxuCygHXb1xPi",
+      "etag": "7405ff45cc5c30d85f77dfce98a953d3",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D2_Rest.assigned_guide.jsonld",
+      "bytes": 5781,
+      "version_id": "FboC0SMKKICfZpj5r667Jc85daanSzML",
+      "etag": "787a887eeacffdf5b151040c9f50c270",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D2_Stim48hr.assigned_guide.jsonld",
+      "bytes": 5793,
+      "version_id": "pqYhvg6NXjU1rQmgtJBp1iRYVjzX8usV",
+      "etag": "2170adc2b79482e1bd9ddd61634fad41",
+      "last_modified": "Tue, 23 Dec 2025 22:26:35 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D2_Stim8hr.assigned_guide.jsonld",
+      "bytes": 5790,
+      "version_id": "fSY8wkEyVS6n7vnBJEq76JC35W.FgYbD",
+      "etag": "ff2865724494498b4467b35f07889c6a",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D3_Rest.assigned_guide.jsonld",
+      "bytes": 5781,
+      "version_id": "2SZ.gS5LiTL3zrrQgQjUc9Z3Sn40B2t4",
+      "etag": "842dd0d3e9f4ecc588756df292564d1e",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D3_Stim48hr.assigned_guide.jsonld",
+      "bytes": 5793,
+      "version_id": "s1YxM4aM4zqD9vLTSsW1uyicwkmpgMCm",
+      "etag": "b8c90448fbbd8e59d3a506be87546d93",
+      "last_modified": "Tue, 23 Dec 2025 22:33:16 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D3_Stim8hr.assigned_guide.jsonld",
+      "bytes": 5790,
+      "version_id": "pUjWGPCpkkRHgUrZH5817JKzjXzVTE6e",
+      "etag": "8866ee036edfba999cb92717c828fca1",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D4_Rest.assigned_guide.jsonld",
+      "bytes": 5781,
+      "version_id": "maaatK4Un8WsEyBXaRDm7wf2UMa1oB4H",
+      "etag": "fba25085b7fc04f2a8649a4b1a98379c",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D4_Stim48hr.assigned_guide.jsonld",
+      "bytes": 5793,
+      "version_id": "aC3ep2RMG_q5_wQ7xyQByVcA7JGwLYIo",
+      "etag": "c56a02c50de670db796f4b6e40c62634",
+      "last_modified": "Tue, 23 Dec 2025 22:26:35 GMT"
+    },
+    {
+      "key": "marson2025_data/metadata/marson_D4_Stim8hr.assigned_guide.jsonld",
+      "bytes": 5790,
+      "version_id": "b6OC0OiyPUwJ3LiXi0z9bEhtgC0PZV3w",
+      "etag": "7e7b98cc4cab0b0bded31c7d68fded55",
+      "last_modified": "Sat, 20 Dec 2025 03:12:39 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/CD4T_aging_signature_DE_results_full.suppl_table.csv",
+      "bytes": 1988893,
+      "version_id": "FneV1WKflS2nfN9ZMT1lJgiBOqzib7hl",
+      "etag": "b8e372ecc73bfe68ee8699f5c9b1d12b",
+      "last_modified": "Mon, 24 Aug 2026 23:06:53 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/DE_stats.suppl_table.csv",
+      "bytes": 7276533,
+      "version_id": "HdPxrH9RBxUV6avDVUK.HLfoNkRhfvbH",
+      "etag": "7e97202a40cbd8981416be12daa36931",
+      "last_modified": "Mon, 24 Aug 2026 23:06:53 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/IL10IL21bulkRNAseq_DESeq2_results_bygene.csv",
+      "bytes": 15090886,
+      "version_id": "rQDL6d0L0YC9q5qlkai8BOHN0ayAGEug",
+      "etag": "dd8ef773898cd4f0b71046a09571289b-2",
+      "last_modified": "Mon, 24 Aug 2026 23:06:53 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/IL10IL21bulkRNAseq_DESeq2_results_byguide.csv",
+      "bytes": 30549723,
+      "version_id": "Ix3i59vrciq68CGUxMCoi7WuI32IAuez",
+      "etag": "fc160093ded43e44200a55e360b8e740-4",
+      "last_modified": "Mon, 24 Aug 2026 23:06:53 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/IL10_IL21_arrayed_validation_combined.csv",
+      "bytes": 5291,
+      "version_id": "LhTTpceGC8aLdSFFfdNpXHJjNQKSTRtS",
+      "etag": "8b4c5b6bb7e6cd6e0a5c76bfb91b6028",
+      "last_modified": "Mon, 24 Aug 2026 23:06:53 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/K562_comparison.suppl_table.csv",
+      "bytes": 969086,
+      "version_id": "OGaYOsq2_RxvUi2XzC136goDWBPJq7Uk",
+      "etag": "bf93fed88d8ba874ea342c055918af2e",
+      "last_modified": "Mon, 24 Aug 2026 23:06:57 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/QC_summaries_per_sample_lane.csv",
+      "bytes": 60515,
+      "version_id": "FS_Fvrl3drUCkTQHQD7vAlXd0erxfZ4o",
+      "etag": "0c5b3a3fbfefb9f8e736a1678228ad6d",
+      "last_modified": "Mon, 24 Aug 2026 23:06:57 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/Th1Th2_validation_summary.suppl_table.csv",
+      "bytes": 20872,
+      "version_id": "AxZ2C8bHV2q6YttkanWqEyHe4BnNGcBG",
+      "etag": "a5512f0e7be66deb7088a34c59a1cbd1",
+      "last_modified": "Mon, 24 Aug 2026 23:06:57 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/Th1Th2bulkRNAseq_DESeq2_results.csv.gz",
+      "bytes": 45347130,
+      "version_id": "EhhfBFX9ulmEapc0HN1XpbNWnlppTYif",
+      "etag": "8c0502c40e7c356e167b5daf8568f7a2-6",
+      "last_modified": "Mon, 24 Aug 2026 23:06:57 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/Th2_Th1_polarization_signature_DE_results_full.suppl_table.csv",
+      "bytes": 6155771,
+      "version_id": "HTvtBRShwQX.PQlMZGZMZItVtI2VTpaN",
+      "etag": "edcde503b28ce396c7495719c8a5ba8b",
+      "last_modified": "Mon, 24 Aug 2026 23:07:10 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/aging_prediction_condition_comparison_regulator_coefficients.csv",
+      "bytes": 1224277,
+      "version_id": "Y1l1MhZ55siZUFvqzv5DYTwUUO0c3.b6",
+      "etag": "9f89f82e4ea620a1e8108780df933533",
+      "last_modified": "Mon, 24 Aug 2026 23:07:13 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/clusterTCR_deseq2_results.csv.gz",
+      "bytes": 19633746,
+      "version_id": ".ST4E3PBSgRETME2YTZAnm8i0tEC8Owz",
+      "etag": "d3945c541e21f9d9ebc7b8f3148fbef8-3",
+      "last_modified": "Mon, 24 Aug 2026 23:07:13 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/cluster_autoimmune_enrichment_results.suppl_table.csv",
+      "bytes": 975501,
+      "version_id": "h1kPxUzk1JwntyurgQH40bJ8wowANs2d",
+      "etag": "6cf0581ee1713d0cd057c6c8e96ac2cb",
+      "last_modified": "Mon, 24 Aug 2026 23:07:16 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/clustering_downstream_genes.csv.gz",
+      "bytes": 19694461,
+      "version_id": "kGLN4AbkSYseIVSMom7fcc8MJBRgll.9",
+      "etag": "4334035862ef98393e5364f947cb5e4f-3",
+      "last_modified": "Mon, 24 Aug 2026 23:07:16 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/clustering_results_and_annotations.csv",
+      "bytes": 121625,
+      "version_id": "3GcCruu5fq7AjJ_qIChMeSox7c8Snrjp",
+      "etag": "aa84af2744d2b5b15022c2e7ac7876cc",
+      "last_modified": "Mon, 24 Aug 2026 23:07:19 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/guide_kd_efficiency.suppl_table.csv",
+      "bytes": 13319852,
+      "version_id": "RvdaBYrRaasoZQY4fVT6G87ToRinZWmA",
+      "etag": "c85756a15c399dfdfd0bc99fe13698f4-2",
+      "last_modified": "Mon, 24 Aug 2026 23:07:19 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/guide_offtarget_analysis_results.csv",
+      "bytes": 2166078,
+      "version_id": "bmdbPt81v8mdu0eAdm6ufqMJ7Mi9v46Z",
+      "etag": "4b1b3786e15dcf9b185e87117215ea9b",
+      "last_modified": "Mon, 24 Aug 2026 23:07:23 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/md_for_manuscript/Supplementary_Table_11_IL10IL21_flow_cytometry_validation.md",
+      "bytes": 6897,
+      "version_id": "5bHEizxv.e0ov22LGgTn8X2fNYXHkaNh",
+      "etag": "dcb8cff5600a1e9dc239ce86d2f18d1c",
+      "last_modified": "Mon, 24 Aug 2026 23:07:24 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/md_for_manuscript/Supplementary_Table_12_Proliferation_IL10IL21_validation.md",
+      "bytes": 4645,
+      "version_id": "L28h1wgeuk1fOMjQAwKpDNG7ekLqTSYM",
+      "etag": "151d5debfc576185ddb6c8750ef00376",
+      "last_modified": "Mon, 24 Aug 2026 23:07:24 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/md_for_manuscript/Supplementary_Table_1_Sample_metadata.md",
+      "bytes": 4643,
+      "version_id": "CZXzWWxzJyY1C_1vy4uBcSPNW2moVhqQ",
+      "etag": "3c45d07f0ae59af0c06ec15964162393",
+      "last_modified": "Mon, 24 Aug 2026 23:07:24 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/md_for_manuscript/Supplementary_Table_23_followup_donor_metadata.md",
+      "bytes": 1830,
+      "version_id": "5WcVe_12Bq9d_3O2.60.2L.jMrQcZWuC",
+      "etag": "000cda04a1268a65d6ec416562a7efd5",
+      "last_modified": "Mon, 24 Aug 2026 23:07:24 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/polarization_prediction_condition_comparison_regulator_coefficients.csv",
+      "bytes": 2639223,
+      "version_id": "f4vElLUCJp0mmt5vFR5hlRYGU.SkAPRz",
+      "etag": "4ecfa82c4db3d9abd131da7d8d2dc978",
+      "last_modified": "Mon, 24 Aug 2026 23:07:24 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/proliferation_stats_IL10IL21.csv",
+      "bytes": 3433,
+      "version_id": "KPPEoHEWp8sqH94QNjK9XtrWSddUG0dJ",
+      "etag": "5a71da39896cf6783fec6659169d7260",
+      "last_modified": "Mon, 24 Aug 2026 23:07:26 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/sample_metadata.suppl_table.csv",
+      "bytes": 2966,
+      "version_id": "P_Tz741nWG6STEbhP2h5sumu6hOHt4ln",
+      "etag": "29ca85689789eaff35d255bc0f0db0ad",
+      "last_modified": "Mon, 24 Aug 2026 23:07:26 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/sgrna_library_metadata.suppl_table.csv",
+      "bytes": 9935249,
+      "version_id": "DH1ABYpJ0EuyXD5Ovuxxz67aBDoqMH96",
+      "etag": "593e3c41641451b3076680b1a025ad02-2",
+      "last_modified": "Mon, 24 Aug 2026 23:07:26 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/stabl_constructs.csv",
+      "bytes": 45180,
+      "version_id": "T9T4viBS1.bIvpH8ZBJ7oje2FhPtxZ9S",
+      "etag": "ab61bc1c7604385a8cf93dd01f95574a",
+      "last_modified": "Mon, 24 Aug 2026 23:07:29 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/table_name_conversion.md",
+      "bytes": 2276,
+      "version_id": "vr52PlsGNxvvKfQoEA0OuxpcxoVwZv9D",
+      "etag": "f23925e81ff41239fbffca6b7c344c31",
+      "last_modified": "Mon, 24 Aug 2026 23:07:29 GMT"
+    },
+    {
+      "key": "marson2025_data/suppl_tables/validation_donor_metadata.csv",
+      "bytes": 1185,
+      "version_id": "fvOPMYiv7iVOSdPmNsDAW3SA1XE0j8Qo",
+      "etag": "fefc58cd4396ef88c9a22cfafd3f94a9",
+      "last_modified": "Mon, 24 Aug 2026 23:07:29 GMT"
+    }
+  ],
+  "s3_access": "Public GET with locked If-Match ETag. Anonymous GET with versionId returns 403; observed version IDs retained for provenance, not used as fetch URLs."
+}

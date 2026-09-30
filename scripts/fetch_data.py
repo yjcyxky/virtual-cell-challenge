@@ -47,6 +47,7 @@ HOST_SLOTS = {
     "ndownloader.figshare.com": 4,
     "ftp.ncbi.nlm.nih.gov": 2,
     "huggingface.co": 8,
+    "genome-scale-tcell-perturb-seq.s3.amazonaws.com": 8,
 }
 DEFAULT_SLOTS = 2
 DISK_HEADROOM = 50 * 2**30      # refuse to start if this much would not remain free
@@ -62,6 +63,25 @@ def dest_dir(src: dict) -> Path:
     move of frozen, read-only files.
     """
     return ROOT / src.get("root", "data/raw") / src["id"]
+
+
+def disk_requirements(sources: list[dict]) -> list[dict]:
+    """Budget remaining bytes on the actual destination filesystem, including symlinks."""
+    volumes = {}
+    for source in sources:
+        destination = dest_dir(source)
+        existing = destination.resolve()
+        while not existing.exists():
+            existing = existing.parent
+        device = existing.stat().st_dev
+        if device not in volumes:
+            volumes[device] = {"path": str(existing), "free": shutil.disk_usage(existing).free,
+                               "remaining": 0}
+        for entry in source["files"]:
+            path = destination / entry["name"]
+            have = path.stat().st_size if path.exists() else 0
+            volumes[device]["remaining"] += max(0, (entry.get("bytes") or 0) - have)
+    return list(volumes.values())
 
 
 _sems: dict[str, threading.Semaphore] = {}
@@ -125,7 +145,9 @@ def fetch_one(entry: dict, dest: Path, verify_sums: bool) -> dict:
                 say(f"  ↓ {dest.name[:54]:54}{tag:12s} {(want or 0) / 2**30:7.2f} GB")
                 proc = subprocess.run(
                     ["curl", "-fsSL", "-C", "-", "--retry", "5", "--retry-delay", "5",
-                     "--retry-all-errors", "--connect-timeout", "30", "-o", str(dest), url],
+                     "--retry-all-errors", "--connect-timeout", "30", "-o", str(dest)]
+                    + (["--header", f"If-Match: {entry['etag']}"] if entry.get("etag") else [])
+                    + [url],
                     capture_output=True, text=True)
             got = dest.stat().st_size if dest.exists() else 0
             if want and got == want:
@@ -173,7 +195,7 @@ def write_source_json(src: dict, dest_dir: Path, rows: list[dict]) -> None:
         files.append({
             "name": name, "bytes": row["bytes"],
             "sha256": row.get("sha256", ""), "url": row["url"],
-            **{k: entry[k] for k in ("checksum", "origin_url", "checksum_source")
+            **{k: entry[k] for k in ("checksum", "origin_url", "checksum_source", "etag", "version_id")
                if entry.get(k) is not None},
         })
     (dest_dir / "SOURCE.json").write_text(json.dumps({
@@ -241,11 +263,13 @@ def main() -> int:
     have = sum((dest_dir(s) / f["name"]).stat().st_size
                for s in todo for f in s["files"]
                if (dest_dir(s) / f["name"]).exists())
-    free = shutil.disk_usage(ROOT).free
+    volumes = disk_requirements(todo)
     print(f"plan: {len(todo)} sources, {sum(len(s['files']) for s in todo)} files, "
           f"{planned / 2**30:.1f} GB   on disk already {have / 2**30:.1f} GB")
-    print(f"disk: {free / 2**30:.0f} GB free, need ~{(planned - have) / 2**30:.0f} GB")
-    if not args.dry_run and free - (planned - have) < DISK_HEADROOM:
+    for volume in volumes:
+        print(f"disk: {volume['path']}: {volume['free'] / 2**30:.0f} GiB free, "
+              f"need ~{volume['remaining'] / 2**30:.0f} GiB")
+    if not args.dry_run and any(v["free"] - v["remaining"] < DISK_HEADROOM for v in volumes):
         print(f"REFUSING: would leave under {DISK_HEADROOM / 2**30:.0f} GB free", file=sys.stderr)
         return 2
     if args.dry_run:
