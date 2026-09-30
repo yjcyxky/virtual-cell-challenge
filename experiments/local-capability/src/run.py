@@ -47,6 +47,11 @@ def main():
     config_path.write_text(yaml.safe_dump(frozen, allow_unicode=True, sort_keys=False))
     if scorer_contract() != json.loads(verified(config['benchmark']['scorer']).read_text()):
         raise ValueError('Official scorer contract changed')
+    if reuse := config.get('reuse_results'):
+        original = json.loads(verified(reuse['source_config_ref']).read_text())
+        comparable = lambda value: {k:v for k,v in value.items() if k not in ('run_id', 'reuse_results')}
+        if comparable(original) != comparable(config):
+            raise ValueError('Completed stages can only be reused under identical scientific configuration')
     run = wandb.init(entity='yjcyxky', project='virtual-cell-challenge', group=config['experiment_id'],
         id=config['run_id'], name=config['run_id'], config=frozen, dir=str(output),
         resume='allow' if resume else 'never', mode=config['tracking']['mode'],

@@ -166,7 +166,8 @@ def ensure_bundle(real, directory, bundle_id, runtime):
     try:
         build_reference_bundle(real, directory, bundle_id, **runtime)
     except ValueError as exc:
-        if 'degenerate' not in str(exc).lower() and 'non-finite' not in str(exc).lower():
+        if not any(message in str(exc).lower() for message in
+                   ('degenerate', 'non-finite', 'no usable replicate scale')):
             raise
         result = {'available': False, 'official_rejection': str(exc), 'files': []}
     else:

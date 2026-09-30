@@ -15,6 +15,22 @@ from .official import annotated, de_table
 from .capability import ensure_bundle, evaluate_counts
 
 
+def completed_result(marker, reuse_ref=None):
+    """Preserve byte-identical completed stages when replacing an archived run."""
+    path = marker if marker.exists() else verified(reuse_ref) if reuse_ref else None
+    if path is None:
+        return None
+    result = json.loads(path.read_text())
+    for item in result['files']:
+        verified(item)
+    if path != marker:
+        result['reused_result_ref'] = reuse_ref
+        result['files'].append(reuse_ref)
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        write_json(marker, result)
+    return result
+
+
 def audit_cell_count_power(output, config, context):
     """Hold the generated population fixed; vary only sampled cell count.
 
@@ -22,10 +38,8 @@ def audit_cell_count_power(output, config, context):
     """
     directory = output / 'predictions' / 'cell-count-power' / context
     marker = directory / 'result.json'
-    if marker.exists():
-        result = json.loads(marker.read_text())
-        for item in result['files']:
-            verified(item)
+    result = completed_result(marker, config.get('reuse_results', {}).get('power', {}).get(context))
+    if result is not None:
         return result
     directory.mkdir(parents=True, exist_ok=True)
     source_ref = config['calibration_refs'][context]
@@ -75,10 +89,8 @@ def audit_cell_count_power(output, config, context):
 def audit_panel(output, config, context, panel_id, observation_ref):
     directory = output / 'predictions' / panel_id / context
     marker = directory / 'panel-result.json'
-    if marker.exists():
-        result = json.loads(marker.read_text())
-        for record in result['files']:
-            verified(record)
+    result = completed_result(marker, config.get('reuse_results', {}).get('panels', {}).get(panel_id + '/' + context))
+    if result is not None:
         return result
     directory.mkdir(parents=True, exist_ok=True)
     observation = json.loads(verified(observation_ref).read_text())
