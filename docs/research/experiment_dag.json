@@ -197,6 +197,203 @@
         "实际训练代码/配置/依赖锁引用",
         "结束条件、数值判据及计算预算"
       ]
+    },
+    "TASK-OBSERVATION-20260930": {
+      "status": "ready",
+      "description": "五背景任务观测与计数生成诊断；固定native深度抽稀和官方DE，非预测器训练/非六指标normalized评分",
+      "scope": "完整轴任务的每背景实测子轴数据/生成校准；留出标签仅用于观测与oracle诊断，不进入部署预测器",
+      "datasets": {
+        "DS-H1": {
+          "context": "H1",
+          "study": "ARC-H1",
+          "files": [
+            "data/raw/arc_vcc2025_h1/adata_Training.h5ad",
+            "data/raw/arc_vcc2025_h1/adata_Validation.h5ad",
+            "data/raw/arc_vcc2025_h1/adata_Test.h5ad"
+          ]
+        },
+        "DS-K562": {
+          "context": "K562 GWPS",
+          "study": "REPLOGLE-2022",
+          "files": [
+            "data/raw/replogle2022/K562_gwps_raw_singlecell_01.h5ad"
+          ]
+        },
+        "DS-RPE1": {
+          "context": "RPE1",
+          "study": "REPLOGLE-2022",
+          "files": [
+            "data/raw/replogle2022/rpe1_raw_singlecell_01.h5ad"
+          ]
+        },
+        "DS-HEPG2": {
+          "context": "HepG2",
+          "study": "NADIG-2025",
+          "files": [
+            "data/raw/nadig2025/GSE264667_hepg2_raw_singlecell_01.h5ad"
+          ]
+        },
+        "DS-JURKAT": {
+          "context": "Jurkat",
+          "study": "NADIG-2025",
+          "files": [
+            "data/raw/nadig2025/GSE264667_jurkat_raw_singlecell_01.h5ad"
+          ]
+        }
+      },
+      "split_design": {
+        "S0": "仅管线/拟合诊断；按物理身份分组，杜绝重复NTC跨池",
+        "S1": "从全部训练背景监督中移除冻结target集合；在已见背景评价",
+        "S2": "五背景轮换留出扰动标签；只评分在允许来源见过的target，目标NTC可输入",
+        "S3": "同时留出背景及全局target集合，天然LOCO未见集合另报",
+        "S4": "按ARC-H1 / REPLOGLE-2022 / NADIG-2025三个研究组留出；混杂限制单列",
+        "selection": "开发选择使用训练内嵌套划分；外层响应仅评价。重复探索后外层仍是开发证据，不称最终无偏检验"
+      },
+      "frozen_before_ready": [
+        "实际原始文件SHA256与SOURCE、HGNC映射和官方基因轴",
+        "H1重复表达与标签核验；物理NTC池身份和零重叠规则",
+        "必要计数正确性与映射排除规则、测量mask",
+        "15个S0–S4实际划分、合格target及每背景已测官方面板",
+        "官方cell-eval2固定commit/preset及baseline/anchor生成配方",
+        "生物独立重复unknown和三研究组混杂限制"
+      ],
+      "evaluation": {
+        "primary": "acceptance.fraction",
+        "secondary": [
+          "official_DE_tables",
+          "native_and_measured_library",
+          "dose_reliability",
+          "known_bulk_reconstruction",
+          "real_null_discoveries"
+        ],
+        "scorer_ref": {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        "reference": "互斥input/score NTC，score再划control/null；非零oracle效应仅生成诊断；无normalized Overall"
+      },
+      "source_refs": [
+        {
+          "path": "docs/research/dataset_foundations.md",
+          "sha256": "a193f9b07ca92bca2de53cd7af7cf81276a83dc0d00eeee6cf5769e9a98465e7"
+        },
+        {
+          "path": "docs/RESEARCH.md",
+          "sha256": "5a94f99fdcf5a6f93e787be33304c9268896994397cf975b61c4bc59206eaf24",
+          "git_commit": "41e29043a476041478f978f48831100adf5a09b5"
+        },
+        {
+          "path": "docs/research/challenge_2026/artifacts.json",
+          "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+        },
+        {
+          "path": "docs/research/challenge_2026/data_audit.json",
+          "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+        },
+        {
+          "path": "docs/research/challenge_2026/gene_mapping.csv.gz",
+          "sha256": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328"
+        },
+        {
+          "path": "docs/research/challenge_2026/official_gene_axis.csv",
+          "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+        },
+        {
+          "path": "docs/research/challenge_2026/official_target_coverage.csv",
+          "sha256": "c52947b78a00456b8c23424b14ace8c98f1763cdfa9837685a10d7c9d9eb25db"
+        },
+        {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        {
+          "path": "docs/research/challenge_2026/splits.json",
+          "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+        },
+        {
+          "path": "docs/research/challenge_2026/target_mapping.csv",
+          "sha256": "148b84d61221f0f22b1c12c365a3ebf0876ddff6cf080e42828f80387a7b94e6"
+        },
+        {
+          "path": "docs/research/challenge_2026/tasks.csv",
+          "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+        },
+        {
+          "path": "docs/research/challenge_protocol.json",
+          "sha256": "dbf4e4b5f68126f1c9a78444c559be17670b0e4bf9cae5ad885cb1e941bf8c71"
+        },
+        {
+          "path": "docs/research/challenge_protocol.md",
+          "sha256": "eb2242a0db9c7560f25082c961125b260c94346beffd990de893f3120ef1a808"
+        },
+        {
+          "path": "docs/RESEARCH.md",
+          "sha256": "a9a3cef2abf90db02dfff31a2c64cbb4ac415779b6312a0f69905e25ecc6740d",
+          "git_commit": "03cf49770cd435a18799cad665513df26f157432"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/dossier/pyproject.toml",
+          "sha256": "f2df037fda8d9b4e5ed6f9fc7f11b86b3ebeaa32e3109b4e26eb7e0e8830cc0e"
+        },
+        {
+          "path": "scripts/dossier/uv.lock",
+          "sha256": "cf814d7c9f78d51290cbefc6b647941aeb7e157f72bf7ea5c8a20ec5b0584dc2"
+        },
+        {
+          "path": "experiments/task-observation/protocol.json",
+          "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+        },
+        {
+          "path": "experiments/task-observation/PLAN.md",
+          "sha256": "7f533b8022bf53743a27dcc81d236d4341b6b74830642d82869b4ec579712ce9"
+        }
+      ],
+      "contract_kind": "vcc2026",
+      "binding": {
+        "data_audit": {
+          "path": "docs/research/challenge_2026/data_audit.json",
+          "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+        },
+        "scorer": {
+          "path": "docs/research/challenge_2026/scorer.json",
+          "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+        },
+        "artifacts": {
+          "path": "docs/research/challenge_2026/artifacts.json",
+          "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+        },
+        "split_manifest": {
+          "path": "docs/research/challenge_2026/splits.json",
+          "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+        },
+        "gene_axis": {
+          "path": "docs/research/challenge_2026/official_gene_axis.csv",
+          "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+        },
+        "observation_view": {
+          "path": "experiments/task-observation/protocol.json",
+          "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+        }
+      },
+      "runtime_requirements": [
+        "冻结cell-eval2 vcc2026 DE及gpudge运行时；不将描述性DE集合诊断当官方六项得分",
+        "保存物理身份、source hashes、计数view和完整raw观测统计",
+        "全程只读共享原始数据；下游拟合必须按split限制训练统计读取"
+      ],
+      "node_before_ready": [
+        "独立outer_split×target_partition×seed",
+        "完整expected_config及benchmark绑定",
+        "实际训练代码/配置/依赖锁引用",
+        "结束条件、数值判据及计算预算"
+      ]
     }
   },
   "nodes": {
@@ -8161,6 +8358,204 @@
         "新集合机制尚未实现/冻结；当前draft不可启动，不创建训练目录或W&B run。",
         "2026-09-30当前队列优先任务约束、数据生成和本地能力评价；集合机制预算待重新分配，参见task_constraints_review.md。"
       ]
+    },
+    "task-observation-s01": {
+      "experiment_id": "task-observation",
+      "directory": "experiments/task-observation",
+      "run_id": "task-observation-s01",
+      "legacy": false,
+      "method_id": "M-TASK-OBSERVATION",
+      "protocol_id": "TASK-OBSERVATION-20260930",
+      "status": "ready",
+      "comparison_id": "C-TASK-DATA-GENERATION",
+      "controls": [],
+      "sources": [
+        "init-linear-s01"
+      ],
+      "requires_evidence": [],
+      "evidence_conditions": {},
+      "config_ref": {
+        "path": "experiments/task-observation/configs/task-observation-s01.json",
+        "sha256": "22fc66a2ef5d3f9258054acd6e64fb2af60d8023d81b5dea6c98ee89a041a41b"
+      },
+      "expected_config": {
+        "contexts": [
+          "H1",
+          "K562",
+          "RPE1",
+          "HepG2",
+          "Jurkat"
+        ],
+        "seed": 930,
+        "data": {
+          "chunk_rows": 1024,
+          "panel_targets": 16,
+          "ntc_bank_cells": 2048,
+          "reference_cells": 400,
+          "native_median_target": 20000,
+          "dose_ci_halfwidth": 0.25
+        },
+        "emitter": {
+          "iterations": 64,
+          "smoothing": 1e-06,
+          "tolerance": 1e-07,
+          "rounding": "conservative"
+        },
+        "calibration": {
+          "cells": 400,
+          "null_repeats": 5,
+          "known_targets": 4,
+          "max_added_null_de": 0,
+          "max_known_bulk_rms": 0.01
+        },
+        "experiment_id": "task-observation",
+        "run_id": "task-observation-s01",
+        "benchmark": {
+          "data_audit": {
+            "path": "docs/research/challenge_2026/data_audit.json",
+            "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+          },
+          "scorer": {
+            "path": "docs/research/challenge_2026/scorer.json",
+            "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+          },
+          "artifacts": {
+            "path": "docs/research/challenge_2026/artifacts.json",
+            "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+          },
+          "split_manifest": {
+            "path": "docs/research/challenge_2026/splits.json",
+            "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+          },
+          "gene_axis": {
+            "path": "docs/research/challenge_2026/official_gene_axis.csv",
+            "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+          },
+          "observation_view": {
+            "path": "experiments/task-observation/protocol.json",
+            "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+          }
+        },
+        "fit_scope": {
+          "outer_split": "observation-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "runtime": {
+          "threads": 8,
+          "device": "cuda",
+          "de_backend": "gpudge"
+        },
+        "tracking": {
+          "mode": "online"
+        },
+        "mapping_ref": {
+          "path": "docs/research/challenge_2026/gene_mapping.csv.gz",
+          "sha256": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328"
+        },
+        "tasks_ref": {
+          "path": "docs/research/challenge_2026/tasks.csv",
+          "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+        },
+        "identity_refs": {
+          "H1": {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-identities.parquet",
+            "sha256": "efae4912f2eb3b710e64290089f17e57a830787f7f38109a50b7c8099249c9c9"
+          },
+          "K562": {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/K562-identities.parquet",
+            "sha256": "f953ccf225a9a15e7e07ab283595fdcddf36332d34922ddc331087c8f1d7909b"
+          },
+          "RPE1": {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/RPE1-identities.parquet",
+            "sha256": "e3de1e3d5a39bb6f5bd31e05f3c85459067c880091d13532994cb2a73adbe9cc"
+          },
+          "HepG2": {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/HepG2-identities.parquet",
+            "sha256": "78ec86a951cce27c5ce535032b3fb40156f6860101494297e5dd7f2c1c4baf5a"
+          },
+          "Jurkat": {
+            "path": "experiments/init-linear/outputs/init-linear-s01/cache/Jurkat-identities.parquet",
+            "sha256": "6e25da3eb9e57bdb67af860f4c6754b708a01eaf167f209d2066dda975001073"
+          }
+        }
+      },
+      "code_refs": [
+        {
+          "path": "experiments/task-observation/PLAN.md",
+          "sha256": "7f533b8022bf53743a27dcc81d236d4341b6b74830642d82869b4ec579712ce9"
+        },
+        {
+          "path": "experiments/task-observation/protocol.json",
+          "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+        },
+        {
+          "path": "experiments/task-observation/pyproject.toml",
+          "sha256": "934cff420882e2b3f08683aedb24e1e617eca351759163aed69a6f11f7d2c0af"
+        },
+        {
+          "path": "experiments/task-observation/reproduce.sh",
+          "sha256": "581422ffedfa95412479c13c0d286bab5ffd732de629d1738236c0a60ba1f5b3"
+        },
+        {
+          "path": "experiments/task-observation/src/run.py",
+          "sha256": "0a2fea944e8b21705b45a4b603f5fc49579e89a137da2a719c1721255c2cae6a"
+        },
+        {
+          "path": "experiments/task-observation/uv.lock",
+          "sha256": "147cdbf77de528b5f37400bebc8ffed19edc3fe0de85d85b71ef9e8a32b3eb59"
+        },
+        {
+          "path": "scripts/dossier/challenge.py",
+          "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+        },
+        {
+          "path": "scripts/dossier/rna.py",
+          "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+        },
+        {
+          "path": "scripts/research.py",
+          "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+        },
+        {
+          "path": "src/vcc_task/__init__.py",
+          "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+        },
+        {
+          "path": "src/vcc_task/calibration.py",
+          "sha256": "d1269ecc709ebf1e403572dbeea81943bd070d1c64bee395cc61cd3909415563"
+        },
+        {
+          "path": "src/vcc_task/common.py",
+          "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+        },
+        {
+          "path": "src/vcc_task/counts.py",
+          "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+        },
+        {
+          "path": "src/vcc_task/observations.py",
+          "sha256": "b4b1f2df68148b988055b2367cd7bd7124bb370668c9a48ee34afb8ed17b35fa"
+        },
+        {
+          "path": "src/vcc_task/official.py",
+          "sha256": "2089b0fe480030efc48a945f487fa443370d1b935c679040e2e9ad590d5a1f98"
+        }
+      ],
+      "metrics_ref": null,
+      "report_ref": null,
+      "git_commit": null,
+      "wandb_url": null,
+      "artifact": null,
+      "design": {
+        "seed_plan": 930,
+        "fit_scope": {
+          "outer_split": "observation-five-contexts",
+          "target_partition": "no_predictor_fit"
+        },
+        "source_usage": "仅复用init-linear的已审计物理身份；全部表达统计重新从原始计数读取。无模型/预测权重复用。",
+        "scope": "五背景观测审核与计数生成验收，无独立预测器拟合；统计缓存必须按后续训练划分限定读取。"
+      },
+      "blockers": []
     }
   },
   "comparisons": {
@@ -9281,22 +9676,24 @@
       "evidence_id": "E-SET-DISTRIBUTION-PACKAGE"
     },
     "C-TASK-DATA-GENERATION": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "protocol_audit",
       "hypothesis": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
       "controls": [],
-      "candidates": [],
+      "candidates": [
+        "task-observation-s01"
+      ],
       "changed_axes": [],
       "changed_fields": [],
       "decision_rule": {
-        "primary_metric": null,
-        "direction": null,
-        "min_effect": null,
-        "scope": "观测条件与计数生成诊断；不归因于现有弱模型的生物机制",
-        "on_support": "完成预定批次后关闭真实证据，推进下一项已冻结工作；模型晋级须有独立范围确认。",
-        "on_against": "定位该实现/观测条件不成立的部分，保持真实评分群体和历史结果；不据此否定整个方法家族。",
+        "primary_metric": "acceptance.fraction",
+        "direction": "maximize",
+        "min_effect": 0.0,
+        "scope": "五背景无预测器拟合观测/生成诊断，seed930，20项检查",
+        "on_support": "关闭本批数据/生成接口证据，进入非零真实panel的能力评估；DE失真仍须定位。",
+        "on_against": "保留完整失败项并登记修改条件；不启动依赖失败性质的预测器训练。",
         "on_inconclusive": "补齐可评分性或恢复完整执行，不能把未完成当阴性。",
-        "threshold_policy": "按设计说明在训练/校准范围内固定数值容差、功效和配对比较门槛；未冻结前不启动。"
+        "threshold_policy": "20项工程检查全部通过为生成接口signal；真实NTC与known-effect DE另报，不等同生物响应或分布恢复成立。"
       },
       "attribution_plan": "观测条件与计数生成诊断；不归因于现有弱模型的生物机制；此处只登记问题，执行前按外层划分×靶点分区×seed建立独立节点、完整expected_config及配置差异。",
       "cost": "medium",

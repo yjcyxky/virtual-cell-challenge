@@ -1848,6 +1848,24 @@
         "L13-DEPMAP-ALIGNMENT"
       ],
       "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。"
+    },
+    "M-TASK-OBSERVATION": {
+      "description": "无预测器拟合的五背景观测与计数生成校准；官方DE、实测独立NTC和已知效应对照",
+      "axes": {
+        "T": "T4",
+        "D": "D1",
+        "R": "R1",
+        "A": "A6",
+        "L": "L6",
+        "O": "O0",
+        "V": "V5",
+        "I": "I10",
+        "G": "G0"
+      },
+      "signature": "T4-D1-R1-A6-L6-O0-V5-I10-G0",
+      "prior": "none；参数化整数生成作为待校准观测模型，诊断不构成生物响应预测性能。",
+      "local_status": "UNTESTED",
+      "evidence_ids": []
     }
   }
 }

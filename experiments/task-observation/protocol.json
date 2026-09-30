@@ -1,0 +1,34 @@
+{
+  "kind": "observation_and_generator_diagnostic",
+  "training_predictor": false,
+  "contexts": [
+    "H1",
+    "K562",
+    "RPE1",
+    "HepG2",
+    "Jurkat"
+  ],
+  "seed": 930,
+  "data": {
+    "chunk_rows": 1024,
+    "panel_targets": 16,
+    "ntc_bank_cells": 2048,
+    "reference_cells": 400,
+    "native_median_target": 20000,
+    "dose_ci_halfwidth": 0.25
+  },
+  "emitter": {
+    "iterations": 64,
+    "smoothing": 1e-06,
+    "tolerance": 1e-07,
+    "rounding": "conservative"
+  },
+  "calibration": {
+    "cells": 400,
+    "null_repeats": 5,
+    "known_targets": 4,
+    "max_added_null_de": 0,
+    "max_known_bulk_rms": 0.01
+  },
+  "score_scope": "official DE parameters only; no normalized six-metric performance claim; no-predictor-fit calibration"
+}

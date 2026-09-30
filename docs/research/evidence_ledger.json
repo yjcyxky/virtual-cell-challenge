@@ -2081,7 +2081,9 @@
       "kind": "experiment",
       "state": "pending",
       "comparison_id": "C-TASK-DATA-GENERATION",
-      "node_ids": [],
+      "node_ids": [
+        "task-observation-s01"
+      ],
       "hypothesis": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
       "claim": "待检验：训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
       "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
@@ -2135,7 +2137,7 @@
       "priority": 1,
       "comparison_id": "C-TASK-DATA-GENERATION",
       "question": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
-      "action": "冻结按来源/guide/靶点的效率与覆盖审计、深度可行视图、零响应和已知可实现效应对照；官方DE与双统计诊断。改变reference时新建协议/anchors，不覆写旧结果。",
+      "action": "执行已冻结task-observation-s01完整五背景批次，回收观测/剂量/官方DE/整数生成诊断并close；完成后按结果冻结下一批。",
       "requires_evidence": []
     },
     {
@@ -2157,7 +2159,7 @@
   ],
   "resource_allocation": {
     "after_evidence": "PROTOCOL-TASK-REVIEW-20260930",
-    "unit": "设计重排；当前训练/leaderboard预算为零。先完成一个数据生成校准批次及一个本地能力评估验收批次；模型预算需在独立run配置中冻结。",
+    "unit": "2026-09-30用户授权按设计实施。首批task-observation-s01完整五背景数据/计数生成诊断已冻结；预测器训练预算待本地能力评估条件落实。",
     "exploration_slots": [
       "C-DEPMAP-RESPONSE-ALIGNMENT"
     ],

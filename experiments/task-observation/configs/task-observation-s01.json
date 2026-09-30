@@ -1,0 +1,101 @@
+{
+  "contexts": [
+    "H1",
+    "K562",
+    "RPE1",
+    "HepG2",
+    "Jurkat"
+  ],
+  "seed": 930,
+  "data": {
+    "chunk_rows": 1024,
+    "panel_targets": 16,
+    "ntc_bank_cells": 2048,
+    "reference_cells": 400,
+    "native_median_target": 20000,
+    "dose_ci_halfwidth": 0.25
+  },
+  "emitter": {
+    "iterations": 64,
+    "smoothing": 1e-06,
+    "tolerance": 1e-07,
+    "rounding": "conservative"
+  },
+  "calibration": {
+    "cells": 400,
+    "null_repeats": 5,
+    "known_targets": 4,
+    "max_added_null_de": 0,
+    "max_known_bulk_rms": 0.01
+  },
+  "experiment_id": "task-observation",
+  "run_id": "task-observation-s01",
+  "benchmark": {
+    "data_audit": {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    "scorer": {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    "artifacts": {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    "split_manifest": {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    "gene_axis": {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    },
+    "observation_view": {
+      "path": "experiments/task-observation/protocol.json",
+      "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+    }
+  },
+  "fit_scope": {
+    "outer_split": "observation-five-contexts",
+    "target_partition": "no_predictor_fit"
+  },
+  "runtime": {
+    "threads": 8,
+    "device": "cuda",
+    "de_backend": "gpudge"
+  },
+  "tracking": {
+    "mode": "online"
+  },
+  "mapping_ref": {
+    "path": "docs/research/challenge_2026/gene_mapping.csv.gz",
+    "sha256": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328"
+  },
+  "tasks_ref": {
+    "path": "docs/research/challenge_2026/tasks.csv",
+    "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+  },
+  "identity_refs": {
+    "H1": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/H1-identities.parquet",
+      "sha256": "efae4912f2eb3b710e64290089f17e57a830787f7f38109a50b7c8099249c9c9"
+    },
+    "K562": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/K562-identities.parquet",
+      "sha256": "f953ccf225a9a15e7e07ab283595fdcddf36332d34922ddc331087c8f1d7909b"
+    },
+    "RPE1": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/RPE1-identities.parquet",
+      "sha256": "e3de1e3d5a39bb6f5bd31e05f3c85459067c880091d13532994cb2a73adbe9cc"
+    },
+    "HepG2": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/HepG2-identities.parquet",
+      "sha256": "78ec86a951cce27c5ce535032b3fb40156f6860101494297e5dd7f2c1c4baf5a"
+    },
+    "Jurkat": {
+      "path": "experiments/init-linear/outputs/init-linear-s01/cache/Jurkat-identities.parquet",
+      "sha256": "6e25da3eb9e57bdb67af860f4c6754b708a01eaf167f209d2066dda975001073"
+    }
+  }
+}
