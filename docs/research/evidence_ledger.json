@@ -2502,7 +2502,7 @@
         "full-eval-support-s03"
       ],
       "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "limitations": "Pending full 15-panel evidence; one completed panel reused and 14 remain. No model efficacy claim.",
+      "limitations": "Incomplete; K562 reference reorder completed but one-entry CSR pointer chunks and recreated accessors caused repeated full-pointer reads. Profiler and timing established the I/O cause; run stopped by SIGTERM exit 143. No method-negative evidence.",
       "source_refs": [
         {
           "path": "docs/research/perturbation_decomposition_review.md",
@@ -2511,15 +2511,33 @@
       ],
       "next_action": "Complete registered full-eval-support-s03, preserving the original 15-panel support scope and all unavailable metrics; then execute the frozen DepMap mechanism batch.",
       "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
+    },
+    "E-LOCAL-EVAL-SUPPORT-R4": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
+      "node_ids": [
+        "full-eval-support-s04"
+      ],
+      "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
+      "limitations": "Pending complete 15-panel protocol evidence. One completed H1 panel reused, 14 remaining panels; no predictor fit or efficacy conclusion.",
+      "source_refs": [
+        {
+          "path": "docs/research/perturbation_decomposition_review.md",
+          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+        }
+      ],
+      "next_action": "Complete registered full-eval-support-s04 with corrected pointer storage/accessor reuse, retaining all original scientific conditions; then complete the DepMap mechanism batch.",
+      "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
     }
   },
   "queue": [
     {
       "id": "Q-LOCAL-EVAL-SUPPORT",
       "priority": 2,
-      "comparison_id": "C-LOCAL-EVAL-SUPPORT-R3",
+      "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
       "question": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "action": "Complete R3 with read-only decoded source banks, same 15 panels; reuse completed R2 H1 results and all source banks by immutable hashes.",
+      "action": "Complete R4 after profiler-confirmed CSR pointer I/O fix; same 15 panels, one immutable completed H1 panel reused.",
       "requires_evidence": []
     },
     {

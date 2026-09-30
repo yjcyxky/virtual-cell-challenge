@@ -1,6 +1,6 @@
 # 完整留出面板与本地评分支持
 
-Comparisons: `C-LOCAL-EVAL-SUPPORT`、`C-LOCAL-EVAL-SUPPORT-R2`、`C-LOCAL-EVAL-SUPPORT-R3`。此路线实现有界内存的完整参考群体与评分；不拟合预测模型。
+Comparisons: `C-LOCAL-EVAL-SUPPORT`、`C-LOCAL-EVAL-SUPPORT-R2`、`C-LOCAL-EVAL-SUPPORT-R3`、`C-LOCAL-EVAL-SUPPORT-R4`。此路线实现有界内存的完整参考群体与评分；不拟合预测模型。
 
 KnowGraph attention: `EXP-LOCAL-EVAL`, `EXP-LOCO`, `ST-WILCOXON`, `PAP-F-PATHWAY`。
 
@@ -39,3 +39,7 @@ baseline 使用同一个官方全体参考 profile，每 16 个靶点调用公�
 R2 已完成五背景原始参考与完整 S2-H1 面板，H1 的分块 baseline 等价检查为 106097×18074 个元素零差异、obs/var 一致。继续 K562 时，原 backed CSR 整数索引路径会逐行读取压缩块，产生大量重复解压。为将计算预算用于完整机制实验，主动停止 R2；本平台 SIGINT 导致原生信号处理器退出 134，研究入口据实记录 failed。它不是评分退化或方法阴性，也不重启原身份。
 
 R3 复用有固定哈希的五背景银行、DepMap 原件及完整 H1 面板（含诊断、两份评分、baseline/anchors 和等价证据），其余 14 个面板完成原定计算。新的参考重排先将每个背景银行顺序解压为只读 CSR 内存映射，在整个 run 内复用；仍使用相同 row indices 生成同一顺序的参考。逐靶诊断对连续行组改用等价的单 span 切片，非连续组保留原索引顺序。数值运算、目标、种子、矩阵和指标定义均不改变。解码缓存约百 GB 级，属于本 run 可重建 I/O 缓存，结束后清理；正式参考/预测/统计全部保留。已有 H1 面板不是新增独立重复，最终报告区分实际新增与复用。
+
+R3 的 K562 重排已完成，但逐靶诊断暴露第二个 I/O 问题。只读 py-spy 堆栈定位到 `AnnData._indptr`；2 秒约 1,008,566 次读取且诊断文件不增长。原 `chunks=True` 在初始长度为 1 的指针上选择了 `(1,)`，而每次 `adata.X` 新建访问器，重复读取 495,407 个指针块。同一真实 AAAS 400×7680 计数群的最小计时：新访问器约 0.85 秒/次，缓存访问器首次约 0.86 秒、后续约 0.0007–0.0010 秒/次，排除矩估计计算为主因。R3 主动 SIGTERM 停止（出口 143），保留失败绑定与产物，不写方法阴性结论。
+
+R4 固定 `indptr` 的 HDF5 chunk 为 65,536 项，并在诊断内各保留一个 pred/real sparse accessor。整数数值、dtype、行列顺序与所有科学配置保持；仍复用 R2 的原始银行和完整 H1 面板，R3 仅用于 I/O 根因诊断，不复用其未完成分数。旧解码缓存可清理并在 R4 重建，原始计数和诊断产物保持。性能修复由实际完整科学运行检验，不新增无请求的软件测试套件。

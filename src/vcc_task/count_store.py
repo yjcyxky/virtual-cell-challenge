@@ -28,7 +28,7 @@ class CountWriter:
         self.indices = x.create_dataset('indices', (0,), maxshape=(None,), chunks=(262144,), dtype='i4',
                                        compression='gzip', compression_opts=1)
         self.ptr = x.create_dataset('indptr', data=np.array([0], dtype=np.int64), maxshape=(None,),
-                                   chunks=True, compression='gzip', compression_opts=1)
+                                   chunks=(65536,), compression='gzip', compression_opts=1)
         self.rows = self.nnz = 0
         self.columns = len(var)
 
