@@ -1,0 +1,112 @@
+{
+  "experiment_id": "full-eval-support",
+  "run_id": "full-eval-support-s01",
+  "seed": 930,
+  "contexts": [
+    "H1",
+    "K562",
+    "RPE1",
+    "HepG2",
+    "Jurkat"
+  ],
+  "scenarios": [
+    "S2",
+    "S3",
+    "S4"
+  ],
+  "expected_panels": 15,
+  "reference_cells": 400,
+  "chunk_rows": 1024,
+  "benchmark": {
+    "data_audit": {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    "scorer": {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    "artifacts": {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    "split_manifest": {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    "gene_axis": {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    },
+    "observation_view": {
+      "path": "experiments/task-observation/protocol.json",
+      "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+    },
+    "full_support_view": {
+      "path": "experiments/full-eval-support/protocol.json",
+      "sha256": "c987d3ab3880c86d825852204f2247bad730be7da7ef0eba7ee94a2d1ec4e1f6"
+    }
+  },
+  "fit_scope": {
+    "outer_split": "full-S2-S3-S4-five-contexts",
+    "target_partition": "no_predictor_fit"
+  },
+  "observation_refs": {
+    "H1": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/observations.json",
+      "sha256": "5f4cb078b2aca17479f5a5ef3b342629edd0d30e7f7db9610f771372a7494a5a"
+    },
+    "K562": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/observations.json",
+      "sha256": "fae14763117cfded4a1cd29709de5637ebef835845d3637884ef70c8b7caea63"
+    },
+    "RPE1": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/observations.json",
+      "sha256": "f6f7d26f0b167f65f1e15b962250b9032a2c0014f615036bcdeaadaa9394f2a8"
+    },
+    "HepG2": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/observations.json",
+      "sha256": "7c6438023326ca6daaf456dc3f4c04c9024858b06975f9417e0ef1fa642c0fe5"
+    },
+    "Jurkat": {
+      "path": "experiments/task-observation/outputs/task-observation-s02/cache/Jurkat/observations.json",
+      "sha256": "20390ecd38e3828d475f62524a8288457c16b1489ef499bfef07ec80b7b8eb1f"
+    }
+  },
+  "mapping_ref": {
+    "path": "docs/research/challenge_2026/gene_mapping.csv.gz",
+    "sha256": "aaccb88c99fc181da3ec9727a66812cac8a742f593c5806fb707f339dc7b2328"
+  },
+  "tasks_ref": {
+    "path": "docs/research/challenge_2026/tasks.csv",
+    "sha256": "f66c2e979670dad58c667b14becdf04ff3d0fba774d74de0902a2c9a3b0d0d35"
+  },
+  "pathway_ref": {
+    "path": "data/raw/networks/ReactomePathways.gmt.zip",
+    "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4"
+  },
+  "runtime": {
+    "device": "cuda",
+    "num_threads": 8,
+    "pert_chunk": 16
+  },
+  "tracking": {
+    "mode": "online"
+  },
+  "diagnostics": {
+    "covariance_genes": 128,
+    "raw_cpm_and_meanlog": true,
+    "exact_participation_rank": true,
+    "pair_samples": 20000,
+    "before_official_scoring": true,
+    "failure_policy": "hard violations stop; statistical deviations retained without response filtering"
+  },
+  "external_prior": {
+    "release": "DepMap 24Q2 Public version 1",
+    "doi": "10.25452/figshare.plus.25880521.v1",
+    "url": "https://ndownloader.figshare.com/files/46489063",
+    "filename": "CRISPRGeneEffect.csv",
+    "size": 419330454,
+    "md5": "d10d73692672380b3792231549e97d5a"
+  }
+}

@@ -2255,27 +2255,34 @@
     },
     "E-POPULATION-EMISSION": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "signal",
       "comparison_id": "C-POPULATION-EMISSION",
       "node_ids": [
         "population-emission-s01"
       ],
-      "claim": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
-      "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
+      "claim": "完整五背景固定响应比较完成，15/15工程验收通过；总体校准恢复独立抽样群均值方差，而非零DE集合保真度未改善，五背景Jaccard中位数均下降。只支持有限范围的抽样正确性修正，不支持分布预测已解决。",
+      "limitations": "无预测器拟合；20固定oracle靶点、每条件20生成重复、DE仅前3重复。生成重复不是生物重复。描述性Jaccard非官方六项；真实n/形态差异仍混合，不能以15项工程验收认证生物分布或跨背景响应。",
       "source_refs": [
         {
-          "path": "docs/research/perturbation_decomposition_review.md",
-          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+          "path": "experiments/population-emission/outputs/population-emission-s01/metrics.json",
+          "sha256": "656fceafcf4dd2163d7981ddb242a3ae8411df1ae76ca79814459f1f6dfe81f3"
+        },
+        {
+          "path": "experiments/population-emission/REPORT.md",
+          "sha256": "79bd34bc0aba3435abd7287f62477a49dcf11f154c823312cb26a7e0f7521a8a"
         }
       ],
-      "next_action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。 补充全文核验：mean-log响应加到单细胞并反变换不保证bulk/DE统计；固定响应比较中同时检查观测空间偏差和有限n波动。现有合法整数无需重复当作模型能力。",
-      "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
+      "next_action": "固定总体校准+独立抽样用于匹配响应模型比较，不继续局部生成器调参；完成C-LOCAL-EVAL-SUPPORT和C-DEPMAP-RESPONSE-ALIGNMENT，保留原始/归一化六项和DE/残差限制；不提交oracle到leaderboard。",
+      "reopen_when": "模型比较显示DE成为主要瓶颈、或新的扰动/assay范围超出本次固定校准；再以固定响应比较条件异质性生成。",
+      "hypothesis": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？"
     },
     "E-LOCAL-EVAL-SUPPORT": {
       "kind": "experiment",
       "state": "pending",
       "comparison_id": "C-LOCAL-EVAL-SUPPORT",
-      "node_ids": [],
+      "node_ids": [
+        "full-eval-support-s01"
+      ],
       "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
       "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
       "source_refs": [
@@ -2471,14 +2478,6 @@
     }
   },
   "queue": [
-    {
-      "id": "Q-POPULATION-EMISSION",
-      "priority": 1,
-      "comparison_id": "C-POPULATION-EMISSION",
-      "question": "将NTC总体响应校准与独立细胞抽样分开，能否恢复有限n群均值波动，同时保留期望响应、整数文库和DE保真度？",
-      "action": "冻结M-POPULATION-EMISSION与当前逐组IPF的固定响应比较；重复生成、零响应、已知响应及n匹配诊断；验收期望和抽样波动，不用精确列总和掩盖分布问题。 在新模型响应监督/解码时显式满足DATA-EVAL-DEFAULTS-20260930的mask内分母契约；旧缓存不得标成跨assay已对齐。 补充全文核验：mean-log响应加到单细胞并反变换不保证bulk/DE统计；固定响应比较中同时检查观测空间偏差和有限n波动。现有合法整数无需重复当作模型能力。",
-      "requires_evidence": []
-    },
     {
       "id": "Q-LOCAL-EVAL-SUPPORT",
       "priority": 2,

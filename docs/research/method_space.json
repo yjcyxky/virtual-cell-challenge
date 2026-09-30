@@ -1913,9 +1913,11 @@
       },
       "signature": "T4-D1-R1-A6-L6-O0-V5-I11-G0",
       "prior": "总体校准与细胞抽样分离可能避免组均值约束造成波动抵消；只是一条由本地诊断提出的待检验假设，不保证恢复扰动特异异质性。",
-      "local_status": "UNTESTED",
-      "evidence_ids": [],
-      "selection_basis": "E-TASK-DATA-GENERATION-R2与E-LOCAL-CAPABILITY-EVALUATOR-R3提供设计动机，不是本候选的有效性证据。"
+      "local_status": "CONTEXT_DEPENDENT",
+      "evidence_ids": [
+        "E-POPULATION-EMISSION"
+      ],
+      "selection_basis": "完整15/15工程验收支持总体校准与独立抽样用于下一轮固定生成条件；DE集合未改善，不支持扰动分布已恢复。"
     }
   }
 }

@@ -1,0 +1,20 @@
+{
+  "kind": "full_frozen_local_evaluation_support",
+  "scenarios": [
+    "S2",
+    "S3",
+    "S4"
+  ],
+  "expected_panels": 15,
+  "panel_targets": "all structurally eligible frozen evaluation targets",
+  "reference_cells": 400,
+  "seed": 930,
+  "ntc": "existing physically disjoint input/score banks",
+  "thinning": "frozen per-context native input NTC median rate; target cells use fixed per-source-block seed",
+  "score": "official vcc2026 baseline, five anchors and six metrics; retain unavailable normalization",
+  "conditions": [
+    "real_copy",
+    "target_derangement"
+  ],
+  "predictor_fit": false
+}
