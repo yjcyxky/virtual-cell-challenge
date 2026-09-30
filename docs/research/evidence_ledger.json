@@ -2093,7 +2093,7 @@
           "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
         }
       ],
-      "next_action": "冻结按来源/guide/靶点的效率与覆盖审计、深度可行视图、零响应和已知可实现效应对照；官方DE与双统计诊断。改变reference时新建协议/anchors，不覆写旧结果。",
+      "next_action": "原run接口故障归档，无方法结论；替代完整执行为task-observation-s02 / C-TASK-DATA-GENERATION-R2。",
       "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
     },
     "E-LOCAL-CAPABILITY-EVALUATOR": {
@@ -2128,6 +2128,25 @@
         }
       ],
       "next_action": "实例化M-DEPMAP-ALIGNED-RIDGE/MLP及无先验/随机先验/原始kNN对照；固定DepMap来源、训练内PCA、每折目标列表和全轴策略，不自动扩参数网格。",
+      "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
+    },
+    "E-TASK-DATA-GENERATION-R2": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-TASK-DATA-GENERATION-R2",
+      "node_ids": [
+        "task-observation-s02"
+      ],
+      "hypothesis": "训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
+      "claim": "待检验：训练观测、测量掩码、敲低可靠性与目标深度对齐后，计数生成能否保持可实现响应且不引入超出真实NTC抽样范围的伪DE？",
+      "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
+      "source_refs": [
+        {
+          "path": "docs/research/task_constraints_review.md",
+          "sha256": "24d5262a272336d67cb9ad3a742afbe1e065333e2e642a8dde71d5c34d3ea03d"
+        }
+      ],
+      "next_action": "完整执行五背景观测与生成验收，然后据真实结果关闭；禁止以部分阶段当方法证据。",
       "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
     }
   },

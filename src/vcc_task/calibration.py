@@ -22,8 +22,8 @@ def calibrate(output, config, context, observation):
     source = output / 'cache' / context / 'bank-depth-view.h5ad'
     bank = ad.read_h5ad(source)
     genes = bank.var_names.to_numpy()
-    ntc = bank.X[bank.obs.bank.eq('input')]
-    scoring = bank.X[bank.obs.bank.eq('score')]
+    ntc = bank.X[bank.obs.bank.eq('input').to_numpy()]
+    scoring = bank.X[bank.obs.bank.eq('score').to_numpy()]
     cfg = config['calibration']
     n = cfg['cells']
     if scoring.shape[0] < 2 * n:
@@ -49,7 +49,7 @@ def calibrate(output, config, context, observation):
     targets = sorted(all_targets, key=lambda t: stable_seed(config['seed'], context, 'known', t))[:cfg['known_targets']]
     native_profile = profile(ntc)
     for target in targets:
-        real = bank.X[bank.obs.target.eq(target)]
+        real = bank.X[bank.obs.target.eq(target).to_numpy()]
         desired = profile(real)
         for rule in ('independent', 'conservative'):
             spec = dict(config['emitter'], rounding=rule)

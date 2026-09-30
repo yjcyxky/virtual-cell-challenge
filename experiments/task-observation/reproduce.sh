@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
-RUN_ID=task-observation-s01
+RUN_ID=task-observation-s02
 RESUME=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -11,7 +11,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 case "$RUN_ID" in
-  task-observation-s01) CONFIG="configs/$RUN_ID.json" ;;
+  task-observation-s01|task-observation-s02) CONFIG="configs/$RUN_ID.json" ;;
   *) echo "Unknown registered run: $RUN_ID" >&2; exit 2 ;;
 esac
 exec /home/jy001/micromamba/envs/virtual-cell/bin/python ../../scripts/research.py execute "$RUN_ID" "${RESUME[@]}" -- \
