@@ -4,6 +4,8 @@
 
 当前使用约定以 [AGENTS.md](../AGENTS.md) 为准；下文数据状态按注明的快照时点阅读，后续核查见 [数据文档索引](../docs/datasets/README.md)。`sources.json` 中的 `tier`、`why`、`caveat` 含有历史判断，不能直接当作质量认证或已验证的建模结论。
 
+**2026-09-30 新增获取任务：**已登记并启动 Xaira Orion（HCT116、HEK293T）与 Zhu 2026 原代 CD4+ T（四供体、三状态）的完整公开 counts 发布包，共约 1.970 TB。原件位于 NAS，`data/raw/xaira_orion/` 和 `data/raw/zhu2026_cd4/` 为统一入口；下载未完成时不能作为完整训练输入。范围、自动收尾、实时状态与首个分片验证见[新 CRISPRi 数据入库说明](../docs/datasets/new-crispri-acquisition-2026-09-30.md)。下方 09-18 快照保持历史状态。
+
 ## 当前登记与下载范围
 
 状态快照：**2026-09-18 22:43，America/New_York**。大小为十进制 GB，仅统计 lock 中的文件；不含额外的 `SOURCE.json`。已完成表示当前登记选择齐备，不表示上游所有版本、SRA 测序 reads 或训练派生物均已下载。下载中的进度会继续变化。

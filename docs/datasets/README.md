@@ -4,6 +4,7 @@
 
 | 文档 | 配套证据与边界 |
 |---|---|
+| [Xaira / CD4 数据入库，2026-09-30](new-crispri-acquisition-2026-09-30.md) | 固定来源与下载范围、NAS 原件、自动校验和原始 counts 索引；完成状态以工作器 JSON 为准 |
 | [入库核查，2026-09-18](data-inventory-audit-2026-09-18.md) | [逐文件审计 JSON](data-inventory-audit-2026-09-18.json)；保留当时 README、协议和文件路径的哈希 |
 | [数据 README 核查，2026-09-18](data-readme-audit-2026-09-18.md) | [结构核查证据](data-readme-evidence-2026-09-18.json)；包括旧 H1 档案计数的纠正 |
 | [McFaline-Figueroa 2024 入库与使用说明](mcfaline-figueroa2024.md) | [下载审计](mcfaline-figueroa2024-download-audit.json)、[gzip 校验](mcfaline-figueroa2024-gzip-check.json) |
