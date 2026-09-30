@@ -1,6 +1,6 @@
 # 完整留出面板与本地评分支持
 
-Comparison: `C-LOCAL-EVAL-SUPPORT`。此路线实现有界内存的完整参考群体与评分；不拟合预测模型。
+Comparisons: `C-LOCAL-EVAL-SUPPORT`、`C-LOCAL-EVAL-SUPPORT-R2`。此路线实现有界内存的完整参考群体与评分；不拟合预测模型。
 
 KnowGraph attention: `EXP-LOCAL-EVAL`, `EXP-LOCO`, `ST-WILCOXON`, `PAP-F-PATHWAY`。
 
@@ -25,3 +25,11 @@ KnowGraph attention: `EXP-LOCAL-EVAL`, `EXP-LOCO`, `ST-WILCOXON`, `PAP-F-PATHWAY
 同时下载并校验官方 DepMap 24Q2 v1 CRISPRGeneEffect 原件，作为后续独立拟合的固定外部描述符来源；本 run 不拟合 PCA 或响应映射。文件落在本 run cache，记录来源 URL、发布 checksum 和本地 SHA256。拟合范围另由模型 run 冻结。
 
 预计占用单 DGX Spark、约 120 GB raw I/O 和数十 GB参考/诊断存储；CPU 上有界读写，GPU 执行官方 DE。单面板技术失败保留并按同条件恢复；不以预检、部分背景或部分指标冒充完成。无 leaderboard 提交。
+
+## 大矩阵索引修复的独立执行
+
+`full-eval-support-s01` 在 K562 累计 nnz 超过 2³¹ 时触发追加指针的 int32 溢出，尚未进入评分。这是技术失败，不是面板或方法阴性。原绑定、失败指标和部分产物保持；显式归档到执行提交，由同路线 `full-eval-support-s02` 替代。新入口先把块内 CSR indptr 转成 int64 再加累计 nnz，不改变细胞/基因/计数或随机生成条件。复用原 run 已完成且哈希固定的 H1 bank/NTC 和已验证 DepMap 原件，K562 未完成 bank 从 raw 重建到新目录；原失败身份不重启。新比较保留相同 15 面板/30 次评分预算和判据。
+
+完整 K562 bank 约 186 万细胞，预计 CSR nnz 超过 50 亿。R2 在首次执行前同时冻结有界内存适配：参考组间顺序固定为 NTC 在前、靶点字典序，组内物理顺序不变；实际整数矩阵的 data/indices/indptr 解码为只读磁盘映射，调用原官方 generic_response_profile 和 build_real_bundle。indices/indptr 用 int64，数据 dtype 和数值不变；临时解码缓存可重建，成功或异常退出后释放，压缩参考文件及哈希永久保留。
+
+baseline 使用同一个官方全体参考 profile，每 16 个靶点调用公开 build_baseline_prediction；模板只需原 NTC 与原 obs/var，非 NTC X 是不被该函数消费的零占位。一次 PCG64(0) Generator 贯穿字典序组调用，并以 int(seed)=0 保留官方元数据；不重置每组随机流。首个 S2-H1 面板另执行一次标准全模板 seed=0 调用，对全部元素、obs/var 逐项比对，必须零差异才进入 anchors。其余背景只复用已通过的同一分块实现；输出 fractional baseline 是官方参照，不属于待提交模型计数。五次 anchor 和所有评分仍调用原官方函数，未修改 cell-eval2 包、公式或采样口径。该适配是计算实现变更并完整记录，不能以名称相同冒充逐项核验已完成。

@@ -18,7 +18,8 @@ from .observations import selected_panels
 
 def external_prior(job):
     spec = job.config['external_prior']
-    path = job.output/'cache'/spec['filename']
+    path = (verified(job.config['reuse']['prior_ref']) if job.config.get('reuse',{}).get('prior_ref')
+            else job.output/'cache'/spec['filename'])
     if not path.exists():
         temporary = path.with_suffix('.download')
         with urllib.request.urlopen(spec['url'], timeout=120) as response, temporary.open('wb') as output:
@@ -36,6 +37,11 @@ def external_prior(job):
 
 def prepare_full_context(job, context):
     cfg = job.config
+    if context in cfg.get('reuse',{}).get('contexts',{}):
+        record = json.loads(verified(cfg['reuse']['contexts'][context]).read_text())
+        for item in record['files']:
+            verified(item)
+        return record
     directory = job.output/'cache'/context
     marker = directory/'reference.json'
     if marker.exists():

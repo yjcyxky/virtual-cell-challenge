@@ -2284,14 +2284,14 @@
         "full-eval-support-s01"
       ],
       "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
+      "limitations": "s01因CSR累计nnz的int32指针溢出执行失败，未完成评价，不构成方法阴性；同科学协议替代入口full-eval-support-s02 / C-LOCAL-EVAL-SUPPORT-R2。",
       "source_refs": [
         {
           "path": "docs/research/perturbation_decomposition_review.md",
           "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
         }
       ],
-      "next_action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。 补充分解诊断：区分source-only模板方向投影、固定centroid相减及评分侧ANOVA；split-half显式处理独立NTC和分母。真实五背景/joint-OOD拟合与接口面板分开计数。",
+      "next_action": "保留原绑定、失败指标和部分产物；执行C-LOCAL-EVAL-SUPPORT-R2。",
       "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
     },
     "DATA-SUPPORT-20260930": {
@@ -2475,15 +2475,33 @@
       "next_action": "按C-POPULATION-EMISSION/C-LOCAL-EVAL-SUPPORT/C-DEPMAP-RESPONSE-ALIGNMENT落实观测与生成一致性、source-only表示和真实joint-OOD；保留同靶Shared及匹配随机/无先验/原始kNN对照，冻结独立run后执行。",
       "reopen_when": "论文修订、作者确认运行版本、先验/数据/评估范围变化；本地有效性仅由完成的匹配比较给出。",
       "publication": "Molina & Zhang, bioRxiv v1, posted 2026-07-27; PDF sha256 d34e545d0f50ad7e4369126f50dad8965be5a0dad2ac4e0e62c76261b8eb6f5c"
+    },
+    "E-LOCAL-EVAL-SUPPORT-R2": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-LOCAL-EVAL-SUPPORT-R2",
+      "node_ids": [
+        "full-eval-support-s02"
+      ],
+      "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
+      "limitations": "新假设与draft，不构成本地方法证据；正式执行前登记独立run、完整配置和预算。",
+      "source_refs": [
+        {
+          "path": "docs/research/perturbation_decomposition_review.md",
+          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+        }
+      ],
+      "next_action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。 补充分解诊断：区分source-only模板方向投影、固定centroid相减及评分侧ANOVA；split-half显式处理独立NTC和分母。真实五背景/joint-OOD拟合与接口面板分开计数。",
+      "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
     }
   },
   "queue": [
     {
       "id": "Q-LOCAL-EVAL-SUPPORT",
       "priority": 2,
-      "comparison_id": "C-LOCAL-EVAL-SUPPORT",
+      "comparison_id": "C-LOCAL-EVAL-SUPPORT-R2",
       "question": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "action": "正式范围改为每折全部结构合格留出靶点；固定min(n,400)真实细胞与预测400，构建一批官方anchors。附n分层、400充分支持和n匹配诊断。全折仍退化则保留raw/未定义Overall并停止扩面板调试；不按响应或anchor质量筛任务。 补充分解诊断：区分source-only模板方向投影、固定centroid相减及评分侧ANOVA；split-half显式处理独立NTC和分母。真实五背景/joint-OOD拟合与接口面板分开计数。",
+      "action": "完成替代run full-eval-support-s02的全15面板，保留失败索引实现记录，不以技术失败作方法证据。",
       "requires_evidence": []
     },
     {

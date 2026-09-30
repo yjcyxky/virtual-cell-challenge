@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
-RUN_ID=full-eval-support-s01
+RUN_ID=full-eval-support-s02
 RESUME=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -11,7 +11,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 case "$RUN_ID" in
-  full-eval-support-s01) CONFIG="configs/$RUN_ID.json"; ENTRY=src/run.py ;;
+  full-eval-support-s01|full-eval-support-s02) CONFIG="configs/$RUN_ID.json"; ENTRY=src/run.py ;;
   *) echo "Unknown registered run: $RUN_ID" >&2; exit 2 ;;
 esac
 exec /home/jy001/micromamba/envs/virtual-cell/bin/python ../../scripts/research.py execute "$RUN_ID" "${RESUME[@]}" -- \

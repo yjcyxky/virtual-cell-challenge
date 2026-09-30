@@ -19,7 +19,7 @@ from research import bind
 from vcc_task.common import NTC, ref, verified, write_json
 from vcc_task.count_store import copy_panel
 from vcc_task.full_reference import prepare_full_context, external_prior
-from vcc_task.capability import ensure_bundle
+from vcc_task.bounded_bundle import bounded_bundle
 from vcc_task.prediction_diagnostics import diagnose_panel
 from vcc_task.frozen_scoring import score_frozen
 from vcc_task.run_context import RegisteredRun
@@ -74,7 +74,9 @@ def panel(job,split,context,observations,checkpoint):
         checkpoint_ref=ref(checkpoint),expected_targets=targets,real=real_path,template=template,
         pathway_ref=cfg['pathway_ref'],covariance_genes=cfg['diagnostics']['covariance_genes'])
     runtime=cfg['runtime']
-    status=ensure_bundle(str(real_path),directory/'bundle',f"full-{split['id']}-{context}",runtime)
+    status=bounded_bundle(str(real_path),directory/'bundle',f"full-{split['id']}-{context}",runtime,
+        chunk_targets=cfg['baseline_memory']['chunk_targets'],
+        verify_full=split['id']+'/'+context==cfg['baseline_memory']['canonical_equivalence_panel'])
     scores={}
     scores['real_copy']=score_frozen(real_path,real_path,status,directory/'real-copy-score',runtime,diagnostic,strata)
     shuffled=directory/'target-derangement.h5ad'
