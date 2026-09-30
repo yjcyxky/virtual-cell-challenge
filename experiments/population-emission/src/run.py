@@ -36,7 +36,7 @@ def context_batch(job, context):
     ntc = bank.X[bank.obs.bank.eq('input').to_numpy()].tocsr()
     score = bank.X[bank.obs.bank.eq('score').to_numpy()].tocsr()
     reference, null_pool = score[:score.shape[0]//2], score[score.shape[0]//2:]
-    _, ntc_stats = describe(ntc)
+    _, ntc_stats = describe(ntc.astype(np.float64))
     ntc_hashes = set(row_hashes(ntc))
     allowed = ~np.isin(bank.var_names, targets)
     hvg = np.argsort(np.where(allowed, ntc_stats['logvar'], -1))[-cfg['diagnostics']['covariance_genes']:]
@@ -65,7 +65,7 @@ def context_batch(job, context):
                 original_depth = np.asarray(ntc[rng.integers(0, ntc.shape[0], cfg['cells'])].sum(1)).ravel()
                 if not np.array_equal(depth, original_depth):
                     raise ValueError('Generated row library changed')
-                distribution, stats = describe(matrix, ntc_stats, hvg, ntc_hashes)
+                distribution, stats = describe(matrix.astype(np.float64), ntc_stats, hvg, ntc_hashes)
                 label = f'{target}__{arm}_{repeat}'
                 records.append(clean(dict(distribution, target=target, arm=arm, repeat=repeat, seed=seed,
                     response_bulk_rms=float(np.sqrt(np.mean((profile(matrix)-desired)**2))))))
