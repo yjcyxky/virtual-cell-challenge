@@ -1837,13 +1837,14 @@
       },
       "signature": "T3-D1-R20-A0-L1-O5-V5-I11-G0",
       "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
-        "L14-DECOMPOSITION-FULLTEXT-V1"
+        "L14-DECOMPOSITION-FULLTEXT-V1",
+        "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     },
     "M-DEPMAP-ALIGNED-MLP": {
       "description": "mlp: source-only masked compositional response and fixed population emitter",
@@ -1860,13 +1861,14 @@
       },
       "signature": "T3-D1-R20-A1-L1-O5-V5-I11-G0",
       "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "candidate",
       "cost": "medium",
       "evidence_ids": [
-        "L14-DECOMPOSITION-FULLTEXT-V1"
+        "L14-DECOMPOSITION-FULLTEXT-V1",
+        "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     },
     "M-TASK-OBSERVATION": {
       "description": "无预测器拟合的五背景观测与计数生成校准；官方DE、实测独立NTC和已知效应对照",
@@ -1946,13 +1948,14 @@
       },
       "signature": "T3-D1-R14-A7-L6-O0-V5-I11-G0",
       "prior": "No target functional prior in prediction; coverage diagnostic only",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "control",
       "cost": "low",
       "evidence_ids": [
-        "L14-DECOMPOSITION-FULLTEXT-V1"
+        "L14-DECOMPOSITION-FULLTEXT-V1",
+        "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     },
     "M-DEPMAP-CONTROL-TEMPLATE": {
       "description": "template: source-only masked compositional response and fixed population emitter",
@@ -1969,13 +1972,14 @@
       },
       "signature": "T3-D1-R23-A7-L6-O0-V5-I11-G0",
       "prior": "No target functional prior in prediction; coverage diagnostic only",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "control",
       "cost": "low",
       "evidence_ids": [
-        "L14-DECOMPOSITION-FULLTEXT-V1"
+        "L14-DECOMPOSITION-FULLTEXT-V1",
+        "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     },
     "M-DEPMAP-RAW-KNN": {
       "description": "knn: source-only masked compositional response and fixed population emitter",
@@ -1991,14 +1995,15 @@
         "G": "G0"
       },
       "signature": "T3-D1-R22-A11-L6-O0-V5-I11-G0",
-      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
-      "local_status": "UNTESTED",
+      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; raw cosine descriptors with source-only imputation, no PCA in kNN prediction; no matched kNN shuffle in this batch; missing-prior fallback template; dose observed but not used",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
-        "L14-DECOMPOSITION-FULLTEXT-V1"
+        "L14-DECOMPOSITION-FULLTEXT-V1",
+        "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     },
     "M-DEPMAP-SHUFFLED-RIDGE": {
       "description": "ridge-shuffled: source-only masked compositional response and fixed population emitter",
@@ -2015,13 +2020,14 @@
       },
       "signature": "T3-D1-R21-A0-L1-O5-V5-I11-G0",
       "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "control",
       "cost": "low",
       "evidence_ids": [
-        "L14-DECOMPOSITION-FULLTEXT-V1"
+        "L14-DECOMPOSITION-FULLTEXT-V1",
+        "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     },
     "M-DEPMAP-SHUFFLED-MLP": {
       "description": "mlp-shuffled: source-only masked compositional response and fixed population emitter",
@@ -2038,13 +2044,14 @@
       },
       "signature": "T3-D1-R21-A1-L1-O5-V5-I11-G0",
       "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
-      "local_status": "UNTESTED",
+      "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "control",
       "cost": "medium",
       "evidence_ids": [
-        "L14-DECOMPOSITION-FULLTEXT-V1"
+        "L14-DECOMPOSITION-FULLTEXT-V1",
+        "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     }
   }
 }
