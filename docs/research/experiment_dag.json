@@ -22396,7 +22396,7 @@
       "legacy": false,
       "method_id": "M-DEPMAP-ALIGNED-RIDGE",
       "protocol_id": "DEPMAP-RESPONSE-20260930",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
       "controls": [
         "depmap-shared-s3-jurkat-s930",
@@ -22689,10 +22689,13 @@
           "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/depmap-response/outputs/depmap-ridge-s3-jurkat-s930/metrics.json",
+        "sha256": "4f4d9330ca7b38137ea7c61ec9f4e23b38f756b0492f509210755859c9cb9900"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
+      "git_commit": "80bba3bd1447f68c33dfc15022e5eb95b8bed813",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-s3-jurkat-s930",
       "design": {
         "fit_scope": {
           "outer_split": "S3-Jurkat",
@@ -22705,7 +22708,9 @@
         "data_boundary": "source-only training targets and context; permitted target NTC; full-axis masks; no response selection",
         "dose": "known guide efficiency reported only, no inferred efficiency from response strength"
       },
-      "blockers": []
+      "blockers": [],
+      "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-s3-jurkat-s930-results:v0",
+      "wandb_sync": "online"
     },
     "depmap-ridge-shuffled-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
