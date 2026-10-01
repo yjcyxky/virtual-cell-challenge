@@ -14997,7 +14997,7 @@
       "legacy": false,
       "method_id": "M-DEPMAP-CONTROL-TEMPLATE",
       "protocol_id": "DEPMAP-RESPONSE-20260930",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
       "controls": [
         "depmap-shared-s3-k562-s930"
@@ -15288,10 +15288,13 @@
           "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/depmap-response/outputs/depmap-template-s3-k562-s930/metrics.json",
+        "sha256": "182d777e0b58248b797a140c7a69b6d0061920ed044f2705dc44cc08c6a0256d"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
+      "git_commit": "867c9233a54593e9ee5a913ab9b8b43a33743395",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-template-s3-k562-s930",
       "design": {
         "fit_scope": {
           "outer_split": "S3-K562",
@@ -15304,7 +15307,9 @@
         "data_boundary": "source-only training targets and context; permitted target NTC; full-axis masks; no response selection",
         "dose": "known guide efficiency reported only, no inferred efficiency from response strength"
       },
-      "blockers": []
+      "blockers": [],
+      "artifact": "yjcyxky/virtual-cell-challenge/depmap-template-s3-k562-s930-results:v0",
+      "wandb_sync": "online"
     },
     "depmap-knn-s3-k562-s930": {
       "experiment_id": "depmap-response",
