@@ -2588,25 +2588,25 @@
   },
   "queue": [
     {
+      "id": "Q-DEPMAP-RESPONSE-ALIGNMENT",
+      "priority": 1,
+      "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
+      "question": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
+      "action": "完成冻结42 fits（七方案×五S3背景加S2-H1，seed930），先逐靶count/null/残差/通路诊断后评分；全批配对后决定路线，不运行超参网格或提交榜单。",
+      "requires_evidence": []
+    },
+    {
       "id": "Q-LOCAL-EVAL-SUPPORT",
       "priority": 2,
       "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
       "question": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "action": "Complete R4 after profiler-confirmed CSR pointer I/O fix; same 15 panels, one immutable completed H1 panel reused.",
-      "requires_evidence": []
-    },
-    {
-      "id": "Q-DEPMAP-RESPONSE-ALIGNMENT",
-      "priority": 3,
-      "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
-      "question": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
-      "action": "完成冻结42 fits（七方案×五S3背景加S2-H1，seed930），先逐靶count/null/残差/通路诊断后评分；全批配对后决定路线，不运行超参网格或提交榜单。",
+      "action": "13/15 complete; kernel-confirmed OOM on full S4-K562 anchor. Preserve completed references, implement memory-only recovery, then finish remaining K562/RPE1. The six model-batch references are complete; do not hold all predictor fits behind this larger auxiliary panel.",
       "requires_evidence": []
     }
   ],
   "resource_allocation": {
     "after_evidence": "E-POPULATION-EMISSION",
-    "unit": "先完成全15面板 evaluator 支持，再完成七方案×六独立外层fit的42-run模型批次。每MLP400epochs、Ridge最多200CG；全部3600任务/臂，400预测细胞/任务。所有方案完成后决定，不按单折早停。",
+    "unit": "先执行已冻结七方案×六独立外层fit的42-run模型批次（所需六个参考已完成），同时准备S4全靶K562/RPE1的内存执行修复；二者正式GPU阶段串行。每MLP400epochs、Ridge最多200CG，3600任务/臂、400预测细胞/任务，全方案完成后决定，不按单折早停。",
     "exploration_slots": [
       "C-DEPMAP-RESPONSE-ALIGNMENT"
     ],
@@ -2615,6 +2615,10 @@
       "transport-linear-s01",
       "transport-no-ntc-s01"
     ],
-    "no_automatic_local_grid": true
+    "no_automatic_local_grid": true,
+    "execution_order_reason_ref": {
+      "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/oom-attempt-failure.json",
+      "sha256": "9aaa6ccd5f3dbe36c99e624ce3d8920346170dddcf355d15063039378dd47e23"
+    }
   }
 }
