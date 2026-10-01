@@ -23041,7 +23041,7 @@
       "legacy": false,
       "method_id": "M-DEPMAP-ALIGNED-MLP",
       "protocol_id": "DEPMAP-RESPONSE-20260930",
-      "status": "ready",
+      "status": "completed",
       "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
       "controls": [
         "depmap-shared-s3-jurkat-s930",
@@ -23334,10 +23334,13 @@
           "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
         }
       ],
-      "metrics_ref": null,
+      "metrics_ref": {
+        "path": "experiments/depmap-response/outputs/depmap-mlp-s3-jurkat-s930/metrics.json",
+        "sha256": "9be3af33e6c104c6593786a38b35347f997b14439b9f66b6703bd6e41f64872f"
+      },
       "report_ref": null,
-      "git_commit": null,
-      "wandb_url": null,
+      "git_commit": "b6e4f57ff2d4ca8dc8298a7cac6353496e9c0ee9",
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-s3-jurkat-s930",
       "design": {
         "fit_scope": {
           "outer_split": "S3-Jurkat",
@@ -23350,7 +23353,9 @@
         "data_boundary": "source-only training targets and context; permitted target NTC; full-axis masks; no response selection",
         "dose": "known guide efficiency reported only, no inferred efficiency from response strength"
       },
-      "blockers": []
+      "blockers": [],
+      "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-s3-jurkat-s930-results:v0",
+      "wandb_sync": "online"
     },
     "depmap-mlp-shuffled-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
