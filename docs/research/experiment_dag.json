@@ -12312,7 +12312,7 @@
         },
         {
           "path": "experiments/full-eval-support/src/run.py",
-          "sha256": "0b793a81d0dabde8ec9a96ee787dd265edb79b624706769c3f4c000ce9dab67f"
+          "sha256": "ab67d42794789ff712f5387eacf29bd905f3dbd653708bb59c6f44bb172f7eef"
         },
         {
           "path": "src/vcc_task/count_store.py",
@@ -12373,6 +12373,10 @@
         {
           "path": "src/vcc_task/bounded_bundle.py",
           "sha256": "ab2a872f3c1396545bb9de5bd0f9fa2ccd7b8f2887c7c47bef01f7fc4702becf"
+        },
+        {
+          "path": "experiments/full-eval-support/src/mapped_copy.py",
+          "sha256": "d9cd94f600231a4b00dfaca3951100e64d229f4a6132f82c483cae443d5a6e2d"
         }
       ],
       "metrics_ref": {
@@ -12380,7 +12384,7 @@
         "sha256": "ad48adde419fa92e3f25b5535b3c01146b3e894a897ca3db60c1c46bee8b7cbe"
       },
       "report_ref": null,
-      "git_commit": null,
+      "git_commit": "a5df16b3f9424b35d09aeaae5e328b01e3866e55",
       "wandb_url": null,
       "design": {
         "fit_scope": {
@@ -12392,9 +12396,7 @@
         "scope": "One fixed support batch, retain undefined scores and stop expanding panels",
         "source_usage": "Scientific source banks and completed H1 panel reused from s01/s02 by existing refs; s03 provides only the actual-file I/O diagnosis. No incomplete s03 numerical score reused."
       },
-      "blockers": [
-        "S4-K562 replicate anchor exceeds available unified memory; memory-only evaluator recovery required."
-      ],
+      "blockers": [],
       "last_attempt": {
         "status": "failed",
         "research": {
@@ -12417,6 +12419,982 @@
       "runtime_failure_ref": {
         "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/oom-attempt-failure.json",
         "sha256": "9aaa6ccd5f3dbe36c99e624ce3d8920346170dddcf355d15063039378dd47e23"
+      },
+      "evaluation_repair": {
+        "kind": "evaluation_only",
+        "reason": "Kernel-confirmed OOM in the first full K562 replicate anchor. Keep all data, order, dtype, random choices and official functions; store independent copied halves as writable temporary CSR memory maps. CPU equivalence on real H1/full measured axis passed all five official split seeds. Completion at the largest scale remains to be demonstrated.",
+        "original_code_refs": [
+          {
+            "path": "experiments/full-eval-support/PLAN.md",
+            "sha256": "078d2acd20fe23998a7f333adc295ed9be760369456f90fd743275ccc98149bb"
+          },
+          {
+            "path": "experiments/full-eval-support/protocol.json",
+            "sha256": "c987d3ab3880c86d825852204f2247bad730be7da7ef0eba7ee94a2d1ec4e1f6"
+          },
+          {
+            "path": "experiments/full-eval-support/pyproject.toml",
+            "sha256": "615fd0cf4453479511530d4caeae5ab0637b0ee2a1390fc50391a6cafb81737c"
+          },
+          {
+            "path": "experiments/full-eval-support/uv.lock",
+            "sha256": "d9bbf35c3941701e5f82fe6fc06906fb598d9365812c0c1da0485e5d6a2901fc"
+          },
+          {
+            "path": "experiments/full-eval-support/reproduce.sh",
+            "sha256": "9dde07881cf63ade5adb034495639b1147b15c77070dfcc6ddf48eb7443d0032"
+          },
+          {
+            "path": "experiments/full-eval-support/src/run.py",
+            "sha256": "0b793a81d0dabde8ec9a96ee787dd265edb79b624706769c3f4c000ce9dab67f"
+          },
+          {
+            "path": "src/vcc_task/count_store.py",
+            "sha256": "b391535aa480839bb65f82ee92e6769bff5787bf72affd144226527bb4b62513"
+          },
+          {
+            "path": "src/vcc_task/full_reference.py",
+            "sha256": "d65f111b73b955ee1b4ea4110b7aede4197141cac4af19d871cef35506bf9269"
+          },
+          {
+            "path": "src/vcc_task/prediction_diagnostics.py",
+            "sha256": "50ac991bafd5ba4922191243df57b4eb1b6ccecfa2b4658a5305e75cabf06a32"
+          },
+          {
+            "path": "src/vcc_task/frozen_scoring.py",
+            "sha256": "b1f50a83b7ced87b8ad1952d8424d261094ced4f82fe7c512ff374a761bdd9f2"
+          },
+          {
+            "path": "src/vcc_task/run_context.py",
+            "sha256": "086bde937aff0857f1c8ac5c40ba436915231985e326e1e54f1b5b31b4bd3fde"
+          },
+          {
+            "path": "src/vcc_task/counts.py",
+            "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+          },
+          {
+            "path": "src/vcc_task/observations.py",
+            "sha256": "b4b1f2df68148b988055b2367cd7bd7124bb370668c9a48ee34afb8ed17b35fa"
+          },
+          {
+            "path": "src/vcc_task/common.py",
+            "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+          },
+          {
+            "path": "src/vcc_task/capability.py",
+            "sha256": "a01fd8917d50916f98adde204a841b7cd3fbe89a74626d1114523b7fc796c42b"
+          },
+          {
+            "path": "src/vcc_task/__init__.py",
+            "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+          },
+          {
+            "path": "scripts/research.py",
+            "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+          },
+          {
+            "path": "scripts/dossier/challenge.py",
+            "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+          },
+          {
+            "path": "scripts/dossier/rna.py",
+            "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+          },
+          {
+            "path": "scripts/analyze_submitted_counts.py",
+            "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+          },
+          {
+            "path": "src/vcc_task/bounded_bundle.py",
+            "sha256": "ab2a872f3c1396545bb9de5bd0f9fa2ccd7b8f2887c7c47bef01f7fc4702becf"
+          }
+        ],
+        "changed_paths": [
+          "experiments/full-eval-support/src/run.py",
+          "experiments/full-eval-support/src/mapped_copy.py"
+        ],
+        "failure_ref": {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/evaluation-repair-failure.json",
+          "sha256": "12aef1757a954d164e87acb6d3a0b72126935d4c2d9d148cf5ff6d44d285bca2"
+        },
+        "preserved_refs": [
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-H1/H1/panel.json",
+            "sha256": "1b6233be92ee0e87de3b37b103ebff70aafb067bf1f6ac55e61c96c4c3a53f27"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/real.h5ad",
+            "sha256": "1f1e9bdc7a6e1f12285a15d7142fe2781e79fb8a064a3291e063124a1660a2d3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s01/cache/H1/input-ntc.h5ad",
+            "sha256": "46cc3cc8a57f963c75d458cdad286b43050b6a583c0937a46d829ed3237e5a74"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/target-derangement.h5ad",
+            "sha256": "3e4271691baccd8cbd35df6ab22f234fbd2f28647e1102157772af8659a40140"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/real-copy-diagnostics/diagnostics.json",
+            "sha256": "0a224a0740da0a58c0aa6b1f48ff4b5d8a146eca70dddb42011e815cf55bbd7b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/derangement-diagnostics/diagnostics.json",
+            "sha256": "f25f54526109d6f24b1d23cf2e4055e2d79a7c94413bce91884b5d13980b67c1"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/real-copy-score/result.json",
+            "sha256": "d49bbb1617795e0524faf3a4a841e3775116b3ff7cd66c2563ecee74198b175f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/derangement-score/result.json",
+            "sha256": "d0b963d418f948062a42e6986d7b6e2a20495b878f1de9a97d964fc9230ac636"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/bundle/anchor_agg.parquet",
+            "sha256": "652aeb9632e75b263f37ed40e5ee53a3c25df3bf77d6a42393627aa871c47de2"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/bundle/anchor_meta.json",
+            "sha256": "8d011f4ea67197bcfa7527f1576786e96506279420ac4089ca4e29eb996af95d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/bundle/anchor_splits.parquet",
+            "sha256": "70b40e2358c3e1b74931e774ae5a653bc87218a3546e1450621003c67a4ab0f8"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/bundle/baseline_agg.csv",
+            "sha256": "411fbd2121851a0c613c7bd9644954bec0b0927850f6e95e347e22bfea1bc21f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/bundle/baseline_meta.json",
+            "sha256": "9c51ee83c7dab0dd6e87dbee08a2e5e48d153a23509f39a3c2821e014db6420d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/bundle/manifest.json",
+            "sha256": "4b3d462f35d96f5caaf0d6cf22a984ab6268290ca77f9bbc259c76d658ead85d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/official-baseline.h5ad",
+            "sha256": "57300feb4d2dd788665b4bad89a5e60dfff3f9618e716390013217a1d74dc4e5"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/predictions/S2-H1/H1/baseline-equivalence.json",
+            "sha256": "8ba2c04a0d4ae3af82c8508227bc7d7bd8ebca10059ffc8fc1d7197e9794e091"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/panel.json",
+            "sha256": "8cb3a9fe81c119bcd4d7dda49bb052a670dd7d923e351826e1ea8dd9d260a3ce"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/real.h5ad",
+            "sha256": "ddbebfb5472b09558fada73457857ecf77e12c8e48bb0da57d081ceacd56431f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/HepG2/input-ntc.h5ad",
+            "sha256": "168d7a319e7b382dc15b08f65ceaa4fb24f3608405f11533cb7ccd7d3190646d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/target-derangement.h5ad",
+            "sha256": "ff34628f32ec3eafdbf9a90eef20f69084dbf2b0322922e503f2da14ee747ece"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/real-copy-diagnostics/diagnostics.json",
+            "sha256": "ae474a4f1afadc7e6df9f0cc9ef9bc5f16823c0f7367255db46977289935b9a3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/derangement-diagnostics/diagnostics.json",
+            "sha256": "3452202de57b6bdfc42669f6d699600178015d44330a40221fea9dc4451ae0af"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/real-copy-score/result.json",
+            "sha256": "0c102f84097af8df5ea5d873b175b3b725edc09ff1aa1f7951a7f16357feeecf"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/derangement-score/result.json",
+            "sha256": "ab5d0b5286ff1525da417090c6e79fef33e00e724558e73e3f99cb7b662410e3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/bundle/anchor_agg.parquet",
+            "sha256": "d7b4a5b96295a13ac92b00611e6d14895d0c5630bb315f5cde2188903cf54710"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/bundle/anchor_meta.json",
+            "sha256": "2dab52d1f0bbbfb1fc27efdb3baa16c40b8fd63d53dfa32b7f4bdb5814275189"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/bundle/anchor_splits.parquet",
+            "sha256": "5c6c6ea0cf45c8a18b309a80acba1dc2fae5933250c75854704cc4df2f1f5e09"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/bundle/baseline_agg.csv",
+            "sha256": "699a88ec2426f66a81827fae14a3a1cea7e7d92098f0fb55ccdaa8b939182760"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/bundle/baseline_meta.json",
+            "sha256": "4ac8ce2695764c52cd26df35c31c615d2c6e735528f0c1d467daafec9664ed9e"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/bundle/manifest.json",
+            "sha256": "da68edea5114f7ae45a8fe65f6856026855ec873b58f8d1bb00266cae887a8a2"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/official-baseline.h5ad",
+            "sha256": "b8fa03dbc34a3b764d8529e1434e442b3d1dd6e32799051d51eb4e5d03faca94"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-HepG2/HepG2/baseline-equivalence.json",
+            "sha256": "f037a793d37aa40a676bbf51a27c339bd8bed928498dd670a8551ad0e2682aa2"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/panel.json",
+            "sha256": "947c2142c21365476a30a472847f2ec74394e6251f22c4ad9893ca5e84a27170"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/real.h5ad",
+            "sha256": "b3119c7da7bfebee231479cc0c0004a79681597a53b563d311978af95bd3a9fc"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/Jurkat/input-ntc.h5ad",
+            "sha256": "022b767af69faf0fae1371414719ccd49903203c20dd466623201c4e01cde993"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/target-derangement.h5ad",
+            "sha256": "cdb8ab57cd86d275fa054cef5f486213764814f174e877f2a967414de2dc1904"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/real-copy-diagnostics/diagnostics.json",
+            "sha256": "b252aa56d351fedd7217c88c2446ba0c670a884e0647e07c1c10757c027f6971"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/derangement-diagnostics/diagnostics.json",
+            "sha256": "8ce2de0db225ada9cf20db383f5e11ce70a0d6cd07ca070cb30c7200dfaf5caf"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/real-copy-score/result.json",
+            "sha256": "f2d04c9f1b9508ac9de3d3ee6a4de8192ae040ca6ca04c407e7bd4694893405a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/derangement-score/result.json",
+            "sha256": "00241ba07eff31a2a542a09fc257279ace7bcd524864f6c6324d5ae10365dc80"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/bundle/anchor_agg.parquet",
+            "sha256": "c0d49e0b412b510eb09d21409c1ff251fa8bc9e4413c88bf90e40ebc04302eef"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/bundle/anchor_meta.json",
+            "sha256": "bc22d6850c0315a5887837110953d5f5abca14eecab345e08100a0ccab507aa9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/bundle/anchor_splits.parquet",
+            "sha256": "0efb346769426dc3e3563cac7d5760d4256797a1d9368e4d3cf2458b9d0b85b9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/bundle/baseline_agg.csv",
+            "sha256": "9c0dd4b066706d9db7b39eedeced41349f1e6d4dc85803277eeff78fbe3292a7"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/bundle/baseline_meta.json",
+            "sha256": "f28b68dc0c988ea59e6ec7c3423a5956779ca487eb3d0be9b59451489f3d4ebb"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/bundle/manifest.json",
+            "sha256": "1a19f6099ec45a1b9af90ea6614e22a40506e56c386b5129a896392707a9e450"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/official-baseline.h5ad",
+            "sha256": "04501def39c22de775e93f9aebdda4c4e2829e643276f784d6fd98d2a214afef"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-Jurkat/Jurkat/baseline-equivalence.json",
+            "sha256": "8372707d5463e5477b2688865ec4e3a4c0444ea85080702e24788e62cf7a9eca"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/panel.json",
+            "sha256": "35e5e8bef786c472966b09b74e9e23dc65cd4bf354acabf6776ff172e4d46ba2"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/real.h5ad",
+            "sha256": "f58838b9ca473487cf934371b86eb576b8ffcadf142a6861c9939d7ec8014617"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/K562/input-ntc.h5ad",
+            "sha256": "55f2b4c8109ec90cbd045b5bf48930a07354a7a9cbb9c966691701bd25193b99"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/target-derangement.h5ad",
+            "sha256": "2eab0c574e5302b45b221ff33ca56b1e4c317bf0dc2116eb0e19d16587ed2f26"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/real-copy-diagnostics/diagnostics.json",
+            "sha256": "c32a8e740ca3b83c03137b0bdbfa633bbb4af7376e7fc13b6e394a577f410cd5"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/derangement-diagnostics/diagnostics.json",
+            "sha256": "743fc25456172d96f71c422b22b00d7b269d3db038f83d714a655d0858e55416"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/real-copy-score/result.json",
+            "sha256": "5de0fbb3bfd87f0e5d89d2cd15935d0032f6365a53ad952809f2f568d2570d74"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/derangement-score/result.json",
+            "sha256": "07dab6d90f900007ed0cfcb16479922f32b7c842ebc5cfaa964c691d5cf25e71"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/bundle/anchor_agg.parquet",
+            "sha256": "55364d19d3185b67977265ae485dec6e5045eccd7903a53df524d6554b8a03d0"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/bundle/anchor_meta.json",
+            "sha256": "fc683aea3fd58b9b896ab281bb4d264d36ea8ff5f5a2d4d2d7bb50a9739b2f02"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/bundle/anchor_splits.parquet",
+            "sha256": "c320a7d99151ddd7cac29159e47ff13241fdae8e49d38ba1bbc7f80b7e9bbca6"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/bundle/baseline_agg.csv",
+            "sha256": "a083fb57947194b4d7d2d5d2beeded1dccb0c93c7990e30b745b50c63c3aab5e"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/bundle/baseline_meta.json",
+            "sha256": "1a28f09c996d1efba7c00da5d01c1f8a8e2363c6eda9dc3ca3bd3ba60b1d7fe1"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/bundle/manifest.json",
+            "sha256": "c7aa83fdc4f5686578003e0177c9d4836674fa6711428ed781d6168d05fb4a4e"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/official-baseline.h5ad",
+            "sha256": "849e2f7c8b5c54433805c5c13adcc093eeccaf1e4f86f254c94d62281e4a1a3c"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-K562/K562/baseline-equivalence.json",
+            "sha256": "3da87d470aaad05465087173bd652849e42ba5cd1c50e6527fd30432ecf865c8"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/panel.json",
+            "sha256": "1d5fc74c3df8c60a0036555913121beb5a82a87b8c7caa0d4d30b5caa0683226"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/real.h5ad",
+            "sha256": "03472830509d2cf1548db2b8c25baea53e32383300c22fbdf0f2faa75d40511c"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s02/cache/RPE1/input-ntc.h5ad",
+            "sha256": "fec5b28b6a0fcf64c1232cb606a52809ebd99e943b3c1793ca47526ef1eecc2a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/target-derangement.h5ad",
+            "sha256": "eaee472f34889b6c6a27aa08e81bc7fb21e64478064c1f3f70b74ae7ac7747a1"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/real-copy-diagnostics/diagnostics.json",
+            "sha256": "f7302237ecba7e326a79f0fa36c1480e2304cdea37b1d74b2d6e0746ddbc3763"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/derangement-diagnostics/diagnostics.json",
+            "sha256": "633b22eebc4957156d0a40478b382ec0dd1a4c6169d263a45df4b51312aaf6e0"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/real-copy-score/result.json",
+            "sha256": "5a62121812c01572528ed678d27d2605679829d13ddb927412e7d71d5d4943a4"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/derangement-score/result.json",
+            "sha256": "fcfdb2a46434b46bc1c0feffa9ddff16f9ed4725eb2decee69947125ec072bd9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/bundle/anchor_agg.parquet",
+            "sha256": "08bbe4d1e59ef5e154fbaf7745107c11fa6d340081294d7dd47b0ab841354653"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/bundle/anchor_meta.json",
+            "sha256": "e38bb0f99deedf4e4702435334c4f75d84c764448c5c28d5e06b6b6e70134bc7"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/bundle/anchor_splits.parquet",
+            "sha256": "2048fd883ac8b6df8d5865842dd10fb4a56939b47b441f734cc935254b5450bd"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/bundle/baseline_agg.csv",
+            "sha256": "ab32e57f61eb4b6e7c27194b20a130f4e53f664c8bf2100ec4d0cb0771f8c751"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/bundle/baseline_meta.json",
+            "sha256": "a8edd35ee89f4c0ac2d9cfeaf8feab285abfc383e9a5ec6b371d1ec0044b7252"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/bundle/manifest.json",
+            "sha256": "bbd3e547dc2906fab4b1f13eed971f4365e461182412ec10b0a95f07524447ab"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/official-baseline.h5ad",
+            "sha256": "f6cefc360acc18b8cfff26530d1805900af6fdf3461c3e458843f2ab7fa164a3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S2-RPE1/RPE1/baseline-equivalence.json",
+            "sha256": "78cfd6c20c818cdfe588f9eb197fcd71d9f9f154ba1ff185acf435b345747d02"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/panel.json",
+            "sha256": "cfc4820ea317e8061f65b387e00d6ca2f8cb83760530b72f3ba6557de2e76a4f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/real.h5ad",
+            "sha256": "eec69812e2cc1a0d2374d9fbdb24babeca4ccbb0d3144254bacbd41b1902a48b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/target-derangement.h5ad",
+            "sha256": "48cdda03aadbd09bd9b342010512981424396d101fe0e34834f3383616dc99d7"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/real-copy-diagnostics/diagnostics.json",
+            "sha256": "ccbedba7a8a7688127d061e0bd7b4358ea584bc8ca1bf6ed23f8ca0efa63df8e"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/derangement-diagnostics/diagnostics.json",
+            "sha256": "19858a73b1a6d060948c7a85eec73127e46388e7af585b48c3fa53ffe0652511"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/real-copy-score/result.json",
+            "sha256": "feea31b17aa1eb9edaa6cbc62ee1dcfb9b256619cd462fe3a0bc9cd92af0e05c"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/derangement-score/result.json",
+            "sha256": "f83940762b4a4c759dcd1f1121dc5ca8858ba0cf9f1ca5b6225f00b16da9f5f3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/bundle/anchor_agg.parquet",
+            "sha256": "f7c4b9f390e0da5e41e3d59330d07a4462e03c08a0a918376eb182a1356fab98"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/bundle/anchor_meta.json",
+            "sha256": "8c814d555795b0e714bf010aec29f04269cc5b18cb94c2536eced87f430d6758"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/bundle/anchor_splits.parquet",
+            "sha256": "7107a365116b97ad9dc12731e3533fa4078994e65f9dd8a6e84df6b99cbc602d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/bundle/baseline_agg.csv",
+            "sha256": "54e27c5e0d85ecf3f98ffc834a4339259ce68b2fbcffe35cfbf59b9ed572691a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/bundle/baseline_meta.json",
+            "sha256": "ad507322cf0aa8c95ff32da93feb9eb5989e250df03e50fe67a09f3148b3b64a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/bundle/manifest.json",
+            "sha256": "0bddf3fc3c56138225ec043e0722fe3601fd30a2b808795fa167f3a15404db52"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/official-baseline.h5ad",
+            "sha256": "b3488266ca74ce62cce2d40dbd710c6a7fea9cc41594bd667d02f4ad4fa059fd"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-H1/H1/baseline-equivalence.json",
+            "sha256": "86e37ffafe53bc8259676808790e4586dc3e65ab686381c40eb1cedf65a8d936"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/panel.json",
+            "sha256": "80a5a71b1975abfe3ea1c6e4b3e5d0862c6251fdc3fba178c3458d267fb04aed"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/real.h5ad",
+            "sha256": "89c0a55ffa837cb57070d47f5944c3298b268555a91dd6cad0a95b8632057a3d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/target-derangement.h5ad",
+            "sha256": "36dba242c6c6cb7ad0694919b014cfd3ca9a058a16814d33fcdd468848ebfee6"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/real-copy-diagnostics/diagnostics.json",
+            "sha256": "86d12f6f0b4f804a894f18932ca54d037ab01abf11da3716070f44bac3a9439d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/derangement-diagnostics/diagnostics.json",
+            "sha256": "959253c53e82a78c24aa2c40355a57a6bdfa839b5cd321e04ff746fae348937a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/real-copy-score/result.json",
+            "sha256": "68e52354e905c98041fb7df100ac2a6137766b98ee9e7d8b250e6eb4f2617ba0"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/derangement-score/result.json",
+            "sha256": "43399173fa58cda500b8ea027a9b80cd243b22c1dce6d56e1753d6a5b58edbd9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/bundle/anchor_agg.parquet",
+            "sha256": "7bdf229fb9185273356ba94af92db342567887b9b89fbb825d0f7171d5406616"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/bundle/anchor_meta.json",
+            "sha256": "934ea83a73d78ef9c185deac8f583bf07ed8f503e4ea65f82e9822353026ae75"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/bundle/anchor_splits.parquet",
+            "sha256": "2d5b30d4f150a8ffc1030d8f7b40bf3cad9a965e13d845d4c95eec3f35e67862"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/bundle/baseline_agg.csv",
+            "sha256": "67ab039ba9d80369ad30b079a466b0c3013a2c83509aab0f6dd6a99bf4dc5e98"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/bundle/baseline_meta.json",
+            "sha256": "62e50806a6a23b9f3a6549b0b3c3fcec0e7a1465dd42fee0e9a769c80d8e91b1"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/bundle/manifest.json",
+            "sha256": "6fb91097a85723db03a1a57a6d0c0e98aaa1de721c3f0dec63a0713c59a11841"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/official-baseline.h5ad",
+            "sha256": "8939d909905daacebc01738e11cc9d39ce418954dc2f0fb0e0f87fc54a94c09f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-HepG2/HepG2/baseline-equivalence.json",
+            "sha256": "9736b8f654b361b1a3c583e45c6977fb2434253791839e25f60f37368ba92805"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/panel.json",
+            "sha256": "456d401fdf18e62338567b57a3eb5363dc573c900a0cd8ef45938c55e9166ebc"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/real.h5ad",
+            "sha256": "fa76d24318698bcbe36d58ba267bb6f50560d7fff1ca2e0c48afede102961074"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/target-derangement.h5ad",
+            "sha256": "3d1f3d6070ac6960f7b88d90802eff6b5c951f9059a80144db2727aa35b50e2c"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/real-copy-diagnostics/diagnostics.json",
+            "sha256": "b70341004b793ee6246226c023edcb6cf6d643176350810d229bac62e3088060"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/derangement-diagnostics/diagnostics.json",
+            "sha256": "bc2720aaec05cba1d2c6396f31f2e5280fa37285f58ebe9b6c9b87954c895244"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/real-copy-score/result.json",
+            "sha256": "d42cbad77a862b9af4847f0c0539cee0ccc8eb7135b106ded1b824003fccef9d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/derangement-score/result.json",
+            "sha256": "f237a708c6119d7dc0a9b9c3320e419ff77ffcec1730b628622c6deb569a8193"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/bundle/anchor_agg.parquet",
+            "sha256": "89797fc52c7b5b2cbc4adfd488ecefd73b167d7c08910d667190bb8a7ae8110f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/bundle/anchor_meta.json",
+            "sha256": "0bad4035a66672ed7ca8d0bd4c3c61ed68e6da32bd2cb52b89d4e35a6798c02e"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/bundle/anchor_splits.parquet",
+            "sha256": "7f8402e2ab1f56dcca61b750c3b4428c65aaa4c75e4d4de58654a086184b57dd"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/bundle/baseline_agg.csv",
+            "sha256": "f20650f0e47c133ae815e7ad960311d55e0b40b0ef2c1bac145dc92173bffd3a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/bundle/baseline_meta.json",
+            "sha256": "4b3fb6ae46b016e90e869366d675abff39c7847d5689ed9fc0e0aca43c1f0590"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/bundle/manifest.json",
+            "sha256": "cd17f14aef0998702353a74514a7d05988d1e58026122112a85dded2f9092d50"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/official-baseline.h5ad",
+            "sha256": "bcb960c6a1ae20149a689de48116cf72ed8e0219eafdb0723273e6ea70a085fd"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/baseline-equivalence.json",
+            "sha256": "f35a04499742dd30ac4001b2efcbca669a81de831176927b28661d7309c2a8e9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/panel.json",
+            "sha256": "bb08a64b23901323d9d24aaae3bc0a3f329abdabfd8ebe8eca7c26e1c73d0737"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/real.h5ad",
+            "sha256": "5d04b9eec91102014eb9eb8253e988eedfb4736be083b6acbd39a0b3347ea4c0"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/target-derangement.h5ad",
+            "sha256": "72ecdfb2676e0a9a6d63514732e153d752de7fe2a65564005823cb2c9529146e"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/real-copy-diagnostics/diagnostics.json",
+            "sha256": "5cd819efe6bed5c6e0045a39b0d803cd56c5441bba1817bac468dac21c5adaf2"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/derangement-diagnostics/diagnostics.json",
+            "sha256": "35ad543876fd82e7a130b236af3272ebf575aa63093be39abe0338808474fad1"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/real-copy-score/result.json",
+            "sha256": "fc9758199bb5db3a6ce0a5e4da0bf5ae0081dbc54ffb6559b54fc83f2fec9308"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/derangement-score/result.json",
+            "sha256": "1aa4c2bb77658c67b24c4b9035819695c561451e156d32e59337d9db677aa447"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/bundle/anchor_agg.parquet",
+            "sha256": "d35141709ac1f5f968e594d78b5b047fb5268ec7e75f29605a81aa14c52d9a25"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/bundle/anchor_meta.json",
+            "sha256": "05c381ed8846070cf240edbe941b047b54c1fc351f906881f45312b043b272fd"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/bundle/anchor_splits.parquet",
+            "sha256": "f3c7b9ca6839c8ad851030e51e114729e0b993ceb823cc820af9d89b90d63dfb"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/bundle/baseline_agg.csv",
+            "sha256": "2517d07bab1f6cdc993a679e280e173dffa30f23f3b7c62cf82880dd629dd9e9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/bundle/baseline_meta.json",
+            "sha256": "4ee23ea5c6c358dc6521f0c7d8efe3f6b0154d5c5132522281fe23a27c05a1f6"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/bundle/manifest.json",
+            "sha256": "9053b3d21395c379ecd660c5f135ca7386ee67c6bab185f262d68eb41eb1922c"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/official-baseline.h5ad",
+            "sha256": "15f1a1f4d268a8983c56ed940192449eef3a468988a5e3d1a899fd5b254e13f7"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-K562/K562/baseline-equivalence.json",
+            "sha256": "4d99001d5497af5ed80b2010125a9a618eaafef46e0ac3f34d8760d3046d29d3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/panel.json",
+            "sha256": "000045aabde63d81f5a4fe052d764f5584f98f17a3f6d178f52758764b9900e5"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/real.h5ad",
+            "sha256": "37529c316c50b1ba1c09d9bbe0f59b3a03366563f0c860ba5b5334bf6521a4ba"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/target-derangement.h5ad",
+            "sha256": "8c83bcf3573936f8d2a3bbcf1900523ee68a3e6da32327906a65f0ede7a26e9a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/real-copy-diagnostics/diagnostics.json",
+            "sha256": "df928de617da46dee59cc791a6f01d4df0a8f9e0e0ff06be3c0b69a202050536"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/derangement-diagnostics/diagnostics.json",
+            "sha256": "4a440257e9de3b1181aebae035911a3369f006acacaa17b397882567cdba19b1"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/real-copy-score/result.json",
+            "sha256": "55f5d3d288707b90e9610c3fe43726973f99b19b707cac92a6b594c8a9464b53"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/derangement-score/result.json",
+            "sha256": "39ae96d3a56f35600c478ecf8fa6117c2a2c1560e4f05ba7167a8e108e12bd2d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/bundle/anchor_agg.parquet",
+            "sha256": "f03b34f6fa27157547607fb8425065db518d344bf8c358e9602c3a813a072eb2"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/bundle/anchor_meta.json",
+            "sha256": "95b2578a45ada24c5ae666cf181f49ae325e27fccb9ee5209f7d0a06b5dc3eec"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/bundle/anchor_splits.parquet",
+            "sha256": "2a5ad212dbb4a67b4f6f64ee76e2a6d1afff709de6d1b15e6645aed356689227"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/bundle/baseline_agg.csv",
+            "sha256": "8806e701d4a76c8966e4f88a1257efe7ac9961a6457d9338ed1d48b008a8e0d8"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/bundle/baseline_meta.json",
+            "sha256": "afd6980b407b88992537c4854783b62f66d8f9ff9ad7ecc770e1deb7cb91479d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/bundle/manifest.json",
+            "sha256": "ddaf71018eb02c1da70d6af83ddfd34b19fedef6788d5df85112d27af3883684"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/official-baseline.h5ad",
+            "sha256": "ea1eafd3c55d1be9f9ca3997114f84db6878173446dd3d7fe6e4aae08c035bd3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-RPE1/RPE1/baseline-equivalence.json",
+            "sha256": "1a79f09f9f4414fcaded66d3c7970a3bf92de47148a26a316a2478aa419e9283"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/panel.json",
+            "sha256": "9768d0b19930062a671e1d3df22410861407c0882a5879f0e2a0f2a623899e9c"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/real.h5ad",
+            "sha256": "8bc31a3650698709741ae02aa9c89efddb8fbf505f181299a07eab421cd8cee4"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/target-derangement.h5ad",
+            "sha256": "c7fdcf41ff74844e3250e18b6b74bc456dce9157ae2fe4128e1122ae4e6400ed"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/real-copy-diagnostics/diagnostics.json",
+            "sha256": "b39843915d0cd6bb1e1a479d2f40db1304a7c79ce17242e390220a7ef9d352fb"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/derangement-diagnostics/diagnostics.json",
+            "sha256": "22b80c4339dfe9da32e7924a59b28688a4ba81172f4fb10077627f7d996808c4"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/real-copy-score/result.json",
+            "sha256": "538feaeeaef4a5b6461d4f541a46cbab7543d47468ea194b55f474c5952eb5e6"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/derangement-score/result.json",
+            "sha256": "900207f30e508c48fe43745a738cbe7494b363cd7bef0156aac3a504fec647c3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/bundle/anchor_agg.parquet",
+            "sha256": "8efa205a57ce3e68b95c42d6b73f50986854d0e7b9010cec9ba586182db733ae"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/bundle/anchor_meta.json",
+            "sha256": "74151c84e91b4e693bb38cc9ff0e2578cf0d4c9ccb83e5a258fe7006cf655d20"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/bundle/anchor_splits.parquet",
+            "sha256": "e4f420b2f75c19e55bc4b3d3a0a54b1957cfb52c21bd4bab1d1dcd0a11ad546f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/bundle/baseline_agg.csv",
+            "sha256": "d9b0ea2a0cf14ba58d2cb2a3497731aa617e661f01b481e9da0e565104d81c03"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/bundle/baseline_meta.json",
+            "sha256": "c326517299fa9b1dcbcd62365ea400d4ead3d9f16f892f04e49544b6bc431142"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/bundle/manifest.json",
+            "sha256": "8060d2c33a0bee6668a5e4d8f9af049cd759141b3791f1dca7cd14e998f30b68"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/official-baseline.h5ad",
+            "sha256": "2ede0e0a3fc515e24968b4255004d890acb89bf245c18e08c698456765c27d56"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-ARC-H1/H1/baseline-equivalence.json",
+            "sha256": "a16c95d257e33b143790a8d06e9489601d66323b963d375807a85de7983fe4bd"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/panel.json",
+            "sha256": "a504aa53c5a1d6758e3e34987b3e934816bbd561942d1e080a4a02760e844aeb"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/real.h5ad",
+            "sha256": "ddbebfb5472b09558fada73457857ecf77e12c8e48bb0da57d081ceacd56431f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/target-derangement.h5ad",
+            "sha256": "ff34628f32ec3eafdbf9a90eef20f69084dbf2b0322922e503f2da14ee747ece"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/real-copy-diagnostics/diagnostics.json",
+            "sha256": "12d1f02c21b07ea96ce90500b0fcbb02fe5df9a3f366f4eda6acd4fd2e9dc092"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/derangement-diagnostics/diagnostics.json",
+            "sha256": "69d53c9b562049424f525e50810c93cfe8560f1715fa4bb40b5a07f32e92fd4f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/real-copy-score/result.json",
+            "sha256": "f96b152794f90ae86a74e21e6aafe35acbeb2c33223e2b1221698568b4b187cd"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/derangement-score/result.json",
+            "sha256": "d16ab09c644108b8a011406025336cffb1d1244a7d5226e9505082f2323c1cca"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/bundle/anchor_agg.parquet",
+            "sha256": "d7b4a5b96295a13ac92b00611e6d14895d0c5630bb315f5cde2188903cf54710"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/bundle/anchor_meta.json",
+            "sha256": "2dab52d1f0bbbfb1fc27efdb3baa16c40b8fd63d53dfa32b7f4bdb5814275189"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/bundle/anchor_splits.parquet",
+            "sha256": "5c6c6ea0cf45c8a18b309a80acba1dc2fae5933250c75854704cc4df2f1f5e09"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/bundle/baseline_agg.csv",
+            "sha256": "3f19a67014bffef686a24562abe6d33d5943c78a331971f551e2795eb3f50fa4"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/bundle/baseline_meta.json",
+            "sha256": "5499164ea97d7fb5a2ca0b96a54a969b59b708c71ecaea366303067b81f52209"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/bundle/manifest.json",
+            "sha256": "7aa89f014302a54f11a60d5dcd60102ac7b7b5e29a6ac8a48b125ec3e47d283f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/official-baseline.h5ad",
+            "sha256": "b8fa03dbc34a3b764d8529e1434e442b3d1dd6e32799051d51eb4e5d03faca94"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/HepG2/baseline-equivalence.json",
+            "sha256": "f2268fc8309cd422bbe64346ad61ae232ddb0f61d3c91642f53931f12f81a91f"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/panel.json",
+            "sha256": "ff533fd80a6d72f31dd12f0c56a082cb18b3fcc11b68d94d2bd06a88471fe5e8"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/real.h5ad",
+            "sha256": "b3119c7da7bfebee231479cc0c0004a79681597a53b563d311978af95bd3a9fc"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/target-derangement.h5ad",
+            "sha256": "cdb8ab57cd86d275fa054cef5f486213764814f174e877f2a967414de2dc1904"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/real-copy-diagnostics/diagnostics.json",
+            "sha256": "a6b559c240a7dcd086239ded44d1684139080003a156d710eb0d36e939fa73a3"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/derangement-diagnostics/diagnostics.json",
+            "sha256": "06f6354480908600855aa2ced72fbe78e808f1bb180d13f847ae353f53145f27"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/real-copy-score/result.json",
+            "sha256": "a766efab4a5ee31bb62d3f41a7075a04f6bd8fe21247b8f28bb480e7ebacea59"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/derangement-score/result.json",
+            "sha256": "bda6bbf5f9604bfe133d73f4e5c67de8131f96dda631d0eb442deea0996679c7"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/bundle/anchor_agg.parquet",
+            "sha256": "c0d49e0b412b510eb09d21409c1ff251fa8bc9e4413c88bf90e40ebc04302eef"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/bundle/anchor_meta.json",
+            "sha256": "bc22d6850c0315a5887837110953d5f5abca14eecab345e08100a0ccab507aa9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/bundle/anchor_splits.parquet",
+            "sha256": "0efb346769426dc3e3563cac7d5760d4256797a1d9368e4d3cf2458b9d0b85b9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/bundle/baseline_agg.csv",
+            "sha256": "1a2c8692328b28693e939af3e06b52cb530507e4c45119999958f4282894e71d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/bundle/baseline_meta.json",
+            "sha256": "6e459928176be3cd3d7236a6c93fb2ac5ae6ad77709ca9ed265203cc87f005d6"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/bundle/manifest.json",
+            "sha256": "b713b780aa7171b1f16ae8ce1c062985dc4ef0a2922b7d0d3461b87257df51f0"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/official-baseline.h5ad",
+            "sha256": "04501def39c22de775e93f9aebdda4c4e2829e643276f784d6fd98d2a214afef"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-NADIG-2025/Jurkat/baseline-equivalence.json",
+            "sha256": "cadb47736ac863e5e4d6719894775fb405d00ae14ee97929e577ed7c88d0a12b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/real.h5ad",
+            "sha256": "ab753b489e818ecf541a51aa0d1b9ef5114891a972d22931771df317a0b90a5a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/official-baseline.h5ad",
+            "sha256": "ebef2e748a90e172f709e534ad5d42aa1da86a0ad6d8f89e0e73c3f5687eec32"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/baseline-equivalence.json",
+            "sha256": "780c606dde1d7f5c7683bdb591af699cde8f970dcf6ced0d11abea077ecd6c36"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/checkpoints/evaluator-specification.json",
+            "sha256": "6c012906a10644f2885ca640ace24837420422d44c460bad247c1f7a3339997a"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/pre-memory-repair-manifest.json",
+            "sha256": "8927528ae53f79d70a86b0c6dfb30c460b18af5f793ab8e29328c134e5ad92c9"
+          }
+        ],
+        "allocation_equivalence_ref": {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/mapped-copy-equivalence.json",
+          "sha256": "85aa9635b9cf7e637344ee5c36b35cf61ad03866d5b01fa8e434865ba69918a4"
+        }
       }
     },
     "depmap-shared-s3-h1-s930": {

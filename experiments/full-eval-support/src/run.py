@@ -16,11 +16,13 @@ from anndata.io import write_elem
 import h5py
 import numpy as np
 import pandas as pd
-from research import bind
+from research import bind, execution_metadata
+import yaml
 from vcc_task.common import NTC, ref, verified, write_json
 from vcc_task.count_store import copy_panel
 from vcc_task.full_reference import prepare_full_context, external_prior
-from vcc_task.bounded_bundle import bounded_bundle, mapped_reference
+from vcc_task.bounded_bundle import mapped_reference
+from mapped_copy import memory_bounded_bundle as bounded_bundle
 from vcc_task.prediction_diagnostics import diagnose_panel
 from vcc_task.frozen_scoring import score_frozen
 from vcc_task.run_context import RegisteredRun
@@ -133,6 +135,15 @@ def main():
     cfg=json.loads(parser.parse_args().config.read_text())
     research=bind(ROOT,cfg['run_id'],cfg,resume=os.environ.get('VCC_RESEARCH_RESUME')=='1')
     job=RegisteredRun(cfg,research)
+    evaluation_config=job.output/'evaluation-config.yaml'
+    prior=yaml.safe_load(evaluation_config.read_text()) if evaluation_config.exists() else {}
+    history=prior.get('evaluation_execution_history',[])
+    execution=execution_metadata(ROOT,cfg['run_id'])
+    if not history or history[-1]!=execution:
+        history.append(execution)
+    evaluation_config.write_text(yaml.safe_dump(dict(yaml.safe_load(job.config_path.read_text()),
+        evaluation_execution_history=history),allow_unicode=True,sort_keys=False))
+    job.run.config.update({'evaluation_execution_history':history},allow_val_change=True)
     try:
         prior=external_prior(job)
         observations={c:prepare_full_context(job,c) for c in cfg['contexts']}
@@ -156,7 +167,8 @@ def main():
         write_json(manifest,{key:ref(job.output/'predictions'/key/'panel.json') for key in results})
         job.complete({'support':{'fraction':sum(r['six_normalized_available'] for r in results.values())/len(results)},
             'panels':results,'support_ref':ref(support),'diagnostics_completed':True,
-            'submission_decision':'not_applicable_evaluator_only'},checkpoint,manifest,[support])
+            'evaluation_config_ref':ref(evaluation_config),
+            'submission_decision':'not_applicable_evaluator_only'},checkpoint,manifest,[support,evaluation_config])
     except BaseException:
         job.run.finish(exit_code=1); raise
 
