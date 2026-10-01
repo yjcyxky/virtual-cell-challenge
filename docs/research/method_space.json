@@ -186,6 +186,18 @@
         "R20": {
           "description": "版本化DepMap靶点依赖谱，经训练靶点内拟合的表示及监督响应对齐；缺先验与未知效率显式处理",
           "local_status": "UNTESTED"
+        },
+        "R21": {
+          "description": "DepMap训练内PCA后按靶点置乱；按来源背景成员集合、评价身份及原始细胞系缺失掩码分组，匹配各背景和评价集合的特征分布、维数、覆盖",
+          "local_status": "UNTESTED"
+        },
+        "R22": {
+          "description": "原始DepMap依赖向量余弦邻域；无响应监督对齐，缺先验按预定模板回退",
+          "local_status": "UNTESTED"
+        },
+        "R23": {
+          "description": "训练context等权、任务等权的无靶点信息响应模板；所有靶点同一latent",
+          "local_status": "UNTESTED"
         }
       },
       "evidence_ids": [
@@ -242,6 +254,10 @@
         },
         "A10": {
           "description": "跨扰动基因/输出基因共享参数的条件解码器；缺监督坐标通过表示和共享函数推断，不设置无监督自由输出权重",
+          "local_status": "UNTESTED"
+        },
+        "A11": {
+          "description": "固定原始先验最近5邻居的共享响应迁移；逐读出按实测邻居覆盖平均",
           "local_status": "UNTESTED"
         }
       },
@@ -1807,54 +1823,50 @@
       "selection_basis": "保留原集合分布候选；2026-09-30用户重排后无本轮训练预算，后续由任务/数据约束和完整能力评价决定资源分配。"
     },
     "M-DEPMAP-ALIGNED-RIDGE": {
-      "description": "DepMap监督对齐正则线性/低秩响应与目标NTC计数生成候选",
+      "description": "ridge: source-only masked compositional response and fixed population emitter",
       "axes": {
-        "T": "T1",
-        "D": "D2",
+        "T": "T3",
+        "D": "D1",
         "R": "R20",
         "A": "A0",
         "L": "L1",
-        "O": "O0",
+        "O": "O5",
         "V": "V5",
-        "I": "I10",
+        "I": "I11",
         "G": "G0"
       },
-      "signature": "T1-D2-R20-A0-L1-O0-V5-I10-G0",
-      "prior": "P-DEPMAP-ALIGNMENT；先验提供靶点信息，监督只用源背景允许标签；bulk响应的具体空间、全轴未测坐标策略、效率处理和生成规则在ready前冻结。NTC到模板及稳定性门控不预设有效。",
+      "signature": "T3-D1-R20-A0-L1-O5-V5-I11-G0",
+      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
       "local_status": "UNTESTED",
       "execution_role": "candidate",
       "cost": "low",
       "evidence_ids": [
-        "L03",
-        "L13-DEPMAP-ALIGNMENT",
         "L14-DECOMPOSITION-FULLTEXT-V1"
       ],
-      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。 v1全文支持监督对齐候选；不是现有one-hot Ridge的重复，不预设线性或NTC条件化的普遍结论。"
+      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
     },
     "M-DEPMAP-ALIGNED-MLP": {
-      "description": "DepMap监督对齐小MLP响应与目标NTC计数生成候选",
+      "description": "mlp: source-only masked compositional response and fixed population emitter",
       "axes": {
-        "T": "T1",
-        "D": "D2",
+        "T": "T3",
+        "D": "D1",
         "R": "R20",
         "A": "A1",
         "L": "L1",
-        "O": "O0",
+        "O": "O5",
         "V": "V5",
-        "I": "I10",
+        "I": "I11",
         "G": "G0"
       },
-      "signature": "T1-D2-R20-A1-L1-O0-V5-I10-G0",
-      "prior": "P-DEPMAP-ALIGNMENT；先验提供靶点信息，监督只用源背景允许标签；bulk响应的具体空间、全轴未测坐标策略、效率处理和生成规则在ready前冻结。NTC到模板及稳定性门控不预设有效。",
+      "signature": "T3-D1-R20-A1-L1-O5-V5-I11-G0",
+      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
       "local_status": "UNTESTED",
       "execution_role": "candidate",
       "cost": "medium",
       "evidence_ids": [
-        "L03",
-        "L13-DEPMAP-ALIGNMENT",
         "L14-DECOMPOSITION-FULLTEXT-V1"
       ],
-      "selection_basis": "2026-09-30用户要求以实验/数据约束和监督先验对齐重新建立早期基线；不是从弱模型结果推导生物机制。 v1全文支持监督对齐候选；不是现有one-hot Ridge的重复，不预设线性或NTC条件化的普遍结论。"
+      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
     },
     "M-TASK-OBSERVATION": {
       "description": "无预测器拟合的五背景观测与计数生成校准；官方DE、实测独立NTC和已知效应对照",
@@ -1918,6 +1930,121 @@
         "E-POPULATION-EMISSION"
       ],
       "selection_basis": "完整15/15工程验收支持总体校准与独立抽样用于下一轮固定生成条件；DE集合未改善，不支持扰动分布已恢复。"
+    },
+    "M-DEPMAP-CONTROL-SHARED": {
+      "description": "shared: source-only masked compositional response and fixed population emitter",
+      "axes": {
+        "T": "T3",
+        "D": "D1",
+        "R": "R14",
+        "A": "A7",
+        "L": "L6",
+        "O": "O0",
+        "V": "V5",
+        "I": "I11",
+        "G": "G0"
+      },
+      "signature": "T3-D1-R14-A7-L6-O0-V5-I11-G0",
+      "prior": "No target functional prior in prediction; coverage diagnostic only",
+      "local_status": "UNTESTED",
+      "execution_role": "control",
+      "cost": "low",
+      "evidence_ids": [
+        "L14-DECOMPOSITION-FULLTEXT-V1"
+      ],
+      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+    },
+    "M-DEPMAP-CONTROL-TEMPLATE": {
+      "description": "template: source-only masked compositional response and fixed population emitter",
+      "axes": {
+        "T": "T3",
+        "D": "D1",
+        "R": "R23",
+        "A": "A7",
+        "L": "L6",
+        "O": "O0",
+        "V": "V5",
+        "I": "I11",
+        "G": "G0"
+      },
+      "signature": "T3-D1-R23-A7-L6-O0-V5-I11-G0",
+      "prior": "No target functional prior in prediction; coverage diagnostic only",
+      "local_status": "UNTESTED",
+      "execution_role": "control",
+      "cost": "low",
+      "evidence_ids": [
+        "L14-DECOMPOSITION-FULLTEXT-V1"
+      ],
+      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+    },
+    "M-DEPMAP-RAW-KNN": {
+      "description": "knn: source-only masked compositional response and fixed population emitter",
+      "axes": {
+        "T": "T3",
+        "D": "D1",
+        "R": "R22",
+        "A": "A11",
+        "L": "L6",
+        "O": "O0",
+        "V": "V5",
+        "I": "I11",
+        "G": "G0"
+      },
+      "signature": "T3-D1-R22-A11-L6-O0-V5-I11-G0",
+      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
+      "local_status": "UNTESTED",
+      "execution_role": "candidate",
+      "cost": "low",
+      "evidence_ids": [
+        "L14-DECOMPOSITION-FULLTEXT-V1"
+      ],
+      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+    },
+    "M-DEPMAP-SHUFFLED-RIDGE": {
+      "description": "ridge-shuffled: source-only masked compositional response and fixed population emitter",
+      "axes": {
+        "T": "T3",
+        "D": "D1",
+        "R": "R21",
+        "A": "A0",
+        "L": "L1",
+        "O": "O5",
+        "V": "V5",
+        "I": "I11",
+        "G": "G0"
+      },
+      "signature": "T3-D1-R21-A0-L1-O5-V5-I11-G0",
+      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
+      "local_status": "UNTESTED",
+      "execution_role": "control",
+      "cost": "low",
+      "evidence_ids": [
+        "L14-DECOMPOSITION-FULLTEXT-V1"
+      ],
+      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
+    },
+    "M-DEPMAP-SHUFFLED-MLP": {
+      "description": "mlp-shuffled: source-only masked compositional response and fixed population emitter",
+      "axes": {
+        "T": "T3",
+        "D": "D1",
+        "R": "R21",
+        "A": "A1",
+        "L": "L1",
+        "O": "O5",
+        "V": "V5",
+        "I": "I11",
+        "G": "G0"
+      },
+      "signature": "T3-D1-R21-A1-L1-O5-V5-I11-G0",
+      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
+      "local_status": "UNTESTED",
+      "execution_role": "control",
+      "cost": "medium",
+      "evidence_ids": [
+        "L14-DECOMPOSITION-FULLTEXT-V1"
+      ],
+      "selection_basis": "2026-09-30 user-requested complete experiments; source response alignment with matched shuffled descriptions and no-target-information controls; no prior local efficacy claim"
     }
   }
 }

@@ -1,0 +1,172 @@
+{
+  "experiment_id": "depmap-response",
+  "run_id": "depmap-mlp-shuffled-s3-jurkat-s930",
+  "seed": 930,
+  "benchmark": {
+    "data_audit": {
+      "path": "docs/research/challenge_2026/data_audit.json",
+      "sha256": "61c54f86b1f9116be76ef1d300f90249988c28fe1991a2553a2e0103e814dc85"
+    },
+    "scorer": {
+      "path": "docs/research/challenge_2026/scorer.json",
+      "sha256": "6008e8001d4fa27b7fba1becd15ad19b7756b1f25a2227c1ca4b73066638eefc"
+    },
+    "artifacts": {
+      "path": "docs/research/challenge_2026/artifacts.json",
+      "sha256": "6a363d461fa1fe30ee396ac2f974d8a4d5e2c5b146e4469ae6ad99abb4df0035"
+    },
+    "split_manifest": {
+      "path": "docs/research/challenge_2026/splits.json",
+      "sha256": "2b542b45d65d1ffbed944475fe7112745b3c0c53819ffd0c58464675f9d5bfbc"
+    },
+    "gene_axis": {
+      "path": "docs/research/challenge_2026/official_gene_axis.csv",
+      "sha256": "7f6f739c7fd7afffecaf35298e34917098056b43efa4665ee68ced1e11a9b013"
+    },
+    "observation_view": {
+      "path": "experiments/task-observation/protocol.json",
+      "sha256": "e04c0354a83d970d39ffaa9c67487a52582c7325670a79618070927dfdc136e2"
+    },
+    "full_support_view": {
+      "path": "experiments/full-eval-support/protocol.json",
+      "sha256": "c987d3ab3880c86d825852204f2247bad730be7da7ef0eba7ee94a2d1ec4e1f6"
+    },
+    "aligned_response_view": {
+      "path": "experiments/depmap-response/protocol.json",
+      "sha256": "44f9b591d86b33a67c95af9252a9c55c22d9ce1f00bbadf083ebe681daf5bcdf"
+    }
+  },
+  "fit_scope": {
+    "outer_split": "S3-Jurkat",
+    "target_partition": "global-train60-validation20-test20"
+  },
+  "source_observations": {
+    "H1": {
+      "statistics_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/statistics.npz",
+        "sha256": "00d934412fb0d7518c7a6a3e23f5c9f18ef239b870ecf0b7bef0e3a8ab671739"
+      },
+      "dose_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/H1/knockdown-by-guide-batch.parquet",
+        "sha256": "b3090756001f8c3946cfcad4240b6757089a1d065872fdd0aade848fad392480"
+      }
+    },
+    "K562": {
+      "statistics_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/statistics.npz",
+        "sha256": "1031c7993cfff4e6828a6ebef40f293bbadf532a3a981421e70cef07977da397"
+      },
+      "dose_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/K562/knockdown-by-guide-batch.parquet",
+        "sha256": "13449b78df18a156a52d802263c12cc08591415f3e43ce03f776db196938e792"
+      }
+    },
+    "RPE1": {
+      "statistics_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/statistics.npz",
+        "sha256": "74adabdc358660011789b480a8d6d31d8470a2413e7f3accecb8ea9b0e697e2b"
+      },
+      "dose_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/RPE1/knockdown-by-guide-batch.parquet",
+        "sha256": "d9b4a1429d2dae1b6746efa8da7049da40dc5c6517e09313f488ff98dfd2c45b"
+      }
+    },
+    "HepG2": {
+      "statistics_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/statistics.npz",
+        "sha256": "6f366d369895669cef41e585dfd54b77bce3cf3f13d85e78bab128909808545e"
+      },
+      "dose_ref": {
+        "path": "experiments/task-observation/outputs/task-observation-s02/cache/HepG2/knockdown-by-guide-batch.parquet",
+        "sha256": "cccc8ef6420bf65a05337d3e6de2abd1c5afc73cf6213606af679fc33b13e19c"
+      }
+    }
+  },
+  "prior_ref": {
+    "path": "experiments/full-eval-support/outputs/full-eval-support-s01/cache/CRISPRGeneEffect.csv",
+    "sha256": "d155149181308f8e16b6a4677cde3e5af1ddef68ada1947486ae8c0bcb231452"
+  },
+  "external_prior": {
+    "release": "DepMap 24Q2 Public version 1",
+    "doi": "10.25452/figshare.plus.25880521.v1",
+    "url": "https://ndownloader.figshare.com/files/46489063",
+    "filename": "CRISPRGeneEffect.csv",
+    "size": 419330454,
+    "md5": "d10d73692672380b3792231549e97d5a"
+  },
+  "evaluation_refs": {
+    "Jurkat": {
+      "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S3-Jurkat/Jurkat/panel.json",
+      "sha256": "456d401fdf18e62338567b57a3eb5363dc573c900a0cd8ef45938c55e9166ebc"
+    }
+  },
+  "pathway_ref": {
+    "path": "data/raw/networks/ReactomePathways.gmt.zip",
+    "sha256": "8c1dbc8578431da5d2d5118262718c60b553a9be3398e93658daa069e4a9afd4"
+  },
+  "model": {
+    "kind": "mlp",
+    "shuffled_prior": true,
+    "pca_components": 50,
+    "neighbors": 5
+  },
+  "ridge": {
+    "device": "cuda",
+    "alpha": 10.0,
+    "intercept_jitter": 1e-12,
+    "maximum_iterations": 200,
+    "relative_tolerance": 1e-05,
+    "checkpoint_every": 10
+  },
+  "mlp": {
+    "device": "cuda",
+    "hidden": [
+      256,
+      256
+    ],
+    "learning_rate": 0.0005,
+    "weight_decay": 1e-05,
+    "epochs": 400,
+    "batch_size": 256,
+    "gradient_clip": 1.0,
+    "checkpoint_every": 10
+  },
+  "response_gauge": "zero_mean_over_source_observed_readouts_excluding_own",
+  "decoder": {
+    "own_residual": 0.2,
+    "total": 50000
+  },
+  "emitter": {
+    "iterations": 128,
+    "smoothing": 1e-06,
+    "tolerance": 1e-07
+  },
+  "environment": {
+    "NUMPY_MADVISE_HUGEPAGE": "0"
+  },
+  "prediction_cells": 400,
+  "diagnostics": {
+    "null_repeats": 3,
+    "repeat_targets": 4,
+    "generation_repeats": 3,
+    "covariance_genes": 128,
+    "before_official_scoring": true,
+    "exact_reuse_identity": true,
+    "null_distribution_statistics": true,
+    "local_storage_contract": "canonical_csr_logical_capacity_int64",
+    "evaluation_only_reference_centering": true,
+    "prior_support_strata": {
+      "source_radius_quantile": 0.95,
+      "minimum_observed_fraction": 0.9
+    },
+    "failure_policy": "stop on count hard violations; report all statistical deviations without response filtering"
+  },
+  "runtime": {
+    "device": "cuda",
+    "num_threads": 8,
+    "pert_chunk": 16
+  },
+  "tracking": {
+    "mode": "online"
+  }
+}

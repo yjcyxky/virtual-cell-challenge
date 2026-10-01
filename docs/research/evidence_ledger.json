@@ -2119,10 +2119,53 @@
       "kind": "experiment",
       "state": "pending",
       "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
-      "node_ids": [],
+      "node_ids": [
+        "depmap-shared-s3-h1-s930",
+        "depmap-template-s3-h1-s930",
+        "depmap-knn-s3-h1-s930",
+        "depmap-ridge-s3-h1-s930",
+        "depmap-ridge-shuffled-s3-h1-s930",
+        "depmap-mlp-s3-h1-s930",
+        "depmap-mlp-shuffled-s3-h1-s930",
+        "depmap-shared-s3-k562-s930",
+        "depmap-template-s3-k562-s930",
+        "depmap-knn-s3-k562-s930",
+        "depmap-ridge-s3-k562-s930",
+        "depmap-ridge-shuffled-s3-k562-s930",
+        "depmap-mlp-s3-k562-s930",
+        "depmap-mlp-shuffled-s3-k562-s930",
+        "depmap-shared-s3-rpe1-s930",
+        "depmap-template-s3-rpe1-s930",
+        "depmap-knn-s3-rpe1-s930",
+        "depmap-ridge-s3-rpe1-s930",
+        "depmap-ridge-shuffled-s3-rpe1-s930",
+        "depmap-mlp-s3-rpe1-s930",
+        "depmap-mlp-shuffled-s3-rpe1-s930",
+        "depmap-shared-s3-hepg2-s930",
+        "depmap-template-s3-hepg2-s930",
+        "depmap-knn-s3-hepg2-s930",
+        "depmap-ridge-s3-hepg2-s930",
+        "depmap-ridge-shuffled-s3-hepg2-s930",
+        "depmap-mlp-s3-hepg2-s930",
+        "depmap-mlp-shuffled-s3-hepg2-s930",
+        "depmap-shared-s3-jurkat-s930",
+        "depmap-template-s3-jurkat-s930",
+        "depmap-knn-s3-jurkat-s930",
+        "depmap-ridge-s3-jurkat-s930",
+        "depmap-ridge-shuffled-s3-jurkat-s930",
+        "depmap-mlp-s3-jurkat-s930",
+        "depmap-mlp-shuffled-s3-jurkat-s930",
+        "depmap-shared-s2-h1-s930",
+        "depmap-template-s2-h1-s930",
+        "depmap-knn-s2-h1-s930",
+        "depmap-ridge-s2-h1-s930",
+        "depmap-ridge-shuffled-s2-h1-s930",
+        "depmap-mlp-s2-h1-s930",
+        "depmap-mlp-shuffled-s2-h1-s930"
+      ],
       "hypothesis": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
-      "claim": "待检验：匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
-      "limitations": "只有问题和设计，无新执行、分数或本地有效性结论；protocol_audit不视为方法涨分。",
+      "claim": "Pending: seven packages, all five S3 folds plus S2-H1, seed 930; supervised DepMap alignment versus matched shuffle and analytic controls",
+      "limitations": "No local efficacy evidence until complete batch and paired analysis; measured-mask/n/depth/efficiency confounding remains explicit",
       "source_refs": [
         {
           "path": "docs/research/task_constraints_review.md",
@@ -2131,9 +2174,13 @@
         {
           "path": "docs/research/perturbation_decomposition_review.md",
           "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+        },
+        {
+          "path": "experiments/depmap-response/PLAN.md",
+          "sha256": "a93d43cf40f10cfe9ea2fe43560179c4688ea7ee97c47b36bdddf85bd57909eb"
         }
       ],
-      "next_action": "实例化M-DEPMAP-ALIGNED-RIDGE/MLP及无先验/随机先验/原始kNN对照；固定DepMap来源、训练内PCA、每折目标列表和全轴策略，不自动扩参数网格。 全文核验支持候选而非已验证方法：旧one-hot Ridge/NTC程序不构成DepMap对照；保留同靶Shared，单列28个当前官方未见靶点及靶点×读出监督覆盖，首批Ridge/小MLP不自动扩rank网格。",
+      "next_action": "Run all 42 registered fits through checkpoint, prediction diagnostics and frozen official scoring; then close matched batch comparison",
       "reopen_when": "完整比较关闭后按其适用范围、新输入或反证重开；当前先补齐冻结条件。"
     },
     "E-TASK-DATA-GENERATION-R2": {
@@ -2553,16 +2600,14 @@
       "priority": 3,
       "comparison_id": "C-DEPMAP-RESPONSE-ALIGNMENT",
       "question": "匹配数据、生成器及先验覆盖时，DepMap监督对齐的Ridge/小MLP能否在LOCO和joint-OOD恢复超出模板的扰动特异响应？",
-      "action": "保留首个正式建模预算给DepMap监督对齐Ridge/小MLP整包及无先验/随机先验/原始kNN对照；复用全五背景统计并在拟合前限制fold/target读取。冻结生成和有效评估条件后按outer×target partition×seed各立完整run；未识别剂量作unknown，不以可估计性删掉公共数据。 全文核验支持候选而非已验证方法：旧one-hot Ridge/NTC程序不构成DepMap对照；保留同靶Shared，单列28个当前官方未见靶点及靶点×读出监督覆盖，首批Ridge/小MLP不自动扩rank网格。",
+      "action": "完成冻结42 fits（七方案×五S3背景加S2-H1，seed930），先逐靶count/null/残差/通路诊断后评分；全批配对后决定路线，不运行超参网格或提交榜单。",
       "requires_evidence": []
     }
   ],
   "resource_allocation": {
-    "after_evidence": "PROTOCOL-DATA-EVAL-DEFAULTS-20260930",
-    "unit": "已确定数据/标准化/评估默认方案；只分配一个固定响应生成比较和一个全折reference支持批次，完成后进入DepMap预测器整包。全折仍退化则停止面板/seed网格、如实限制结论；不以所有归一化都可用作为后续机制启动前置。具体run及计算预算仍须正式冻结。",
+    "after_evidence": "E-POPULATION-EMISSION",
+    "unit": "先完成全15面板 evaluator 支持，再完成七方案×六独立外层fit的42-run模型批次。每MLP400epochs、Ridge最多200CG；全部3600任务/臂，400预测细胞/任务。所有方案完成后决定，不按单折早停。",
     "exploration_slots": [
-      "C-POPULATION-EMISSION",
-      "C-LOCAL-EVAL-SUPPORT",
       "C-DEPMAP-RESPONSE-ALIGNMENT"
     ],
     "third_slot": "后续探索候选：集合分布整包继续保留draft，本轮未分配执行预算；能力评估基础完成后再决定，不要求所有模板/稳定性假设或线性基线先获胜。",

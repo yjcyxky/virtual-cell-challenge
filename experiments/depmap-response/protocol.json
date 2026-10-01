@@ -1,0 +1,30 @@
+{
+  "kind": "masked_compositional_functional_response",
+  "outer_splits": [
+    "S3-H1",
+    "S3-K562",
+    "S3-RPE1",
+    "S3-HepG2",
+    "S3-Jurkat",
+    "S2-H1"
+  ],
+  "seed": 930,
+  "independent_fits": 42,
+  "training": "source-context and task balanced downstream centered log1p(CP50K) bulk differences; actual measured axes; no target-context perturbation responses",
+  "source_counts": "native structural-eligible observations; guide efficiency diagnostic only; no response-strength filter",
+  "representation": "versioned DepMap 24Q2 v1; source-unique-target median imputation and PCA50; target-description shuffle within source-context-membership, evaluation-membership and exact original finite-entry-mask blocks, preserving per-context and evaluation feature distributions without heldout responses",
+  "output": "18533-axis compositional log response; measured-axis normalization, pseudocount removal and nonnegative projection; globally untrained readouts zero latent",
+  "response_gauge": "zero_mean_over_source_observed_readouts_excluding_own",
+  "own_target": "exclude current target from learning loss; fixed bulk composition residual 0.2 for all non-null arms",
+  "counts": "whole-input-NTC calibration then independent 400-cell draws and library-conserving random rounding; frozen population emitter",
+  "reference": "matching completed full-eval-support-s04 panel by immutable file hash, physically disjoint score NTC and min(n,400) real cells",
+  "stage_order": "fit and freeze checkpoint; generate; full count, null, template residual, coverage and pathway diagnostics; official six raw and normalized metrics",
+  "official_scoring": "cell-eval2 5e64833518a6603a0301cbe28185d49c30f4a986 vcc2026 with exact reference baseline and five anchors; retain unavailable scores",
+  "primary": "summary.raw_pds",
+  "selection": "complete all 42 fits before matched package decision; S3 five-context pairing plus S2-H1 diagnostic; no automatic leaderboard submission",
+  "evaluation_only_diagnostics": "After prediction freeze: independent pred/real target-centroid removal, then projection off real mean-response direction; reference-label-derived quantities are never model inputs",
+  "prior_support_diagnostics": "Original finite cell-line fraction, canonical mean dependency and source-PCA whitened radius; fixed below-0.9-coverage and above-source-p95-radius strata; no sample filtering",
+  "diagnostic_reuse": "Exact checkpoint, prediction, response/mask, panel/input, actual config and execution code hashes; completed pre-score marker required",
+  "null_distribution": "Three n=400 zero/input/real-null groups against the same disjoint first-half scoring NTC, with input-only covariance positions",
+  "local_storage": "Canonical CSR logical element capacity and int64 pointers; submission archive nnz limit is not a limit on variable-size local diagnostic panels"
+}
