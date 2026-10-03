@@ -7,13 +7,21 @@
 - 由目标背景的 NTC 细胞群和扰动信息预测扰动后表达分布，泛化到未见背景与扰动组合。明确 `Baseline + Δ` 的表达空间；共享响应、背景修正和功能模块都是待检验先验。
 - 小样本指独立背景、研究及扰动组合不足。先修复数据/评估正确性，再研究数据质量、先验和表示；模型容量、目标函数和优化由已识别瓶颈驱动。
 - **初始化依据**：本轮方法空间与前瞻 DAG 以[分享九轴方案](https://chatgpt.com/share/6ab9c3e3-56cc-83e9-bbef-b1f196a8e83c)、五个原始数据集和已发表原始研究建立，不由现有实验、分数或既定模型路线填充。初始方法均为 `UNTESTED`、执行节点均为 `draft`；之后通过实际归因实验积累本地证据。旧结果保留，回顾性纳入另作审计并注明用途。
-- **设计前必读**：[研发依据与轴边界](docs/RESEARCH.md#初始化依据与研究假设)；涉及输入/划分时读[五背景数据事实](docs/research/dataset_foundations.md)，采用论文方法/先验时读[文献卡片](docs/research/literature_foundations.md)。H1、K562 GWPS、RPE1、HepG2、Jurkat 是五背景、三来源研究；元数据覆盖不等于 QC 后监督量。
+- **设计前必读**：[研发依据与轴边界](docs/RESEARCH.md#初始化依据与研究假设)；涉及输入/划分时读[五背景数据事实](docs/research/dataset_foundations.md)，采用论文方法/先验时读[文献卡片](docs/research/literature_foundations.md)。H1、K562 GWPS、RPE1、HepG2、Jurkat 是五背景、三来源研究；元数据覆盖不等于 QC 后监督量。 同时将 [VCC KnowGraph 注意力索引](docs/research/knowledge_graph.attention.json) 作为设计与复盘时的辅助输入；它用于提示相关检查项，不替代上述原始依据、DAG/Ledger 或 Agent 的科学判断。
 - **2026 官方对齐**：输入映射、模型输出和提交以已登记官方 `gene_names.csv` 的完整基因轴、顺序及 `pert_counts.csv` 为目标。各来源保留测量掩码；本地只在该背景真实测得的官方轴子集评分，报告覆盖，不把缺测补零作为监督或评分真值，不默认将任务缩为五背景交集。辅助靶点可用于训练，官方面板覆盖须单列。
 - **官方评估**：使用 DAG 冻结的官方 `cell-eval2` commit 和 `vcc2026` preset，调用其 baseline、real-bundle/anchor 和评分接口。每个参考群体重新生成匹配 anchors；未定义指标与退化参照按官方规则处理，不能自行改公式、删指标或借用旧 anchors。实际配置的 `benchmark` 必须匹配 DAG 协议的 `binding`，否则不能启动。协议冻结不等于已取得六项有效分数。
 - **榜单核查**：完成模型的官方导出沿用原 run/W&B，在 DAG 追加冻结的评估阶段；先核验 checkpoint、生成规则、完整官方输入和已提交代码，再生成预测、完成[统计诊断与提交判断](#训练后预测统计诊断必做)、校验/提交，保存 VCC 哈希、entry_id、panel/anchor_version 与完整回执，恢复使用同一 entry。比较本地与榜单时同时报告 raw、normalized 和群体/面板差异；相同官方包不能证明同一标尺。核查或修改榜单配方前读 [r4 构建证据边界](docs/research/r4_anchor_audit.md)：包默认值、bundle 名称和分数接近均不能认证线上配方；固定预测的 baseline 诊断须保留全部对照与历史结果，默认协议变更另需直接来源依据。执行方式见 [已完成模型的官方核查](docs/RESEARCH.md#已完成模型的官方核查)。
 - **开始任何研发任务，先执行** `/home/jy001/micromamba/envs/virtual-cell/bin/python scripts/research.py status`，按输出处理未闭环比较或最高优先问题。命令与接入示例见 [RESEARCH.md](docs/RESEARCH.md)。
 - **三份对象是研究管理的唯一事实源**：[Method Space](docs/research/method_space.json) 定义九轴候选及方法坐标；[Experiment DAG](docs/research/experiment_dag.json) 登记实际执行、对照、来源、协议和比较；[Evidence Ledger](docs/research/evidence_ledger.json) 保存有来源的结论、决策与下一步。不要另维护手工实验列表或仅在文字里声明已登记。
 - **证据类型有边界**：`literature/external`、`dataset/observed`、`protocol/constraint` 提供来源依据；`experiment/pending` 是问题，均不代表本地方法有效。只有真实完成的比较可关闭为本地证据；文献、待检验假设不能满足训练前置。`evidence_conditions` 指定继续分支所需结论，失败/证据不足按预定分支处理。
+
+## KnowGraph 注意力检查
+
+- `docs/research/knowledge_graph.attention.json` 是**注意力索引，不是决策规则、事实源或实验队列**。Agent 仍根据当前 `status`、PLAN、已完成实验、本地证据、数据约束和预算自行选择下一步；图谱节点不能替代 `requires_evidence`、不能关闭比较，也不能覆盖用户明确约定。
+- 设计实验、诊断失败或复盘结果时，先定位与当前问题直接相关的节点，重点读取节点的 `vcc_implication`（原图谱中的“**对 VCC 2026 意味着什么**”）。把这些内容转成“本轮是否已经考虑/验证/不适用”的检查项，而不是机械执行建议。
+- **沿边分配注意力**：默认检查直接相连的一跳节点；只有确有必要才继续向外追溯。`prerequisite` / `extends` 用来提醒前后依赖知识，`supports` / `challenges` 用来同时查看支持与反例，`applies_to` / `uses_data` / `evaluated_by` / `part_of` / `related_to` 用来补充数据、评估与上下文检查。图谱里的这些关系是**检查项依赖关系**，不自动成为 Experiment DAG 的执行前置。
+- `priority`、`evidence`、`unverified` 和 `scope_notes` 只帮助分配注意力与判断可信边界：P0/P1 不等于必须执行，论文结论不等于本地方法已验证，`inferred`/`unverified` 内容必须作为待检验假设处理。若图谱建议与本地实验或当前任务条件冲突，优先保留冲突并设计能区分解释的实验，而不是强行服从图谱。
+- PLAN 可用一行 `KnowGraph attention: <node ids>` 记录本轮实际参考的少量节点；REPORT 只需说明哪些节点提示被结果支持、削弱或判为不适用。**不新增研究管理对象或 schema**，Method Space、Experiment DAG、Evidence Ledger 仍是唯一研究事实源。
 
 ## 必须完成的研究闭环
 
