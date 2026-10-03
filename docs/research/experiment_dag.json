@@ -12109,7 +12109,7 @@
       "legacy": false,
       "method_id": "M-LOCAL-CAPABILITY",
       "protocol_id": "FULL-EVAL-SUPPORT-20260930",
-      "status": "failed",
+      "status": "interrupted",
       "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
       "controls": [],
       "sources": [
@@ -12398,7 +12398,7 @@
       },
       "blockers": [],
       "last_attempt": {
-        "status": "failed",
+        "status": "interrupted",
         "research": {
           "node_id": "full-eval-support-s04",
           "experiment_id": "full-eval-support",
@@ -12410,11 +12410,101 @@
           "registration_sha256": "9a47901bab9adc799695bc53e08e33bcb79290a6c1d537f868b93a0363623e50",
           "git_commit": "a5df16b3f9424b35d09aeaae5e328b01e3866e55"
         },
-        "error": "Kernel global OOM killed PID 3609303 during first S4-K562 replicate anchor; no completed panel or model result invalidated.",
-        "failure_ref": {
-          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/oom-attempt-failure.json",
-          "sha256": "9aaa6ccd5f3dbe36c99e624ce3d8920346170dddcf355d15063039378dd47e23"
-        }
+        "execution": {
+          "git_commit": "4f8aad94e0a99977f5277777069c72b8d7b25788",
+          "code_refs": [
+            {
+              "path": "experiments/full-eval-support/PLAN.md",
+              "sha256": "078d2acd20fe23998a7f333adc295ed9be760369456f90fd743275ccc98149bb"
+            },
+            {
+              "path": "experiments/full-eval-support/protocol.json",
+              "sha256": "c987d3ab3880c86d825852204f2247bad730be7da7ef0eba7ee94a2d1ec4e1f6"
+            },
+            {
+              "path": "experiments/full-eval-support/pyproject.toml",
+              "sha256": "615fd0cf4453479511530d4caeae5ab0637b0ee2a1390fc50391a6cafb81737c"
+            },
+            {
+              "path": "experiments/full-eval-support/uv.lock",
+              "sha256": "d9bbf35c3941701e5f82fe6fc06906fb598d9365812c0c1da0485e5d6a2901fc"
+            },
+            {
+              "path": "experiments/full-eval-support/reproduce.sh",
+              "sha256": "9dde07881cf63ade5adb034495639b1147b15c77070dfcc6ddf48eb7443d0032"
+            },
+            {
+              "path": "experiments/full-eval-support/src/run.py",
+              "sha256": "ab67d42794789ff712f5387eacf29bd905f3dbd653708bb59c6f44bb172f7eef"
+            },
+            {
+              "path": "src/vcc_task/count_store.py",
+              "sha256": "b391535aa480839bb65f82ee92e6769bff5787bf72affd144226527bb4b62513"
+            },
+            {
+              "path": "src/vcc_task/full_reference.py",
+              "sha256": "d65f111b73b955ee1b4ea4110b7aede4197141cac4af19d871cef35506bf9269"
+            },
+            {
+              "path": "src/vcc_task/prediction_diagnostics.py",
+              "sha256": "50ac991bafd5ba4922191243df57b4eb1b6ccecfa2b4658a5305e75cabf06a32"
+            },
+            {
+              "path": "src/vcc_task/frozen_scoring.py",
+              "sha256": "b1f50a83b7ced87b8ad1952d8424d261094ced4f82fe7c512ff374a761bdd9f2"
+            },
+            {
+              "path": "src/vcc_task/run_context.py",
+              "sha256": "086bde937aff0857f1c8ac5c40ba436915231985e326e1e54f1b5b31b4bd3fde"
+            },
+            {
+              "path": "src/vcc_task/counts.py",
+              "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+            },
+            {
+              "path": "src/vcc_task/observations.py",
+              "sha256": "b4b1f2df68148b988055b2367cd7bd7124bb370668c9a48ee34afb8ed17b35fa"
+            },
+            {
+              "path": "src/vcc_task/common.py",
+              "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+            },
+            {
+              "path": "src/vcc_task/capability.py",
+              "sha256": "a01fd8917d50916f98adde204a841b7cd3fbe89a74626d1114523b7fc796c42b"
+            },
+            {
+              "path": "src/vcc_task/__init__.py",
+              "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+            },
+            {
+              "path": "scripts/research.py",
+              "sha256": "e71f01f03a350b8d21cb689de6a3a6e35058102d396aef1b0784525ed205b944"
+            },
+            {
+              "path": "scripts/dossier/challenge.py",
+              "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+            },
+            {
+              "path": "scripts/dossier/rna.py",
+              "sha256": "44eeb779628d746989b4f7b3f2b0b40d3efacaef05106accbf127a8ed4f893ae"
+            },
+            {
+              "path": "scripts/analyze_submitted_counts.py",
+              "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+            },
+            {
+              "path": "src/vcc_task/bounded_bundle.py",
+              "sha256": "ab2a872f3c1396545bb9de5bd0f9fa2ccd7b8f2887c7c47bef01f7fc4702becf"
+            },
+            {
+              "path": "experiments/full-eval-support/src/mapped_copy.py",
+              "sha256": "d9cd94f600231a4b00dfaca3951100e64d229f4a6132f82c483cae443d5a6e2d"
+            }
+          ],
+          "evaluation_repair_sha256": "3c6103c6f40ec03ab7b4bdd0eed684be6640ccf677aa006c398310c41a8aa701"
+        },
+        "error": "execution interrupted; checkpoint restoration remains required"
       },
       "runtime_failure_ref": {
         "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/oom-attempt-failure.json",
