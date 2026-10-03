@@ -65,7 +65,7 @@ flowchart TD
   n58["full-eval-support-s01 | failed"]
   n59["full-eval-support-s02 | failed"]
   n60["full-eval-support-s03 | failed"]
-  n61["full-eval-support-s04 | failed"]
+  n61["full-eval-support-s04 | completed"]
   n62["depmap-shared-s3-h1-s930 | completed"]
   n63["depmap-template-s3-h1-s930 | completed"]
   n64["depmap-knn-s3-h1-s930 | completed"]

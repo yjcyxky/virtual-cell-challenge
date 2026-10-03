@@ -2745,46 +2745,94 @@
     },
     "E-LOCAL-EVAL-SUPPORT-R4": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "supported",
       "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
       "node_ids": [
         "full-eval-support-s04"
       ],
-      "claim": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "limitations": "Pending complete evaluation. First R4 attempt stopped after NumPy hugepage advice caused sustained kernel compaction during official jackknife. A 100M-element allocation/cast probe took 0.32s without advice, while advice timed out before input allocation at 25s. This operational failure is not scientific evidence. Original attempt and fixed intermediate outputs retained.",
+      "claim": "完整15面板/30 instrument评分完成；15/15支持六项归一化及Overall。达到完整参考支持门槛。",
+      "limitations": "这是评价器与真实支持诊断，没有预测器拟合；min(n,400)的真实细胞量、测量掩码和深度/assay混杂仍存在，不能作为模型提升或机制证据。S4-K562按全靶面板排除后仅263个PDS/几何读出，六项可定义不代表全谱能力得到充分评价。H1逐元素baseline等价核验支持内存实现，未宣称线上榜单标尺相同。",
       "source_refs": [
         {
-          "path": "docs/research/perturbation_decomposition_review.md",
-          "sha256": "fa462825a618f7bd3f0c83c87ff82be012b10111e049e7b0cd936767bfce0bd2"
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/metrics.json",
+          "sha256": "8c81d8a2926f1b3a0da624c1184241c80997d5e6f779c5d488f04ab84ba12fe1"
         },
         {
-          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/attempt-01-failure.json",
-          "sha256": "c4e9eaa55d699e2fe61c0c96ca9a1eab756badeecc25fa75a02a1baee54da80b"
+          "path": "experiments/full-eval-support/REPORT.md",
+          "sha256": "63f453b8889d64c9d43eb0792a945d658e7d0f74cf47348c7130b28a53e32f62"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/full-panel-summary.json",
+          "sha256": "44dea9a9342db0d89f800096504466e9ba5f91d8974802558796dabcd3f7080c"
         },
         {
           "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/runtime-allocation.json",
           "sha256": "788e842890599fde75ede4a6f8291726dc093535c75049980e34f9ac4533790a"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/allocation-recovery-confirmation.json",
+          "sha256": "70ec29c1b18a2436d2276b27803b4d7e02b7f115d99467d906c73272f225b6f9"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/environment-interruption-recovery.json",
+          "sha256": "a2b07bfa2b32db39d4bf4ee7a1f1bde202df6a33b02700da37e5179a4651aa91"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/oom-attempt-failure.json",
+          "sha256": "9aaa6ccd5f3dbe36c99e624ce3d8920346170dddcf355d15063039378dd47e23"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/evaluation-repair-failure.json",
+          "sha256": "12aef1757a954d164e87acb6d3a0b72126935d4c2d9d148cf5ff6d44d285bca2"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/mapped-copy-equivalence.json",
+          "sha256": "85aa9635b9cf7e637344ee5c36b35cf61ad03866d5b01fa8e434865ba69918a4"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/evaluation-config.yaml",
+          "sha256": "55e5962438d6ec2649f03144ab6951e83266433d5625bd73b55e4146ce5fda37"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/target-exclusion-mapping-audit.json",
+          "sha256": "9d389372ced67907610de2e7420c8a118b8d5c146175ca9d388b4d365fc9837c"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/post-anchor-interruption-recovery.json",
+          "sha256": "710824bb5d05cacc7405d6c2719cf73c8bfd9a9cc7efdf506af34eb71fd57923"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/scoring-oom-failure.json",
+          "sha256": "7a8ba19b52ffedbdd37b8f75da317148837c9c6cc7e201c8302503f9987fdf88"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/evaluation-repair-scoring-failure.json",
+          "sha256": "7da08575e8f9c80dbd2752c95874ecaaf5c7868d30662e26574454de0a86782c"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/mapped-score-equivalence.json",
+          "sha256": "075eb74cada7f3aa445eecd599f9df59e493cb3bf1271ef5bba90461f38ea61e"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/completion-analysis-provenance.json",
+          "sha256": "d8abfdbd0274c7fdf190d4e912ebb473ebb851512d85f1a32e950a439836270f"
+        },
+        {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/completion-artifact-receipt.json",
+          "sha256": "539fb87212030545fe525a46d850c849cd4f0af4f20cf8edb8427b6a5f462f69"
         }
       ],
-      "next_action": "Resume full-eval-support-s04 with NUMPY_MADVISE_HUGEPAGE=0 after recorded allocation diagnosis; identical registered code/config, arrays, seeds and scoring formulas; reuse completed immutable panel and anchors, finish 15 panels.",
-      "reopen_when": "完整预定比较结束后据实关闭，或新数据/代码改变适用条件。"
+      "next_action": "冻结本次完整参考和有效/不可定义范围；后续机制与预算遵循已关闭的DepMap七方案×六独立fit比较及当前Ledger队列，不继续面板调参或提交榜单。",
+      "reopen_when": "新的参考群体、测量/来源数据、官方scorer变更或明确复现差异出现；不是根据某个模型单次分数改协议。",
+      "hypothesis": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？"
     }
   },
-  "queue": [
-    {
-      "id": "Q-LOCAL-EVAL-SUPPORT",
-      "priority": 1,
-      "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
-      "question": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？",
-      "action": "模型42 fits已完成并关闭；保留13个已完成参考，沿full-eval-support-s04原身份登记内存分配修复，完成S4-K562/RPE1并关闭参考覆盖比较。",
-      "requires_evidence": []
-    }
-  ],
+  "queue": [],
   "resource_allocation": {
-    "after_evidence": "E-DEPMAP-RESPONSE-ALIGNMENT",
-    "unit": "当前执行预算仅完成冻结full-eval-support-s04剩余2/15参考面板；内存分配修复不改变数据、种子、评分器或已完成结果。42-fit模型整包未晋级，停止本配方rank/学习率网格，不提交leaderboard。",
+    "after_evidence": "E-LOCAL-EVAL-SUPPORT-R4",
+    "unit": "本轮冻结预算已完成：population-emission、DepMap七方案×六拟合（42 fits）、full-eval-support完整15面板/30对照均已闭环。采用固定计数生成与本地诊断/官方评分条件；不再扩展评估面板或当前DepMap配方rank/学习率网格，不提交leaderboard。",
     "exploration_slots": [],
-    "third_slot": "下一轮设计方向：保留同靶监督响应，功能先验服务未见靶点，联合校准弱响应/背景强度并用跨基因共享输出覆盖未监督读出。需另登记完整机制对照、预算和晋级标准；尚未分配新训练预算。剂量不确定性先评估部分汇聚，unknown不硬筛。",
+    "third_slot": "下一轮机制设计优先保留同靶监督响应、为未见靶点提供监督对齐的功能映射，并联合检验弱响应/背景强度校准和跨基因共享输出。先登记匹配对照、独立fit范围、完整预算及晋级标准；当前未启动新训练。剂量作为有不确定性的观测，unknown不硬筛。",
     "stopped_local_branches": [
       "transport-linear-s01",
       "transport-no-ntc-s01"

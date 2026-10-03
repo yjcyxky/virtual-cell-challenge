@@ -1908,9 +1908,10 @@
       "prior": "none；oracle仅评分侧验收，不构成模型输入或生物机制结论。",
       "local_status": "CONTEXT_DEPENDENT",
       "evidence_ids": [
-        "E-LOCAL-CAPABILITY-EVALUATOR-R3"
+        "E-LOCAL-CAPABILITY-EVALUATOR-R3",
+        "E-LOCAL-EVAL-SUPPORT-R4"
       ],
-      "selection_basis": "这是评价器仪器验收，非预测模型。标签/残差诊断已执行；有限16靶面板的官方归一化存在参考可评分性限制。"
+      "selection_basis": "评价器仪器验收，非预测模型。有限16靶面板的历史归一化限制保留；新冻结完整15面板/30对照均支持官方六项归一化，见E-LOCAL-EVAL-SUPPORT-R4。每项有效靶点数、真实n、测量掩码与K562仅263个PDS读出的范围约束仍须单列。"
     },
     "M-POPULATION-EMISSION": {
       "description": "NTC总体条件变换与独立细胞计数抽样候选；分开检验期望响应、生成波动和官方DE",

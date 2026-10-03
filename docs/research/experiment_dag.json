@@ -12109,7 +12109,7 @@
       "legacy": false,
       "method_id": "M-LOCAL-CAPABILITY",
       "protocol_id": "FULL-EVAL-SUPPORT-20260930",
-      "status": "failed",
+      "status": "completed",
       "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
       "controls": [],
       "sources": [
@@ -12385,11 +12385,14 @@
       ],
       "metrics_ref": {
         "path": "experiments/full-eval-support/outputs/full-eval-support-s04/metrics.json",
-        "sha256": "ad48adde419fa92e3f25b5535b3c01146b3e894a897ca3db60c1c46bee8b7cbe"
+        "sha256": "8c81d8a2926f1b3a0da624c1184241c80997d5e6f779c5d488f04ab84ba12fe1"
       },
-      "report_ref": null,
+      "report_ref": {
+        "path": "experiments/full-eval-support/REPORT.md",
+        "sha256": "63f453b8889d64c9d43eb0792a945d658e7d0f74cf47348c7130b28a53e32f62"
+      },
       "git_commit": "a5df16b3f9424b35d09aeaae5e328b01e3866e55",
-      "wandb_url": null,
+      "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/full-eval-support-s04",
       "design": {
         "fit_scope": {
           "outer_split": "full-S2-S3-S4-five-contexts",
@@ -13530,7 +13533,9 @@
           "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/mapped-score-equivalence.json",
           "sha256": "075eb74cada7f3aa445eecd599f9df59e493cb3bf1271ef5bba90461f38ea61e"
         }
-      }
+      },
+      "artifact": "yjcyxky/virtual-cell-challenge/full-eval-support-s04-results:v0",
+      "wandb_sync": "online"
     },
     "depmap-shared-s3-h1-s930": {
       "experiment_id": "depmap-response",
