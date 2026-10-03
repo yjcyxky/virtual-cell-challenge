@@ -24,7 +24,7 @@ from vcc_task.full_reference import prepare_full_context, external_prior
 from vcc_task.bounded_bundle import mapped_reference
 from mapped_copy import memory_bounded_bundle as bounded_bundle
 from vcc_task.prediction_diagnostics import diagnose_panel
-from vcc_task.frozen_scoring import score_frozen
+from mapped_score import memory_score_frozen as score_frozen
 from vcc_task.run_context import RegisteredRun
 
 

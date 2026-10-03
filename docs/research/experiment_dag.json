@@ -12109,7 +12109,7 @@
       "legacy": false,
       "method_id": "M-LOCAL-CAPABILITY",
       "protocol_id": "FULL-EVAL-SUPPORT-20260930",
-      "status": "interrupted",
+      "status": "failed",
       "comparison_id": "C-LOCAL-EVAL-SUPPORT-R4",
       "controls": [],
       "sources": [
@@ -12312,7 +12312,7 @@
         },
         {
           "path": "experiments/full-eval-support/src/run.py",
-          "sha256": "ab67d42794789ff712f5387eacf29bd905f3dbd653708bb59c6f44bb172f7eef"
+          "sha256": "74c5ccaafe6180017098fbe80374b754a85f19d827cdd691046234784cbd5120"
         },
         {
           "path": "src/vcc_task/count_store.py",
@@ -12377,6 +12377,10 @@
         {
           "path": "experiments/full-eval-support/src/mapped_copy.py",
           "sha256": "d9cd94f600231a4b00dfaca3951100e64d229f4a6132f82c483cae443d5a6e2d"
+        },
+        {
+          "path": "experiments/full-eval-support/src/mapped_score.py",
+          "sha256": "b3d62eb44387db0c6f924e25e025398b7b3091fcdbef424e9064eeb3c3890d68"
         }
       ],
       "metrics_ref": {
@@ -12398,7 +12402,7 @@
       },
       "blockers": [],
       "last_attempt": {
-        "status": "interrupted",
+        "status": "failed",
         "research": {
           "node_id": "full-eval-support-s04",
           "experiment_id": "full-eval-support",
@@ -12411,7 +12415,7 @@
           "git_commit": "a5df16b3f9424b35d09aeaae5e328b01e3866e55"
         },
         "execution": {
-          "git_commit": "4f8aad94e0a99977f5277777069c72b8d7b25788",
+          "git_commit": "ebde46543a72caa8e6a077fc2f8c0fb013d8b307",
           "code_refs": [
             {
               "path": "experiments/full-eval-support/PLAN.md",
@@ -12504,7 +12508,7 @@
           ],
           "evaluation_repair_sha256": "3c6103c6f40ec03ab7b4bdd0eed684be6640ccf677aa006c398310c41a8aa701"
         },
-        "error": "execution interrupted; checkpoint restoration remains required"
+        "error": "execution exited 137; completed status rejected"
       },
       "runtime_failure_ref": {
         "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/oom-attempt-failure.json",
@@ -12512,7 +12516,7 @@
       },
       "evaluation_repair": {
         "kind": "evaluation_only",
-        "reason": "Kernel-confirmed OOM in the first full K562 replicate anchor. Keep all data, order, dtype, random choices and official functions; store independent copied halves as writable temporary CSR memory maps. CPU equivalence on real H1/full measured axis passed all five official split seeds. Completion at the largest scale remains to be demonstrated.",
+        "reason": "Kernel-confirmed OOM in the first full K562 replicate anchor. Keep all data, order, dtype, random choices and official functions; store independent copied halves as writable temporary CSR memory maps. CPU equivalence on real H1/full measured axis passed all five official split seeds. Completion at the largest scale remains to be demonstrated. A second, kernel-confirmed OOM occurred in final K562 file-based scoring after the anchors completed. Pass equivalent read-only mapped AnnData through the official compute_metrics API, keeping original file refs/run metadata, source dtypes, numerical functions and config. Two real H1 instrument arms have identical full DE tables and input fingerprints; raw scalar discrepancy max 1.11e-16 is below native repeated-call drift 2.22e-16. No scientific threshold or scorer condition changes; largest-scale score completion remains to be demonstrated.",
         "original_code_refs": [
           {
             "path": "experiments/full-eval-support/PLAN.md",
@@ -12601,11 +12605,12 @@
         ],
         "changed_paths": [
           "experiments/full-eval-support/src/run.py",
-          "experiments/full-eval-support/src/mapped_copy.py"
+          "experiments/full-eval-support/src/mapped_copy.py",
+          "experiments/full-eval-support/src/mapped_score.py"
         ],
         "failure_ref": {
-          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/evaluation-repair-failure.json",
-          "sha256": "12aef1757a954d164e87acb6d3a0b72126935d4c2d9d148cf5ff6d44d285bca2"
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/evaluation-repair-scoring-failure.json",
+          "sha256": "7da08575e8f9c80dbd2752c95874ecaaf5c7868d30662e26574454de0a86782c"
         },
         "preserved_refs": [
           {
@@ -13479,11 +13484,51 @@
           {
             "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/pre-memory-repair-manifest.json",
             "sha256": "8927528ae53f79d70a86b0c6dfb30c460b18af5f793ab8e29328c134e5ad92c9"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle-result.json",
+            "sha256": "6f1fcb8710367bb6d1675e333781c27a68bda0ffdb3200e2b3379af113c1c86b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle/anchor_agg.parquet",
+            "sha256": "921bfeebb2c020ab7347d2c16af579bc9dba0946dc45d752fca00e10bb4081fa"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle/anchor_meta.json",
+            "sha256": "a7f6f0fb060bb772ff06153be9d7b82ddd9be34ebb23c0dcb275ad4f8ebb05eb"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle/anchor_splits.parquet",
+            "sha256": "4e006403240565bf1c850d18caabf66d6e92e9a5d9b06351bf986522813a61c5"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle/baseline_agg.csv",
+            "sha256": "ab8e969151356be5e610280c77426be06f8d285ba9c8e23d3c728b9c478e5eab"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle/baseline_meta.json",
+            "sha256": "caa583652a4070ba42ba458ddd7d974c6ea0660bc4dfa1d797293712aee875e2"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle/config.yaml",
+            "sha256": "5e137aaac09bc40a933c38198997282ff926f4872bccb7e2df190009d056b87b"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/S4-REPLOGLE-2022/K562/bundle/manifest.json",
+            "sha256": "146f19058fb5f7fffae3f290b2273686c5b73704cfd0c90fdacecca7e78d680d"
+          },
+          {
+            "path": "experiments/full-eval-support/outputs/full-eval-support-s04/predictions/pre-score-repair-manifest.json",
+            "sha256": "b3fd5a8f65ea617356bd16b3ad309efa5e7ef15e36719e8db4fbb082b565856d"
           }
         ],
         "allocation_equivalence_ref": {
           "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/mapped-copy-equivalence.json",
           "sha256": "85aa9635b9cf7e637344ee5c36b35cf61ad03866d5b01fa8e434865ba69918a4"
+        },
+        "score_input_equivalence_ref": {
+          "path": "experiments/full-eval-support/outputs/full-eval-support-s04/diagnostics/mapped-score-equivalence.json",
+          "sha256": "075eb74cada7f3aa445eecd599f9df59e493cb3bf1271ef5bba90461f38ea61e"
         }
       }
     },
