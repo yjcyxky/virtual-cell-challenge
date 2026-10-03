@@ -26,6 +26,7 @@
 | [experiments/](experiments/README.md) | 历史实验设计、评分分析和故障诊断；其结果尚未自动纳入本轮账本 |
 | ideas/ | [早期挑战摘要](ideas/challenge-overview.md)、[模块建模设想](ideas/initialized-thought.md)、[响应变量分析](ideas/variations.md)；保留的讨论材料，其中的推荐和推测不代表已验证结论或当前执行方案 |
 | operations/ | [worktree 整合记录](operations/worktree-consolidation.md)；维护操作及当时路径 |
+| maintenance/ | [手动同步到 NAS 并迁出本地大文件](maintenance/nas-sync.md)；命令、校验与恢复边界 |
 
 ## 归档约定
 

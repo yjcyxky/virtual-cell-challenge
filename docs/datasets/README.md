@@ -4,6 +4,7 @@
 
 | 文档 | 配套证据与边界 |
 |---|---|
+| [GSE132080 入库与 CD4 下载恢复，2026-10-03](acquisition-resume-2026-10-03.md) | GSE132080 五文件已校验；CD4 同条件续传与原自动收尾已恢复，尚未完成 |
 | [PDF v3 数据缺口核查，2026-10-02](../research/dataset_overview_v3_gap_analysis.md) | 11 项逐一对照实盘：9 项原始数据齐备，GSE132080 缺失，CD4 未完整；区分原始来源与 PDF 筛选产物 |
 | [Xaira / CD4 数据入库，2026-09-30](new-crispri-acquisition-2026-09-30.md) | 固定来源与下载范围、NAS 原件、自动校验和原始 counts 索引；完成状态以工作器 JSON 为准 |
 | [入库核查，2026-09-18](data-inventory-audit-2026-09-18.md) | [逐文件审计 JSON](data-inventory-audit-2026-09-18.json)；保留当时 README、协议和文件路径的哈希 |

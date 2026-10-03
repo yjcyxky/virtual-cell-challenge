@@ -1,8 +1,55 @@
 {
   "schema_version": 1,
-  "locked_at": "2026-09-30T20:00:53+00:00",
-  "total_bytes": 2446928500882,
+  "locked_at": "2026-10-03T03:56:48+00:00",
+  "total_bytes": 2447281477858,
   "sources": [
+    {
+      "id": "jost2020_gse132080",
+      "tier": "b",
+      "title": "Jost 2020 K562 titrating CRISPRi guide activity Perturb-seq (GSE132080)",
+      "citation": "Jost et al. Nature Biotechnology 38, 355\u2013364 (2020). DOI:10.1038/s41587-019-0387-5; GEO GSE132080.",
+      "license": "Public GEO deposit; no explicit dataset-specific license stated in the file listing.",
+      "why": "Raw expression and guide activity annotations for explicitly registered knockdown-strength studies; acquisition does not establish model benefit.",
+      "caveat": "K562 intermediate-activity sgRNA experiment; distinct from Adamson UPR and absent from the pinned scPerturb collection. Preserve guide/activity metadata and source counts. No QC, DE selection, normalization or train/test split at acquisition. Public GEO endpoint does not provide a full-file checksum; freeze locally computed SHA-256 after download. Stored on NAS through data/raw/jost2020_gse132080.",
+      "kind": "http",
+      "files": [
+        {
+          "name": "GSE132080_10X_barcodes.tsv.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE132nnn/GSE132080/suppl/GSE132080_10X_barcodes.tsv.gz",
+          "bytes": 94141,
+          "checksum": null,
+          "checksum_source": "No upstream checksum in GEO supplementary listing/HEAD; local SHA-256 recorded after download."
+        },
+        {
+          "name": "GSE132080_10X_genes.tsv.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE132nnn/GSE132080/suppl/GSE132080_10X_genes.tsv.gz",
+          "bytes": 264786,
+          "checksum": null,
+          "checksum_source": "No upstream checksum in GEO supplementary listing/HEAD; local SHA-256 recorded after download."
+        },
+        {
+          "name": "GSE132080_10X_matrix.mtx.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE132nnn/GSE132080/suppl/GSE132080_10X_matrix.mtx.gz",
+          "bytes": 352247428,
+          "checksum": null,
+          "checksum_source": "No upstream checksum in GEO supplementary listing/HEAD; local SHA-256 recorded after download."
+        },
+        {
+          "name": "GSE132080_cell_identities.csv.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE132nnn/GSE132080/suppl/GSE132080_cell_identities.csv.gz",
+          "bytes": 366158,
+          "checksum": null,
+          "checksum_source": "No upstream checksum in GEO supplementary listing/HEAD; local SHA-256 recorded after download."
+        },
+        {
+          "name": "GSE132080_sgRNA_barcode_sequences_and_phenotypes.csv.gz",
+          "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE132nnn/GSE132080/suppl/GSE132080_sgRNA_barcode_sequences_and_phenotypes.csv.gz",
+          "bytes": 4463,
+          "checksum": null,
+          "checksum_source": "No upstream checksum in GEO supplementary listing/HEAD; local SHA-256 recorded after download."
+        }
+      ]
+    },
     {
       "id": "collectri",
       "tier": "c",
