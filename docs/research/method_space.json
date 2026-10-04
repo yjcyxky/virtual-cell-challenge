@@ -1983,7 +1983,7 @@
       "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
     },
     "M-DEPMAP-RAW-KNN": {
-      "description": "knn: source-only masked compositional response and fixed population emitter",
+      "description": "knn: raw DepMap cosine neighbors transfer source-only masked compositional responses with the fixed population emitter. The prior field retains its original hashed registration wording; inference does not use PCA and this batch has no matched kNN shuffle.",
       "axes": {
         "T": "T3",
         "D": "D1",
@@ -1996,7 +1996,7 @@
         "G": "G0"
       },
       "signature": "T3-D1-R22-A11-L6-O0-V5-I11-G0",
-      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; raw cosine descriptors with source-only imputation, no PCA in kNN prediction; no matched kNN shuffle in this batch; missing-prior fallback template; dose observed but not used",
+      "prior": "P-DEPMAP-ALIGNMENT; exact 24Q2 v1; source-only PCA; identity shuffle control; missing-prior fallback template; dose observed but not used in this batch",
       "local_status": "CONTEXT_DEPENDENT",
       "execution_role": "candidate",
       "cost": "low",
@@ -2004,7 +2004,7 @@
         "L14-DECOMPOSITION-FULLTEXT-V1",
         "E-DEPMAP-RESPONSE-ALIGNMENT"
       ],
-      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies."
+      "selection_basis": "2026-10-01: complete 42-fit matched comparison; current package fails joint promotion. True aligned priors beat matched shuffles on PDS/Overall in all five S3 contexts, while weak-response expression/Jaccard and same-target S2 transfer remain limitations. Keep controls as references; no leaderboard or automatic parameter grid. One training seed, five development contexts from three studies. 2026-10-03 provenance repair: restore the original immutable prior text used in all six kNN fit bindings; retain the later clarification here: P-DEPMAP-ALIGNMENT; exact 24Q2 v1; raw cosine descriptors with source-only imputation, no PCA in kNN prediction; no matched kNN shuffle in this batch; missing-prior fallback template; dose observed but not used. No code, configuration, weights or numerical result changed."
     },
     "M-DEPMAP-SHUFFLED-RIDGE": {
       "description": "ridge-shuffled: source-only masked compositional response and fixed population emitter",

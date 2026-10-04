@@ -9750,7 +9750,8 @@
         "scope": "五背景观测审核与计数生成验收，无独立预测器拟合；统计缓存必须按后续训练划分限定读取。"
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "22352adf0dea7ac4dd9aac5a0a8e8afc4126a9c0"
     },
     "local-capability-s01": {
       "experiment_id": "local-capability",
@@ -10762,7 +10763,8 @@
         "scope": "无预测器拟合，oracle与置乱及模板只验收评价器；15面板不是15个生物重复"
       },
       "blockers": [],
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "27b6ba39ec08191069d691364e4f24e8cc4f83b9"
     },
     "population-emission-s01": {
       "experiment_id": "population-emission",
@@ -10994,7 +10996,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/population-emission-s01-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "e80947ddf9d639379a983c5ecefa738ebaece9fd"
     },
     "full-eval-support-s01": {
       "experiment_id": "full-eval-support",
@@ -13535,7 +13538,8 @@
         }
       },
       "artifact": "yjcyxky/virtual-cell-challenge/full-eval-support-s04-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "a05f5cb94e96c09a9d90f37347dee8c906cf25f3"
     },
     "depmap-shared-s3-h1-s930": {
       "experiment_id": "depmap-response",
@@ -13857,7 +13861,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-shared-s3-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "4f122ec75071432a9b5ef8cdecb4c8cae20f6847"
     },
     "depmap-template-s3-h1-s930": {
       "experiment_id": "depmap-response",
@@ -14181,7 +14186,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-template-s3-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "ad9bccfc71bdecb13124dab219390092186e9451"
     },
     "depmap-knn-s3-h1-s930": {
       "experiment_id": "depmap-response",
@@ -14506,7 +14512,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s3-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "213b556a9662c1aa6938199f71fc85aeaea6a6cd"
     },
     "depmap-ridge-s3-h1-s930": {
       "experiment_id": "depmap-response",
@@ -14832,7 +14839,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-s3-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "4ca22861b0a45675c69e9bfb52ce6060e7b0cf42"
     },
     "depmap-ridge-shuffled-s3-h1-s930": {
       "experiment_id": "depmap-response",
@@ -15157,7 +15165,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-shuffled-s3-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "5271fb9dd92398901e7a3990b1c01f4a4abac9a0"
     },
     "depmap-mlp-s3-h1-s930": {
       "experiment_id": "depmap-response",
@@ -15483,7 +15492,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-s3-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "db3649440b98106136c5793cfc82a39df739d100"
     },
     "depmap-mlp-shuffled-s3-h1-s930": {
       "experiment_id": "depmap-response",
@@ -15808,7 +15818,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-shuffled-s3-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "3d7a60a3e6d23fcfd0d50a6e1242eb85019043ac"
     },
     "depmap-shared-s3-k562-s930": {
       "experiment_id": "depmap-response",
@@ -16130,7 +16141,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-shared-s3-k562-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "98c66033240c3b52fcc07160c7dc005aa4c26f8c"
     },
     "depmap-template-s3-k562-s930": {
       "experiment_id": "depmap-response",
@@ -16454,7 +16466,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-template-s3-k562-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "867c9233a54593e9ee5a913ab9b8b43a33743395"
     },
     "depmap-knn-s3-k562-s930": {
       "experiment_id": "depmap-response",
@@ -16779,7 +16792,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s3-k562-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "b759eb10380bc2ecf3ca9814b6a033bde2a3e0bf"
     },
     "depmap-ridge-s3-k562-s930": {
       "experiment_id": "depmap-response",
@@ -17105,7 +17119,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-s3-k562-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "2c37d92d3b8d6c7a37938a83a7f3e68389fad273"
     },
     "depmap-ridge-shuffled-s3-k562-s930": {
       "experiment_id": "depmap-response",
@@ -17430,7 +17445,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-shuffled-s3-k562-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "a7ea0435a92b2579f63d7f5f8e901c19e90f2e4e"
     },
     "depmap-mlp-s3-k562-s930": {
       "experiment_id": "depmap-response",
@@ -17756,7 +17772,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-s3-k562-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "b588785a9c2c3678146448201f48341f35cdeb9e"
     },
     "depmap-mlp-shuffled-s3-k562-s930": {
       "experiment_id": "depmap-response",
@@ -18081,7 +18098,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-shuffled-s3-k562-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "5894f60a1308612b3159ed96595b05eecac2a3db"
     },
     "depmap-shared-s3-rpe1-s930": {
       "experiment_id": "depmap-response",
@@ -18403,7 +18421,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-shared-s3-rpe1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "93797a56122a13b5754ee6253f0c3e3ef0280a83"
     },
     "depmap-template-s3-rpe1-s930": {
       "experiment_id": "depmap-response",
@@ -18727,7 +18746,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-template-s3-rpe1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "eb519b6912bfd793de0712c8aabb07bbf893cf9b"
     },
     "depmap-knn-s3-rpe1-s930": {
       "experiment_id": "depmap-response",
@@ -19052,7 +19072,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s3-rpe1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "7228047887a4ed551a75840d5661667a512c37a5"
     },
     "depmap-ridge-s3-rpe1-s930": {
       "experiment_id": "depmap-response",
@@ -19378,7 +19399,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-s3-rpe1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "bc95d9c8add7fa209e0b3777b8913b62f837ed28"
     },
     "depmap-ridge-shuffled-s3-rpe1-s930": {
       "experiment_id": "depmap-response",
@@ -19703,7 +19725,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-shuffled-s3-rpe1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "9125a5e2185ca085642e480fc01fe380986237b3"
     },
     "depmap-mlp-s3-rpe1-s930": {
       "experiment_id": "depmap-response",
@@ -20029,7 +20052,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-s3-rpe1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "446e0931e45baceb0dbc09ab5a5ff8b38215a963"
     },
     "depmap-mlp-shuffled-s3-rpe1-s930": {
       "experiment_id": "depmap-response",
@@ -20354,7 +20378,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-shuffled-s3-rpe1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "b29a092ece2446bfe423a7414b80c3da653eec11"
     },
     "depmap-shared-s3-hepg2-s930": {
       "experiment_id": "depmap-response",
@@ -20676,7 +20701,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-shared-s3-hepg2-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "b1def4b18ac01d0a40be270f60bbeeff90653b99"
     },
     "depmap-template-s3-hepg2-s930": {
       "experiment_id": "depmap-response",
@@ -21000,7 +21026,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-template-s3-hepg2-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "95561d35b3ba703299c035f5ad61f16d1eb1a92c"
     },
     "depmap-knn-s3-hepg2-s930": {
       "experiment_id": "depmap-response",
@@ -21325,7 +21352,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s3-hepg2-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "e32215483dd61d505319d409798bcc11f6667f80"
     },
     "depmap-ridge-s3-hepg2-s930": {
       "experiment_id": "depmap-response",
@@ -21651,7 +21679,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-s3-hepg2-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "91189eafcd999b5cb118dfdd078fd07e24bf6a30"
     },
     "depmap-ridge-shuffled-s3-hepg2-s930": {
       "experiment_id": "depmap-response",
@@ -21976,7 +22005,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-shuffled-s3-hepg2-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "9edb2941799c9d65cb8cd991a1749a024f22e305"
     },
     "depmap-mlp-s3-hepg2-s930": {
       "experiment_id": "depmap-response",
@@ -22302,7 +22332,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-s3-hepg2-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "bd1e0f7861e1c990ee6e0ba2f1823984a6b7ffb3"
     },
     "depmap-mlp-shuffled-s3-hepg2-s930": {
       "experiment_id": "depmap-response",
@@ -22627,7 +22658,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-shuffled-s3-hepg2-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "e5ee2e310666feb552e0b8e161893b71ac636755"
     },
     "depmap-shared-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
@@ -22949,7 +22981,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-shared-s3-jurkat-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "1452aa8dcee5e629faf10e2cc4a84e1e76ebb11c"
     },
     "depmap-template-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
@@ -23273,7 +23306,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-template-s3-jurkat-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "dfefdaded00d4cfda38d6afcef6a1767d7b16d2f"
     },
     "depmap-knn-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
@@ -23598,7 +23632,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s3-jurkat-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "c3b57620010c31edf80891cc312c038f3f31e582"
     },
     "depmap-ridge-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
@@ -23924,7 +23959,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-s3-jurkat-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "80bba3bd1447f68c33dfc15022e5eb95b8bed813"
     },
     "depmap-ridge-shuffled-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
@@ -24249,7 +24285,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-shuffled-s3-jurkat-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "652bf8db64e27ceb865f8c68c253ccf4cae76888"
     },
     "depmap-mlp-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
@@ -24575,7 +24612,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-s3-jurkat-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "b6e4f57ff2d4ca8dc8298a7cac6353496e9c0ee9"
     },
     "depmap-mlp-shuffled-s3-jurkat-s930": {
       "experiment_id": "depmap-response",
@@ -24900,7 +24938,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-shuffled-s3-jurkat-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "5be7e2913562e83a55589b4dd9ddc871cddb1301"
     },
     "depmap-shared-s2-h1-s930": {
       "experiment_id": "depmap-response",
@@ -25222,7 +25261,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-shared-s2-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "1d33e6c6e1266a06a0b3666dddbbc415a3d819ba"
     },
     "depmap-template-s2-h1-s930": {
       "experiment_id": "depmap-response",
@@ -25546,7 +25586,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-template-s2-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "93bb406b230acb86fb438c726c75eb5dc8db68e2"
     },
     "depmap-knn-s2-h1-s930": {
       "experiment_id": "depmap-response",
@@ -25871,7 +25912,191 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s2-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "802b310d48109ab21a0d26b1e931515d537d17eb",
+      "official_evaluation": {
+        "comparison_id": "C-DEPMAP-KNN-H1-OFFICIAL",
+        "status": "ready",
+        "config_ref": {
+          "path": "experiments/depmap-response/configs/official-knn-s2-h1-s930.json",
+          "sha256": "aaa46d955841157086ce490da9c44b0f1d0488b9e10e672a3e70ff0f59fd8a04"
+        },
+        "code_refs": [
+          {
+            "path": "data/registry.lock.json",
+            "sha256": "cf0ff899fe935b84d6929e3d067f73e11960eeabd0a1e0aad8c8443b43307208"
+          },
+          {
+            "path": "experiments/depmap-response/PLAN.md",
+            "sha256": "a93d43cf40f10cfe9ea2fe43560179c4688ea7ee97c47b36bdddf85bd57909eb"
+          },
+          {
+            "path": "experiments/depmap-response/protocol.json",
+            "sha256": "44f9b591d86b33a67c95af9252a9c55c22d9ce1f00bbadf083ebe681daf5bcdf"
+          },
+          {
+            "path": "experiments/depmap-response/pyproject.toml",
+            "sha256": "759793afbaebcffae9985b978ebe8640c39d8057967134e3384381949a9958b9"
+          },
+          {
+            "path": "experiments/depmap-response/reproduce.sh",
+            "sha256": "05bfc40473566164421edd09b995d4cdd27e92437a01083c50cc31dddc60bdc0"
+          },
+          {
+            "path": "experiments/depmap-response/src/analyze.py",
+            "sha256": "57eb0c437af0bc986727edd3dd59b766d90b486821d1253a478705bcaeb186d8"
+          },
+          {
+            "path": "experiments/depmap-response/src/run.py",
+            "sha256": "b089939789683ebfbc9a7cb66613cb02439024f5f5b3af8c1c61c5a85b7b4098"
+          },
+          {
+            "path": "experiments/depmap-response/submit.sh",
+            "sha256": "33a2c47b3cdba838e86914d80a087e3ba5f914939f6d91dfbb335e4f92d51b33"
+          },
+          {
+            "path": "experiments/depmap-response/uv.lock",
+            "sha256": "ab85606ebb1fd16dd199a46ce14eff9bba2b7ce38424b34a4da063d738ba91f5"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/estimators.py",
+            "sha256": "3b1a7ef00207663e3aaecac0420dce466cfc1eef98afe9468beec4d3278352bf"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/evaluate.py",
+            "sha256": "f0786a029420c9d498fbee686e9838dc51974b3996f58ca7a41cf1d7a1c73c9f"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/summarize.py",
+            "sha256": "ad7bca1558cf5dd43caa156c7b9f4fd2676ac6996973e8a157a4587b0cfd7b49"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/vcc_baseline.py",
+            "sha256": "54c3b84f4e4776b04f5bc6cdcabe79b810f142af624c6c65acb8cfdc7d789114"
+          },
+          {
+            "path": "experiments/exp002-response-transfer-validation/src/vcc_submission.py",
+            "sha256": "e25e70e8d39e20dc1e3e1daa537aa7c0e9e42a8682d2119a1fbd26761d72a5b2"
+          },
+          {
+            "path": "experiments/init-linear/src/data.py",
+            "sha256": "c24ea917769f9236859a07b1983756a19022fcfbb85106c818c41c58dec3fb43"
+          },
+          {
+            "path": "experiments/init-linear/src/submission.py",
+            "sha256": "b748d432b615399c42ed5a64ecdf892db4046b8feeaa015593d7add8b913262d"
+          },
+          {
+            "path": "experiments/init-linear/submit.sh",
+            "sha256": "845ae16f6ad804fd0c5131f9d17c56704fc5a8f3b0382abf7074b34c476540ff"
+          },
+          {
+            "path": "scripts/analyze_submitted_counts.py",
+            "sha256": "a8ef17d3a1c1a417834d3c220aa92a97a65f5a34bb07fc26f01342e048f1cc31"
+          },
+          {
+            "path": "scripts/dossier/challenge.py",
+            "sha256": "75551cd756917533ddd7377283cc7f84b6e4a1edb6648f18b7db5b80490b0ac7"
+          },
+          {
+            "path": "scripts/dossier/heterogeneity.py",
+            "sha256": "ef5f805e2a26e42ef1efade45d1e3358933c60e27ffedeb4a6612d5b35e47c3e"
+          },
+          {
+            "path": "scripts/dossier/profile_responses.py",
+            "sha256": "a358852669d097cad813e55ac5d4c15a5eac7d88bd182d3268f9a8f1e8317839"
+          },
+          {
+            "path": "scripts/dossier/render.py",
+            "sha256": "310946d5e208aa57f828978d5825c08777c2cd9ad6169f3840cb7860d38ee97e"
+          },
+          {
+            "path": "scripts/dossier/response.py",
+            "sha256": "23dd80aa90b8d970d2bb4421fce8ede5b532034298fbd38c8b02b60ca1bbe6f6"
+          },
+          {
+            "path": "scripts/research.py",
+            "sha256": "8a4a5be3edddd5e6d2b104b605dcf9cc01c6291042aa2f262ee5ba1456aa3ba1"
+          },
+          {
+            "path": "src/vcc_task/__init__.py",
+            "sha256": "fd8284b6e3d2f5e64664e2c0d8bcb0abbf58a662f4d7c239269f885f9b2b5aaf"
+          },
+          {
+            "path": "src/vcc_task/capability.py",
+            "sha256": "a01fd8917d50916f98adde204a841b7cd3fbe89a74626d1114523b7fc796c42b"
+          },
+          {
+            "path": "src/vcc_task/common.py",
+            "sha256": "2343e1b8e0fcff4f5b097ab5216e825fef3280c08784cab4b9bc511fed664771"
+          },
+          {
+            "path": "src/vcc_task/count_store.py",
+            "sha256": "b391535aa480839bb65f82ee92e6769bff5787bf72affd144226527bb4b62513"
+          },
+          {
+            "path": "src/vcc_task/counts.py",
+            "sha256": "3dbc74e52c73ceb8c17804f3a979cf5616b1580a59961b16cddc74ee704e36a8"
+          },
+          {
+            "path": "src/vcc_task/depmap_submission.py",
+            "sha256": "a6d4914364f4e571c9cf054b299cabe5fd356abb080c3e3d9b18d08ab5f8e44c"
+          },
+          {
+            "path": "src/vcc_task/frozen_knn.py",
+            "sha256": "75a020989f94f37ce457ccffdbdfcba79a4edd0e70a249a3702314d120778f76"
+          },
+          {
+            "path": "src/vcc_task/frozen_scoring.py",
+            "sha256": "b1f50a83b7ced87b8ad1952d8424d261094ced4f82fe7c512ff374a761bdd9f2"
+          },
+          {
+            "path": "src/vcc_task/official.py",
+            "sha256": "2089b0fe480030efc48a945f487fa443370d1b935c679040e2e9ad590d5a1f98"
+          },
+          {
+            "path": "src/vcc_task/official_diagnostics.py",
+            "sha256": "ea8afe6aed8c7725fe3da62b37a96588fbb560b476a81c4a2d5b27d7d9230d58"
+          },
+          {
+            "path": "src/vcc_task/population_emission.py",
+            "sha256": "dd047b0412e3aa5a780e39cc96ffbdac911a703c2e786a5b839ea560b23f5aec"
+          },
+          {
+            "path": "src/vcc_task/prediction_diagnostics.py",
+            "sha256": "50ac991bafd5ba4922191243df57b4eb1b6ccecfa2b4658a5305e75cabf06a32"
+          },
+          {
+            "path": "src/vcc_task/response_data.py",
+            "sha256": "67c4bb150f15b72a40ef5ec57af5cdd75306e9c91a5ce8e618030eb91e9b3fc5"
+          },
+          {
+            "path": "src/vcc_task/response_experiment.py",
+            "sha256": "7b8caa3a6d3cbea19d0605da9163bb13df9b25e3073a1afe08845e48cb7492fe"
+          },
+          {
+            "path": "src/vcc_task/response_models.py",
+            "sha256": "88a97dcdcd93193a23029700ffc7e7cfa55607667944f46682a62608ad19af95"
+          },
+          {
+            "path": "src/vcc_task/run_context.py",
+            "sha256": "086bde937aff0857f1c8ac5c40ba436915231985e326e1e54f1b5b31b4bd3fde"
+          },
+          {
+            "path": "src/vcc_task/score_support.py",
+            "sha256": "1d821812340abae40fd916e1b589cc9ad016d421680a91f842ea7c140293266f"
+          },
+          {
+            "path": "experiments/depmap-response/OFFICIAL_EVALUATION.md",
+            "sha256": "c12c07b120aa2b1567f71a20f2d088ebbc32376e3df6bc2f6b3372b1c8ccbaa1"
+          }
+        ],
+        "scope": "User explicitly requested leaderboard measurement and selected S2-H1. Same completed fit and W&B identity; all original weights, latent rule, decoder and emitter preserved. New full-axis A/B/C diagnostics before one remote submission. Original local non-promotion decision remains unchanged.",
+        "plan_ref": {
+          "path": "experiments/depmap-response/OFFICIAL_EVALUATION.md",
+          "sha256": "c12c07b120aa2b1567f71a20f2d088ebbc32376e3df6bc2f6b3372b1c8ccbaa1"
+        }
+      }
     },
     "depmap-ridge-s2-h1-s930": {
       "experiment_id": "depmap-response",
@@ -26197,7 +26422,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-s2-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "098d2b5c1a26472f99d0e4e7eddc2d872867dc64"
     },
     "depmap-ridge-shuffled-s2-h1-s930": {
       "experiment_id": "depmap-response",
@@ -26522,7 +26748,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-ridge-shuffled-s2-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "84883a1e5ac0f0f07969724790ee80e7f321a41b"
     },
     "depmap-mlp-s2-h1-s930": {
       "experiment_id": "depmap-response",
@@ -26848,7 +27075,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-s2-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "78f6d6c2c41a93a93576acd937bb2f80a07632ee"
     },
     "depmap-mlp-shuffled-s2-h1-s930": {
       "experiment_id": "depmap-response",
@@ -27173,7 +27401,8 @@
       },
       "blockers": [],
       "artifact": "yjcyxky/virtual-cell-challenge/depmap-mlp-shuffled-s2-h1-s930-results:v0",
-      "wandb_sync": "online"
+      "wandb_sync": "online",
+      "code_snapshot_commit": "eb5bb001fecd53163a4807d9ae6cc9b8cc67e892"
     }
   },
   "comparisons": {
@@ -28644,6 +28873,38 @@
       "cost": "medium",
       "priority_basis": "已完成两批真实数据/评价器诊断给出的直接限制；不是从弱预测模型归因生物机制。 2026-09-30全文核验见L14-DECOMPOSITION-FULLTEXT-V1；适用边界详见docs/research/perturbation_decomposition_review.md。 原s01为int32累计索引技术失败，未产生方法结论；仅复用已完成H1和已校验外部先验。",
       "evidence_id": "E-LOCAL-EVAL-SUPPORT-R4"
+    },
+    "C-DEPMAP-KNN-H1-OFFICIAL": {
+      "status": "draft",
+      "purpose": "protocol_audit",
+      "hypothesis": "固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
+      "controls": [],
+      "candidates": [
+        "depmap-knn-s2-h1-s930"
+      ],
+      "changed_axes": [
+        "V"
+      ],
+      "changed_fields": [
+        "evaluation.backgrounds",
+        "evaluation.target_panel",
+        "evaluation.measured_gene_axis",
+        "evaluation.reference_and_anchors",
+        "evaluation.execution_service"
+      ],
+      "decision_rule": {
+        "primary_metric": "official.score_avg",
+        "direction": "maximize",
+        "min_effect": 0.0,
+        "scope": "Single frozen kNN checkpoint, seed 930, official val A/B/C 300 targets on 18533 genes; original S2-H1 has 280 targets on its measured subset. Descriptive development evidence only.",
+        "on_support": "Published Overall > 0 supports only this fixed prediction exceeding the official aggregate normalized zero baseline; retain local non-promotion and all component tradeoffs.",
+        "on_against": "Published Overall <= 0 does not support that limited baseline claim; preserve the negative result without changing the model or generator.",
+        "on_inconclusive": "No valid published six-metric result: keep pending and resume same entry; no model-negative claim.",
+        "threshold_policy": "Frozen before generation and scores. User requests the measurement regardless of local promotion; diagnostic hard failures stop submission."
+      },
+      "evidence_id": "E-DEPMAP-KNN-H1-OFFICIAL",
+      "attribution_plan": "No new fitting. Simultaneous changes of population, target coverage, measured axis and remote anchors prevent single-factor attribution.",
+      "stage_readiness": "Original fit completed; registered official stage may execute after code freeze. Set comparison ready only after published official scores, then close evidence."
     }
   },
   "continuation_rules": {

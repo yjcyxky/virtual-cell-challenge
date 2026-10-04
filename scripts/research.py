@@ -31,6 +31,7 @@ NODE_STATES = {"draft", "ready", "completed", "failed", "interrupted"}
 PURPOSES = {"screen", "confirm", "interaction", "integrate", "protocol_audit", "baseline"}
 SPEC_FIELDS = ("experiment_id", "directory", "method_id", "protocol_id", "comparison_id",
                "controls", "sources", "requires_evidence", "evidence_conditions", "config_ref", "expected_config", "code_refs")
+ARTIFACT_MIRROR = Path('/mnt/projects/virtual-cell-challenge')
 
 
 class ResearchError(ValueError):
@@ -59,6 +60,32 @@ def local_path(root, path):
     if Path(path).is_absolute() or not resolved.is_relative_to(root.resolve()):
         raise ResearchError(f"reference escapes repository: {path}")
     return resolved
+
+
+def artifact_path(root, path):
+    """Read untracked evidence from its exact authorized NAS mirror location.
+
+    Code, configuration and Git references retain the strict repository boundary.
+    Offloading changes storage only: the original reference and content hash stay.
+    """
+    try:
+        return local_path(root, path)
+    except ResearchError:
+        if not isinstance(path, str) or not path:
+            raise
+        relative = Path(path)
+        parts = relative.parts
+        artifact = (parts[:1] == ('data',) or
+                    len(parts) >= 5 and parts[0] == 'experiments' and parts[2] == 'outputs')
+        resolved = (root / relative).resolve()
+        mirror = ARTIFACT_MIRROR.resolve()
+        expected = mirror / relative
+        if (relative.is_absolute() or '..' in parts or not artifact
+                or not resolved.is_relative_to(mirror) or resolved != expected
+                or not resolved.is_file()
+                or git(root, 'ls-files', '--error-unmatch', '--', path, check=False).returncode == 0):
+            raise
+        return resolved
 
 
 def read_bytes(root, path, staged=False):
@@ -105,7 +132,7 @@ def ref_error(root, ref, staged=False):
             # Preserved checkpoints/predictions may be many GiB. Hash ignored
             # local artifacts in bounded chunks, including during staged checks.
             if not staged or git(root, "ls-files", "--error-unmatch", "--", ref["path"], check=False).returncode:
-                path = local_path(root, ref["path"])
+                path = artifact_path(root, ref["path"])
                 digestor = hashlib.sha256()
                 try:
                     with path.open('rb') as stream:

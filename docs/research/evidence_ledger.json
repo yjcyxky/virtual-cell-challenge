@@ -2825,12 +2825,48 @@
       "next_action": "冻结本次完整参考和有效/不可定义范围；后续机制与预算遵循已关闭的DepMap七方案×六独立fit比较及当前Ledger队列，不继续面板调参或提交榜单。",
       "reopen_when": "新的参考群体、测量/来源数据、官方scorer变更或明确复现差异出现；不是根据某个模型单次分数改协议。",
       "hypothesis": "每折全部结构合格留出靶点，能否支持官方六项归一化与覆盖明确的模型比较？"
+    },
+    "E-DEPMAP-KNN-H1-OFFICIAL": {
+      "kind": "experiment",
+      "state": "pending",
+      "comparison_id": "C-DEPMAP-KNN-H1-OFFICIAL",
+      "node_ids": [
+        "depmap-knn-s2-h1-s930"
+      ],
+      "hypothesis": "固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
+      "source_refs": [
+        {
+          "path": "experiments/depmap-response/configs/official-knn-s2-h1-s930.json",
+          "sha256": "aaa46d955841157086ce490da9c44b0f1d0488b9e10e672a3e70ff0f59fd8a04"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/metrics.json",
+          "sha256": "e373d5b745f9b2fe60c2dd3e628c0dce66dc4378119e146bca675fcdf072957f"
+        },
+        {
+          "path": "experiments/depmap-response/OFFICIAL_EVALUATION.md",
+          "sha256": "c12c07b120aa2b1567f71a20f2d088ebbc32376e3df6bc2f6b3372b1c8ccbaa1"
+        }
+      ],
+      "next_action": "Generate frozen S2-H1 kNN predictions on official A/B/C, finish diagnostics, package and submit once; retain one entry identity until published.",
+      "claim": "待检验：固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
+      "limitations": "尚未生成或提交本次官方预测；原本地整包未晋级结论保留。单 checkpoint/单 seed 的官方验证反馈只能作为开发证据。",
+      "reopen_when": "本次核查先取得有效 published 回执；关闭后仅在新背景、独立 seed 或额外官方分项证据下重开，不重复提交相同文件。"
     }
   },
-  "queue": [],
+  "queue": [
+    {
+      "id": "E-DEPMAP-KNN-H1-OFFICIAL",
+      "priority": 1,
+      "comparison_id": "C-DEPMAP-KNN-H1-OFFICIAL",
+      "question": "固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
+      "action": "User-selected S2-H1 official export and leaderboard measurement, without fitting or changing local method decisions.",
+      "requires_evidence": []
+    }
+  ],
   "resource_allocation": {
     "after_evidence": "E-LOCAL-EVAL-SUPPORT-R4",
-    "unit": "本轮冻结预算已完成：population-emission、DepMap七方案×六拟合（42 fits）、full-eval-support完整15面板/30对照均已闭环。采用固定计数生成与本地诊断/官方评分条件；不再扩展评估面板或当前DepMap配方rank/学习率网格，不提交leaderboard。",
+    "unit": "本轮冻结预算已完成：population-emission、DepMap七方案×六拟合（42 fits）、full-eval-support完整15面板/30对照均已闭环。采用固定计数生成与本地诊断/官方评分条件；不再扩展评估面板或当前DepMap配方rank/学习率网格，不提交leaderboard。 2026-10-03 用户明确指定 S2-H1 kNN 的一次官方核查；只增加该原 run 的导出/诊断/远端评分阶段，不启动训练，不扩大其他模型的榜单预算。",
     "exploration_slots": [],
     "third_slot": "下一轮机制设计优先保留同靶监督响应、为未见靶点提供监督对齐的功能映射，并联合检验弱响应/背景强度校准和跨基因共享输出。先登记匹配对照、独立fit范围、完整预算及晋级标准；当前未启动新训练。剂量作为有不确定性的观测，unknown不硬筛。",
     "stopped_local_branches": [

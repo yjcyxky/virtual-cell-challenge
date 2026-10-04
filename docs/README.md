@@ -15,6 +15,7 @@
 | 登记执行、对照与前置关系 | [Experiment DAG](research/experiment_dag.json) |
 | 查看依赖图 | [DAG 自动生成视图](research/experiment_dag.md) |
 | 查验来源、记录实验结论及下一步 | [Evidence Ledger](research/evidence_ledger.json) |
+| 查阅已完成数据统计与实验的有日期盘点 | [仓库分析快照，2026-10-03](research/repository_analysis_inventory_2026-10-03.md)；仅作既有结果导航，不替代三份研究对象 |
 
 `research/` 中的三份 JSON 是研究管理事实源；Markdown DAG 由工具生成。固定来源引用包含内容哈希，调整文档位置时须核对引用。
 
