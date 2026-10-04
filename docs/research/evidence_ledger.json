@@ -2336,7 +2336,8 @@
         },
         {
           "path": "experiments/depmap-response/REPORT.md",
-          "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+          "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+          "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
         },
         {
           "path": "experiments/depmap-response/outputs/depmap-mlp-shuffled-s2-h1-s930/diagnostics/batch-results.json",
@@ -2828,45 +2829,119 @@
     },
     "E-DEPMAP-KNN-H1-OFFICIAL": {
       "kind": "experiment",
-      "state": "pending",
+      "state": "supported",
       "comparison_id": "C-DEPMAP-KNN-H1-OFFICIAL",
       "node_ids": [
         "depmap-knn-s2-h1-s930"
       ],
       "hypothesis": "固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
+      "claim": "固定 S2-H1 kNN 的官方 A/B/C Overall=0.01148417，高于聚合 normalized 零基线；六项 raw/normalized 及本地差值已保存。此结论仅限当前单文件官方测量。 PDS 和 Reach 为正，Expression 为 0，LFC/Fidelity/Jaccard 为负，整体分数很弱；不改变原路线不晋级决定。",
+      "limitations": [
+        "Single frozen checkpoint and seed; validation feedback is development evidence, not SOTA or independent confirmation.",
+        "H1 (280 targets, 18074 measured genes) and official A/B/C (300 targets, 18533 genes) differ in backgrounds, targets, measured axis, reference populations and anchors. Score differences cannot be attributed to one factor.",
+        "Official per-context scores, metric-valid counts and exact remote anchor construction are not in the receipt. Same package or anchor label does not certify the same scale.",
+        "272 official targets are source-seen; 28 source-unseen. 7617 readouts have no source response supervision. Fixed own-target knockdown and inherited NTC shape are not learned mechanisms."
+      ],
       "source_refs": [
-        {
-          "path": "experiments/depmap-response/configs/official-knn-s2-h1-s930.json",
-          "sha256": "aaa46d955841157086ce490da9c44b0f1d0488b9e10e672a3e70ff0f59fd8a04"
-        },
         {
           "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/metrics.json",
           "sha256": "e373d5b745f9b2fe60c2dd3e628c0dce66dc4378119e146bca675fcdf072957f"
         },
         {
+          "path": "experiments/depmap-response/configs/official-knn-s2-h1-s930.json",
+          "sha256": "aaa46d955841157086ce490da9c44b0f1d0488b9e10e672a3e70ff0f59fd8a04"
+        },
+        {
           "path": "experiments/depmap-response/OFFICIAL_EVALUATION.md",
           "sha256": "c12c07b120aa2b1567f71a20f2d088ebbc32376e3df6bc2f6b3372b1c8ccbaa1"
+        },
+        {
+          "path": "experiments/depmap-response/REPORT.md",
+          "sha256": "6e37d181db9bf00383226d9ef0897110f60e28848c2c7d7038270b769762fd0c"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/comparison.json",
+          "sha256": "94822355259764f64df85e71aa0f5a3939f330ef9503870a40b912ddeae167f3"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/published-status.json",
+          "sha256": "7322de9f022881ee331334825d75b4123978359a3b81edca2622d508d804a51d"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/published-summary.json",
+          "sha256": "bcc4900ca818bb151bb8f13f1d55018fc479d291a7b9356ea626d2463eea2925"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/submission-entry.json",
+          "sha256": "22238279f35880634a2fe2fa413950b215962625d5051a4e88f8e9f3893dfdad"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/submission-file.json",
+          "sha256": "772e5c1c11ff4a9d72226258c38ec30012b46907de3e72605b3c28487dc9049d"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/predictions.vcc",
+          "sha256": "d86e5b8bbdbd3a73002b955598d3b423525a5b722f29e9621ad3245de28033fc"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/statistical-review.json",
+          "sha256": "1ef089ab2ac36994ec8054f3a3649b19ec432aca708590b2796815a4cbb9a037"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/export-identity.json",
+          "sha256": "72e39465cd2fe4edb5e87b94f344d492e0110f9a1cd36172064a5bccf9e4f49e"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/local-replay.json",
+          "sha256": "5f2f3c1cf5eab21a0358badd5b2cb628e0b476aa738250fce8da33e0b51d2234"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/submission-decision.json",
+          "sha256": "1fc4187ec2a47555f31b09af9ac23b82e898793a0cd238e5a1d52a0e8ea4d0a9"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/A/diagnostics/completed.json",
+          "sha256": "62b0284c4d13498a5e0e72f40d70d6f6c139cf2ef80de08a503e735ed8656109"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/B/diagnostics/completed.json",
+          "sha256": "5e8ac6e9284dc1742e84a4db4decc9339f55e81cb72edd2e8776905373b55e9d"
+        },
+        {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/C/diagnostics/completed.json",
+          "sha256": "1e281a83d853f7403ae71db88a24fe8c5115d88b614d70255ae6301017017968"
         }
       ],
-      "next_action": "Generate frozen S2-H1 kNN predictions on official A/B/C, finish diagnostics, package and submit once; retain one entry identity until published.",
-      "claim": "待检验：固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
-      "limitations": "尚未生成或提交本次官方预测；原本地整包未晋级结论保留。单 checkpoint/单 seed 的官方验证反馈只能作为开发证据。",
-      "reopen_when": "本次核查先取得有效 published 回执；关闭后仅在新背景、独立 seed 或额外官方分项证据下重开，不重复提交相同文件。"
+      "metrics": {
+        "official_raw": {
+          "pds_cosine": 0.5675102192493496,
+          "expr_mse_unbiased_capped_norm": 7.906899229434622,
+          "de_wilcoxon_lfc_nmae": 1.023454485343079,
+          "de_wilcoxon_direction_fidelity_yield_raw": 0.4918047871756977,
+          "de_wilcoxon_direction_reach_raw": 0.12172401430327758,
+          "de_wilcoxon_sig_jaccard": 0.024207235024643014
+        },
+        "official_normalized": {
+          "pds_cosine": 0.14848740008483544,
+          "expr_mse_unbiased_capped_norm": 0,
+          "de_wilcoxon_lfc_nmae": -0.041230655134241435,
+          "de_wilcoxon_direction_fidelity_yield_raw": -0.06900248567902846,
+          "de_wilcoxon_direction_reach_raw": 0.04751592106371525,
+          "de_wilcoxon_sig_jaccard": -0.016865157171446567
+        },
+        "official_Overall": 0.011484170527305706,
+        "local_Overall": 0.15157351141367748,
+        "official_minus_local_Overall": -0.14008934088637176
+      },
+      "decision": "Complete this user-requested measurement; retain the original local non-promotion and stop further submissions/tuning in this task.",
+      "next_action": "保留该 entry、VCC 和完整回执；下一轮机制设计另登记监督覆盖、背景响应强度与生成分布的匹配对照，不追加同文件提交或局部超参网格。",
+      "reopen_when": "取得独立背景/研究或生成种子证据，或官方提供分背景分项、有效数及 anchors 构建直接来源后，再登记能区分解释的新比较。"
     }
   },
-  "queue": [
-    {
-      "id": "E-DEPMAP-KNN-H1-OFFICIAL",
-      "priority": 1,
-      "comparison_id": "C-DEPMAP-KNN-H1-OFFICIAL",
-      "question": "固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
-      "action": "User-selected S2-H1 official export and leaderboard measurement, without fitting or changing local method decisions.",
-      "requires_evidence": []
-    }
-  ],
+  "queue": [],
   "resource_allocation": {
     "after_evidence": "E-LOCAL-EVAL-SUPPORT-R4",
-    "unit": "本轮冻结预算已完成：population-emission、DepMap七方案×六拟合（42 fits）、full-eval-support完整15面板/30对照均已闭环。采用固定计数生成与本地诊断/官方评分条件；不再扩展评估面板或当前DepMap配方rank/学习率网格，不提交leaderboard。 2026-10-03 用户明确指定 S2-H1 kNN 的一次官方核查；只增加该原 run 的导出/诊断/远端评分阶段，不启动训练，不扩大其他模型的榜单预算。",
+    "unit": "既有 population-emission、DepMap 七方案×六拟合及 full-eval-support 全量比较保持闭环结论。用户指定的 S2-H1 kNN 一次官方测量已取得 published 回执；不追加训练、同文件重复提交或当前配方局部调参。后续机制预算须另行登记。",
     "exploration_slots": [],
     "third_slot": "下一轮机制设计优先保留同靶监督响应、为未见靶点提供监督对齐的功能映射，并联合检验弱响应/背景强度校准和跨基因共享输出。先登记匹配对照、独立fit范围、完整预算及晋级标准；当前未启动新训练。剂量作为有不确定性的观测，unknown不硬筛。",
     "stopped_local_branches": [

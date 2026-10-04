@@ -13843,7 +13843,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "4f122ec75071432a9b5ef8cdecb4c8cae20f6847",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-shared-s3-h1-s930",
@@ -14168,7 +14169,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "ad9bccfc71bdecb13124dab219390092186e9451",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-template-s3-h1-s930",
@@ -14494,7 +14496,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "213b556a9662c1aa6938199f71fc85aeaea6a6cd",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-knn-s3-h1-s930",
@@ -14821,7 +14824,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "4ca22861b0a45675c69e9bfb52ce6060e7b0cf42",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-s3-h1-s930",
@@ -15147,7 +15151,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "5271fb9dd92398901e7a3990b1c01f4a4abac9a0",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-shuffled-s3-h1-s930",
@@ -15474,7 +15479,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "db3649440b98106136c5793cfc82a39df739d100",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-s3-h1-s930",
@@ -15800,7 +15806,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "3d7a60a3e6d23fcfd0d50a6e1242eb85019043ac",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-shuffled-s3-h1-s930",
@@ -16123,7 +16130,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "98c66033240c3b52fcc07160c7dc005aa4c26f8c",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-shared-s3-k562-s930",
@@ -16448,7 +16456,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "867c9233a54593e9ee5a913ab9b8b43a33743395",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-template-s3-k562-s930",
@@ -16774,7 +16783,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "b759eb10380bc2ecf3ca9814b6a033bde2a3e0bf",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-knn-s3-k562-s930",
@@ -17101,7 +17111,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "2c37d92d3b8d6c7a37938a83a7f3e68389fad273",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-s3-k562-s930",
@@ -17427,7 +17438,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "a7ea0435a92b2579f63d7f5f8e901c19e90f2e4e",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-shuffled-s3-k562-s930",
@@ -17754,7 +17766,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "b588785a9c2c3678146448201f48341f35cdeb9e",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-s3-k562-s930",
@@ -18080,7 +18093,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "5894f60a1308612b3159ed96595b05eecac2a3db",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-shuffled-s3-k562-s930",
@@ -18403,7 +18417,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "93797a56122a13b5754ee6253f0c3e3ef0280a83",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-shared-s3-rpe1-s930",
@@ -18728,7 +18743,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "eb519b6912bfd793de0712c8aabb07bbf893cf9b",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-template-s3-rpe1-s930",
@@ -19054,7 +19070,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "7228047887a4ed551a75840d5661667a512c37a5",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-knn-s3-rpe1-s930",
@@ -19381,7 +19398,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "bc95d9c8add7fa209e0b3777b8913b62f837ed28",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-s3-rpe1-s930",
@@ -19707,7 +19725,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "9125a5e2185ca085642e480fc01fe380986237b3",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-shuffled-s3-rpe1-s930",
@@ -20034,7 +20053,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "446e0931e45baceb0dbc09ab5a5ff8b38215a963",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-s3-rpe1-s930",
@@ -20360,7 +20380,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "b29a092ece2446bfe423a7414b80c3da653eec11",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-shuffled-s3-rpe1-s930",
@@ -20683,7 +20704,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "b1def4b18ac01d0a40be270f60bbeeff90653b99",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-shared-s3-hepg2-s930",
@@ -21008,7 +21030,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "95561d35b3ba703299c035f5ad61f16d1eb1a92c",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-template-s3-hepg2-s930",
@@ -21334,7 +21357,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "e32215483dd61d505319d409798bcc11f6667f80",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-knn-s3-hepg2-s930",
@@ -21661,7 +21685,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "91189eafcd999b5cb118dfdd078fd07e24bf6a30",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-s3-hepg2-s930",
@@ -21987,7 +22012,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "9edb2941799c9d65cb8cd991a1749a024f22e305",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-shuffled-s3-hepg2-s930",
@@ -22314,7 +22340,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "bd1e0f7861e1c990ee6e0ba2f1823984a6b7ffb3",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-s3-hepg2-s930",
@@ -22640,7 +22667,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "e5ee2e310666feb552e0b8e161893b71ac636755",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-shuffled-s3-hepg2-s930",
@@ -22963,7 +22991,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "1452aa8dcee5e629faf10e2cc4a84e1e76ebb11c",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-shared-s3-jurkat-s930",
@@ -23288,7 +23317,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "dfefdaded00d4cfda38d6afcef6a1767d7b16d2f",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-template-s3-jurkat-s930",
@@ -23614,7 +23644,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "c3b57620010c31edf80891cc312c038f3f31e582",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-knn-s3-jurkat-s930",
@@ -23941,7 +23972,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "80bba3bd1447f68c33dfc15022e5eb95b8bed813",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-s3-jurkat-s930",
@@ -24267,7 +24299,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "652bf8db64e27ceb865f8c68c253ccf4cae76888",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-shuffled-s3-jurkat-s930",
@@ -24594,7 +24627,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "b6e4f57ff2d4ca8dc8298a7cac6353496e9c0ee9",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-s3-jurkat-s930",
@@ -24920,7 +24954,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "5be7e2913562e83a55589b4dd9ddc871cddb1301",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-shuffled-s3-jurkat-s930",
@@ -25243,7 +25278,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "1d33e6c6e1266a06a0b3666dddbbc415a3d819ba",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-shared-s2-h1-s930",
@@ -25568,7 +25604,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "93bb406b230acb86fb438c726c75eb5dc8db68e2",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-template-s2-h1-s930",
@@ -25894,7 +25931,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "802b310d48109ab21a0d26b1e931515d537d17eb",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-knn-s2-h1-s930",
@@ -25916,7 +25954,7 @@
       "code_snapshot_commit": "802b310d48109ab21a0d26b1e931515d537d17eb",
       "official_evaluation": {
         "comparison_id": "C-DEPMAP-KNN-H1-OFFICIAL",
-        "status": "ready",
+        "status": "completed",
         "config_ref": {
           "path": "experiments/depmap-response/configs/official-knn-s2-h1-s930.json",
           "sha256": "aaa46d955841157086ce490da9c44b0f1d0488b9e10e672a3e70ff0f59fd8a04"
@@ -26095,7 +26133,63 @@
         "plan_ref": {
           "path": "experiments/depmap-response/OFFICIAL_EVALUATION.md",
           "sha256": "c12c07b120aa2b1567f71a20f2d088ebbc32376e3df6bc2f6b3372b1c8ccbaa1"
-        }
+        },
+        "result_ref": {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/comparison.json",
+          "sha256": "94822355259764f64df85e71aa0f5a3939f330ef9503870a40b912ddeae167f3"
+        },
+        "replay_ref": {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/local-replay.json",
+          "sha256": "5f2f3c1cf5eab21a0358badd5b2cb628e0b476aa738250fce8da33e0b51d2234"
+        },
+        "identity_ref": {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/export-identity.json",
+          "sha256": "72e39465cd2fe4edb5e87b94f344d492e0110f9a1cd36172064a5bccf9e4f49e"
+        },
+        "diagnostic_review_ref": {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/statistical-review.json",
+          "sha256": "1ef089ab2ac36994ec8054f3a3649b19ec432aca708590b2796815a4cbb9a037"
+        },
+        "diagnostic_refs": [
+          {
+            "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/A/diagnostics/completed.json",
+            "sha256": "62b0284c4d13498a5e0e72f40d70d6f6c139cf2ef80de08a503e735ed8656109"
+          },
+          {
+            "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/B/diagnostics/completed.json",
+            "sha256": "5e8ac6e9284dc1742e84a4db4decc9339f55e81cb72edd2e8776905373b55e9d"
+          },
+          {
+            "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/C/diagnostics/completed.json",
+            "sha256": "1e281a83d853f7403ae71db88a24fe8c5115d88b614d70255ae6301017017968"
+          }
+        ],
+        "submission_decision_ref": {
+          "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/submission-decision.json",
+          "sha256": "1fc4187ec2a47555f31b09af9ac23b82e898793a0cd238e5a1d52a0e8ea4d0a9"
+        },
+        "results": {
+          "knn": {
+            "entry_id": "VbwIq7s66YimJ1CgCfT8",
+            "Overall": 0.011484170527305706,
+            "summary_ref": {
+              "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/published-summary.json",
+              "sha256": "bcc4900ca818bb151bb8f13f1d55018fc479d291a7b9356ea626d2463eea2925"
+            },
+            "status_ref": {
+              "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/published-status.json",
+              "sha256": "7322de9f022881ee331334825d75b4123978359a3b81edca2622d508d804a51d"
+            },
+            "submission_file_ref": {
+              "path": "experiments/depmap-response/outputs/depmap-knn-s2-h1-s930/predictions/official-abc-knn/submission-file.json",
+              "sha256": "772e5c1c11ff4a9d72226258c38ec30012b46907de3e72605b3c28487dc9049d"
+            },
+            "panel_id": "vcc2026-val-1",
+            "anchor_version": "vcc2026-valA-r4+vcc2026-valB-r4+vcc2026-valC-r4",
+            "artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s2-h1-s930-official-knn:v0"
+          }
+        },
+        "comparison_artifact": "yjcyxky/virtual-cell-challenge/depmap-knn-s2-h1-s930-official-comparison:v0"
       }
     },
     "depmap-ridge-s2-h1-s930": {
@@ -26404,7 +26498,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "098d2b5c1a26472f99d0e4e7eddc2d872867dc64",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-s2-h1-s930",
@@ -26730,7 +26825,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "84883a1e5ac0f0f07969724790ee80e7f321a41b",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-ridge-shuffled-s2-h1-s930",
@@ -27057,7 +27153,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "78f6d6c2c41a93a93576acd937bb2f80a07632ee",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-s2-h1-s930",
@@ -27383,7 +27480,8 @@
       },
       "report_ref": {
         "path": "experiments/depmap-response/REPORT.md",
-        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c"
+        "sha256": "aafb5cc49af379af1307c62f193a87c498346af3fcb2a045da64518a69804c7c",
+        "git_commit": "f64177e14098039a94a64c50376b123d4b1f9dcc"
       },
       "git_commit": "eb5bb001fecd53163a4807d9ae6cc9b8cc67e892",
       "wandb_url": "https://wandb.ai/yjcyxky/virtual-cell-challenge/runs/depmap-mlp-shuffled-s2-h1-s930",
@@ -28875,7 +28973,7 @@
       "evidence_id": "E-LOCAL-EVAL-SUPPORT-R4"
     },
     "C-DEPMAP-KNN-H1-OFFICIAL": {
-      "status": "draft",
+      "status": "ready",
       "purpose": "protocol_audit",
       "hypothesis": "固定 depmap-knn-s2-h1-s930 的官方 A/B/C Overall 是否大于 0，并记录六项 raw/normalized 与原 S2-H1 的描述性差异？",
       "controls": [],
